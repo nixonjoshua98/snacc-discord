@@ -1,2 +1,2 @@
-# darkness-corp-discord-bot
+# darkness-discord-bot
  
