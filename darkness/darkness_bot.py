@@ -1,24 +1,24 @@
 from discord.ext import commands
 
-
-def get_message_text(ctx):
-    msg = ctx.message.content
-    prefix_used = ctx.prefix
-    alias_used = ctx.invoked_with
-
-    return msg[len(prefix_used) + len(alias_used):]
+from darkness.common import data_reader
+import darkness.cogs as cogs
 
 
 class DarknessBot(commands.Bot):
-    TOKEN = "NjY2NjE2NTE1NDM2NDc4NDcz.Xh2xCA.X8d9IFcSW_2e4c_maBMoXlxmI7Y"
-    PREFIX = "!"
-    
+
     def __init__(self):
-        super().__init__(command_prefix=DarknessBot.PREFIX)
+        super().__init__(command_prefix="!")
+
+        self._config = data_reader.read_json("bot_config.json")
+
+        self.command_prefix = self._config["prefix"]
+
+        for c in cogs.cog_list:
+            self.add_cog(c(self))
 
     @staticmethod
     async def on_ready():
         print("Bot ready")
 
     def run(self):
-        super().run(DarknessBot.TOKEN)
+        super().run(self._config["token"])
