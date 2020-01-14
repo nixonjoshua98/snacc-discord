@@ -15,10 +15,3 @@ class Greetings(commands.Cog):
 
 		if channel is not None:
 			await channel.send(f"Welcome {member.mention} to the server.")
-
-	@commands.Cog.listener()
-	async def on_member_remove(self, member):
-		channel = self.bot.get_channel(self._config["welcome_channel"])
-
-		if channel is not None:
-			await channel.send(f"{member.display_name} has said farewell to the server.")
