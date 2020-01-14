@@ -16,9 +16,13 @@ class DarknessBot(commands.Bot):
         for c in cogs.cog_list:
             self.add_cog(c(self))
 
-    @staticmethod
-    async def on_ready():
+    async def on_ready(self):
+        self.remove_command("help")
+
         print("Bot ready")
+
+    async def on_command_error(self, ctx, excep):
+        pass
 
     def run(self):
         super().run(self._config["token"])
