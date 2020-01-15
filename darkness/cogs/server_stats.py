@@ -13,7 +13,7 @@ class ServerStats(commands.Cog):
 	async def size(self, ctx):
 		await ctx.send(f"This server has ``{ctx.guild.member_count}`` members")
 
-	@commands.command(name="joined", description="Returns the date the user joined the server")
+	@commands.command(name="joined")
 	async def joined(self, ctx):
 		date = ctx.author.joined_at.strftime("%B %d, %Y")
 
