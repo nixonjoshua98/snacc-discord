@@ -15,10 +15,16 @@ class ServerStats(commands.Cog):
 
 	@commands.command(name="joined")
 	async def joined(self, ctx):
-		joined_at = ctx.author.joined_at
+		date = ctx.author.joined_at.strftime("%B %d, %Y")
 
-		date = joined_at.strftime("%B %d, %Y")
+		msg = f"``{ctx.author.display_name}`` joined {date}"
 
-		msg = f"``{ctx.author.display_name}`` joined on {date}"
+		await ctx.send(msg)
+
+	@commands.command(name="created")
+	async def created(self, ctx):
+		date = ctx.author.created_at.strftime("%B %d, %Y")
+
+		msg = f"The ``{ctx.author.display_name}`` account was created {date}"
 
 		await ctx.send(msg)
