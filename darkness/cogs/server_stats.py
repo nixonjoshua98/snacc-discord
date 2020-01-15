@@ -11,7 +11,7 @@ class ServerStats(commands.Cog):
 
 	@commands.command(name="size")
 	async def size(self, ctx):
-		await ctx.send(f"The darkness has taken over ``{ctx.guild.member_count}`` accounts!")
+		await ctx.send(f"This server has ``{ctx.guild.member_count}`` members")
 
 	@commands.command(name="joined")
 	async def joined(self, ctx):
