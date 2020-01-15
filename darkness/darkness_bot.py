@@ -1,3 +1,4 @@
+import discord
 from discord.ext import commands
 
 from darkness.common import data_reader
@@ -19,10 +20,27 @@ class DarknessBot(commands.Bot):
     async def on_ready(self):
         self.remove_command("help")
 
-        print("Bot ready")
+        print("Bot successfully started")
+
+    async def help(self, ctx):
+        embed = discord.Embed(
+            colour=discord.Colour.orange()
+        )
+
+        embed.set_author(name="Help Section")
+
+        embed.add_field(name="help", value="Shows this message", inline=False)
+
+        embed.set_footer(text=self.user.display_name)
+
+        await ctx.send(embed=embed)
 
     async def on_command_error(self, ctx, excep):
-        pass
+        msg = ctx.message.content
+
+        if msg.startswith(f"{self.command_prefix}help"):
+            await self.help(ctx)
 
     def run(self):
+        print("Bot attempting to start")
         super().run(self._config["token"])
