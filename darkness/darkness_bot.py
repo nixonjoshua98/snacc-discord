@@ -7,7 +7,7 @@ import darkness.cogs as cogs
 
 class DarknessBot(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix="?")
+        super().__init__(command_prefix="?", case_insensitive=True)
 
         self._config = data_reader.read_json("bot_config.json")
 
