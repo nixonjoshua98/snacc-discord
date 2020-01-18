@@ -4,6 +4,8 @@ from discord.ext import commands
 from darkness.common import data_reader
 import darkness.cogs as cogs
 
+#
+
 
 class DarknessBot(commands.Bot):
     def __init__(self):
