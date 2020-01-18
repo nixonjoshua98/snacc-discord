@@ -1,17 +1,13 @@
 from discord.ext import commands
 
 
-class AccountStats(commands.Cog):
+class Account(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-	@commands.command(name="joined")
+	@commands.command(name="join")
 	async def joined(self, ctx):
-		"""
-		Sends a message which contains the date the user joined the server
-		:param ctx:
-		:return:
-		"""
+		# Sends a message of when the user joined the server
 
 		date = ctx.author.joined_at.strftime("%B %d, %Y")
 
@@ -21,11 +17,7 @@ class AccountStats(commands.Cog):
 
 	@commands.command(name="created")
 	async def created(self, ctx):
-		"""
-		Sends a message which contains the date which the account was created
-		:param ctx:
-		:return:
-		"""
+		# Sends a message which contains the date which the account was created
 
 		date = ctx.author.created_at.strftime("%B %d, %Y")
 

@@ -1,4 +1,4 @@
 
 {
-  "on_member_join_message": "Welcome {member.mention} to the server."
+  "on_member_join_message": "Welcome {member.mention} to {guild.name}."
 }

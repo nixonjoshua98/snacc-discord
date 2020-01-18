@@ -3,7 +3,7 @@ from discord.ext import commands
 from darkness.common import data_reader
 
 
-class ServerStats(commands.Cog):
+class Server(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
@@ -11,15 +11,10 @@ class ServerStats(commands.Cog):
 
 	@commands.command(name="size")
 	async def size(self, ctx):
-		"""
-		Sends a message containing the member count of the server
-
-		:param ctx: The message send in the server
-		:return:
-		"""
-
+		# Returns the server size
 		await ctx.send(f"This server has ``{ctx.guild.member_count}`` members")
 
 	@commands.command(name="invite")
 	async def invite(self, ctx):
+		# Returns the invite link for the server
 		await ctx.send(self._server_config["invite_link"])

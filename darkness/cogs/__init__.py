@@ -1,10 +1,12 @@
-from darkness.cogs.server_stats import ServerStats
-from darkness.cogs.greetings import Greetings
-from darkness.cogs.account_stats import AccountStats
+from darkness.cogs.server_cog import Server
+from darkness.cogs.greetings_cog import Greetings
+from darkness.cogs.account_cog import Account
+from darkness.cogs.help_cog import Help
 
 
 cog_list = [
 	Greetings,
-	ServerStats,
-	AccountStats
+	Server,
+	Account,
+	Help
 ]
