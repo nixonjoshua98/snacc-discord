@@ -1,3 +1,4 @@
+import discord
 from discord.ext import commands
 
 
@@ -7,4 +8,24 @@ class Help(commands.Cog):
 
 	@commands.command()
 	async def help(self, ctx):
-		await ctx.send("[HELP]")
+		embed = discord.Embed(title="Help", description="``!Help`` section on how to use this bot.", color=0xff8000)
+
+		for cog_name in self.bot.cogs:
+			cog = self.bot.get_cog(cog_name)
+
+			coms = cog.get_commands()
+
+			if len(coms) == 0 or cog == self:
+				continue
+
+			# embed.add_field(name=cog_name, value="-", inline=False)
+
+			for com in coms:
+				desc = "Description" if com.description == "" else com.description
+				name = f"{self.bot.command_prefix}{com.name}"
+
+				embed.add_field(name=name, value=desc, inline=False)
+
+		embed.set_footer(text="Darkness Bot")
+
+		await ctx.send(embed=embed)
