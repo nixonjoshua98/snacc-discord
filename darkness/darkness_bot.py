@@ -10,7 +10,7 @@ class DarknessBot(commands.Bot):
 
         self._config = data_reader.read_json("bot_config.json")
 
-        # self.command_prefix = self._config["prefix"]
+        self.command_prefix = self._config["prefix"]
 
         self.remove_command("help")
 
