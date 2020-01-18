@@ -7,24 +7,19 @@ class ServerStats(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-		self._config = data_reader.read_json("server_config.json")
+		self._server_config = data_reader.read_json("server_config.json")
 
 	@commands.command(name="size")
 	async def size(self, ctx):
+		"""
+		Sends a message containing the member count of the server
+
+		:param ctx: The message send in the server
+		:return:
+		"""
+
 		await ctx.send(f"This server has ``{ctx.guild.member_count}`` members")
 
-	@commands.command(name="joined")
-	async def joined(self, ctx):
-		date = ctx.author.joined_at.strftime("%B %d, %Y")
-
-		msg = f"``{ctx.author.display_name}`` joined the server on {date}"
-
-		await ctx.send(msg)
-
-	@commands.command(name="created")
-	async def created(self, ctx):
-		date = ctx.author.created_at.strftime("%B %d, %Y")
-
-		msg = f"The ``{ctx.author.display_name}`` account was created on {date}"
-
-		await ctx.send(msg)
+	@commands.command(name="invite")
+	async def invite(self, ctx):
+		await ctx.send(self._server_config["invite_link"])

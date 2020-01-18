@@ -8,7 +8,7 @@ import darkness.cogs as cogs
 class DarknessBot(commands.Bot):
 
     def __init__(self):
-        super().__init__(command_prefix="!")
+        super().__init__(command_prefix="?")
 
         self._config = data_reader.read_json("bot_config.json")
 
@@ -18,6 +18,8 @@ class DarknessBot(commands.Bot):
             self.add_cog(c(self))
 
     async def on_ready(self):
+        """ Method which is called once the bot has connected to the Discord servers """
+
         self.remove_command("help")
 
         print("Bot successfully started")
@@ -42,5 +44,10 @@ class DarknessBot(commands.Bot):
             await self.help(ctx)
 
     def run(self):
+        """
+        Attempts to start the discord bot
+
+        :exception RunTimeError: Throws when the bot fails to run
+        """
         print("Bot attempting to start")
         super().run(self._config["token"])
