@@ -24,8 +24,8 @@ class Help(commands.Cog):
 				desc = "Description" if com.description == "" else com.description
 				name = f"{self.bot.command_prefix}{com.name}"
 
-				embed.add_field(name=name, value=desc, inline=False)
+				embed.add_field(name=name, value=desc, inline=True)
 
-		embed.set_footer(text="Darkness Bot")
+		embed.set_footer(text=self.bot.user.display_name)
 
 		await ctx.send(embed=embed)

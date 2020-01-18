@@ -14,7 +14,7 @@ class Server(commands.Cog):
 		# Returns the server size
 		await ctx.send(f"This server has ``{ctx.guild.member_count}`` members")
 
-	@commands.command(name="invite", description="Server invite link")
+	@commands.command(name="invite", description="Invite link")
 	async def invite(self, ctx):
 		# Returns the invite link for the server
 		await ctx.send(self._server_config["invite_link"])
