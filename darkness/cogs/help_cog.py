@@ -10,7 +10,7 @@ class Help(commands.Cog):
 	async def help(self, ctx):
 		embed = discord.Embed(
 			title="Help",
-			description=f"``{self.bot.command_prefix}Help`` section on how to use this bot.",
+			description=f"``{self.bot.command_prefix}Help``",
 			color=0xff8000,
 		)
 
