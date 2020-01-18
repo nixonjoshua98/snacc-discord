@@ -8,7 +8,13 @@ class Help(commands.Cog):
 
 	@commands.command()
 	async def help(self, ctx):
-		embed = discord.Embed(title="Help", description="``!Help`` section on how to use this bot.", color=0xff8000)
+		embed = discord.Embed(
+			title="Help",
+			description=f"``{self.bot.command_prefix}Help`` section on how to use this bot.",
+			color=0xff8000,
+		)
+
+		embed.set_thumbnail(url=ctx.guild.icon_url)
 
 		for cog_name in self.bot.cogs:
 			cog = self.bot.get_cog(cog_name)
@@ -22,9 +28,9 @@ class Help(commands.Cog):
 
 			for com in coms:
 				desc = "Description" if com.description == "" else com.description
-				name = f"{self.bot.command_prefix}{com.name}"
+				name = f"*{self.bot.command_prefix}{com.name}*"
 
-				embed.add_field(name=name, value=desc, inline=True)
+				embed.add_field(name=name, value=desc, inline=False)
 
 		embed.set_footer(text=self.bot.user.display_name)
 

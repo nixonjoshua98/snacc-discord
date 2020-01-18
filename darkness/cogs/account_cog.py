@@ -5,7 +5,7 @@ class Account(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-	@commands.command(name="join", description="Server join date")
+	@commands.command(name="join", description="Date user joined the server")
 	async def joined(self, ctx):
 		# Sends a message of when the user joined the server
 
