@@ -30,6 +30,8 @@ def remove_json_key(file_name: str, key: str):
 
 	data = read_json(file_name)
 
+	data[key] = []
+
 	del data[key]
 
 	with open(p, "w") as f:

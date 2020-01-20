@@ -22,22 +22,39 @@ class Activity(commands.Cog):
 		self.bot = bot
 
 	@commands.has_role("Darkness Employee")
-	@commands.group(name="stats", aliases=["s"], description="Register your level and trophies")
+	@commands.command(name="stats", aliases=["s"], description="Register your level and trophies")
 	async def stats_command(self, ctx, *args):
-		if ctx.invoked_subcommand is None:
-			if len(args) == 0:
-				await self.display_own_stats(ctx)
+		if len(args) == 0:
+			await self.display_own_stats(ctx)
 
-			elif len(args) == 1:
-				await self.display_others_stats(ctx, args[0])
+		elif len(args) == 1:
+			await self.display_others_stats(ctx, args[0])
 
-			elif len(args) == 2:
-				await self.update_own_stats(ctx, args)
+		elif len(args) == 2:
+			await self.update_own_stats(ctx, args)
 
 	@commands.is_owner()
-	@commands.group(name="remove")
+	@commands.command(name="remove", hidden=True)
 	async def remove_member(self, ctx, username: str):
 		data_reader.remove_json_key("member_activity.json", username)
+
+		await ctx.send(f"Removed ``{username}`` from member stats")
+
+	@commands.command(name="all", description="Show all registered users")
+	async def all_stats(self, ctx):
+		data = data_reader.read_json("member_activity.json")
+
+		msg = "```Members\n"
+
+		for k in data:
+			stats = self.get_stats(k)
+
+			msg += f"{stats.username}\n"
+			msg += f"\tLvl: {stats.level} Trophies: {stats.trophies}\n"
+
+		msg += "```"
+
+		await ctx.send(msg)
 
 	async def display_own_stats(self, ctx):
 		username = ctx.author.display_name

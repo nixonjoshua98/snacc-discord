@@ -6,8 +6,7 @@ from darkness.common import myjson
 
 
 def run():
-	if not os.getenv("DEBUG", False):
-		myjson.download_all()
+	myjson.download_all()
 
 	bot = DarknessBot()
 
