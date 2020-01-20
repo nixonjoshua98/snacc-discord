@@ -21,7 +21,7 @@ class Activity(commands.Cog):
 			row = self.get_latest_row(username)
 
 			# A row was found
-			if row is not [[]]:
+			if row:
 				embed = discord.Embed(
 					title=f"Member: {username}",
 					description=f"Most Recent Stat Update",

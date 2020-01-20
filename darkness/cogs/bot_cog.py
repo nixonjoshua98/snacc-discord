@@ -8,7 +8,7 @@ class BotCog(commands.Cog):
 		self.bot = bot
 
 	@commands.is_owner()
-	@commands.group(name="prefix", description="Set the prefix for the bot", hidden=True)
+	@commands.command(name="prefix", description="Set the prefix for the bot", hidden=True)
 	async def prefix(self, ctx, prefix: str):
 		# Sets the bot prefix
 
