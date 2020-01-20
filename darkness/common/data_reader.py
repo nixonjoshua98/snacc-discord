@@ -1,6 +1,5 @@
 import os
 import json
-import requests
 
 from darkness.common.constants import RESOURCES_DIR
 
@@ -21,6 +20,17 @@ def write_json_keys(file_name: str, **kwargs):
 
 	for k, w in kwargs.items():
 		data[k] = w
+
+	with open(p, "w") as f:
+		json.dump(data, f)
+
+
+def remove_json_key(file_name: str, key: str):
+	p = os.path.join(RESOURCES_DIR, file_name)
+
+	data = read_json(file_name)
+
+	del data[key]
 
 	with open(p, "w") as f:
 		json.dump(data, f)

@@ -22,16 +22,22 @@ class Activity(commands.Cog):
 		self.bot = bot
 
 	@commands.has_role("Darkness Employee")
-	@commands.command(name="stats", aliases=["s"], description="Register your level and trophies")
+	@commands.group(name="stats", aliases=["s"], description="Register your level and trophies")
 	async def stats_command(self, ctx, *args):
-		if len(args) == 0:
-			await self.display_own_stats(ctx)
+		if ctx.invoked_subcommand is None:
+			if len(args) == 0:
+				await self.display_own_stats(ctx)
 
-		elif len(args) == 1:
-			await self.display_others_stats(ctx, args[0])
+			elif len(args) == 1:
+				await self.display_others_stats(ctx, args[0])
 
-		elif len(args) == 2:
-			await self.update_own_stats(ctx, args)
+			elif len(args) == 2:
+				await self.update_own_stats(ctx, args)
+
+	@commands.is_owner()
+	@commands.group(name="remove")
+	async def remove_member(self, ctx, username: str):
+		data_reader.remove_json_key("member_activity.json", username)
 
 	async def display_own_stats(self, ctx):
 		username = ctx.author.display_name
