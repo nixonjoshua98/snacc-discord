@@ -1,5 +1,6 @@
 import asyncio
 import threading
+import os
 
 from discord.ext import commands
 
@@ -37,7 +38,8 @@ class DarknessBot(commands.Bot):
         while True:
             await asyncio.sleep(60 * 30)
 
-            threading.Thread(target=myjson.upload_all).start()
+            if not os.getenv("DEBUG", False):
+                threading.Thread(target=myjson.upload_all).start()
 
             print("Backing up")
 

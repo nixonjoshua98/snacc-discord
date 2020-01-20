@@ -19,7 +19,7 @@ class Activity(commands.Cog):
 
 		# If no arguments passed
 		if level is None or trophies is None or level <= 0 or trophies <= 0:
-			row = self.get_latest_row(username)
+			row = self.get_stats(username)
 
 			# A row was found
 			if row:
@@ -84,7 +84,7 @@ class Activity(commands.Cog):
 		return True
 
 	@staticmethod
-	def get_latest_row(username):
+	def get_stats(username):
 		activity_file = data_reader.read_json("member_activity.json")
 
 		member_record = activity_file.get(username, [[]])
