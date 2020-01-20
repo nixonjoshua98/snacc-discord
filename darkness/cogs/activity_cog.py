@@ -1,4 +1,5 @@
 import discord
+import dataclasses
 
 from datetime import datetime
 
@@ -8,67 +9,94 @@ from darkness.common import myjson
 from discord.ext import commands
 
 
+@dataclasses.dataclass()
+class StatsDC:
+	username: str
+	date: str
+	level: int
+	trophies: int
+
+
 class Activity(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
 	@commands.has_role("Darkness Employee")
-	@commands.command(name="active", aliases=["a"], description="Register your level and trophies")
-	async def set_stats_command(self, ctx, level: int = None, trophies: int = None):
+	@commands.command(name="stats", aliases=["s"], description="Register your level and trophies")
+	async def stats_command(self, ctx, *args):
+		if len(args) == 0:
+			await self.display_own_stats(ctx)
+
+		elif len(args) == 1:
+			await self.display_others_stats(ctx, args[0])
+
+		elif len(args) == 2:
+			await self.update_own_stats(ctx, args)
+
+	async def display_own_stats(self, ctx):
 		username = ctx.author.display_name
 
-		# If no arguments passed
-		if level is None or trophies is None or level <= 0 or trophies <= 0:
-			row = self.get_stats(username)
+		stats = self.get_stats(username)
 
-			# A row was found
-			if row:
-				embed = discord.Embed(
-					title=f"Member: {username}",
-					description=f"Most Recent Stat Update",
-					color=0xff8000,
-				)
+		if stats is not None:
+			embed = self.create_embed(username, stats)
 
-				embed.add_field(name="Date Recorded", value=row[0])
-				embed.add_field(name="Level", value=row[1])
-				embed.add_field(name="No. Trophies", value=row[2])
+			await ctx.send(embed=embed)
+		else:
+			await ctx.send(f"``{username}``, I could not find any stats for you")
 
-				embed.set_footer(text=self.bot.user.display_name)
+	async def display_others_stats(self, ctx, username):
+		stats = self.get_stats(username)
 
-				await ctx.send(embed=embed)
+		if stats is not None:
+			embed = self.create_embed(username, stats)
 
-			# Row wasn't found, most likely because the user hasn't set anything before.
-			else:
-				await ctx.send(f"``{username}``, I could not find any stats for you")
+			await ctx.send(embed=embed)
+		else:
+			await ctx.send(f"I could not find any stats for ``{username}``")
 
-		# Only allow stat sets if a member has a nickname (of their IGN)
-		elif ctx.author.nick is None:
-			await ctx.send(f"``{username}``, you need a nickname to be able to set your stats")
+	async def update_own_stats(self, ctx, args):
+		username = ctx.author.display_name
 
-		elif ctx.author.nick is not None:
-			updated_stats = await self.update_stats(username, level, trophies)
+		# Check if all args are ints
+		if all(map(str.isdigit, args[0: 2])):
+			level, trophies = args[0: 2]
 
-			if updated_stats:
+			stats_updated = self.set_stats(username, int(level), int(trophies))
+
+			if stats_updated:
 				await ctx.send(f"``{username}`` has successfully updated their stats")
 
-			elif not updated_stats:
+			elif not stats_updated:
 				await ctx.send(f"``{username}``, you can only update your stats once a day")
 
-		myjson.upload("member_activity.json")
+			myjson.upload("member_activity.json")
+
+	def create_embed(self, username, stats):
+		embed = discord.Embed(
+			title=f"Member: {username}",
+			description=f"Most Recent Stat Update",
+			color=0xff8000,
+		)
+
+		embed.add_field(name="Date Recorded", value=str(stats.date))
+		embed.add_field(name="Level", value=str(stats.level))
+		embed.add_field(name="No. Trophies", value=str(stats.trophies))
+
+		embed.set_footer(text=self.bot.user.display_name)
+
+		return embed
 
 	@staticmethod
-	async def update_stats(username: str, level: int, trophies: int) -> bool:
+	def set_stats(username: str, level: int, trophies: int) -> bool:
 		today = datetime.today()
 
 		activity_file = data_reader.read_json("member_activity.json")
-
 		member_record = activity_file.get(username, None)
 
 		if member_record is not None:
 			row_date, row_level, row_trophies = member_record[-1]
-
 			date_object = datetime.strptime(row_date, "%m-%d-%Y")
-
 			days_since = (today - date_object).days
 
 			# Limit updates to once per day
@@ -77,9 +105,7 @@ class Activity(commands.Cog):
 
 		today_str = today.strftime("%m-%d-%Y")
 
-		data_to_add = [today_str, level, trophies]
-
-		data_reader.append_json_keys("member_activity.json", username, data_to_add)
+		data_reader.append_json_keys("member_activity.json", username, [today_str, level, trophies])
 
 		return True
 
@@ -87,7 +113,13 @@ class Activity(commands.Cog):
 	def get_stats(username):
 		activity_file = data_reader.read_json("member_activity.json")
 
-		member_record = activity_file.get(username, [[]])
+		for k, v in activity_file.items():
+			if k.lower() == username.lower():
+				v[-1].insert(0, username)
 
-		return member_record[-1]
+				s = StatsDC(*v[-1])
+
+				return s
+
+		return None
 

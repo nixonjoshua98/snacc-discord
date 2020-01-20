@@ -26,7 +26,8 @@ class DarknessBot(commands.Bot):
     async def on_ready(self):
         """ Method which is called once the bot has connected to the Discord servers """
 
-        self.loop.create_task(self.backup_loop())
+        if not os.getenv("DEBUG", False):
+            self.loop.create_task(self.backup_loop())
 
         print("Bot successfully started")
 
@@ -38,8 +39,7 @@ class DarknessBot(commands.Bot):
         while True:
             await asyncio.sleep(60 * 30)
 
-            if not os.getenv("DEBUG", False):
-                threading.Thread(target=myjson.upload_all).start()
+            threading.Thread(target=myjson.upload_all).start()
 
             print("Backing up")
 

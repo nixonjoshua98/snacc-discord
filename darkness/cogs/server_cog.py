@@ -9,7 +9,7 @@ class Server(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-	@commands.command(name="size", description="Number of members in the server")
+	@commands.command(name="size", description="Number of members in the server", hidden=True)
 	async def size(self, ctx):
 		# Returns the server size
 		await ctx.send(f"This server has ``{ctx.guild.member_count}`` members")
