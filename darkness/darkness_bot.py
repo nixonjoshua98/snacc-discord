@@ -23,6 +23,10 @@ class DarknessBot(commands.Bot):
 
         print("Bot successfully started")
 
+    @staticmethod
+    async def on_command_error(ctx, esc):
+        pass
+
     def run(self):
         # Attempts to start the discord bot
 
