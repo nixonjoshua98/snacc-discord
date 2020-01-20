@@ -72,7 +72,7 @@ class Activity(commands.Cog):
 		stats = self.get_stats(username)
 
 		if stats is not None:
-			embed = self.create_embed(username, stats)
+			embed = self.create_embed(stats.username, stats)
 
 			await ctx.send(embed=embed)
 		else:
