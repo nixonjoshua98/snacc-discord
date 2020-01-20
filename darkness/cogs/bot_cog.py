@@ -1,6 +1,7 @@
 from discord.ext import commands
 
 from darkness.common import data_reader
+from darkness.common import myjson
 
 
 class BotCog(commands.Cog):
@@ -20,3 +21,17 @@ class BotCog(commands.Cog):
 			self.bot.command_prefix = prefix
 
 			await ctx.send(f"My command prefix has been set to {prefix}")
+
+	@commands.is_owner()
+	@commands.command(name="backup", hidden=True)
+	async def backup(self, ctx):
+
+		await ctx.send("Starting backup, this will block other commands")
+
+		ok = myjson.upload_all()
+
+		if ok:
+			await ctx.send("Data backed up successfully")
+		else:
+			await ctx.send("Not all data was backed up")
+

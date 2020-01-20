@@ -1,6 +1,11 @@
+import asyncio
+import threading
+
 from discord.ext import commands
 
 from darkness.common import data_reader
+from darkness.common import myjson
+
 import darkness.cogs as cogs
 
 
@@ -8,26 +13,37 @@ class DarknessBot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix="?", case_insensitive=True)
 
-        self._config = data_reader.read_json("bot_config.json")
+        config = data_reader.read_json("bot_config.json")
 
-        self.command_prefix = self._config["prefix"]
+        self.command_prefix = config["prefix"]
 
         self.remove_command("help")
 
         for c in cogs.cog_list:
             self.add_cog(c(self))
 
-    @staticmethod
-    async def on_ready():
+    async def on_ready(self):
         """ Method which is called once the bot has connected to the Discord servers """
+
+        self.loop.create_task(self.backup_loop())
 
         print("Bot successfully started")
 
-    @staticmethod
-    async def on_command_error(ctx, esc):
+    async def on_command_error(self, ctx, esc):
         pass
+
+    @staticmethod
+    async def backup_loop():
+        while True:
+            await asyncio.sleep(60 * 30)
+
+            threading.Thread(target=myjson.upload_all).start()
+
+            print("Backing up")
 
     def run(self):
         # Attempts to start the discord bot
 
-        super().run(self._config["token"])
+        config = data_reader.read_json("bot_config.json")
+
+        super().run(config["token"])

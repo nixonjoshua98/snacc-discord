@@ -1,4 +1,1 @@
-
-{
-  "on_member_join_message": "Welcome {member.mention} to {guild.name}."
-}
+{"on_member_join_message": "Welcome {member.mention} to {guild.name}."}

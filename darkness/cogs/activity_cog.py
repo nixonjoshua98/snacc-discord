@@ -3,6 +3,7 @@ import discord
 from datetime import datetime
 
 from darkness.common import data_reader
+from darkness.common import myjson
 
 from discord.ext import commands
 
@@ -52,6 +53,8 @@ class Activity(commands.Cog):
 
 			elif not updated_stats:
 				await ctx.send(f"``{username}``, you can only update your stats once a day")
+
+		myjson.upload("member_activity.json")
 
 	@staticmethod
 	async def update_stats(username: str, level: int, trophies: int) -> bool:
