@@ -10,7 +10,7 @@ cog_list = [
 	Activity,
 	Greetings,
 	Server,
-	Account,
+	# Account,
 	Help,
 	BotCog
 ]
