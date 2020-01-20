@@ -27,6 +27,9 @@ class Help(commands.Cog):
 			# embed.add_field(name=cog_name, value="-", inline=False)
 
 			for com in coms:
+				if com.hidden or not com.enabled:
+					continue
+					
 				desc = "Description" if com.description == "" else com.description
 				name = f"*{self.bot.command_prefix}{com.name}*"
 

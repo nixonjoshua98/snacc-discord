@@ -5,7 +5,7 @@ class Account(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-	@commands.command(name="join", description="Date user joined the server")
+	@commands.command(name="join", description="Date user joined the server", hidden=True)
 	async def joined(self, ctx):
 		# Sends a message of when the user joined the server
 
@@ -15,7 +15,7 @@ class Account(commands.Cog):
 
 		await ctx.send(msg)
 
-	@commands.command(name="created", description="Account creation date")
+	@commands.command(name="created", description="Account creation date", hidden=True)
 	async def created(self, ctx):
 		# Sends a message which contains the date which the account was created
 

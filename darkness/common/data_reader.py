@@ -23,3 +23,18 @@ def write_json_keys(file_name: str, **kwargs):
 
 	with open(p, "w") as f:
 		json.dump(data, f)
+
+
+def append_json_keys(file_name: str, key: str, ls: list):
+	p = os.path.join(RESOURCES_DIR, file_name)
+
+	data = read_json(file_name)
+
+	value = data.get(key, [])
+
+	value.append(ls)
+
+	data[key] = value
+
+	with open(p, "w") as f:
+		json.dump(data, f)
