@@ -26,12 +26,12 @@ class BotCog(commands.Cog):
 	@commands.command(name="backup", hidden=True)
 	async def backup(self, ctx):
 
-		await ctx.send("Starting backup, this will block other commands")
+		msg = await ctx.send("Starting backup, this will block other commands")
 
 		ok = myjson.upload_all()
 
 		if ok:
-			await ctx.send("Data backed up successfully")
+			await msg.edit(content="Data backed up successfully")
 		else:
-			await ctx.send("Not all data was backed up")
+			await msg.edit(content="Not all data was backed up")
 
