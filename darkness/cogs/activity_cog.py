@@ -138,7 +138,7 @@ class Activity(commands.Cog):
 
 		for k, v in activity_file.items():
 			if k.lower() == username.lower():
-				v[-1].insert(0, username)
+				v[-1].insert(0, k)
 
 				s = StatsDC(*v[-1])
 
