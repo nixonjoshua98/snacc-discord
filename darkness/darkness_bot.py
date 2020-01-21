@@ -32,7 +32,7 @@ class DarknessBot(commands.Bot):
         print("Bot successfully started")
 
     async def on_command_error(self, ctx, esc):
-        pass
+        print(esc)
 
     @staticmethod
     async def backup_loop():

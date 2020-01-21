@@ -119,14 +119,14 @@ class Activity(commands.Cog):
 
 		if member_record is not None:
 			row_date, row_level, row_trophies = member_record[-1]
-			date_object = datetime.strptime(row_date, "%m-%d-%Y")
+			date_object = datetime.strptime(row_date, "%d/%m/%Y")
 			days_since = (today - date_object).days
 
 			# Limit updates to once per day
 			if days_since < 1:
 				return False
 
-		today_str = today.strftime("%m-%d-%Y")
+		today_str = today.strftime("%d/%m/%Y")
 
 		data_reader.append_json_keys("member_activity.json", username, [today_str, level, trophies])
 
