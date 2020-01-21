@@ -24,6 +24,18 @@ def update_key(file_name: str, *, key: str, value):
 		json.dump(data, f)
 
 
+def remove_key(file_name: str, *, key: str):
+	p = os.path.join(RESOURCES_DIR, file_name)
+
+	data = read_json(file_name)
+
+	data[key] = None
+
+	del data[key]
+
+	write_json(data)
+
+
 def write_json(file_name: str, new_data):
 	p = os.path.join(RESOURCES_DIR, file_name)
 

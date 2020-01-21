@@ -16,6 +16,8 @@ class DarknessBot(commands.Bot):
         if not os.getenv("DEBUG", False):
             self.command_prefix = "!"
 
+        print("Prefix: " + self.command_prefix)
+
         self.remove_command("help")
 
         for c in cogs.cog_list:

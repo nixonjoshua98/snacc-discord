@@ -25,7 +25,7 @@ class MemberStats(commands.Cog):
 		self.bot = bot
 
 	@commands.has_role("Darkness Employee")
-	@commands.command(name="stats", aliases=["s"], description="Set your stats ``!s <level> <trophies>``")
+	@commands.command(name="stats", aliases=["s"], description="Set your stats ``!s <lvl> <trophies>``")
 	async def set_stats(self, ctx, level: int, trophies: int):
 		author_id = ctx.author.id
 
@@ -52,6 +52,14 @@ class MemberStats(commands.Cog):
 		emoji = ":thumbsup:" if ok_to_update else ":thumbsdown:"
 
 		await ctx.send(f"``{ctx.author.display_name}`` {emoji}")
+
+	@commands.is_owner()
+	@commands.command(name="delete")
+	async def delete_user(self, ctx, username: str):
+		member = ctx.guild.get_member_named(username)
+
+		if member is not None:
+			data_reader.remove_key("member_stats.json", key=member.id)
 
 	@commands.command(name="lbt", description="Show member stats sorted by trophies")
 	async def get_stats_sorted_by_trophies(self, ctx):
@@ -110,15 +118,19 @@ class MemberStats(commands.Cog):
 
 		msg += f"Member Stats ({sort_name})\n\n"
 
-		for i, (k, v) in enumerate(sorted_data[0: 10]):
+		rank = 0
+
+		for k, v in sorted_data[0: 10]:
 			member = server.get_member(int(k))
 
 			if member is None:
 				continue
 
+			rank += 1
+
 			username = member.display_name
 
-			msg += f"#{i + 1} {username} ({v[-1][DATE_STAT]})\n"
+			msg += f"#{rank} {username} ({v[-1][DATE_STAT]})\n"
 			msg += f"\tLvl: {v[-1][LEVEL_STAT]} Trophies: {v[-1][TROPHIES_STAT]}\n"
 
 		msg += "```"
