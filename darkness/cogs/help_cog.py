@@ -6,7 +6,7 @@ class Help(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-	@commands.command()
+	@commands.command(name="help")
 	async def help(self, ctx):
 		embed = discord.Embed(
 			title="Help",
@@ -23,8 +23,6 @@ class Help(commands.Cog):
 
 			if len(coms) == 0 or cog == self:
 				continue
-
-			# embed.add_field(name=cog_name, value="-", inline=False)
 
 			for com in coms:
 				if com.hidden or not com.enabled:

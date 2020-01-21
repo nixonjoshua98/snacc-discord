@@ -14,9 +14,7 @@ class Greetings(commands.Cog):
 		channel = member.guild.system_channel
 
 		if channel is not None:
-			greeting_config = data_reader.read_json("greetings_config.json")
-
-			welcome_msg = greeting_config['on_member_join_message'].format(
+			welcome_msg = "Welcome {member.mention} to {guild.name}.".format(
 				member=member,
 				guild=member.guild
 			)
