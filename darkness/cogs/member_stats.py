@@ -24,6 +24,7 @@ class MemberStats(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
+	@commands.has_role("Darkness Employee")
 	@commands.command(name="stats", aliases=["s"], description="Set your stats ``!s <level> <trophies>``")
 	async def set_stats(self, ctx, level: int, trophies: int):
 		author_id = ctx.author.id
@@ -70,6 +71,7 @@ class MemberStats(commands.Cog):
 		msg = self.create_stat_leaderboard(sort_by_date, "sorted by date", server=ctx.guild)
 		await ctx.send(msg)
 
+	@commands.has_role("Darkness Employee")
 	@commands.command(name="me", description="Shows your latest stats")
 	async def get_user_own_stats(self, ctx):
 		member_stats_file = data_reader.read_json("member_stats.json")
