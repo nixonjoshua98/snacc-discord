@@ -33,7 +33,7 @@ def remove_key(file_name: str, *, key: str):
 
 	del data[key]
 
-	write_json(data)
+	write_json(file_name, data)
 
 
 def write_json(file_name: str, new_data):

@@ -1,4 +1,5 @@
 import discord
+import os
 
 from datetime import datetime
 from discord.ext import commands
@@ -47,19 +48,25 @@ class MemberStats(commands.Cog):
 
 			data_reader.update_key("member_stats.json", key=str(author_id), value=author_stats)
 
-			myjson.upload_json(file="member_stats.json")
+			if not os.getenv("DEBUG", False):
+				myjson.upload_json(file="member_stats.json")
 
 		emoji = ":thumbsup:" if ok_to_update else ":thumbsdown:"
 
 		await ctx.send(f"``{ctx.author.display_name}`` {emoji}")
 
 	@commands.is_owner()
-	@commands.command(name="delete")
+	@commands.command(name="delete", hidden=True)
 	async def delete_user(self, ctx, username: str):
 		member = ctx.guild.get_member_named(username)
 
 		if member is not None:
-			data_reader.remove_key("member_stats.json", key=member.id)
+			data_reader.remove_key("member_stats.json", key=str(member.id))
+
+			if not os.getenv("DEBUG", False):
+				myjson.upload_json(file="member_stats.json")
+
+			await ctx.send(f"``{member.display_name} has been removed")
 
 	@commands.command(name="lbt", description="Show member stats sorted by trophies")
 	async def get_stats_sorted_by_trophies(self, ctx):
