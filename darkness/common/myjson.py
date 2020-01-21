@@ -42,7 +42,11 @@ def upload_json(*, file: str):
 	if url is not None:
 		response = requests.put(url, headers=headers, data=json.dumps(data_reader.read_json(file)))
 
+		print(f"Backed up {file}")
+
 		return response.status_code == requests.codes.ok
+
+	print(f"Failed to back up {file}")
 
 	return False
 
