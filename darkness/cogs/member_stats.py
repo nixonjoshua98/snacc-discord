@@ -19,11 +19,13 @@ TROPHIES_STAT = 2
 
 
 class MemberStats(commands.Cog):
-	MAX_NUM_ROWS = 3
+	MAX_NUM_ROWS = 15
 	DAYS_COOLDOWN = 1
 
 	def __init__(self, bot):
 		self.bot = bot
+
+		myjson.get_json(file="member_stats.json")
 
 	@commands.has_role("Darkness Employee")
 	@commands.command(name="stats", aliases=["s"], description="Set your stats ``!s <lvl> <trophies>``")
@@ -56,8 +58,8 @@ class MemberStats(commands.Cog):
 		await ctx.send(f"``{ctx.author.display_name}`` {emoji}")
 
 	@commands.is_owner()
-	@commands.command(name="delete", hidden=True)
-	async def delete_user(self, ctx, username: str):
+	@commands.command(name="remove", hidden=True)
+	async def remove_user(self, ctx, username: str):
 		member = ctx.guild.get_member_named(username)
 
 		if member is not None:
@@ -66,7 +68,23 @@ class MemberStats(commands.Cog):
 			if not os.getenv("DEBUG", False):
 				myjson.upload_json(file="member_stats.json")
 
-			await ctx.send(f"``{member.display_name} has been removed")
+			await ctx.send(f"``{member.display_name}`` has been removed")
+
+	@commands.is_owner()
+	@commands.command(name="rewind", hidden=True)
+	async def rewind_user(self, ctx, username: str):
+		member = ctx.guild.get_member_named(username)
+
+		if member is not None:
+			member_stats_file = data_reader.read_json("member_stats.json")
+
+			rows = member_stats_file.get(str(member.id), [])
+			rows = rows[:len(rows) - 1]
+
+			data_reader.update_key("member_stats.json", key=str(member.id), value=rows)
+
+			if not os.getenv("DEBUG", False):
+				myjson.upload_json(file="member_stats.json")
 
 	@commands.command(name="lbt", description="Show member stats sorted by trophies")
 	async def get_stats_sorted_by_trophies(self, ctx):
@@ -127,10 +145,14 @@ class MemberStats(commands.Cog):
 
 		rank = 0
 
+		role = discord.utils.find(lambda r: r.name == "Darkness Employee", server.roles)
+
 		for k, v in sorted_data[0: 10]:
 			member = server.get_member(int(k))
 
-			if member is None:
+			is_guild_member = role in member.roles
+
+			if member is None or not is_guild_member:
 				continue
 
 			rank += 1

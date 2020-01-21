@@ -1,7 +1,5 @@
 from discord.ext import commands
 
-from darkness.common import data_reader
-
 
 class Greetings(commands.Cog):
 	def __init__(self, bot):
@@ -14,7 +12,7 @@ class Greetings(commands.Cog):
 		channel = member.guild.system_channel
 
 		if channel is not None:
-			welcome_msg = "Welcome {member.mention} to {guild.name}! Let us know you are here in #non-member-chat!".format(
+			welcome_msg = "Welcome {member.mention} to {guild.name}!".format(
 				member=member,
 				guild=member.guild
 			)
