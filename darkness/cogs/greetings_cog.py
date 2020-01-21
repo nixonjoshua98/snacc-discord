@@ -14,7 +14,7 @@ class Greetings(commands.Cog):
 		channel = member.guild.system_channel
 
 		if channel is not None:
-			welcome_msg = "Welcome {member.mention} to {guild.name}.".format(
+			welcome_msg = "Welcome {member.mention} to {guild.name}! Let us know you are here in #non-member-chat!".format(
 				member=member,
 				guild=member.guild
 			)
