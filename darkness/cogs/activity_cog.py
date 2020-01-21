@@ -49,7 +49,7 @@ class Activity(commands.Cog):
 		for k in data:
 			stats = self.get_stats(k)
 
-			msg += f"{stats.username}\n"
+			msg += f"{stats.username} ({stats.date})\n"
 			msg += f"\tLvl: {stats.level} Trophies: {stats.trophies}\n"
 
 		msg += "```"
