@@ -24,7 +24,6 @@ class MemberStats(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-	@commands.is_owner()
 	@commands.command(name="stats", aliases=["s"], description="Set your stats ``!s <level> <trophies>``")
 	async def set_stats(self, ctx, level: int, trophies: int):
 		author_id = ctx.author.id
@@ -53,19 +52,16 @@ class MemberStats(commands.Cog):
 
 		await ctx.send(f"``{ctx.author.display_name}`` {emoji}")
 
-	@commands.is_owner()
 	@commands.command(name="lbt", description="Show member stats sorted by trophies")
 	async def get_stats_sorted_by_trophies(self, ctx):
 		msg = self.create_stat_leaderboard(lambda d: d[1][-1][TROPHIES_STAT], "sorted by trophies", server=ctx.guild)
 		await ctx.send(msg)
 
-	@commands.is_owner()
 	@commands.command(name="lbl", description="Show member stats sorted by level")
 	async def get_stats_sorted_by_level(self, ctx):
 		msg = self.create_stat_leaderboard(lambda d: d[1][-1][LEVEL_STAT], "sorted by level", server=ctx.guild)
 		await ctx.send(msg)
 
-	@commands.is_owner()
 	@commands.command(name="lbd", description="Show member stats sorted by last update date")
 	async def get_stats_sorted_by_date(self, ctx):
 		def sort_by_date(d):
@@ -74,7 +70,6 @@ class MemberStats(commands.Cog):
 		msg = self.create_stat_leaderboard(sort_by_date, "sorted by date", server=ctx.guild)
 		await ctx.send(msg)
 
-	@commands.is_owner()
 	@commands.command(name="me", description="Shows your latest stats")
 	async def get_user_own_stats(self, ctx):
 		member_stats_file = data_reader.read_json("member_stats.json")
