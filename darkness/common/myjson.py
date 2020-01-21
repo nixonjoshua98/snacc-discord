@@ -27,7 +27,7 @@ def get_json(*, file: str = None, cache: bool = True):
 		data = response.json()
 
 		if cache:
-			data_reader.write_json(file, **data)
+			data_reader.write_json(file, data)
 
 	return data
 
