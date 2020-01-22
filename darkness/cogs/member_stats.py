@@ -86,9 +86,10 @@ class MemberStats(commands.Cog):
 			if not os.getenv("DEBUG", False):
 				myjson.upload_json(file="member_stats.json")
 
-			await ctx.send(f"``{member.display_name} has been rewinded")
+			await ctx.send(f"``{member.display_name}``` has been rewinded")
 
-		await ctx.send(f"``Rewind on {member.display_name} has failed")
+		else:
+			await ctx.send(f"Rewind on ``{member.display_name}``` has failed")
 
 	@commands.command(name="lbt", description="Show member stats sorted by trophies")
 	async def get_stats_sorted_by_trophies(self, ctx):
