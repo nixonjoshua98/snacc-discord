@@ -19,7 +19,7 @@ TROPHIES_STAT = 2
 
 
 class MemberStats(commands.Cog):
-	MAX_NUM_ROWS = 15
+	MAX_NUM_ROWS = 25
 	DAYS_COOLDOWN = 1
 
 	def __init__(self, bot):
@@ -35,27 +35,17 @@ class MemberStats(commands.Cog):
 		member_stats_file = data_reader.read_json("member_stats.json")
 
 		author_stats = member_stats_file.get(str(author_id), [])[-(self.MAX_NUM_ROWS + 1):]
-		ok_to_update = True
 
-		if author_stats:
-			date_object = datetime.strptime(author_stats[-1][DATE_STAT], "%d/%m/%Y")
-			days_since = (datetime.today() - date_object).days
+		today = datetime.today().strftime("%d/%m/%Y")
 
-			ok_to_update = days_since >= self.DAYS_COOLDOWN
+		author_stats.append([today, level, trophies])
 
-		if ok_to_update:
-			today = datetime.today().strftime("%d/%m/%Y")
+		data_reader.update_key("member_stats.json", key=str(author_id), value=author_stats)
 
-			author_stats.append([today, level, trophies])
+		if not os.getenv("DEBUG", False):
+			myjson.upload_json(file="member_stats.json")
 
-			data_reader.update_key("member_stats.json", key=str(author_id), value=author_stats)
-
-			if not os.getenv("DEBUG", False):
-				myjson.upload_json(file="member_stats.json")
-
-		emoji = ":thumbsup:" if ok_to_update else ":thumbsdown:"
-
-		await ctx.send(f"``{ctx.author.display_name}`` {emoji}")
+		await ctx.send(f"``{ctx.author.display_name}`` :thumbsup:")
 
 	@commands.is_owner()
 	@commands.command(name="remove", hidden=True)
@@ -72,8 +62,8 @@ class MemberStats(commands.Cog):
 
 	@commands.is_owner()
 	@commands.command(name="rewind", hidden=True)
-	async def rewind_user(self, ctx, username: str):
-		member = ctx.guild.get_member_named(username)
+	async def rewind_user(self, ctx, entry_id: int):
+		member = ctx.guild.get_member(entry_id)
 
 		if member is not None:
 			member_stats_file = data_reader.read_json("member_stats.json")
@@ -89,7 +79,7 @@ class MemberStats(commands.Cog):
 			await ctx.send(f"``{member.display_name}`` has been rewinded")
 
 		else:
-			await ctx.send(f"Rewind on ``{member.display_name}`` has failed")
+			await ctx.send(f"Rewind has failed")
 
 	@commands.command(name="lbt", description="Show member stats sorted by trophies")
 	async def get_stats_sorted_by_trophies(self, ctx):
