@@ -94,11 +94,11 @@ class MemberStats(commands.Cog):
 		await ctx.send(msg)
 
 	@commands.command(name="lbd", description="Show member stats sorted by last update date")
-	async def get_stats_sorted_by_date(self, ctx):
+	async def get_stats_sorted_by_date(self, ctx, *, show_ids: bool = False):
 		def sort_by_date(d):
 			return datetime.strptime(d[1][-1][DATE_STAT], "%d/%m/%Y")
 
-		msg = self.create_stat_leaderboard(sort_by_date, "sorted by date", server=ctx.guild)
+		msg = self.create_stat_leaderboard(sort_by_date, "sorted by date", server=ctx.guild, show_ids=show_ids)
 		await ctx.send(msg)
 
 	@commands.has_role("Darkness Employee")
@@ -131,7 +131,7 @@ class MemberStats(commands.Cog):
 			await ctx.send(f"``{display_name}``, I could not find any stats for you")
 
 	@staticmethod
-	def create_stat_leaderboard(sort_func, sort_name: str, *, server: discord.Guild):
+	def create_stat_leaderboard(sort_func, sort_name: str, *, server: discord.Guild, show_ids: bool = False):
 		member_stats_file = data_reader.read_json("member_stats.json")
 
 		sorted_data = sorted(member_stats_file.items(), key=sort_func, reverse=True)
@@ -154,7 +154,7 @@ class MemberStats(commands.Cog):
 
 			rank += 1
 
-			username = member.display_name
+			username = k if show_ids else member.display_name
 
 			msg += f"#{rank} {username} ({v[-1][DATE_STAT]})\n"
 			msg += f"\tLvl: {v[-1][LEVEL_STAT]} Trophies: {v[-1][TROPHIES_STAT]}\n"
