@@ -93,14 +93,21 @@ class MemberStats(commands.Cog):
 		msg = self.create_stat_leaderboard(lambda d: d[1][-1][LEVEL_STAT], "sorted by level", server=ctx.guild)
 		await ctx.send(msg)
 
-	@commands.command(name="lbd", description="Show member stats sorted by last update date")
-	async def get_stats_sorted_by_date(self, ctx, arg=None):
+	@commands.group(name="lbd", description="Show member stats sorted by last update date")
+	async def get_stats_sorted_by_date(self, ctx):
 		def sort_by_date(d):
 			return datetime.strptime(d[1][-1][DATE_STAT], "%d/%m/%Y")
 
-		show_ids = arg == "id"
+		if ctx.invoked_subcommand is None:
+			msg = self.create_stat_leaderboard(sort_by_date, "sorted by date", server=ctx.guild)
+			await ctx.send(msg)
 
-		msg = self.create_stat_leaderboard(sort_by_date, "sorted by date", server=ctx.guild, show_ids=show_ids)
+	@get_stats_sorted_by_date.command(name="id", hidden=True)
+	async def sort_by_date_show_ids(self, ctx):
+		def sort_by_date(d):
+			return datetime.strptime(d[1][-1][DATE_STAT], "%d/%m/%Y")
+
+		msg = self.create_stat_leaderboard(sort_by_date, "sorted by date", server=ctx.guild, show_ids=True)
 		await ctx.send(msg)
 
 	@commands.has_role("Darkness Employee")
