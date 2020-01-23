@@ -49,34 +49,41 @@ class MemberStats(commands.Cog):
 
 	@commands.is_owner()
 	@commands.command(name="remove", hidden=True)
-	async def remove_user(self, ctx, username: str):
-		member = ctx.guild.get_member_named(username)
+	async def remove_user(self, ctx, entry_id: int):
+		member = ctx.guild.get_member(entry_id)
+
+		data_reader.remove_key("member_stats.json", key=str(entry_id))
+
+		if not os.getenv("DEBUG", False):
+			myjson.upload_json(file="member_stats.json")
 
 		if member is not None:
-			data_reader.remove_key("member_stats.json", key=str(member.id))
-
-			if not os.getenv("DEBUG", False):
-				myjson.upload_json(file="member_stats.json")
-
 			await ctx.send(f"``{member.display_name}`` has been removed")
+
+		else:
+			await ctx.send(f"ID: ``{entry_id}`` has been removed *if they existed*")
 
 	@commands.is_owner()
 	@commands.command(name="rewind", hidden=True)
 	async def rewind_user(self, ctx, entry_id: int):
-		member = ctx.guild.get_member(entry_id)
+		member_stats_file = data_reader.read_json("member_stats.json")
 
-		if member is not None:
-			member_stats_file = data_reader.read_json("member_stats.json")
-
-			rows = member_stats_file.get(str(member.id), [])
+		if str(entry_id) in member_stats_file:
+			rows = member_stats_file.get(str(entry_id), [])
 			rows = rows[:len(rows) - 1]
 
-			data_reader.update_key("member_stats.json", key=str(member.id), value=rows)
+			data_reader.update_key("member_stats.json", key=str(entry_id), value=rows)
 
 			if not os.getenv("DEBUG", False):
 				myjson.upload_json(file="member_stats.json")
 
-			await ctx.send(f"``{member.display_name}`` has been rewinded")
+			member = ctx.guild.get_member(entry_id)
+
+			if member is not None:
+				await ctx.send(f"``{member.display_name}`` has been rewinded")
+
+			else:
+				ctx.send(f"ID: {entry_id} has been rewinded, but they are not in this Discord server")
 
 		else:
 			await ctx.send(f"Rewind has failed")
