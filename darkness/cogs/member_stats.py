@@ -7,11 +7,6 @@ from discord.ext import commands
 from darkness.common import data_reader
 from darkness.common import myjson
 
-"""
-	?s 1 2: Set stats
-	?lbt: get lb sorted by trophy count
-"""
-
 # Indexes
 DATE_STAT = 0
 LEVEL_STAT = 1
@@ -86,7 +81,7 @@ class MemberStats(commands.Cog):
 				ctx.send(f"ID: {entry_id} has been rewinded, but they are not in this Discord server")
 
 		else:
-			await ctx.send(f"Rewind has failed")
+			await ctx.send(f"Rewind has failed since this ID has not been registered before")
 
 	@commands.command(name="lbt", description="Show member stats sorted by trophies")
 	async def get_stats_sorted_by_trophies(self, ctx):
