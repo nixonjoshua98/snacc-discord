@@ -94,9 +94,11 @@ class MemberStats(commands.Cog):
 		await ctx.send(msg)
 
 	@commands.command(name="lbd", description="Show member stats sorted by last update date")
-	async def get_stats_sorted_by_date(self, ctx, *, show_ids: bool = False):
+	async def get_stats_sorted_by_date(self, ctx, arg=None):
 		def sort_by_date(d):
 			return datetime.strptime(d[1][-1][DATE_STAT], "%d/%m/%Y")
+
+		show_ids = arg == "id"
 
 		msg = self.create_stat_leaderboard(sort_by_date, "sorted by date", server=ctx.guild, show_ids=show_ids)
 		await ctx.send(msg)
