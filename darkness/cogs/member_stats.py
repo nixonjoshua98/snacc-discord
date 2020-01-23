@@ -152,7 +152,7 @@ class MemberStats(commands.Cog):
 
 		role = discord.utils.find(lambda r: r.name == "Darkness Employee", server.roles)
 
-		for k, v in sorted_data
+		for k, v in sorted_data:
 			member = server.get_member(int(k))
 
 			is_guild_member = role in member.roles
