@@ -83,16 +83,19 @@ class MemberStats(commands.Cog):
 		else:
 			await ctx.send(f"Rewind has failed since this ID has not been registered before")
 
+	@commands.has_role("Darkness Employee")
 	@commands.command(name="lbt", description="Show member stats sorted by trophies")
 	async def get_stats_sorted_by_trophies(self, ctx):
 		msg = self.create_stat_leaderboard(lambda d: d[1][-1][TROPHIES_STAT], "sorted by trophies", server=ctx.guild)
 		await ctx.send(msg)
 
+	@commands.has_role("Darkness Employee")
 	@commands.command(name="lbl", description="Show member stats sorted by level")
 	async def get_stats_sorted_by_level(self, ctx):
 		msg = self.create_stat_leaderboard(lambda d: d[1][-1][LEVEL_STAT], "sorted by level", server=ctx.guild)
 		await ctx.send(msg)
 
+	@commands.has_role("Darkness Employee")
 	@commands.group(name="lbd", description="Show member stats sorted by last update date")
 	async def get_stats_sorted_by_date(self, ctx):
 		def sort_by_date(d):
@@ -102,6 +105,7 @@ class MemberStats(commands.Cog):
 			msg = self.create_stat_leaderboard(sort_by_date, "sorted by date", server=ctx.guild)
 			await ctx.send(msg)
 
+	@commands.is_owner()
 	@get_stats_sorted_by_date.command(name="id", hidden=True)
 	async def sort_by_date_show_ids(self, ctx):
 		def sort_by_date(d):
