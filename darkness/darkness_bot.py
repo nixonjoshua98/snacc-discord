@@ -24,7 +24,7 @@ class DarknessBot(commands.Bot):
         print("Bot successfully started")
 
     async def on_command_error(self, ctx, esc):
-        print(esc)
+        await ctx.send(f"*{esc}*")
 
     def run(self):
         super().run("NjY2NjE2NTE1NDM2NDc4NDcz.Xh2xCA.X8d9IFcSW_2e4c_maBMoXlxmI7Y")
