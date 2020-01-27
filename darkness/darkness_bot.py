@@ -23,14 +23,20 @@ class DarknessBot(commands.Bot):
     async def on_ready(self):
         print("Bot successfully started")
 
-        self.loop.create_task(self.async_loop())
+        await self.wait_until_ready()
+
+        self.loop.create_task(self.background_loop())
 
     async def on_command_error(self, ctx, esc):
         await ctx.send(f"*{esc}*")
 
-    async def async_loop(self):
+    async def background_loop(self):
+        print("Background loop started")
+
         while not self.is_closed():
             await asyncio.sleep(15)
+
+        print("Background loop ended")
 
     def run(self):
         super().run("NjY2NjE2NTE1NDM2NDc4NDcz.Xh2xCA.X8d9IFcSW_2e4c_maBMoXlxmI7Y")
