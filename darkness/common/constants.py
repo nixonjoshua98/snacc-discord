@@ -19,5 +19,5 @@ SET_STATS_COOLDOWN = 60
 MAX_NUM_STAT_ENTRIES = 3
 
 # - Debug
-if os.getenv("DEBUG", False):
-	JSON_URL_LOOKUP["member_stats.json"] = "https://api.myjson.com/bins/17xtpy"
+# if os.getenv("DEBUG", False):
+# JSON_URL_LOOKUP["member_stats.json"] = "https://api.myjson.com/bins/17xtpy"

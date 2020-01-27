@@ -46,9 +46,13 @@ def create_leaderboard(ls, title):
 	rank = 1
 
 	for row in ls:
-		username, date, level, trophies = row
+		username, days_ago, level, trophies = row
 
-		msg += f"\n#{rank} {username} {date}"
+		msg += f"\n#{rank} {username} "
+
+		if days_ago > 0:
+			msg += f"({days_ago} day{'' if days_ago == 1 else 's'} ago)"
+
 		msg += f"\n\tLvl: {level} Trophies: {trophies}"
 
 		rank += 1
@@ -73,9 +77,11 @@ def get_all_members_latest_stat(guild):
 
 		date, level, trophies = v[-1]
 
-		date = functions.format_date_str(date)
+		date = functions.str_to_date(date)
 
-		data.append((member.display_name, date, level, trophies))
+		hours_since_update = datetime.today() - date
+
+		data.append((member.display_name, hours_since_update.days, level, trophies))
 
 	return data
 
@@ -115,7 +121,7 @@ class MemberStats(commands.Cog):
 
 		embed = discord.Embed(title=f"Member: {username}", description=f"Most Recent Stat Update", color=0xff8000)
 
-		date = functions.format_date_str(last_row[0])
+		date = functions.str_to_date(last_row[0])
 
 		embed.add_field(name="Date Recorded", value=date)
 		embed.add_field(name="Level", value=last_row[1])
@@ -132,7 +138,7 @@ class MemberStats(commands.Cog):
 	async def get_date_lb(self, ctx):
 		stats = get_all_members_latest_stat(ctx.guild)
 
-		stats.sort(key=lambda row: datetime.strptime(row[1], "%d/%m/%Y"), reverse=True)
+		stats.sort(key=lambda row: row[1], reverse=False)
 
 		msg = create_leaderboard(stats, "date")
 
