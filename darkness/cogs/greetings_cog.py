@@ -1,5 +1,7 @@
 from discord.ext import commands
 
+from darkness.common.constants import NON_MEMBER_CHANNEL
+
 
 class Greetings(commands.Cog):
 	def __init__(self, bot):
@@ -7,14 +9,8 @@ class Greetings(commands.Cog):
 
 	@commands.Cog.listener()
 	async def on_member_join(self, member):
-		# Welcomes the new user to the server
+		sys_channel = member.guild.system_channel
 
-		channel = member.guild.system_channel
+		chat_channel = member.guild.get_channel(NON_MEMBER_CHANNEL)
 
-		if channel is not None:
-			welcome_msg = "Welcome {member.mention} to {guild.name}!".format(
-				member=member,
-				guild=member.guild
-			)
-
-			await channel.send(welcome_msg)
+		await sys_channel.send(f"Welcome {member.mention}, talk to us in {chat_channel.mention}!")
