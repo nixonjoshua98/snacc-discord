@@ -17,7 +17,7 @@ from darkness.common.constants import (SET_STATS_COOLDOWN, MAX_NUM_STAT_ENTRIES,
 # - Checks
 async def is_in_bot_channel(ctx):
 	if ctx.channel.id not in BOT_CHANNELS:
-		raise CommandError(f"**{ctx.author.display_name}**. Commands are displayed in this channel")
+		raise CommandError(f"**{ctx.author.display_name}**. Commands are disabled in this channel")
 
 	return True
 
