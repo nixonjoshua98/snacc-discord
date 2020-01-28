@@ -122,6 +122,7 @@ class MemberStats(commands.Cog):
 		embed = discord.Embed(title=f"Member: {username}", description=f"Most Recent Stat Update", color=0xff8000)
 
 		date = functions.str_to_date(last_row[0])
+		date = date.strftime("%d/%m/%Y")  # Remove the time
 
 		embed.add_field(name="Date Recorded", value=date)
 		embed.add_field(name="Level", value=last_row[1])
