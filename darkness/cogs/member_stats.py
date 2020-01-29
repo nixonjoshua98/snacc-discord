@@ -1,7 +1,9 @@
 
 import os
+import typing
 import discord
 import operator
+import dataclasses
 
 from datetime import datetime
 
@@ -12,6 +14,13 @@ from darkness.common import (data_reader)
 from darkness.common.backup import Backup
 from darkness.common import functions
 from darkness.common.constants import (SET_STATS_COOLDOWN, MAX_NUM_STAT_ENTRIES, MEMBER_ROLE_NAME, BOT_CHANNELS)
+
+
+@dataclasses.dataclass()
+class MemberStatsDC:
+	date: datetime
+	level: int
+	trophies: int
 
 
 # - Checks
@@ -127,7 +136,6 @@ class MemberStats(commands.Cog):
 		embed.add_field(name="Date Recorded", value=date)
 		embed.add_field(name="Level", value=last_row[1])
 		embed.add_field(name="No. Trophies", value=last_row[2])
-
 		embed.set_footer(text=self.bot.user.display_name)
 
 		await ctx.send(embed=embed)
@@ -170,3 +178,49 @@ class MemberStats(commands.Cog):
 		msg = create_leaderboard(stats, "trophies")
 
 		await ctx.send(msg)
+
+	@commands.is_owner()
+	@commands.check(is_in_bot_channel)
+	@commands.guild_only()
+	@commands.command(name="shame", description="Call out the slackers")
+	async def shame(self, ctx):
+		member_role = discord.utils.get(ctx.guild.roles, name=MEMBER_ROLE_NAME)
+
+		no_sets = []
+		late_sets = []
+
+		for member in ctx.guild.members:
+
+			# Not a guild member
+			if member_role not in member.roles:
+				continue
+
+			stats = self.get_member_stats(member.id)
+
+			if not stats:
+				no_sets.append(member)
+
+			# Hasn't updated in 3 or more days
+			elif functions.days_since(stats.date) >= 3:
+				late_sets.append(member)
+
+		message = ""
+		message += "**Zero Stat Updates**\n" + " ".join(tuple(map(lambda m: m.mention, no_sets)))
+		message += "\n**No Recent Updates**\n" + " ".join(tuple(map(lambda m: m.mention, late_sets)))
+
+		await ctx.send(message)
+
+	@staticmethod
+	def get_member_stats(member_id: int) -> typing.Union[MemberStatsDC, None]:
+		member_stats_file = data_reader.read_json("member_stats.json")
+
+		stats = member_stats_file.get(str(member_id), [])
+
+		if stats:
+			latest = stats[-1]
+
+			return MemberStatsDC(functions.str_to_date(latest[0]), latest[1], latest[2])
+
+
+
+
