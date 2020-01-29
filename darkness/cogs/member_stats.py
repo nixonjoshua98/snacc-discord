@@ -182,7 +182,7 @@ class MemberStats(commands.Cog):
 	@commands.is_owner()
 	@commands.check(is_in_bot_channel)
 	@commands.guild_only()
-	@commands.command(name="shame", description="Call out the slackers")
+	@commands.command(name="shame", description="Call out the slackers", hidden=True)
 	async def shame(self, ctx):
 		member_role = discord.utils.get(ctx.guild.roles, name=MEMBER_ROLE_NAME)
 
