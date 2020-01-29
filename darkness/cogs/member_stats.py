@@ -45,7 +45,7 @@ def add_stat_entry(user_id, level, trophies):
 
 def get_member_stats(user_id):
 	member_stats_file = data_reader.read_json("member_stats.json")
-	stats = member_stats_file.get(str(user_id), [])[-(MAX_NUM_STAT_ENTRIES + 1):]
+	stats = member_stats_file.get(str(user_id), [])
 
 	return stats
 
