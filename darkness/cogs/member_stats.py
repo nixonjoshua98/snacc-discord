@@ -34,7 +34,9 @@ async def is_in_bot_channel(ctx):
 
 
 def add_stat_entry(user_id, level, trophies):
-	stats = get_member_stats(user_id)
+	stats = get_member_stats(user_id)[1: MAX_NUM_STAT_ENTRIES]
+
+	print(stats)
 	today = datetime.today().strftime("%d/%m/%Y %H:%M:%S")
 	stats.append([today, level, trophies])
 	data_reader.update_key("member_stats.json", key=str(user_id), value=stats)
@@ -104,7 +106,6 @@ class MemberStats(commands.Cog):
 	@commands.has_role(MEMBER_ROLE_NAME)
 	@commands.check(is_in_bot_channel)
 	@commands.guild_only()
-	@commands.cooldown(1, SET_STATS_COOLDOWN, commands.BucketType.member)
 	@commands.command(name="stats", aliases=["s"], description="Set your stats ``!s <lvl> <trophies>``")
 	async def set_stats(self, ctx, level: int, trophies: int):
 		add_stat_entry(ctx.author.id, level, trophies)
