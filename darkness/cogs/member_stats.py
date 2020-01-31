@@ -8,7 +8,6 @@ import dataclasses
 from datetime import datetime
 
 from discord.ext import commands
-from discord.ext.commands import CommandError
 
 from darkness.common import (data_reader)
 from darkness.common.backup import Backup
@@ -104,6 +103,24 @@ class MemberStats(commands.Cog):
 			Backup.upload_file("member_stats.json")
 
 		await ctx.send(f"``{ctx.author.display_name}`` :thumbsup:")
+
+	@commands.is_owner()
+	@commands.check(checks.is_in_bot_channel)
+	@commands.guild_only()
+	@commands.command(name="set", aliases=["ss"], hidden=True)
+	async def set_other_stats(self, ctx, user_id: int,  level: int, trophies: int):
+		member = ctx.guild.get_member(user_id)
+
+		if member is None:
+			await ctx.send("User not found in the server")
+
+		else:
+			add_stat_entry(user_id, level, trophies)
+
+			if not os.getenv("DEBUG", False):
+				Backup.upload_file("member_stats.json")
+
+			await ctx.send(f"``{member.display_name}`` :thumbsup:")
 
 	@commands.has_role(MEMBER_ROLE_NAME)
 	@commands.check(checks.is_in_bot_channel)
