@@ -7,9 +7,8 @@ from darkness.common.constants import (BOT_CHANNELS, MEMBER_ROLE_NAME)
 
 async def can_use_command(ctx):
 
-	# Ignore DMs
 	if ctx.guild is None:
-		return False
+		raise CommandError(f"**{ctx.author.display_name}**. Commands are not allowed here")
 
 	member_role = discord.utils.get(ctx.guild.roles, name=MEMBER_ROLE_NAME)
 
