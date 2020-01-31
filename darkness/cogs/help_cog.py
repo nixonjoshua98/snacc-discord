@@ -2,15 +2,13 @@ import discord
 from discord.ext import commands
 
 from darkness.common import checks
-from darkness.common.constants import MEMBER_ROLE_NAME
 
 
 class Help(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-	@commands.has_role(MEMBER_ROLE_NAME)
-	@commands.check(checks.is_in_bot_channel)
+	@commands.check(checks.can_use_command)
 	@commands.command(name="help")
 	async def help(self, ctx):
 		embed = discord.Embed(

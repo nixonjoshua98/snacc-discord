@@ -2,7 +2,7 @@
 from datetime import datetime
 
 
-def str_to_date(s):
+def to_date(s):
 	try:
 		date = datetime.strptime(s, "%d/%m/%Y %H:%M:%S")
 	except ValueError:
@@ -11,5 +11,9 @@ def str_to_date(s):
 	return date
 
 
-def days_since(date: datetime) -> int:
-	return (datetime.today() - date).days
+def days_since(date) -> int:
+	if isinstance(date, datetime):
+		return (datetime.today() - date).days
+
+	elif isinstance(date, str):
+		return (datetime.today() - to_date(date)).days
