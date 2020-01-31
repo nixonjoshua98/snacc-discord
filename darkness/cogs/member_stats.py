@@ -13,7 +13,8 @@ from discord.ext.commands import CommandError
 from darkness.common import (data_reader)
 from darkness.common.backup import Backup
 from darkness.common import functions
-from darkness.common.constants import (SET_STATS_COOLDOWN, MAX_NUM_STAT_ENTRIES, MEMBER_ROLE_NAME, BOT_CHANNELS)
+from darkness.common import checks
+from darkness.common.constants import (MAX_NUM_STAT_ENTRIES, MEMBER_ROLE_NAME, BOT_CHANNELS)
 
 
 @dataclasses.dataclass()
@@ -21,16 +22,6 @@ class MemberStatsDC:
 	date: datetime
 	level: int
 	trophies: int
-
-
-# - Checks
-async def is_in_bot_channel(ctx):
-	if ctx.channel.id not in BOT_CHANNELS:
-		raise CommandError(f"**{ctx.author.display_name}**. Commands are disabled in this channel")
-
-	return True
-
-# -
 
 
 def add_stat_entry(user_id, level, trophies):
@@ -103,7 +94,7 @@ class MemberStats(commands.Cog):
 		Backup.download_file("member_stats.json")
 
 	@commands.has_role(MEMBER_ROLE_NAME)
-	@commands.check(is_in_bot_channel)
+	@commands.check(checks.is_in_bot_channel)
 	@commands.guild_only()
 	@commands.command(name="stats", aliases=["s"], description="Set your stats ``!s <lvl> <trophies>``")
 	async def set_stats(self, ctx, level: int, trophies: int):
@@ -115,7 +106,7 @@ class MemberStats(commands.Cog):
 		await ctx.send(f"``{ctx.author.display_name}`` :thumbsup:")
 
 	@commands.has_role(MEMBER_ROLE_NAME)
-	@commands.check(is_in_bot_channel)
+	@commands.check(checks.is_in_bot_channel)
 	@commands.guild_only()
 	@commands.command(name="me", description="Shows your latest stats")
 	async def get_stats(self, ctx):
@@ -141,7 +132,7 @@ class MemberStats(commands.Cog):
 		await ctx.send(embed=embed)
 
 	@commands.has_role(MEMBER_ROLE_NAME)
-	@commands.check(is_in_bot_channel)
+	@commands.check(checks.is_in_bot_channel)
 	@commands.guild_only()
 	@commands.command(name="lbd", description="Show member stats sorted by last update date")
 	async def get_date_lb(self, ctx):
@@ -154,7 +145,7 @@ class MemberStats(commands.Cog):
 		await ctx.send(msg)
 
 	@commands.has_role(MEMBER_ROLE_NAME)
-	@commands.check(is_in_bot_channel)
+	@commands.check(checks.is_in_bot_channel)
 	@commands.guild_only()
 	@commands.command(name="lbl", description="Show member stats sorted by level")
 	async def get_level_lb(self, ctx):
@@ -167,7 +158,7 @@ class MemberStats(commands.Cog):
 		await ctx.send(msg)
 
 	@commands.has_role(MEMBER_ROLE_NAME)
-	@commands.check(is_in_bot_channel)
+	@commands.check(checks.is_in_bot_channel)
 	@commands.guild_only()
 	@commands.command(name="lbt", description="Show member stats sorted by trophies")
 	async def get_trophy_lb(self, ctx):
@@ -180,7 +171,7 @@ class MemberStats(commands.Cog):
 		await ctx.send(msg)
 
 	@commands.is_owner()
-	@commands.check(is_in_bot_channel)
+	@commands.check(checks.is_in_bot_channel)
 	@commands.guild_only()
 	@commands.command(name="shame", description="Call out the slackers", hidden=True)
 	async def shame(self, ctx):
