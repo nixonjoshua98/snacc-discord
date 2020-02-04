@@ -19,4 +19,4 @@ class Greetings(commands.Cog):
 	async def on_member_remove(self, member):
 		sys_channel = member.guild.system_channel
 
-		await sys_channel.send(f"{member.mention} **{member.display_name}** has left the server :frowning:")
+		await sys_channel.send(f"{member.mention} **({member.display_name})** has left the server :frowning:")
