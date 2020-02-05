@@ -22,7 +22,7 @@ def download_file(file: str):
 
 
 def upload_file(file: str):
-	debug_mode = os.getenv("DEBUG", True)
+	debug_mode = os.getenv("DEBUG", False)
 
 	if not debug_mode:
 		url = constants.JSON_URL_LOOKUP.get(file, None)
