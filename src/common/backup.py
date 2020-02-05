@@ -20,6 +20,9 @@ def download_file(file: str):
 
 		print(f"Downloaded '{file}'")
 
+	else:
+		print(f"Failed to download '{file}'")
+
 
 def upload_file(file: str):
 	debug_mode = os.getenv("DEBUG", False)

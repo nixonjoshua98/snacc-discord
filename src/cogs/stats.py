@@ -14,8 +14,8 @@ class Stats(commands.Cog):
 
 	async def cog_check(self, ctx):
 		return (
-				await checks.has_member_role(ctx) and
 				await checks.in_bot_channel(ctx) and
+				await checks.has_member_role(ctx) and
 				await checks.message_from_guild(ctx)
 		)
 
@@ -40,7 +40,7 @@ class Stats(commands.Cog):
 
 	async def shame_background_task(self):
 		"""
-		Method is a background task, which is called periodically
+		Background task, which is called periodically
 		"""
 		guild = self.bot.get_guild(constants.GUILD_ID)
 		channel = guild.get_channel(constants.BOT_SPAM_CHANNEL)
