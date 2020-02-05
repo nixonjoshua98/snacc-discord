@@ -33,8 +33,12 @@ class DarknessBot(commands.Bot):
     async def background_loop(self):
         print("Background loop started")
 
+        stats_cog = self.get_cog("MemberStats")
+
         while not self.is_closed():
-            await asyncio.sleep(15)
+            await asyncio.sleep(60 * 60 * 8)
+
+            await stats_cog.shame()
 
         print("Background loop ended")
 

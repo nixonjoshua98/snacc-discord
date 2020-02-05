@@ -7,6 +7,8 @@ from discord.ext import commands
 from darkness.common import backup
 from darkness.common import checks
 
+from darkness.common.constants import BOT_SPAM_CHANNEL, GUILD_ID
+
 from .member_stats_funcs import (
 	add_stat_entry,
 	create_user_stat_embed,
@@ -80,14 +82,16 @@ class MemberStats(commands.Cog):
 
 		await ctx.send(msg)
 
-	@commands.check(checks.can_use_command)
-	@commands.command(name="shame", description="Call out the slackers", hidden=True)
-	async def shame(self, ctx):
-		members = get_inactive_members(ctx.guild)
+	async def shame(self):
+		guild = self.bot.get_guild(GUILD_ID)
+
+		channel = guild.get_channel(BOT_SPAM_CHANNEL)
+
+		members = get_inactive_members(channel.guild)
 
 		message = "**Lacking Activity**\n" + " ".join(tuple(map(lambda m: m.mention, members)))
 
-		await ctx.send(message)
+		await channel.send(message)
 
 
 
