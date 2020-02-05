@@ -36,8 +36,6 @@ class MyBot(commands.Bot):
 		asycio_schedule.add_task(60 * 60 * 8, self.get_cog("Stats").shame_background_task, lambda: not self.is_closed())
 
 	async def on_command_error(self, ctx, esc):
-		print(esc)
-
 		await ctx.send(esc)
 
 	async def on_message(self, message):

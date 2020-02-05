@@ -16,7 +16,7 @@ async def has_member_role(ctx):
 
 async def message_from_guild(ctx):
 	if ctx.guild is None:
-		raise CommandError(f"Ignoring DM from {ctx.author.name}.")
+		raise CommandError(f"Ignoring DM from **{ctx.author.name}**.")
 
 	return ctx.guild is not None
 
