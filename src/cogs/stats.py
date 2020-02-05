@@ -32,6 +32,8 @@ class Stats(commands.Cog):
 	async def set_stats(self, ctx, level: int, trophies: int):
 		GuildMember(_id=ctx.author.id).update_stats(level=level, trophies=trophies, write_file=True)
 
+		backup.upload_file("stats.json")
+
 		await ctx.send(f"**{ctx.author.display_name}** :thumbsup:")
 
 	@commands.command(name="lb", aliases=["lbt"])
@@ -39,9 +41,6 @@ class Stats(commands.Cog):
 		await ctx.send(ServerMemberStats(ctx.guild).create_leaderboard(sort_by="trophies"))
 
 	async def shame_background_task(self):
-		"""
-		Background task, which is called periodically
-		"""
 		guild = self.bot.get_guild(constants.GUILD_ID)
 		channel = guild.get_channel(constants.BOT_SPAM_CHANNEL)
 

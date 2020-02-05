@@ -3,7 +3,6 @@ import os
 
 from discord.ext import commands
 from src import cogs
-from src.common import backup
 from src.common import constants
 from src.common import asycio_schedule
 
@@ -32,8 +31,7 @@ class MyBot(commands.Bot):
 
 		self.loop.create_task(self.background_loop())
 
-		asycio_schedule.add_task(60 * 30, lambda: backup.upload_file("stats.json"), lambda: not self.is_closed())
-		asycio_schedule.add_task(60 * 60 * 8, self.get_cog("Stats").shame_background_task, lambda: not self.is_closed())
+		asycio_schedule.add_task(60 * 60 * 6, self.get_cog("Stats").shame_background_task, lambda: not self.is_closed())
 
 	async def on_command_error(self, ctx, esc):
 		await ctx.send(esc)
