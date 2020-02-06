@@ -4,7 +4,6 @@ import os
 from discord.ext import commands
 from src import cogs
 from src.common import constants
-from src.common import asycio_schedule
 
 
 class MyBot(commands.Bot):
@@ -12,9 +11,6 @@ class MyBot(commands.Bot):
 		super().__init__(command_prefix="!", case_insensitive=True)
 
 		self.remove_command("help")
-
-		for c in cogs.all:
-			self.add_cog(c(self))
 
 	async def background_loop(self):
 		print("Background loop started")
@@ -29,9 +25,12 @@ class MyBot(commands.Bot):
 
 		print("Bot successfully started")
 
-		self.loop.create_task(self.background_loop())
+		for c in cogs.all:
+			self.add_cog(c(self))
 
-		asycio_schedule.add_task(60 * 60 * 6, self.get_cog("Stats").shame_background_task, lambda: not self.is_closed())
+			print(f"Added Cog: {c.__name__}")
+
+		self.loop.create_task(self.background_loop())
 
 	async def on_command_error(self, ctx, esc):
 		await ctx.send(esc)

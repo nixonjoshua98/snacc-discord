@@ -1,8 +1,8 @@
 import asyncio
 
 
-async def task_loop(delay: int, func, condition):
-	while condition():
+async def task_loop(delay: int, func):
+	while True:
 		await asyncio.sleep(delay)
 
 		if asyncio.iscoroutinefunction(func):
@@ -11,8 +11,10 @@ async def task_loop(delay: int, func, condition):
 			func()
 
 
-def add_task(delay: int, func, condition):
-	return asyncio.create_task(task_loop(delay, func, condition))
+def add_task(delay: int, func):
+	print(f"Added task: {func.__name__}")
+
+	return asyncio.create_task(task_loop(delay, func))
 
 
 async def cancel_task(task: asyncio.Task):
