@@ -1,6 +1,8 @@
 from discord.ext import commands
-from src.structures.guild_member import GuildMember
-from src.structures.server_member_stats import ServerMemberStats
+
+from src.structures import GuildMember
+from src.structures import ServerMemberStats
+
 from src.common import checks
 from src.common import backup
 from src.common import constants
