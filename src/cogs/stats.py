@@ -52,6 +52,7 @@ class Stats(commands.Cog):
 	@commands.command(name="shame")
 	async def shame(self, ctx):
 		await ctx.send(self.get_shame_message(ctx.guild))
+		await ctx.message.delete()
 
 	async def background_shame_task(self):
 		guild = self.bot.get_guild(constants.GUILD_ID)
