@@ -40,8 +40,6 @@ class Stats(commands.Cog):
 	async def set_stats(self, ctx, level: int, trophies: int):
 		GuildMember(_id=ctx.author.id).update_stats(level=level, trophies=trophies, write_file=True)
 
-		backup.upload_file("stats.json")
-
 		await ctx.send(f"**{ctx.author.display_name}** :thumbsup:")
 
 	@commands.command(name="lb", aliases=["lbt"])
@@ -52,7 +50,6 @@ class Stats(commands.Cog):
 	@commands.command(name="shame")
 	async def shame(self, ctx):
 		await ctx.send(self.get_shame_message(ctx.guild))
-		await ctx.message.delete()
 
 	async def background_shame_task(self):
 		guild = self.bot.get_guild(constants.GUILD_ID)

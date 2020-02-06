@@ -1,10 +1,12 @@
 import asyncio
-import os
 
 from src import cogs
 
-from discord.ext import commands
+from src.common import backup
 from src.common import constants
+from src.common import asycio_schedule
+
+from discord.ext import commands
 
 
 class MyBot(commands.Bot):
@@ -33,12 +35,13 @@ class MyBot(commands.Bot):
 
 		self.loop.create_task(self.background_loop())
 
+		asycio_schedule.add_task(constants.BACKUP_DELAY, backup.backup_background_loop)
+
 	async def on_command_error(self, ctx, esc):
 		await ctx.send(esc)
 
 	async def on_message(self, message):
-		if not os.getenv("DEBUG", False) or message.author.id == constants.SNACC_ID:
-			await self.process_commands(message)
+		await self.process_commands(message)
 
 	def run(self):
 		super().run("NjY2NjE2NTE1NDM2NDc4NDcz.Xh2xCA.X8d9IFcSW_2e4c_maBMoXlxmI7Y")
