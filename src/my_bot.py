@@ -35,7 +35,7 @@ class MyBot(commands.Bot):
 
 		self.loop.create_task(self.background_loop())
 
-		asycio_schedule.add_task(constants.BACKUP_DELAY, backup.backup_background_loop)
+		asycio_schedule.add_task(constants.BACKUP_DELAY, backup.backup_background_task)
 
 	async def on_command_error(self, ctx, esc):
 		await ctx.send(esc)

@@ -35,7 +35,7 @@ def upload_file(file: str):
 		print(f"Uploading {file} failed due to being in DEBUG mode")
 
 
-def backup_background_loop():
+def backup_background_task():
 	for f in constants.JSON_URL_LOOKUP:
 		path = os.path.join(constants.RESOURCES_DIR, f)
 
