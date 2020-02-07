@@ -1,5 +1,7 @@
 import asyncio
 
+# https://phoolish-philomath.com/asynchronous-task-scheduling-in-python.html
+
 
 async def task_loop(delay: int, func):
 	while True:

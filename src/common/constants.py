@@ -8,6 +8,6 @@ BOT_SPAM_CHANNEL = 666748718183088138
 GUILD_ID = 666613802657382435
 BOT_CHANNELS = [666748718183088138, 666760256277446686]
 
-JSON_URL_LOOKUP = {"stats.json": "https://api.myjson.com/bins/1d98rq"}
+JSON_URL_LOOKUP = {"game_stats.json": "https://api.myjson.com/bins/1d98rq"}
 
 BACKUP_DELAY = 60  # Seconds

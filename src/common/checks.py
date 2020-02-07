@@ -1,6 +1,7 @@
 
 
 import discord
+from discord.ext import commands
 from discord.ext.commands import CommandError
 from src.common import constants
 from src.common import data_reader
@@ -15,13 +16,6 @@ async def has_member_role(ctx):
 	return member_role in ctx.author.roles
 
 
-async def message_from_guild(ctx):
-	if ctx.guild is None:
-		raise CommandError(f"Ignoring DM from **{ctx.author.name}**.")
-
-	return ctx.guild is not None
-
-
 async def in_bot_channel(ctx):
 	if ctx.channel.id not in constants.BOT_CHANNELS:
 		raise CommandError(f"**{ctx.author.display_name}**, Commands are disabled in this channel.")
@@ -29,12 +23,15 @@ async def in_bot_channel(ctx):
 	return ctx.channel.id in constants.BOT_CHANNELS
 
 
-async def user_has_stats(ctx):
-	data = data_reader.read_json("stats.json")
+def id_exists_in_file(file):
+	async def predicate(ctx):
+		data = data_reader.read_json(file)
 
-	has_set_stats = data.get(str(ctx.author.id), None) is not None
+		stats = data.get(str(ctx.author.id), None)
 
-	if not has_set_stats:
-		raise CommandError(f"**{ctx.author.display_name}**, I found no stats for you.")
+		if stats is None:
+			raise CommandError(f"**{ctx.author.display_name}**, I found no stats for you.")
 
-	return has_set_stats
+		return True
+
+	return commands.check(predicate)

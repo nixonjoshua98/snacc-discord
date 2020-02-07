@@ -1,5 +1,5 @@
 
-from .stats import Stats
+from .game_stats import GameStats
 from.greetings import Greetings
 
-all = (Stats, Greetings)
+all = (GameStats, Greetings)
