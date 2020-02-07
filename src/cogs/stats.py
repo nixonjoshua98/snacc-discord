@@ -10,7 +10,7 @@ from src.common import asycio_schedule
 
 
 class Stats(commands.Cog):
-	SHAME_COMMAND_DELAY = 60 * 60 * 8
+	SHAME_COMMAND_DELAY = 60 * 60 * 6
 
 	def __init__(self, bot):
 		self.bot = bot

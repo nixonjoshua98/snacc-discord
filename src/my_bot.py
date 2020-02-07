@@ -35,6 +35,7 @@ class MyBot(commands.Bot):
 
 		self.loop.create_task(self.background_loop())
 
+		# THIS NEEDS TO START AFTER THE FILES HAVE INITIALLY BEEN DOWNLOADED, OTHERWISE DATA WILL BE OVERWRITTEN
 		asycio_schedule.add_task(constants.BACKUP_DELAY, backup.backup_background_task)
 
 	async def on_command_error(self, ctx, esc):
