@@ -5,8 +5,9 @@ from src.structures import PlayerGameStats
 
 from src.common import checks
 from src.common import backup
-from src.common import constants
 from src.common import asycio_schedule
+
+from src.common.constants import GUILD_ID, BOT_SPAM_CHANNEL
 
 
 class GameStats(commands.Cog):
@@ -42,7 +43,7 @@ class GameStats(commands.Cog):
 
 		await ctx.send(f"**{ctx.author.display_name}** :thumbsup:")
 
-	@commands.command(name="lb", aliases=["lbt"])
+	@commands.command(name="lbt")
 	async def show_guild_trophy_leaderboard(self, ctx):
 		server = ServerGameStats(ctx.guild)
 
@@ -54,9 +55,11 @@ class GameStats(commands.Cog):
 		await ctx.send(self.get_shame_message(ctx.guild))
 
 	async def background_shame_task(self):
-		guild = self.bot.get_guild(constants.GUILD_ID)
+		guild = self.bot.get_guild(GUILD_ID)
 
-		channel = guild.get_channel(constants.BOT_SPAM_CHANNEL)
+		channel = guild.get_channel(BOT_SPAM_CHANNEL)
+
+		print("Posted members with lacking activity")
 
 		await channel.send(self.get_shame_message(guild))
 

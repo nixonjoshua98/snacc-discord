@@ -18,7 +18,7 @@ class GameStatsDC:
 class PlayerGameStats:
 	FILE = "game_stats.json"
 
-	def __init__(self, guild: discord.Guild, _id: str):
+	def __init__(self, guild: discord.Guild, _id: int):
 		self._id = _id
 		self._stats = None
 		self._guild = guild
