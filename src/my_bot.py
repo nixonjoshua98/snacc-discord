@@ -42,12 +42,15 @@ class MyBot(commands.Bot):
 		await message.delete()
 
 	async def on_message(self, message: discord.Message):
+		# Ignore itself
 		if message.author.id == self.user.id:
 			return
 
+		# Valid commands
 		elif message.content.startswith(self.command_prefix):
 			await self.process_commands(message)
 
+		# Random commands on messages
 		else:
 			await msg_commands.on_message_commands(message)
 
