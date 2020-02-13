@@ -37,7 +37,11 @@ class MyBot(commands.Bot):
 		asycio_schedule.add_task(BACKUP_DELAY, backup.backup_background_task)
 
 	async def on_command_error(self, ctx, esc):
-		await ctx.send(esc)
+		message = await ctx.send(esc)
+
+		await asyncio.sleep(5)
+
+		await message.delete()
 
 	async def on_message(self, message: discord.Message):
 		if message.author.id == self.user.id:
@@ -46,14 +50,13 @@ class MyBot(commands.Bot):
 		if random.randint(0, 100) <= 25:
 			channel, content, author = message.channel, message.content, message.author
 
-			f = lambda c: f"*{c}*"
+			f = lambda c: f"*{c}*" if c != " " else c
 
-			msg = " ".join([f(c) if i % 2 == 1 else f(c.upper()) for i, c in enumerate(content.lower()) if c != " "])
+			msg = " ".join([f(c) if i % 2 == 1 else f(c.upper()) for i, c in enumerate(content.lower())])
 
 			await channel.send(msg)
 
-		else:
-			await self.process_commands(message)
+		await self.process_commands(message)
 
 	def run(self):
 		super().run("NjY2NjE2NTE1NDM2NDc4NDcz.Xh2xCA.X8d9IFcSW_2e4c_maBMoXlxmI7Y")
