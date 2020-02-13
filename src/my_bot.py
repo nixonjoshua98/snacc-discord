@@ -1,8 +1,8 @@
 import asyncio
 import discord
-import random
 
 from src import cogs
+from src import msg_commands
 from src.common import backup
 from src.common import asycio_schedule
 from src.common.constants import BACKUP_DELAY
@@ -38,25 +38,18 @@ class MyBot(commands.Bot):
 
 	async def on_command_error(self, ctx, esc):
 		message = await ctx.send(esc)
-
 		await asyncio.sleep(5)
-
 		await message.delete()
 
 	async def on_message(self, message: discord.Message):
 		if message.author.id == self.user.id:
 			return
 
-		if random.randint(0, 100) <= 25:
-			channel, content, author = message.channel, message.content, message.author
+		elif message.content.startswith(self.command_prefix):
+			await self.process_commands(message)
 
-			f = lambda c: f"*{c}*" if c != " " else c
-
-			msg = " ".join([f(c) if i % 2 == 1 else f(c.upper()) for i, c in enumerate(content.lower())])
-
-			await channel.send(msg)
-
-		await self.process_commands(message)
+		else:
+			await msg_commands.on_message_commands(message)
 
 	def run(self):
 		super().run("NjY2NjE2NTE1NDM2NDc4NDcz.Xh2xCA.X8d9IFcSW_2e4c_maBMoXlxmI7Y")

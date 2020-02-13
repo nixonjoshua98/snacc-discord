@@ -3,6 +3,8 @@ from discord.ext import commands
 from src.structures import ServerGameStats
 from src.structures import PlayerGameStats
 
+from src.structures import Member
+
 from src.common import checks
 from src.common import backup
 from src.common import asycio_schedule
@@ -37,11 +39,11 @@ class GameStats(commands.Cog):
 
 	@commands.command(name="stats", aliases=["s"])
 	async def set_stats(self, ctx, level: int, trophies: int):
-		player = PlayerGameStats(ctx.guild, ctx.author.id)
+		player = Member(ctx.author.id)
 
-		player.update_stats(level=level, trophies=trophies, write_file=True)
+		updated = player.update_game_stats(level=level, trophies=trophies)
 
-		await ctx.send(f"**{ctx.author.display_name}** :thumbsup:")
+		await ctx.send(f"**{ctx.author.display_name}** {':thumbsup:' if updated else ':thumbsdown:'}")
 
 	@commands.command(name="lb")
 	async def leaderboard(self, ctx):
