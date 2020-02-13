@@ -12,7 +12,7 @@ from discord.ext import commands
 
 class MyBot(commands.Bot):
 	def __init__(self):
-		super().__init__(command_prefix="/", case_insensitive=True)
+		super().__init__(command_prefix="!", case_insensitive=True)
 
 		self.remove_command("help")
 
@@ -37,9 +37,7 @@ class MyBot(commands.Bot):
 		asycio_schedule.add_task(BACKUP_DELAY, backup.backup_background_task)
 
 	async def on_command_error(self, ctx, esc):
-		message = await ctx.send(esc)
-		await asyncio.sleep(5)
-		await message.delete()
+		await ctx.send(esc)
 
 	async def on_error(self, event_method, *args, **kwargs):
 		print(event_method, args, kwargs)

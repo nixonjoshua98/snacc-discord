@@ -5,7 +5,7 @@ import random
 async def on_message_commands(message):
 	val = random.randint(0, 100)
 
-	if val <= 5:
+	if val <= 10:
 		await mock_message(message)
 
 
