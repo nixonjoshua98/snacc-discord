@@ -48,7 +48,7 @@ class MyBot(commands.Bot):
 
 			f = lambda c: f"*{c}*"
 
-			msg = " ".join([f(c) if i % 2 == 1 else f(c.upper()) for i, c in enumerate(content.lower()) if c.isalpha()])
+			msg = " ".join([f(c) if i % 2 == 1 else f(c.upper()) for i, c in enumerate(content.lower()) if c != " "])
 
 			await channel.send(msg)
 
