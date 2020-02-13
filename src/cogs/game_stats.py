@@ -43,8 +43,8 @@ class GameStats(commands.Cog):
 
 		await ctx.send(f"**{ctx.author.display_name}** :thumbsup:")
 
-	@commands.command(name="lbt")
-	async def show_guild_trophy_leaderboard(self, ctx):
+	@commands.command(name="lb")
+	async def leaderboard(self, ctx):
 		server = ServerGameStats(ctx.guild)
 
 		await ctx.send(server.create_leaderboard(sort_by="trophies"))
@@ -52,7 +52,7 @@ class GameStats(commands.Cog):
 	@commands.is_owner()
 	@commands.command(name="shame")
 	async def shame(self, ctx):
-		await ctx.send(self.get_shame_message(ctx.guild))
+		await ctx.send(self.create_shame_message(ctx.guild))
 
 	async def background_shame_task(self):
 		guild = self.bot.get_guild(GUILD_ID)
@@ -61,10 +61,10 @@ class GameStats(commands.Cog):
 
 		print("Posted members with lacking activity")
 
-		await channel.send(self.get_shame_message(guild))
+		await channel.send(self.create_shame_message(guild))
 
 	@staticmethod
-	def get_shame_message(guild) -> str:
+	def create_shame_message(guild) -> str:
 		server = ServerGameStats(guild)
 
 		members = server.get_slacking_members()
