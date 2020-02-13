@@ -5,8 +5,10 @@ import random
 async def on_message_commands(message):
 	val = random.randint(0, 100)
 
-	if val <= 10:
-		await mock_message(message)
+	if not message.mentions:
+		# 5% chance
+		if val <= 5 and len(message.clean_content) <= 50:
+			await mock_message(message)
 
 
 async def mock_message(message: discord.Message):
@@ -22,5 +24,4 @@ async def mock_message(message: discord.Message):
 
 		return " ".join(msg)
 
-	if len(message.clean_content) <= 25:
-		await message.channel.send(mock(message.clean_content))
+	await message.channel.send(mock(message.clean_content))
