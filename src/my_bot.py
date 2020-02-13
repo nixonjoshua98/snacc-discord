@@ -5,14 +5,14 @@ from src import cogs
 from src import msg_commands
 from src.common import backup
 from src.common import asycio_schedule
-from src.common.constants import BACKUP_DELAY
+from src.common.constants import BACKUP_DELAY, MEMBER_CHANNELS
 
 from discord.ext import commands
 
 
 class MyBot(commands.Bot):
 	def __init__(self):
-		super().__init__(command_prefix="!", case_insensitive=True)
+		super().__init__(command_prefix="/", case_insensitive=True)
 
 		self.remove_command("help")
 
@@ -41,6 +41,9 @@ class MyBot(commands.Bot):
 		await asyncio.sleep(5)
 		await message.delete()
 
+	async def on_error(self, event_method, *args, **kwargs):
+		print(event_method, args, kwargs)
+
 	async def on_message(self, message: discord.Message):
 		# Ignore itself
 		if message.author.id == self.user.id:
@@ -51,7 +54,7 @@ class MyBot(commands.Bot):
 			await self.process_commands(message)
 
 		# Random commands on messages
-		else:
+		elif message.channel.id in MEMBER_CHANNELS:
 			await msg_commands.on_message_commands(message)
 
 	def run(self):

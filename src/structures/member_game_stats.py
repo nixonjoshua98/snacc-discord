@@ -37,7 +37,7 @@ class MemberGameStats:
 		data = data_reader.read_json(self.DATA_FILE)
 
 		try:
-			data[str(self._id)] = [self.date_set.strftime("%d/%m/%Y"), self.level, self.trophies]
+			data[str(self._id)] = [self.date_set.strftime("%d/%m/%Y %H:%M:%S"), self.level, self.trophies]
 		except AttributeError:
 			return False
 
