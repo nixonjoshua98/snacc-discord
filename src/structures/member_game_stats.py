@@ -17,6 +17,7 @@ class MemberGameStats:
 	def update(self, *, level: int, trophies: int) -> bool:
 		self.level = level
 		self.trophies = trophies
+		self.date_set = datetime.today()
 
 		return self._save_stats()
 
@@ -36,10 +37,7 @@ class MemberGameStats:
 	def _save_stats(self) -> bool:
 		data = data_reader.read_json(self.DATA_FILE)
 
-		try:
-			data[str(self._id)] = [self.date_set.strftime("%d/%m/%Y %H:%M:%S"), self.level, self.trophies]
-		except AttributeError:
-			return False
+		data[str(self._id)] = [self.date_set.strftime("%d/%m/%Y %H:%M:%S"), self.level, self.trophies]
 
 		data_reader.write_json(self.DATA_FILE, data)
 

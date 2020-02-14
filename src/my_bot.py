@@ -39,9 +39,6 @@ class MyBot(commands.Bot):
 	async def on_command_error(self, ctx, esc):
 		await ctx.send(esc)
 
-	async def on_error(self, event_method, *args, **kwargs):
-		print(event_method, args, kwargs)
-
 	async def on_message(self, message: discord.Message):
 		# Ignore itself
 		if message.author.id == self.user.id:
