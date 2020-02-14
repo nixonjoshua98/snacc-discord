@@ -59,10 +59,10 @@ class GameStats(commands.Cog):
 		await ctx.send(f"**{display_name}** {':thumbsup:' if updated else ':thumbsdown:'}")
 
 	@commands.command(name="lb")
-	async def leaderboard(self, ctx):
+	async def leaderboard(self, ctx, inc_date="yes"):
 		server = ServerGameStats(ctx.guild)
 
-		await ctx.send(server.create_leaderboard(sort_by="trophies"))
+		await ctx.send(server.create_leaderboard(sort_by="trophies", inc_date=inc_date == "yes"))
 
 	@commands.is_owner()
 	@commands.command(name="shame")

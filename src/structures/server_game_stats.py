@@ -33,7 +33,7 @@ class ServerGameStats:
 	def get_slacking_members(self):
 		return [m for m in self._members if not m.has_set_stats() or m.days_since_set() >= self.STAT_SET_COOLDOWN]
 
-	def create_leaderboard(self, *, sort_by: str):
+	def create_leaderboard(self, *, sort_by: str, inc_date: bool):
 		members = self._members
 
 		if sort_by == "trophies":
@@ -57,7 +57,8 @@ class ServerGameStats:
 			username_gap = " " * (longest_name - username_length) + " " * 3
 
 			msg += f"\n#{rank:02d} {m.display_name}{username_gap}{m.level:03d}  {m.trophies:04d}"
-			msg += f"  {days_ago} days ago" if days_ago >= self.STAT_SET_COOLDOWN else ""
+
+			msg += f"  {days_ago} days ago" if days_ago >= self.STAT_SET_COOLDOWN and inc_date else ""
 
 			rank += 1
 
