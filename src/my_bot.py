@@ -1,11 +1,12 @@
 import asyncio
 import discord
+import os
 
 from src import cogs
 from src import msg_commands
 from src.common import backup
 from src.common import asycio_schedule
-from src.common.constants import BACKUP_DELAY, MEMBER_CHANNELS
+from src.common.constants import BACKUP_DELAY, MEMBER_CHANNELS, SNACC_ID
 
 from discord.ext import commands
 
@@ -40,6 +41,9 @@ class MyBot(commands.Bot):
 		await ctx.send(esc)
 
 	async def on_message(self, message: discord.Message):
+		if os.getenv("DEBUG", False) and message.author.id != SNACC_ID:
+			return
+
 		# Ignore itself
 		if message.author.id == self.user.id:
 			return

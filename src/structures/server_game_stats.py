@@ -41,18 +41,19 @@ class ServerGameStats:
 
 		rank = 1
 
+		longest_name = len(sorted(members, key=lambda mem: len(mem.display_name), reverse=True)[0].display_name)
+
 		for m in members:
 			if not m.has_set_stats():
 				continue
 
-			days_ago = m.days_since_set()
+			username_length = len(m.display_name)
 
-			msg += f"\n#{rank } {m.display_name} "
+			username_gap = ' ' * (longest_name + 3 - username_length)
+			level_gap = " " * 2
+			rank_gap = " " * 2
 
-			if days_ago > 0:
-				msg += f"({days_ago} day{'' if days_ago == 1 else 's'} ago)"
-
-			msg += f"\n\tLvl: {m.level} Trophies: {m.trophies}"
+			msg += f"\n#{rank:02d}{rank_gap}|{m.display_name}{username_gap}|{m.level:03d}{level_gap}|{m.trophies:04d}|"
 
 			rank += 1
 
