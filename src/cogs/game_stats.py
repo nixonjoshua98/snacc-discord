@@ -37,9 +37,18 @@ class GameStats(commands.Cog):
 
 		await ctx.send(embed=player.create_embed())
 
-	@commands.command(name="stats", aliases=["s"])
+	@commands.command(name="set", aliases=["s"])
 	async def set_stats(self, ctx, level: int, trophies: int):
 		player = Member(ctx.author.id)
+
+		updated = player.update_game_stats(level=level, trophies=trophies)
+
+		await ctx.send(f"**{ctx.author.display_name}** {':thumbsup:' if updated else ':thumbsdown:'}")
+
+	@commands.is_owner()
+	@commands.command(name="setuser", aliases=["su"])
+	async def set_user(self, ctx, _id: int, level: int, trophies: int):
+		player = Member(_id)
 
 		updated = player.update_game_stats(level=level, trophies=trophies)
 
