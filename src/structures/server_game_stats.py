@@ -6,6 +6,8 @@ from .player_game_stats import PlayerGameStats
 
 
 class ServerGameStats:
+	STAT_SET_COOLDOWN = 3
+
 	def __init__(self, guild: discord.Guild):
 		self._guild = guild
 		self._members = []
@@ -29,7 +31,7 @@ class ServerGameStats:
 		return sorted(members, key=lambda m: m.trophies, reverse=True)
 
 	def get_slacking_members(self):
-		return [m for m in self._members if not m.has_set_stats() or m.days_since_set() >= 3]
+		return [m for m in self._members if not m.has_set_stats() or m.days_since_set() >= self.STAT_SET_COOLDOWN]
 
 	def create_leaderboard(self, *, sort_by: str):
 		members = self._members
@@ -43,17 +45,19 @@ class ServerGameStats:
 
 		longest_name = len(sorted(members, key=lambda mem: len(mem.display_name), reverse=True)[0].display_name)
 
+		msg += f"\n    Username{' ' * (longest_name - 5)}Lvl  Trophies"
+
 		for m in members:
 			if not m.has_set_stats():
 				continue
 
 			username_length = len(m.display_name)
+			days_ago = m.days_since_set()
 
-			username_gap = ' ' * (longest_name + 3 - username_length)
-			level_gap = " " * 2
-			rank_gap = " " * 2
+			username_gap = " " * (longest_name - username_length) + " " * 3
 
-			msg += f"\n#{rank:02d}{rank_gap}|{m.display_name}{username_gap}|{m.level:03d}{level_gap}|{m.trophies:04d}|"
+			msg += f"\n#{rank:02d} {m.display_name}{username_gap}{m.level:03d}  {m.trophies:04d}"
+			msg += f"  {days_ago} days ago" if days_ago >= self.STAT_SET_COOLDOWN else ""
 
 			rank += 1
 
