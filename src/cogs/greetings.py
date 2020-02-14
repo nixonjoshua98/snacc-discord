@@ -7,9 +7,6 @@ class Greetings(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-	async def cog_check(self, ctx):
-		return not os.getenv("DEBUG", False)
-
 	@commands.Cog.listener()
 	async def on_member_join(self, member):
 		sys_channel = member.guild.system_channel
