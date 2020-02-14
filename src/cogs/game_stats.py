@@ -52,7 +52,11 @@ class GameStats(commands.Cog):
 
 		updated = player.update_game_stats(level=level, trophies=trophies)
 
-		await ctx.send(f"**{ctx.author.display_name}** {':thumbsup:' if updated else ':thumbsdown:'}")
+		member_set = ctx.guild.get_member(_id)
+
+		display_name = member_set.display_name if member_set else ctx.author.display_name
+
+		await ctx.send(f"**{display_name}** {':thumbsup:' if updated else ':thumbsdown:'}")
 
 	@commands.command(name="lb")
 	async def leaderboard(self, ctx):
