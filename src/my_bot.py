@@ -40,8 +40,8 @@ class MyBot(commands.Bot):
 	async def on_command_error(self, ctx, esc):
 		print(type(esc))
 
-		if isinstance(esc, commands.errors.CommandOnCooldown):
-			await ctx.send(f"**{ctx.author.display_name}** you cannot do that yet :frown:")
+		if isinstance(esc, commands.CommandOnCooldown):
+			await ctx.send(f"**{ctx.author.display_name}** you are on cooldown :frowning:")
 
 		else:
 			await ctx.send(esc)
