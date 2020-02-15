@@ -34,7 +34,7 @@ class Bank(commands.Cog):
 	async def get_some_coins(self, ctx):
 		coins = PlayerCoins(ctx.author)
 
-		amount = random.randint(5, 25)
+		amount = random.randint(15, 50)
 
 		coins.add(amount)
 
