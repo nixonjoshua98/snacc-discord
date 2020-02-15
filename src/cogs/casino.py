@@ -17,14 +17,16 @@ class Casino(commands.Cog):
 
 	@commands.cooldown(1, 5, commands.BucketType.user)
 	@commands.command(name="spin")
-	async def spin(self, ctx, amount: int = 10):
+	async def spin(self, ctx):
 		def num2emoji(num):
 			return "".join([f":{num2words(digit)}:" for digit in f"{num:05d}"])
 
+		coins = PlayerCoins(ctx.author)
+
+		amount = coins.balance
+
 		if amount < 10:
 			return await ctx.send(f"Minimum bet: **10**")
-
-		coins = PlayerCoins(ctx.author)
 
 		if coins.deduct(amount):
 			winnings = amount
