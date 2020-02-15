@@ -14,3 +14,5 @@ BOT_CHANNELS = [BOT_SPAM_CHANNEL, SECRET_CHANNEL]
 JSON_URL_LOOKUP = {"game_stats.json": "https://api.myjson.com/bins/1d98rq"}
 
 BACKUP_DELAY = 60
+
+MAX_DAYS_NO_UPDATE = 3
