@@ -32,13 +32,13 @@ class Casino(commands.Cog):
 			winnings = amount
 			message = await ctx.send(f"-> {num2emoji(winnings)} <-")
 
-			min_win = max(int(amount * 0.75), amount - 250)
-			max_win = min(int(amount * 1.50), amount + 250)
+			min_winnings = max(int(amount * 0.75), amount - 100)
+			max_winnings = min(int(amount * 1.50), amount + 100)
 
 			for i in range(2):
 				await asyncio.sleep(1.0)
 
-				winnings = max(0, random.randint(min_win, max_win))
+				winnings = max(0, random.randint(min_winnings, max_winnings))
 
 				await message.edit(content=f"-> {num2emoji(winnings)} <-")
 
