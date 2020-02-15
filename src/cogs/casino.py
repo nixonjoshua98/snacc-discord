@@ -16,7 +16,7 @@ class Casino(commands.Cog):
 		return await checks.in_bot_channel(ctx) and await checks.has_member_role(ctx) and commands.guild_only()
 
 	@commands.cooldown(1, 5, commands.BucketType.user)
-	@commands.command(name="spin")
+	@commands.command(name="spin", aliases=["sp"])
 	async def spin(self, ctx):
 		def num2emoji(num):
 			return "".join([f":{num2words(digit)}:" for digit in f"{num:05d}"])
