@@ -49,8 +49,8 @@ class ServerGameStats:
 
 			member = PlayerGameStats(m)
 
+			if member.has_stats():
+				self.active_members.append(member)
+
 			if member.slacking():
 				self.slacking_members.append(member)
-
-			elif member.has_stats():
-				self.active_members.append(member)

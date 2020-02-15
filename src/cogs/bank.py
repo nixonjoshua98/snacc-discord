@@ -31,4 +31,4 @@ class Bank(commands.Cog):
 
 		coins.add(amount)
 
-		await ctx.send(f"**{ctx.author.display_name}**, you have gained **{amount}** coins!")
+		await ctx.send(f"**{ctx.author.display_name}** gained **{amount}** coins!")
