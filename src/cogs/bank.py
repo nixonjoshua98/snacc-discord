@@ -1,4 +1,5 @@
 import random
+import discord
 
 from discord.ext import commands
 from src.common import checks
@@ -32,6 +33,22 @@ class Bank(commands.Cog):
 		coins.add(amount)
 
 		await ctx.send(f"**{ctx.author.display_name}** gained **{amount}** coins!")
+
+	@commands.command(name="gift")
+	async def gift(self, ctx, target_user: discord.Member, amount: int):
+		user_coins = PlayerCoins(ctx.author)
+		target_player = PlayerCoins(target_user)
+
+		if amount < 10:
+			return await ctx.send(f"Nice try **{ctx.author.display_name}** :smile:")
+
+		if user_coins.deduct(amount):
+			target_player.add(amount)
+
+			await ctx.send(f"**{ctx.author.display_name}** gifted **{target_user.display_name}** **{amount}** coins")
+
+		else:
+			await ctx.send(f"**{ctx.author.display_name}** failed to gift coins to {target_user.display_name}**")
 
 	@commands.command(name="coinlb", aliases=["clb"])
 	async def leaderboard(self, ctx):
