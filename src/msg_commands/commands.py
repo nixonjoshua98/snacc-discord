@@ -6,8 +6,7 @@ async def on_message_commands(message):
 	val = random.randint(0, 100)
 
 	if not message.mentions:
-		# 5% chance
-		if val <= 5 and len(message.clean_content) <= 50:
+		if val <= 10 and len(message.clean_content) <= 50:
 			await mock_message(message)
 
 

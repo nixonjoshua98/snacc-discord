@@ -31,7 +31,7 @@ class Bank(commands.Cog):
 
 	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
 	@commands.command(name="coins", aliases=["c"])
-	async def daily(self, ctx):
+	async def get_some_coins(self, ctx):
 		coins = PlayerCoins(ctx.author)
 
 		amount = random.randint(5, 25)

@@ -15,7 +15,7 @@ class Casino(commands.Cog):
 	async def cog_check(self, ctx):
 		return await checks.in_bot_channel(ctx) and await checks.has_member_role(ctx) and commands.guild_only()
 
-	@commands.cooldown(1, 15, commands.BucketType.user)
+	@commands.cooldown(1, 5, commands.BucketType.user)
 	@commands.command(name="spin")
 	async def spin(self, ctx, amount: int = 10):
 		def num2emoji(num):
@@ -31,7 +31,7 @@ class Casino(commands.Cog):
 			message = await ctx.send(f"-> {num2emoji(winnings)} <-")
 
 			for i in range(3):
-				await asyncio.sleep(0.5)
+				await asyncio.sleep(1.0)
 				winnings = max(0, random.randint(int(amount * 0.5), int(amount * 1.25)))
 				await message.edit(content=f"-> {num2emoji(winnings)} <-")
 
