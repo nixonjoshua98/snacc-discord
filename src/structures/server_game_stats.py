@@ -22,7 +22,8 @@ class ServerGameStats:
 
 		name_length = 15
 
-		msg = f"```Darkness Family Leaderboard\n\n    Username{' ' * (name_length - 5)}Lvl  Trophies"
+		msg = f"```Darkness Family Leaderboard\n"
+		msg += f"\n    Username{' ' * (name_length - 5)}Lvl  Trophies"
 
 		for rank, stats in enumerate(self.active_members):
 			days_ago = stats.days_since_set()

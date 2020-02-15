@@ -11,7 +11,10 @@ SECRET_CHANNEL = 666760256277446686
 MEMBER_CHANNELS = [666613803231739927]
 BOT_CHANNELS = [BOT_SPAM_CHANNEL, SECRET_CHANNEL]
 
-JSON_URL_LOOKUP = {"game_stats.json": "https://api.myjson.com/bins/1d98rq"}
+JSON_URL_LOOKUP = {
+	"game_stats.json": "https://api.myjson.com/bins/1d98rq",
+	"coins.json": "https://api.myjson.com/bins/fb9yk"
+}
 
 BACKUP_DELAY = 60
 
