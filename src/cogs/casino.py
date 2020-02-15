@@ -32,7 +32,7 @@ class Casino(commands.Cog):
 
 			for i in range(3):
 				await asyncio.sleep(1.0)
-				winnings = max(0, random.randint(int(amount * 0.75), int(amount * 1.25)))
+				winnings = max(0, random.randint(int(amount * 0.75), int(amount * 1.5)))
 				await message.edit(content=f"-> {num2emoji(winnings)} <-")
 
 			PlayerCoins(ctx.author).add(winnings)  # Reload

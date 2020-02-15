@@ -22,13 +22,6 @@ class Bank(commands.Cog):
 
 		await ctx.send(f"**{ctx.author.display_name}**, you have a total of **{coins.balance}** coins")
 
-	@commands.is_owner()
-	@commands.command(name="zero")
-	async def zero_coins(self, ctx, _id: int):
-		PlayerCoins(ctx.guild.get_member(_id)).zero()
-
-		await ctx.send(f"**Done** :thumbsup:")
-
 	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
 	@commands.command(name="coins", aliases=["c"])
 	async def get_some_coins(self, ctx):
