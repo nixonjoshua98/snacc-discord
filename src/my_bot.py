@@ -38,8 +38,6 @@ class MyBot(commands.Bot):
 		asycio_schedule.add_task(BACKUP_DELAY, backup.backup_background_task)
 
 	async def on_command_error(self, ctx, esc):
-		print(type(esc))
-
 		if isinstance(esc, commands.CommandOnCooldown):
 			await ctx.send(f"**{ctx.author.display_name}** you are on cooldown :frowning:")
 
