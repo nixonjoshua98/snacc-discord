@@ -23,7 +23,7 @@ class Bank(commands.Cog):
 		await ctx.send(f"**{ctx.author.display_name}**, you have a total of **{coins.balance}** coins")
 
 	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
-	@commands.command(name="coins", aliases=["c"])
+	@commands.command(name="free")
 	async def get_some_coins(self, ctx):
 		coins = PlayerCoins(ctx.author)
 
@@ -32,3 +32,7 @@ class Bank(commands.Cog):
 		coins.add(amount)
 
 		await ctx.send(f"**{ctx.author.display_name}** gained **{amount}** coins!")
+
+	@commands.command(name="coinlb")
+	async def leaderboard(self, ctx):
+		await ctx.send("This is totally a coin leaderboard")
