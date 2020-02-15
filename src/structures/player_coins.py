@@ -16,6 +16,11 @@ class PlayerCoins:
 
 		self._save("coins.json")
 
+	def zero(self):
+		self.balance = 0
+
+		self._save("coins.json")
+
 	def deduct(self, amount: int):
 		if amount > self.balance:
 			return False
