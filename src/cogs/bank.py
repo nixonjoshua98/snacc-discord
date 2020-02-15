@@ -1,3 +1,5 @@
+import random
+
 from discord.ext import commands
 from src.common import checks
 from src.common import backup
@@ -18,6 +20,15 @@ class Bank(commands.Cog):
 	async def balance(self, ctx):
 		coins = PlayerCoins(ctx.author)
 
-		coins.add(1)
-
 		await ctx.send(f"**{ctx.author.display_name}**, you have a balance of **{coins.balance}** coins")
+
+	@commands.cooldown(1, 60 * 60 * 24, commands.BucketType.user)
+	@commands.command(name="daily")
+	async def daily(self, ctx):
+		coins = PlayerCoins(ctx.author)
+
+		amount = random.randint(10, 25)
+
+		coins.add(amount)
+
+		await ctx.send(f"**{ctx.author.display_name}**, you have gained **{amount}** coins!")
