@@ -33,7 +33,7 @@ class Casino(commands.Cog):
 			message = await ctx.send(f"-> {num2emoji(winnings)} <-")
 
 			lower_bound = max(int(amount * 0.75), amount - 75)
-			upper_bound = min(int(amount * 1.50), amount + 125)
+			upper_bound = min(int(amount * 1.50), amount + 100)
 
 			for i in range(2):
 				await asyncio.sleep(1.0)
