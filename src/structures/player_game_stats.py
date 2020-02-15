@@ -23,6 +23,8 @@ class PlayerGameStats:
 		self._stats = None
 		self._guild = guild
 
+		self.id_ = _id
+
 		self.member = guild.get_member(_id)
 
 		self._load_game_stats()

@@ -33,7 +33,7 @@ class ServerGameStats:
 	def get_slacking_members(self):
 		return [m for m in self._members if not m.has_set_stats() or m.days_since_set() >= self.STAT_SET_COOLDOWN]
 
-	def create_leaderboard(self,):
+	def create_leaderboard(self, user_id: int = -1):
 		members = self.sorted_by_trophies()
 
 		# Get the length of the longest username
@@ -46,6 +46,9 @@ class ServerGameStats:
 			if not m.has_set_stats():
 				continue
 
+			if m.id_ == user_id:
+				msg += "``` ```"
+
 			days_ago = m.days_since_set()
 
 			username_length = len(m.display_name)
@@ -53,6 +56,9 @@ class ServerGameStats:
 
 			msg += f"\n#{rank + 1:02d} {m.display_name}{username_gap}{m.level:03d}  {m.trophies:04d}"
 			msg += f"  {days_ago} days ago" if days_ago >= self.STAT_SET_COOLDOWN else ""
+
+			if m.id_ == user_id:
+				msg += "``` ```"
 
 		msg += "```"
 

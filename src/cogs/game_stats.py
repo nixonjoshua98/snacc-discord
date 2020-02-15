@@ -62,7 +62,7 @@ class GameStats(commands.Cog):
 	async def leaderboard(self, ctx):
 		server = ServerGameStats(ctx.guild)
 
-		await ctx.send(server.create_leaderboard())
+		await ctx.send(server.create_leaderboard(ctx.author.id))
 
 	@commands.is_owner()
 	@commands.command(name="shame")
