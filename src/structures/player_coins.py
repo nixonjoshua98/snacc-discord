@@ -16,6 +16,16 @@ class PlayerCoins:
 
 		self._save("coins.json")
 
+	def deduct(self, amount: int):
+		if amount > self.balance:
+			return False
+
+		self.balance = max(0, self.balance - amount)
+
+		self._save("coins.json")
+
+		return True
+
 	def _load(self, file: str):
 		data = data_reader.read_json(file)
 
