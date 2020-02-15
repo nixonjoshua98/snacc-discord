@@ -28,7 +28,6 @@ class Casino(commands.Cog):
 
 		if coins.deduct(amount):
 			winnings = amount
-
 			message = await ctx.send(f"-> {num2emoji(winnings)} <-")
 
 			for i in range(3):
