@@ -38,7 +38,7 @@ class Bank(commands.Cog):
 	async def gift(self, ctx, target_user: discord.Member, amount: int):
 		user_coins, target_player = PlayerCoins(ctx.author), PlayerCoins(target_user)
 
-		if amount < 0:
+		if amount < 0 or ctx.author.id == target_user.id:
 			return await ctx.send(f"Nice try **{ctx.author.display_name}** :smile:")
 
 		if user_coins.deduct(amount):
