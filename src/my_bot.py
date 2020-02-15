@@ -38,8 +38,10 @@ class MyBot(commands.Bot):
 		asycio_schedule.add_task(BACKUP_DELAY, backup.backup_background_task)
 
 	async def on_command_error(self, ctx, esc):
-		if esc is commands.CommandOnCooldown:
-			await ctx.send(f"**{ctx.author.display_name}** You cannot do that yet")
+		print(type(esc))
+
+		if isinstance(esc, commands.errors.CommandOnCooldown):
+			await ctx.send(f"**{ctx.author.display_name}** you cannot do that yet :frown:")
 
 		else:
 			await ctx.send(esc)
