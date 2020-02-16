@@ -7,7 +7,7 @@ from src.common import data_reader
 from discord.ext.commands import CommandError
 from src.common.errors import MinimumCoinError
 
-from src.common.constants import MEMBER_ROLE_ID, GAME_CHANNELS, RANK_CHANNELS
+from src.common.constants import MEMBER_ROLE_ID, GAME_CHANNELS, RANK_CHANNELS, BOT_CHANNELS
 
 
 async def has_member_role(ctx):
@@ -15,6 +15,13 @@ async def has_member_role(ctx):
 
 	if member_role not in ctx.author.roles:
 		raise CommandError(f"**{ctx.author.display_name}** you need the **{member_role.name}** role.")
+
+	return True
+
+
+async def in_any_bot_channel(ctx):
+	if ctx.channel.id not in BOT_CHANNELS:
+		raise CommandError(f"**{ctx.author.display_name}**, this command is disabled in this channel.")
 
 	return True
 

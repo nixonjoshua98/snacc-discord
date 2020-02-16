@@ -12,15 +12,7 @@ from discord.ext import commands
 
 class MyBot(commands.Bot):
 	def __init__(self):
-		super().__init__(command_prefix="!", case_insensitive=True)
-
-	@commands.is_owner()
-	@commands.cooldown(1, 60, commands.BucketType.user)
-	@commands.command(name="backup")
-	async def backup(self, ctx):
-		backup.backup_all_files()
-
-		await ctx.send("**Done** :thumbsup:")
+		super().__init__(command_prefix="-", case_insensitive=True)
 
 	async def background_loop(self):
 		print("Background loop started")
