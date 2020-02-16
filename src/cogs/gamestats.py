@@ -1,3 +1,5 @@
+import discord
+
 from discord.ext import commands
 
 from src.structures import ServerGameStats
@@ -31,10 +33,10 @@ class GameStats(commands.Cog):
 
 	@commands.is_owner()
 	@commands.command(name="setuser", aliases=["su"])
-	async def set_user(self, ctx, _id: int, level: int, trophies: int):
-		stats = PlayerGameStats(ctx.guild.get_member(_id))
+	async def set_user(self, ctx, user: discord.Member, level: int, trophies: int):
+		stats = PlayerGameStats(user)
 		stats.update(level=level, trophies=trophies)
-		await ctx.send(f"**{stats.user.display_name}** :thumbsup:")
+		await ctx.send(f"**{user.display_name}** :thumbsup:")
 
 	@commands.command(name="lb")
 	async def leaderboard(self, ctx):
