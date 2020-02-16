@@ -7,7 +7,7 @@ from src.common import checks
 from src.common import backup
 
 
-class GameStatsCog(commands.Cog):
+class GameStats(commands.Cog):
 	FILE = "game_stats.json"
 
 	def __init__(self, bot):

@@ -1,11 +1,11 @@
 
-from .gamestatscog import GameStatsCog
+from .gamestats import GameStats
 from .greetings import Greetings
 from .casino import Casino
 from .bank import Bank
 
 all = (
-	GameStatsCog,
+	GameStats,
 	Greetings,
 	Bank,
 	Casino

@@ -14,8 +14,6 @@ class MyBot(commands.Bot):
 	def __init__(self):
 		super().__init__(command_prefix="!", case_insensitive=True)
 
-		self.remove_command("help")
-
 	@commands.is_owner()
 	@commands.cooldown(1, 60, commands.BucketType.user)
 	@commands.command(name="backup")
