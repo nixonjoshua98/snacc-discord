@@ -11,6 +11,11 @@ class PlayerCoins:
 
 		self._load("coins.json")
 
+	def set(self, amount: int):
+		self.balance = amount
+
+		self._save("coins.json")
+
 	def add(self, amount: int):
 		self.balance = max(0, self.balance + amount)
 

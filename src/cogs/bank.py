@@ -66,6 +66,13 @@ class Bank(commands.Cog):
 		else:
 			await ctx.send(f"**{ctx.author.display_name}** failed to take coins from {target_user.display_name}**")
 
+	@commands.is_owner()
+	@commands.command(name="setcoins")
+	async def set_coins(self, ctx, user: discord.Member, amount: int):
+		PlayerCoins(user).set(amount)
+
+		await ctx.send(f"{ctx.author.display_name}** done :thumbsup:")
+
 	@commands.cooldown(1, 15, commands.BucketType.user)
 	@commands.command(name="coinlb", aliases=["clb"])
 	async def leaderboard(self, ctx):

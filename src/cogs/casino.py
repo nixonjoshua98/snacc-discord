@@ -23,23 +23,30 @@ class Casino(commands.Cog):
 			return "".join([f":{num2words(digit)}:" for digit in f"{num:05d}"])
 
 		coins = PlayerCoins(ctx.author)
-		winnings = amount = coins.balance
+		amount = coins.balance
+
 		coins.deduct(amount)
 
 		lower_bound = max(int(amount * 0.75), amount - 75)
 		upper_bound = min(int(amount * 1.50), amount + 100)
 
-		message = await ctx.send(f"-> {num2emoji(winnings)} <-")
+		# Add winnings before the actual spin to avoid issues
+		winnings = max(0, random.randint(lower_bound, upper_bound))
+		winnings = winnings + 1 if winnings == amount else winnings
+
+		coins.add(winnings)
+
+		message = await ctx.send(f"-> {num2emoji(amount)} <-")
 
 		# Spin animation
 		for i in range(2):
 			await asyncio.sleep(1.0)
-			winnings = max(0, random.randint(lower_bound, upper_bound))
-			winnings = winnings + 1 if winnings == amount else winnings  # Cannot gain nothing
-			await message.edit(content=f" -> {num2emoji(winnings)} <-")
+			temp_num = max(0, random.randint(lower_bound, upper_bound))
+
+			temp_num = temp_num + 1 if temp_num == amount else temp_num
+
+			await message.edit(content=f" -> {num2emoji(temp_num)} <-")
 
 		text = 'won' if winnings-amount > 0 else 'lost'
-
-		PlayerCoins(ctx.author).add(winnings)
 
 		await ctx.send(f"**{ctx.author.display_name}** has {text} **{abs(winnings-amount)}** coins!")
