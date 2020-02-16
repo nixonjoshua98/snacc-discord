@@ -48,7 +48,7 @@ class Bank(commands.Cog):
 			await ctx.send(f"**{ctx.author.display_name}** gifted **{target_user.display_name}** **{amount}** coins")
 
 		else:
-			await ctx.send(f"**{ctx.author.display_name}** failed to gift coins to {target_user.display_name}**")
+			await ctx.send(f"**{ctx.author.display_name}** failed to gift coins to **{target_user.display_name}**")
 
 	@commands.is_owner()
 	@commands.command(name="steal")
@@ -64,7 +64,7 @@ class Bank(commands.Cog):
 			await ctx.send(f"**{ctx.author.display_name}** stole **{amount}** coins from **{target_user.display_name}**")
 
 		else:
-			await ctx.send(f"**{ctx.author.display_name}** failed to take coins from {target_user.display_name}**")
+			await ctx.send(f"**{ctx.author.display_name}** failed to steal from **{target_user.display_name}**")
 
 	@commands.cooldown(1, 15, commands.BucketType.user)
 	@commands.command(name="coinlb", aliases=["clb"])
