@@ -35,7 +35,7 @@ class Bank(commands.Cog):
 
 		await ctx.send(f"**{ctx.author.display_name}** gained **{amount}** coins!")
 
-	@commands.command(name="gift", aliases=["give"])
+	@commands.command(name="gift")
 	async def gift(self, ctx, target_user: discord.Member, amount: int):
 		user_coins, target_player = PlayerCoins(ctx.author), PlayerCoins(target_user)
 
