@@ -18,6 +18,7 @@ class MyBot(commands.Bot):
 
 	@commands.is_owner()
 	@commands.cooldown(1, 60, commands.BucketType.user)
+	@commands.command(name="backup")
 	async def backup(self, ctx):
 		backup.backup_all_files()
 
