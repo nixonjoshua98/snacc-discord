@@ -46,6 +46,9 @@ class Casino(commands.Cog):
 			temp_num = temp_num + 1 if temp_num == amount else temp_num
 
 			await message.edit(content=f"-> {num2emoji(temp_num)} <-")
+
+		await asyncio.sleep(1.0)
+
 		await message.edit(content=f"-> {num2emoji(winnings)} <-")
 
 		text = 'won' if winnings-amount > 0 else 'lost'
