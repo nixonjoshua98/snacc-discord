@@ -30,9 +30,11 @@ class Casino(commands.Cog):
 		lower_bound = int(max(amount * 0.75, amount - (25 + (5 * amount / 1000))))
 		upper_bound = int(min(amount * 1.50, amount + (35 + (10 * amount / 1000))))
 
+		print(lower_bound, amount, upper_bound)
+
 		# Add winnings before the actual spin to avoid issues
 		winnings = max(0, random.randint(lower_bound, upper_bound))
-		winnings = winnings + 1 if winnings == amount else winnings
+		winnings = winnings - 1 if winnings == amount else winnings
 
 		coins.add(winnings)
 
