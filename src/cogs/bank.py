@@ -16,7 +16,7 @@ class Bank(commands.Cog):
 		backup.download_file("coins.json")
 
 	async def cog_check(self, ctx):
-		return await checks.in_bot_channel(ctx) and commands.guild_only()
+		return await checks.in_game_room(ctx) and commands.guild_only()
 
 	@commands.command(name="balance", aliases=["bal"])
 	async def balance(self, ctx):

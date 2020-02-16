@@ -16,7 +16,7 @@ class GameStatsCog(commands.Cog):
 		backup.download_file(self.FILE)
 
 	async def cog_check(self, ctx):
-		return await checks.in_bot_channel(ctx) and await checks.has_member_role(ctx) and commands.guild_only()
+		return await checks.in_rank_room(ctx) and await checks.has_member_role(ctx) and commands.guild_only()
 
 	@checks.id_exists_in_file(FILE)
 	@commands.command(name="me")

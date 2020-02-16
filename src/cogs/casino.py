@@ -13,7 +13,7 @@ class Casino(commands.Cog):
 		self.bot = bot
 
 	async def cog_check(self, ctx):
-		return await checks.in_bot_channel(ctx) and commands.guild_only()
+		return await checks.in_game_room(ctx) and commands.guild_only()
 
 	@checks.has_minimum_coins("coins.json", 10)
 	@commands.cooldown(1, 5, commands.BucketType.user)
