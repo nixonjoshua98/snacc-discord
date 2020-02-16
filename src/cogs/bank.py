@@ -71,7 +71,7 @@ class Bank(commands.Cog):
 	async def set_coins(self, ctx, user: discord.Member, amount: int):
 		PlayerCoins(user).set(amount)
 
-		await ctx.send(f"{ctx.author.display_name}** done :thumbsup:")
+		await ctx.send(f"**{ctx.author.display_name}** done :thumbsup:")
 
 	@commands.cooldown(1, 15, commands.BucketType.user)
 	@commands.command(name="coinlb", aliases=["clb"])
