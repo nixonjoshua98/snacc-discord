@@ -12,7 +12,7 @@ from discord.ext import commands
 
 class MyBot(commands.Bot):
 	def __init__(self):
-		super().__init__(command_prefix="-", case_insensitive=True)
+		super().__init__(command_prefix="!", case_insensitive=True)
 
 	async def background_loop(self):
 		print("Background loop started")
