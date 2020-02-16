@@ -39,7 +39,7 @@ class Bank(commands.Cog):
 	async def gift(self, ctx, target_user: discord.Member, amount: int):
 		user_coins, target_player = PlayerCoins(ctx.author), PlayerCoins(target_user)
 
-		if amount < 0 or ctx.author.id == target_user.id:
+		if amount <= 0 or ctx.author.id == target_user.id:
 			return await ctx.send(f"Nice try **{ctx.author.display_name}** :smile:")
 
 		if user_coins.deduct(amount):
@@ -50,6 +50,22 @@ class Bank(commands.Cog):
 		else:
 			await ctx.send(f"**{ctx.author.display_name}** failed to gift coins to {target_user.display_name}**")
 
+	@commands.is_owner()
+	@commands.command(name="steal")
+	async def steal(self, ctx, target_user: discord.Member, amount: int):
+		user_coins, target_player = PlayerCoins(ctx.author), PlayerCoins(target_user)
+
+		if amount <= 0 or ctx.author.id == target_user.id:
+			return await ctx.send(f"Nice try **{ctx.author.display_name}** :smile:")
+
+		if target_player.deduct(amount):
+			user_coins.add(amount)
+
+			await ctx.send(f"**{ctx.author.display_name}** stole **{amount}** coins from **{target_user.display_name}**")
+
+		else:
+			await ctx.send(f"**{ctx.author.display_name}** failed to take coins from {target_user.display_name}**")
+
 	@commands.cooldown(1, 15, commands.BucketType.user)
 	@commands.command(name="coinlb", aliases=["clb"])
 	async def leaderboard(self, ctx):
@@ -59,7 +75,7 @@ class Bank(commands.Cog):
 		for _id, amount in data:
 			user = ctx.guild.get_member(int(_id))
 
-			if user:
+			if user and amount > 0:
 				username_gap = " " * (15 - len(user.display_name)) + " "
 				msg += f"\n#{rank:02d} {user.display_name[0:15]}{username_gap}{amount:05d}"
 				rank += 1
