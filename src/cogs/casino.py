@@ -12,11 +12,14 @@ class Casino(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
+		self.total_winnings = 0
+		self.total_uses = 0
+
 	async def cog_check(self, ctx):
 		return await checks.in_game_room(ctx) and commands.guild_only()
 
 	@checks.has_minimum_coins("coins.json", 10)
-	@commands.cooldown(1, 5, commands.BucketType.user)
+	@commands.cooldown(1, 3, commands.BucketType.user)
 	@commands.command(name="spin", aliases=["sp"])
 	async def spin(self, ctx):
 		def num2emoji(num):
@@ -27,14 +30,19 @@ class Casino(commands.Cog):
 
 		coins.deduct(amount)
 
-		lower_bound = int(max(amount * 0.75, amount - (25 + (5 * amount / 1000))))
-		upper_bound = int(min(amount * 1.50, amount + (35 + (10 * amount / 1000))))
+		lower_bound = int(max(amount * 0.75, amount - (25 + (5.0 * amount / 1000))))
+		upper_bound = int(min(amount * 1.50, amount + (35 + (7.5 * amount / 1000))))
 
-		print(lower_bound, amount, upper_bound)
+		print(f"Spin Bounds: {lower_bound} ({lower_bound-amount}), {amount}, {upper_bound} (+{upper_bound-amount})")
 
 		# Add winnings before the actual spin to avoid issues
 		winnings = max(0, random.randint(lower_bound, upper_bound))
 		winnings = winnings - 1 if winnings == amount else winnings
+
+		self.total_winnings += winnings - amount
+		self.total_uses += 1
+
+		print("Average Spin Winnings:", self.total_winnings // self.total_uses, "coins")
 
 		coins.add(winnings)
 
@@ -49,10 +57,8 @@ class Casino(commands.Cog):
 
 			await message.edit(content=f"-> {num2emoji(temp_num)} <-")
 
+		text = 'won' if winnings - amount > 0 else 'lost'
+
 		await asyncio.sleep(1.0)
-
 		await message.edit(content=f"-> {num2emoji(winnings)} <-")
-
-		text = 'won' if winnings-amount > 0 else 'lost'
-
 		await ctx.send(f"**{ctx.author.display_name}** has {text} **{abs(winnings-amount)}** coins!")
