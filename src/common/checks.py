@@ -2,9 +2,11 @@
 
 import discord
 from discord.ext import commands
-from discord.ext.commands import CommandError
 from src.common import constants
 from src.common import data_reader
+
+from discord.ext.commands import CommandError
+from src.common.errors import MinimumCoinError
 
 
 async def has_member_role(ctx):
@@ -31,6 +33,20 @@ def id_exists_in_file(file):
 
 		if stats is None:
 			raise CommandError(f"**{ctx.author.display_name}** I found no stats for you.")
+
+		return True
+
+	return commands.check(predicate)
+
+
+def has_minimum_coins(file, amount):
+	async def predicate(ctx):
+		data = data_reader.read_json(file)
+
+		coins = data.get(str(ctx.author.id), 0)
+
+		if coins < amount:
+			raise MinimumCoinError(f"**{ctx.author.display_name}** you do you not enough coins to do that :frowning:")
 
 		return True
 

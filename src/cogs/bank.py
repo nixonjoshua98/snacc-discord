@@ -4,6 +4,7 @@ import discord
 from discord.ext import commands
 from src.common import checks
 from src.common import backup
+from src.common import data_reader
 
 from src.structures import PlayerCoins
 
@@ -49,6 +50,20 @@ class Bank(commands.Cog):
 		else:
 			await ctx.send(f"**{ctx.author.display_name}** failed to gift coins to {target_user.display_name}**")
 
+	@commands.cooldown(1, 15, commands.BucketType.user)
 	@commands.command(name="coinlb", aliases=["clb"])
 	async def leaderboard(self, ctx):
-		await ctx.send("This is totally a coin leaderboard")
+		data = sorted(data_reader.read_json("coins.json").items(), key=lambda k: k[1], reverse=True)
+
+		msg, rank = "```Coin Leaderboard\n\n    Username        Coins", 1
+		for _id, amount in data:
+			user = ctx.guild.get_member(int(_id))
+
+			if user:
+				username_gap = " " * (15 - len(user.display_name)) + " "
+				msg += f"\n#{rank:02d} {user.display_name[0:15]}{username_gap}{amount:05d}"
+				rank += 1
+
+		msg += "```"
+
+		await ctx.send(msg)
