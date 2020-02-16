@@ -16,6 +16,13 @@ class MyBot(commands.Bot):
 
 		self.remove_command("help")
 
+	@commands.is_owner()
+	@commands.cooldown(1, 60, commands.BucketType.user)
+	async def backup(self, ctx):
+		backup.backup_all_files()
+
+		await ctx.send("**Done** :thumbsup:")
+
 	async def background_loop(self):
 		print("Background loop started")
 
@@ -34,7 +41,7 @@ class MyBot(commands.Bot):
 
 		self.loop.create_task(self.background_loop())
 
-		asycio_schedule.add_task(BACKUP_DELAY, backup.backup_background_task)
+		asycio_schedule.add_task(BACKUP_DELAY, backup.backup_all_files)
 
 	async def on_command_error(self, ctx, esc):
 		if isinstance(esc, commands.CommandOnCooldown):
