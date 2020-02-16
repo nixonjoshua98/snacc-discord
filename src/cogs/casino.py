@@ -27,8 +27,8 @@ class Casino(commands.Cog):
 
 		coins.deduct(amount)
 
-		lower_bound = int(max(amount * 0.75, amount - (20 + (5 * amount / 1000))))
-		upper_bound = int(min(amount * 1.50, amount + (35 + (15 * amount / 1000))))
+		lower_bound = int(max(amount * 0.75, amount - (35 + (5 * amount / 1000))))
+		upper_bound = int(min(amount * 1.50, amount + (50 + (10 * amount / 1000))))
 
 		# Add winnings before the actual spin to avoid issues
 		winnings = max(0, random.randint(lower_bound, upper_bound))
