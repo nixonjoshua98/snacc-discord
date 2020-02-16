@@ -23,8 +23,8 @@ class Casino(commands.Cog):
 			return "".join([f":{num2words(digit)}:" for digit in f"{num:05d}"])
 
 		coins = PlayerCoins(ctx.author)
-
 		winnings = amount = coins.balance
+		coins.deduct(amount)
 
 		lower_bound = max(int(amount * 0.75), amount - 75)
 		upper_bound = min(int(amount * 1.50), amount + 100)
@@ -40,7 +40,6 @@ class Casino(commands.Cog):
 
 		text = 'won' if winnings-amount > 0 else 'lost'
 
-		# Either add a +100 or a -100
-		PlayerCoins(ctx.author).add(winnings-amount)
+		PlayerCoins(ctx.author).add(winnings)
 
 		await ctx.send(f"**{ctx.author.display_name}** has {text} **{abs(winnings-amount)}** coins!")

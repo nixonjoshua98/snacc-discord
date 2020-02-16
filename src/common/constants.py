@@ -23,6 +23,6 @@ JSON_URL_LOOKUP = {
 	"coins.json": "https://api.myjson.com/bins/fb9yk"
 }
 
-BACKUP_DELAY = 180
+BACKUP_DELAY = 300
 
 MAX_DAYS_NO_UPDATE = 3
