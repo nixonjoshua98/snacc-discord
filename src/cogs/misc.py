@@ -11,12 +11,6 @@ class Misc(commands.Cog):
 	async def cog_check(self, ctx):
 		return await checks.in_any_bot_channel(ctx) and commands.guild_only()
 
-	@commands.command(name="69")
-	async def help(self, ctx):
-		help_text = "Help Command"
-
-		await ctx.send(help_text)
-
 	@commands.is_owner()
 	@commands.command(name="backup")
 	async def backup(self, ctx):
