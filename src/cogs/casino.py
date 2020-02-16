@@ -26,8 +26,8 @@ class Casino(commands.Cog):
 		winnings = amount = coins.balance
 		coins.deduct(amount)
 
-		lower_bound = max(int(amount * 0.75), amount - 50)
-		upper_bound = min(int(amount * 1.50), amount + 50)
+		lower_bound = max(int(amount * 0.75), amount - 75)
+		upper_bound = min(int(amount * 1.50), amount + 100)
 
 		message = await ctx.send(f"-> {num2emoji(winnings)} <-")
 
