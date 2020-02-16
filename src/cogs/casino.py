@@ -27,8 +27,8 @@ class Casino(commands.Cog):
 
 		coins.deduct(amount)
 
-		lower_bound = int(max(amount * 0.75, amount - (75 + (35 * amount / 1000))))
-		upper_bound = int(min(amount * 1.50, amount + (100 + (50 * amount / 1000))))
+		lower_bound = int(max(amount * 0.75, amount - (75 + (10 * amount / 1000))))
+		upper_bound = int(min(amount * 1.50, amount + (100 + (25 * amount / 1000))))
 
 		print(amount, upper_bound, lower_bound)
 
