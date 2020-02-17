@@ -13,6 +13,8 @@ class Bank(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
+		self.dropped_coins = 0
+
 		backup.download_file("coins.json")
 
 	async def cog_check(self, ctx):
@@ -23,6 +25,33 @@ class Bank(commands.Cog):
 		coins = PlayerCoins(ctx.author)
 
 		await ctx.send(f"**{ctx.author.display_name}** you have a total of **{coins.balance}** coins")
+
+	@commands.command(name="drop")
+	async def drop_coins(self, ctx, amount: int = 100):
+		coins = PlayerCoins(ctx.author)
+
+		if coins.deduct(amount):
+			self.dropped_coins += amount
+
+			return await ctx.send(f"**{ctx.author.display_name}** dropped **{amount}** coins")
+
+		await ctx.send(f"**{ctx.author.display_name}** you have less than **{amount}** coins :slight_frown:")
+
+	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
+	@commands.command(name="pickup")
+	async def pickup_coins(self, ctx):
+		coins = PlayerCoins(ctx.author)
+
+		if self.dropped_coins > 0:
+			amount = random.randint(int(self.dropped_coins / 2), self.dropped_coins)
+
+			coins.add(amount)
+
+			self.dropped_coins = max(0, self.dropped_coins - amount)
+
+			return await ctx.send(f"**{ctx.author.display_name}** picked up **{amount}** coins!")
+
+		await ctx.send(f"**{ctx.author.display_name}** found no coins :cry:")
 
 	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
 	@commands.command(name="free")
