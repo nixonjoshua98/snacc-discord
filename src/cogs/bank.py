@@ -28,6 +28,9 @@ class Bank(commands.Cog):
 
 	@commands.command(name="drop")
 	async def drop_coins(self, ctx, amount: int = 100):
+		if amount <= 0:
+			return await ctx.send(f"**{ctx.author.display_name}** :slight_frown:")
+
 		coins = PlayerCoins(ctx.author)
 
 		if coins.deduct(amount):

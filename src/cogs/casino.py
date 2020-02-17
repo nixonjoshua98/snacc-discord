@@ -33,16 +33,12 @@ class Casino(commands.Cog):
 		lower_bound = int(max(amount * 0.75, amount - (25 + (5.0 * amount / 1000))))
 		upper_bound = int(min(amount * 1.50, amount + (35 + (7.5 * amount / 1000))))
 
-		print(f"Spin Bounds: {lower_bound} ({lower_bound-amount}), {amount}, {upper_bound} (+{upper_bound-amount})")
-
 		# Add winnings before the actual spin to avoid issues
 		winnings = max(0, random.randint(lower_bound, upper_bound))
 		winnings = winnings - 1 if winnings == amount else winnings
 
 		self.total_winnings += winnings - amount
 		self.total_uses += 1
-
-		print("Average Spin Winnings:", self.total_winnings // self.total_uses, "coins")
 
 		coins.add(winnings)
 
