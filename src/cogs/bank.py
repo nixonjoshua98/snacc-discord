@@ -46,13 +46,14 @@ class Bank(commands.Cog):
 		coins = PlayerCoins(ctx.author)
 
 		if self.dropped_coins > 0:
-			amount = random.randint(int(self.dropped_coins / 2), self.dropped_coins)
+			amount = random.randint(int(self.dropped_coins * 0.25), self.dropped_coins)
 
 			coins.add(amount)
 
 			self.dropped_coins = max(0, self.dropped_coins - amount)
 
-			return await ctx.send(f"**{ctx.author.display_name}** picked up **{amount}** coins!")
+			if amount > 0:
+				return await ctx.send(f"**{ctx.author.display_name}** picked up **{amount}** coins!")
 
 		await ctx.send(f"**{ctx.author.display_name}** found no coins :cry:")
 
