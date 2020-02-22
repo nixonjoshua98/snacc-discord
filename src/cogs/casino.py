@@ -1,60 +1,31 @@
-import random
-import asyncio
-
-from num2words import num2words
 from discord.ext import commands
 from src.common import checks
 
-from src.structures import PlayerCoins
+from src.structures.casino import SpinMachine
 
 
 class Casino(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-		self.total_winnings = 0
-		self.total_uses = 0
-
 	async def cog_check(self, ctx):
 		return await checks.in_game_room(ctx) and commands.guild_only()
 
 	@checks.has_minimum_coins("coins.json", 10)
 	@commands.cooldown(1, 3, commands.BucketType.user)
-	@commands.command(name="spin", aliases=["sp"])
+	@commands.command(name="spin", aliases=["sp"], help="Spin a slot machine")
 	async def spin(self, ctx):
-		def num2emoji(num):
-			return "".join([f":{num2words(digit)}:" for digit in f"{num:05d}"])
+		machine = SpinMachine(ctx)
 
-		coins = PlayerCoins(ctx.author)
-		amount = coins.balance
+		winnings = await machine.spin()
 
-		coins.deduct(amount)
+		text = 'won' if winnings > 0 else 'lost'
 
-		lower_bound = int(max(amount * 0.75, amount - (25 + (5.0 * amount / 1000))))
-		upper_bound = int(min(amount * 1.50, amount + (35 + (10.0 * amount / 1000))))
+		await ctx.send(f"**{ctx.author.display_name}** has {text} **{abs(winnings)}** coins!")
 
-		# Add winnings before the actual spin to avoid issues
-		winnings = max(0, random.randint(lower_bound, upper_bound))
-		winnings = winnings - 1 if winnings == amount else winnings
+	@checks.has_minimum_coins("coins.json", 10)
+	@commands.cooldown(1, 3, commands.BucketType.user)
+	@commands.command(name="flip", aliases=["fl"], help="Flip a coin [HIGH RISK]")
+	async def flip(self, ctx):
+		await ctx.send(f"TODO")
 
-		self.total_winnings += winnings - amount
-		self.total_uses += 1
-
-		coins.add(winnings)
-
-		message = await ctx.send(f"-> {num2emoji(amount)} <-")
-
-		# Spin animation
-		for i in range(2):
-			await asyncio.sleep(1.0)
-			temp_num = max(0, random.randint(lower_bound, upper_bound))
-
-			temp_num = temp_num + 1 if temp_num == amount else temp_num
-
-			await message.edit(content=f"-> {num2emoji(temp_num)} <-")
-
-		text = 'won' if winnings - amount > 0 else 'lost'
-
-		await asyncio.sleep(1.0)
-		await message.edit(content=f"-> {num2emoji(winnings)} <-")
-		await ctx.send(f"**{ctx.author.display_name}** has {text} **{abs(winnings-amount)}** coins!")

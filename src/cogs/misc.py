@@ -4,7 +4,7 @@ from src.common import backup
 from src.common import checks
 
 
-class Misc(commands.Cog):
+class Misc(commands.Cog, command_attrs=dict(hidden=True)):
 	def __init__(self, bot):
 		self.bot = bot
 

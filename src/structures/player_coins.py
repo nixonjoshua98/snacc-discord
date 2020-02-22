@@ -1,10 +1,11 @@
 import discord
+import typing
 
 from src.common import data_reader
 
 
 class PlayerCoins:
-	def __init__(self, member: discord.Member):
+	def __init__(self, member: typing.Union[discord.User, discord.Member]):
 		self.user = member
 
 		self.balance = 0
