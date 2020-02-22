@@ -21,12 +21,12 @@ class Floor(commands.Cog):
 	async def drop_coins(self):
 		self._coins_on_floor += random.randint(15, 35)
 
-	@commands.command(name="floor", help="See whats on the guild floor")
+	@commands.command(name="floor", help="See whats on the floor")
 	async def floor(self, ctx):
 		await ctx.send(f"There are **{self._coins_on_floor}** coins on the floor")
 
 	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
-	@commands.command(name="pickup", help="Pickup something from the floor")
+	@commands.command(name="pickup", help="Pick up something from the floor")
 	async def pickup(self, ctx):
 		if self._coins_on_floor > 0:
 			coins = PlayerCoins(ctx.author)

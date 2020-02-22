@@ -25,7 +25,7 @@ class Bank(commands.Cog):
 		await ctx.send(f"**{ctx.author.display_name}** you have a total of **{coins.balance}** coins")
 
 	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
-	@commands.command(name="free", help="Get some free coins [1hr Cooldown]")
+	@commands.command(name="free", help="Get free coins [1hr Cooldown]")
 	async def free(self, ctx):
 		coins = PlayerCoins(ctx.author)
 
