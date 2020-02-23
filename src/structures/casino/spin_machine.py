@@ -13,10 +13,10 @@ class SpinMachine:
 
 	@staticmethod
 	def get_win_bounds(amount) -> tuple:
-		lower = int(max(amount * 0.75, amount - (25 + (5.0 * amount / 1000))))
-		upper = int(min(amount * 1.50, amount + (35 + (7.5 * amount / 1000))))
+		upper = min(amount * 1.50, amount + (35 + (7.5 * amount / 1000)))
+		lower = max(amount * 0.75, amount + (upper - amount) * -0.9)
 
-		return lower, upper
+		return int(lower), int(upper)
 
 	@staticmethod
 	def create_message(amount):
