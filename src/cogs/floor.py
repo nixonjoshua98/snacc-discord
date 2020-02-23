@@ -19,7 +19,7 @@ class Floor(commands.Cog):
 		return await checks.in_game_room(ctx) and commands.guild_only()
 
 	async def drop_coins(self):
-		self._coins_on_floor += random.randint(5, 15)
+		self._coins_on_floor += random.randint(10, 20)
 
 	@commands.command(name="floor", help="See whats on the floor")
 	async def floor(self, ctx):
