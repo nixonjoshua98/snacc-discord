@@ -39,6 +39,8 @@ class SpinMachine:
 
 		coins.add(winnings)
 
+		print(f"{lower}({lower-bet_amount}), {bet_amount}, {upper}({upper-bet_amount}), {winnings}({winnings-bet_amount})")
+
 		message = await self._ctx.send(self.create_message(bet_amount))
 
 		for i in range(2):
