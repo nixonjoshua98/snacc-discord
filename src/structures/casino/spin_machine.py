@@ -14,14 +14,22 @@ class SpinMachine:
 	@staticmethod
 	def get_win_bounds(amount) -> tuple:
 		lower = int(max(amount * 0.75, amount - (25 + (5.0 * amount / 1000))))
-		upper = int(min(amount * 1.50, amount + (35 + (10.0 * amount / 1000))))
+		upper = int(min(amount * 1.50, amount + (35 + (7.5 * amount / 1000))))
 
 		return lower, upper
 
-	async def spin(self) -> int:
-		def num2emoji(num):
-			return "".join([f":{num2words(digit)}:" for digit in f"{num:05d}"])
+	@staticmethod
+	def create_message(amount):
+		number_emoji = "".join([f":{num2words(digit)}:" for digit in f"{amount:05d}"])
+		num_emoji = number_emoji.count(":") // 2
 
+		return (
+			f":arrow_lower_right:{':arrow_down:' * num_emoji}:arrow_lower_left:\n"
+			f":arrow_right:{number_emoji}:arrow_left:\n"
+			f":arrow_upper_right:{':arrow_up:' * num_emoji}:arrow_upper_left:"
+		)
+
+	async def spin(self) -> int:
 		coins = PlayerCoins(self._ctx.author)
 
 		bet_amount = coins.balance
@@ -36,7 +44,7 @@ class SpinMachine:
 
 		coins.add(winnings)
 
-		message = await self._ctx.send(f":arrow_right:{num2emoji(bet_amount)}:arrow_left:")
+		message = await self._ctx.send(self.create_message(bet_amount))
 
 		for i in range(2):
 			await asyncio.sleep(1.0)
@@ -46,8 +54,9 @@ class SpinMachine:
 			# Stops the number being the bet amount (looks weird)
 			temp_num = temp_num + 1 if temp_num == bet_amount else temp_num
 
-			await message.edit(content=f":arrow_right:{num2emoji(temp_num)}:arrow_left:")
+			await message.edit(content=self.create_message(temp_num))
 
 		await asyncio.sleep(1.0)
-		await message.edit(content=f":arrow_right:{num2emoji(winnings)}:arrow_left:")
+		await message.edit(content=self.create_message(winnings))
+
 		return winnings - bet_amount

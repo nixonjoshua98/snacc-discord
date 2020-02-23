@@ -27,5 +27,5 @@ class Casino(commands.Cog):
 	@commands.cooldown(1, 3, commands.BucketType.user)
 	@commands.command(name="flip", aliases=["fl"], help="Flip a coin [HIGH RISK]")
 	async def flip(self, ctx):
-		await ctx.send(f"TODO")
+		await ctx.send(f"Not Added :cry:")
 
