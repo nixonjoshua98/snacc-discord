@@ -21,13 +21,8 @@ class SpinMachine:
 	@staticmethod
 	def create_message(amount):
 		number_emoji = "".join([f":{num2words(digit)}:" for digit in f"{amount:05d}"])
-		num_emoji = number_emoji.count(":") // 2
 
-		return (
-			f":arrow_lower_right:{':arrow_down:' * num_emoji}:arrow_lower_left:\n"
-			f":arrow_right:{number_emoji}:arrow_left:\n"
-			f":arrow_upper_right:{':arrow_up:' * num_emoji}:arrow_upper_left:"
-		)
+		return f":arrow_right:{number_emoji}:arrow_left:\n"
 
 	async def spin(self) -> int:
 		coins = PlayerCoins(self._ctx.author)
