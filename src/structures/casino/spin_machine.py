@@ -13,8 +13,8 @@ class SpinMachine:
 
 	@staticmethod
 	def get_win_bounds(amount) -> tuple:
-		upper = min(amount * 1.50, amount + (35 + (7.5 * amount / 1000)))
-		lower = max(amount * 0.75, amount + (upper - amount) * -0.9)
+		lower = max(amount * 0.75, amount - (15 + (5.0 * amount / 1000)))
+		upper = min(amount * 1.50, amount + (25 + (7.5 * amount / 1000)))
 
 		return int(lower), int(upper)
 
@@ -38,8 +38,6 @@ class SpinMachine:
 		winnings = winnings + 2 if winnings == bet_amount else winnings
 
 		coins.add(winnings)
-
-		# print(f"{lower}({lower-bet_amount}), {bet_amount}, {upper}({upper-bet_amount}), {winnings}({winnings-bet_amount})")
 
 		message = await self._ctx.send(self.create_message(bet_amount))
 
