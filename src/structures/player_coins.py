@@ -13,12 +13,12 @@ class PlayerCoins:
 		self._load("coins.json")
 
 	def set(self, amount: int):
-		self.balance = amount
+		self.balance = int(amount)
 
 		self._save("coins.json")
 
 	def add(self, amount: int):
-		self.balance = max(0, self.balance + amount)
+		self.balance = int(max(0, self.balance + amount))
 
 		self._save("coins.json")
 
@@ -26,7 +26,7 @@ class PlayerCoins:
 		if amount > self.balance:
 			return False
 
-		self.balance = max(0, self.balance - amount)
+		self.balance = int(max(0, self.balance - amount))
 
 		self._save("coins.json")
 

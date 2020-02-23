@@ -11,7 +11,7 @@ class Floor(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-		self._coins_on_floor = 50
+		self._coins_on_floor = 0
 
 		asycio_schedule.add_task(60 * 60, self.drop_coins)
 

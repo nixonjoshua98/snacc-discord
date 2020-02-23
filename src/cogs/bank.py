@@ -22,7 +22,7 @@ class Bank(commands.Cog):
 	async def balance(self, ctx):
 		coins = PlayerCoins(ctx.author)
 
-		await ctx.send(f"**{ctx.author.display_name}** you have a total of **{coins.balance}** coins")
+		await ctx.send(f"**{ctx.author.display_name}** you have a total of **{coins.balance:,}** coins")
 
 	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
 	@commands.command(name="free", help="Get free coins [1hr Cooldown]")
@@ -45,7 +45,7 @@ class Bank(commands.Cog):
 		if user_coins.deduct(amount):
 			target_player.add(amount)
 
-			await ctx.send(f"**{ctx.author.display_name}** gifted **{target_user.display_name}** **{amount}** coins")
+			await ctx.send(f"**{ctx.author.display_name}** gifted **{target_user.display_name}** **{amount:,}** coins")
 
 		else:
 			await ctx.send(f"**{ctx.author.display_name}** failed to gift coins to {target_user.display_name}**")

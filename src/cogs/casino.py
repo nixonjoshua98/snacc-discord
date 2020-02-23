@@ -1,7 +1,14 @@
+import random
+import asyncio
+
 from discord.ext import commands
+
 from src.common import checks
 
+from src.structures import PlayerCoins
+
 from src.structures.casino import SpinMachine
+from src.structures.casino import CoinFlip
 
 
 class Casino(commands.Cog):
@@ -21,11 +28,17 @@ class Casino(commands.Cog):
 
 		text = 'won' if winnings > 0 else 'lost'
 
-		await ctx.send(f"**{ctx.author.display_name}** has {text} **{abs(winnings)}** coins!")
+		await ctx.send(f"**{ctx.author.display_name}** has {text} **{abs(winnings):,}** coins!")
 
 	@checks.has_minimum_coins("coins.json", 10)
-	@commands.cooldown(1, 3, commands.BucketType.user)
+	@commands.cooldown(1, 60 * 30, commands.BucketType.user)
 	@commands.command(name="flip", aliases=["fl"], help="Flip a coin [HIGH RISK]")
 	async def flip(self, ctx):
-		await ctx.send(f"Not Added :cry:")
+		coin = CoinFlip(ctx)
+
+		winnings = await coin.flip()
+
+		text = 'won' if winnings > 0 else 'lost'
+
+		await ctx.send(f"**{ctx.author.display_name}** has {text} **{abs(winnings):,}** coins by flipping a coin!")
 
