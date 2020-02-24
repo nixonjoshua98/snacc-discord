@@ -13,8 +13,8 @@ class SpinMachine:
 
 	@staticmethod
 	def get_win_bounds(amount) -> tuple:
-		lower = max(amount * 0.75, amount - (15 + (5.0 * amount / 1000)))
-		upper = min(amount * 1.50, amount + (25 + (7.5 * amount / 1000)))
+		lower = max([amount * 0.50, amount - (30 + (7.50 * amount / 1000))])
+		upper = min([amount * 2.00, amount + (50 + (12.0 * amount / 1000))])
 
 		return int(lower), int(upper)
 
@@ -36,6 +36,8 @@ class SpinMachine:
 		# Add winnings before the actual spin to avoid issues
 		winnings = max(0, random.randint(lower, upper))
 		winnings = winnings + 2 if winnings == bet_amount else winnings
+
+		print(f"{lower}({lower - bet_amount}), {bet_amount}, {upper}({upper - bet_amount}), {winnings}({winnings - bet_amount})")
 
 		coins.add(winnings)
 
