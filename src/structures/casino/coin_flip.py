@@ -13,7 +13,7 @@ class CoinFlip:
 
 		start_balance = coins.balance
 
-		win_amount = int(min(1000, coins.balance * 0.5))
+		win_amount = int(min(750, coins.balance * 0.5))
 
 		if random.randint(0, 1) == 0:
 			coins.add(win_amount)
@@ -21,6 +21,4 @@ class CoinFlip:
 		else:
 			coins.deduct(win_amount)
 
-		winnings = coins.balance - start_balance
-
-		return winnings
+		return coins.balance - start_balance
