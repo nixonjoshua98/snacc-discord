@@ -13,8 +13,8 @@ class SpinMachine:
 
 	@staticmethod
 	def get_win_bounds(amount) -> tuple:
-		lower = max([amount * 0.75, amount - (30 + (7.50 * amount / 1000))])
-		upper = min([amount * 2.00, amount + (50 + (12.0 * amount / 1000))])
+		lower = max([amount * 0.75, amount - (25 + (7.50 * amount / 1000))])
+		upper = min([amount * 2.00, amount + (50 + (10.0 * amount / 1000))])
 
 		return int(lower), int(upper)
 
