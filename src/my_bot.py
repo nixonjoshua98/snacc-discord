@@ -18,7 +18,7 @@ class MyBot(commands.Bot):
 
 		print("Bot successfully started")
 
-		for c in cogs.all:
+		for c in cogs.ALL_COGS:
 			self.add_cog(c(self))
 
 			print(f"Added Cog: {c.__name__}")

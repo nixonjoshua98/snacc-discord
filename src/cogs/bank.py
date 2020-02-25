@@ -48,7 +48,7 @@ class Bank(commands.Cog):
 			await ctx.send(f"**{ctx.author.display_name}** gifted **{target_user.display_name}** **{amount:,}** coins")
 
 		else:
-			await ctx.send(f"**{ctx.author.display_name}** failed to gift coins to {target_user.display_name}**")
+			await ctx.send(f"**{ctx.author.display_name}** failed to gift coins to **{target_user.display_name}**")
 
 	@commands.is_owner()
 	@commands.command(name="setcoins", hidden=True)
