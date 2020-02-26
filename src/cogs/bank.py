@@ -100,7 +100,7 @@ class Bank(commands.Cog):
 		"""
 		data = sorted(data_reader.read_json("coins.json").items(), key=lambda k: k[1], reverse=True)
 
-		msg, rank = "```c++", 1
+		msg, rank = "```c++\n", 1
 
 		msg += "Coin Leaderboard\n\n    Username        Coins"
 
