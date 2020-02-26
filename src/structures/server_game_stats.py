@@ -22,7 +22,9 @@ class ServerGameStats:
 
 		name_length = 15
 
-		msg = f"```Darkness Family Leaderboard\n"
+		msg = "```c++\n"
+
+		msg += "Darkness Family Leaderboard\n"
 		msg += f"\n    Username{' ' * (name_length - 7)}Lvl Trophies"
 
 		for rank, stats in enumerate(self.active_members):
