@@ -4,7 +4,7 @@ import os
 from src import cogs
 from src.common import backup
 from src.common import asycio_schedule
-from src.common.constants import BACKUP_DELAY, SNACC_ID
+from src.common.constants import SNACC_ID
 
 from discord.ext import commands
 
@@ -23,7 +23,7 @@ class MyBot(commands.Bot):
 
 			print(f"Added Cog: {c.__name__}")
 
-		asycio_schedule.add_task(BACKUP_DELAY, backup.backup_all_files)
+		asycio_schedule.add_task(60 * 5, backup.backup_all_files)
 
 	async def on_command_error(self, ctx, esc):
 		if isinstance(esc, commands.CommandOnCooldown):

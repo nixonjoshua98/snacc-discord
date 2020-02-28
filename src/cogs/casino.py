@@ -14,7 +14,7 @@ class Casino(commands.Cog):
 		return await checks.in_game_room(ctx) and commands.guild_only()
 
 	@checks.has_minimum_coins("coins.json", 10)
-	@commands.cooldown(1, 3, commands.BucketType.user)
+	@commands.cooldown(25, 60 * 60 * 24, commands.BucketType.user)
 	@commands.command(name="spin", aliases=["sp"], help="Slot machine [LOW RISK]")
 	async def spin(self, ctx):
 		machine = SpinMachine(ctx)
@@ -26,7 +26,7 @@ class Casino(commands.Cog):
 		await ctx.send(f"**{ctx.author.display_name}** has {text} **{abs(winnings):,}** coins!")
 
 	@checks.has_minimum_coins("coins.json", 10)
-	@commands.cooldown(1, 60 * 30, commands.BucketType.user)
+	@commands.cooldown(1, 60 * 60 * 6, commands.BucketType.user)
 	@commands.command(name="flip", aliases=["fl"], help="Flip a coin [HIGH RISK]")
 	async def flip(self, ctx):
 		coin = CoinFlip(ctx)
