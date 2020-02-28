@@ -37,7 +37,7 @@ class SpinMachine:
 		winnings = max(0, random.randint(lower, upper))
 		winnings = winnings + 2 if winnings == bet_amount else winnings
 
-		print(f"{lower}({lower - bet_amount}), {bet_amount}, {upper}({upper - bet_amount}), {winnings}({winnings - bet_amount})")
+		# print(f"{lower}({lower - bet_amount}), {bet_amount}, {upper}({upper - bet_amount}), {winnings}({winnings - bet_amount})")
 
 		coins.add(winnings)
 
