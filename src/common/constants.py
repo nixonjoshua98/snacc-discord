@@ -24,3 +24,5 @@ JSON_URL_LOOKUP = {
 
 # Cooldowns
 MAX_DAYS_NO_UPDATE = 7
+
+BACKUP_DELAY = 60 * 5
