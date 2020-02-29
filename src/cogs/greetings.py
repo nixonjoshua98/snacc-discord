@@ -9,7 +9,10 @@ class Greetings(commands.Cog):
 	async def on_member_join(self, member):
 		sys_channel = member.guild.system_channel
 
-		await sys_channel.send(f"Welcome {member.mention} to {member.guild.name}!")
+		if sys_channel:
+			return await sys_channel.send(f"Welcome {member.mention} to {member.guild.name}!")
+
+		print(f"{__name__}: No System Channel to send a greetings")
 
 	@commands.Cog.listener()
 	async def on_member_remove(self, member):

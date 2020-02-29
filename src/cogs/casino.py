@@ -26,7 +26,7 @@ class Casino(commands.Cog):
 		await ctx.send(f"**{ctx.author.display_name}** has {text} **{abs(winnings):,}** coins!")
 
 	@checks.has_minimum_coins("coins.json", 10)
-	@commands.cooldown(1, 60 * 60 * 3, commands.BucketType.user)
+	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
 	@commands.command(name="flip", aliases=["fl"], help="Flip a coin [HIGH RISK]")
 	async def flip(self, ctx):
 		coin = CoinFlip(ctx)
