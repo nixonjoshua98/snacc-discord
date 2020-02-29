@@ -1,11 +1,12 @@
 import discord
 
 from src.common import data_reader
-from src.common.constants import MAX_DAYS_NO_UPDATE
 from datetime import datetime
 
 
 class PlayerGameStats:
+	MAX_DAYS_NO_UPDATE = 7
+
 	def __init__(self, user: discord.Member):
 		self.user = user
 
@@ -19,13 +20,19 @@ class PlayerGameStats:
 		self._save("game_stats.json")
 
 	def serialize(self) -> list:
+		"""
+
+		Format the data so it can be saved easily
+
+		:return:
+		"""
 		return [self.date_set.strftime("%d/%m/%Y %H:%M:%S"), self.level, self.trophies]
 
 	def has_stats(self) -> bool:
 		return self.date_set is not None and self.level is not None and self.trophies is not None
 
 	def slacking(self) -> bool:
-		return True if (not self.has_stats() or self.days_since_set() >= MAX_DAYS_NO_UPDATE) else False
+		return True if (not self.has_stats() or self.days_since_set() >= self.MAX_DAYS_NO_UPDATE) else False
 
 	def days_since_set(self) -> int:
 		return (datetime.today() - self.date_set).days if self.has_stats() else -1

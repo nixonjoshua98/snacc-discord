@@ -34,22 +34,27 @@ def download_file(file: str):
 		print(f"Failed to download '{file}'")
 
 
-def upload_file(file: str):
+def upload_file(file: str) -> bool:
 	debug_mode = os.getenv("DEBUG", False)
 
 	if not debug_mode:
 		url = JSON_URL_LOOKUP.get(file, None)
 
 		if url is not None:
-			requests.put(url, headers=headers, data=json.dumps(data_reader.read_json(file)))
+			page = requests.put(url, headers=headers, data=json.dumps(data_reader.read_json(file)))
 
 			print(f"Uploaded '{file}'")
 
+			return page.status_code == requests.codes.ok
+
 	else:
-		print(f"Uploading {file} failed due to being in DEBUG mode")
+		""" DEBUG Mode """
+		return False
 
 
-def backup_all_files():
+def backup_all_files() -> bool:
+	is_ok = True
+
 	for f in JSON_URL_LOOKUP:
 		path = os.path.join(constants.RESOURCES_DIR, f)
 
@@ -58,4 +63,7 @@ def backup_all_files():
 		time_since_update = datetime.today() - modified_date
 
 		if time_since_update.total_seconds() >= MAX_TIME_SINCE_BACKUP:
-			upload_file(f)
+			if not upload_file(f):
+				is_ok = False
+
+	return is_ok

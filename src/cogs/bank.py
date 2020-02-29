@@ -79,7 +79,7 @@ class Bank(commands.Cog):
 
 		:param ctx: The message context
 		:param user: The user whose coin balance will be set
-		:param amount: Thew new coin balance
+		:param amount: The new coin balance
 		:return:
 		"""
 		if amount < 0:

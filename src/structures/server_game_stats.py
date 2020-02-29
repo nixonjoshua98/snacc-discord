@@ -2,7 +2,7 @@ import discord
 
 from .player_game_stats import PlayerGameStats
 
-from src.common.constants import MEMBER_ROLE_ID, MAX_DAYS_NO_UPDATE
+from src.common.constants import MEMBER_ROLE_ID
 
 
 class ServerGameStats:
@@ -27,16 +27,16 @@ class ServerGameStats:
 		msg += "Darkness Family Leaderboard\n"
 		msg += f"\n    Username{' ' * (name_length - 7)}Lvl Trophies"
 
-		for rank, stats in enumerate(self.active_members):
-			days_ago = stats.days_since_set()
+		for rank, member in enumerate(self.active_members):
+			days_ago = member.days_since_set()
 
-			user = stats.user
+			user = member.user
 
 			username_gap = " " * (name_length - len(user.display_name)) + " "
 
 			msg += f"\n#{rank + 1:02d} {user.display_name[0:name_length]}"
-			msg += f"{username_gap}{stats.level:03d} {stats.trophies:04d}"
-			msg += f" {days_ago} days ago" if days_ago >= MAX_DAYS_NO_UPDATE else ""
+			msg += f"{username_gap}{member.level:03d} {member.trophies:04d}"
+			msg += f" {days_ago} days ago" if days_ago >= member.MAX_DAYS_NO_UPDATE else ""
 
 		msg += "```"
 
