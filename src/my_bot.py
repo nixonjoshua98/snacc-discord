@@ -23,7 +23,8 @@ class MyBot(commands.Bot):
 
 			print(f"Added Cog: {c.__name__}")
 
-		asycio_schedule.add_task(60 * 5, backup.backup_all_files)
+		# Check every 30 seconds
+		asycio_schedule.add_task(30, backup.backup_all_files)
 
 	async def on_command_error(self, ctx, esc):
 		if isinstance(esc, commands.CommandOnCooldown):
