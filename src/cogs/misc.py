@@ -14,10 +14,6 @@ class Misc(commands.Cog, command_attrs=dict(hidden=True)):
 	@commands.is_owner()
 	@commands.command(name="backup")
 	async def backup(self, ctx):
-		backed_up = backup.backup_all_files()
+		backup.backup_all_files()
 
-		if backed_up:
-			await ctx.send(f"Backup done :smile:")
-
-		else:
-			await ctx.send(f"Backup failed :frowning:")
+		await ctx.send(f":thumbsup:")

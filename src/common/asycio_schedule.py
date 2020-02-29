@@ -1,22 +1,26 @@
 import asyncio
 
-# https://phoolish-philomath.com/asynchronous-task-scheduling-in-python.html
 
-
-async def task_loop(delay: int, func):
+async def task_loop(delay: int, func, args):
 	while True:
 		await asyncio.sleep(delay)
 
 		if asyncio.iscoroutinefunction(func):
-			await func()
+			try:
+				await func(*args)
+			except TypeError:
+				await func()
 		else:
-			func()
+			try:
+				func(*args)
+			except TypeError:
+				func()
 
 
-def add_task(delay: int, func):
+def add_task(delay: int, func, *args):
 	print(f"Added task: {func.__name__}")
 
-	return asyncio.create_task(task_loop(delay, func))
+	return asyncio.create_task(task_loop(delay, func, args))
 
 
 async def cancel_task(task: asyncio.Task):

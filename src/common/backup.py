@@ -16,9 +16,6 @@ headers = {
 	"Content-Type": "application/json"
 }
 
-# Backup the files in <JSON_URL_LOOKUP> if the time since last edit is greater than this
-MAX_TIME_SINCE_BACKUP = 60 * 3
-
 
 def download_file(file: str):
 	url = JSON_URL_LOOKUP.get(file, None)
@@ -34,27 +31,19 @@ def download_file(file: str):
 		print(f"Failed to download '{file}'")
 
 
-def upload_file(file: str) -> bool:
+def upload_file(file: str) :
 	debug_mode = os.getenv("DEBUG", False)
 
 	if not debug_mode:
 		url = JSON_URL_LOOKUP.get(file, None)
 
 		if url is not None:
-			page = requests.put(url, headers=headers, data=json.dumps(data_reader.read_json(file)))
+			requests.put(url, headers=headers, data=json.dumps(data_reader.read_json(file)))
 
 			print(f"Uploaded '{file}'")
 
-			return page.status_code == requests.codes.ok
 
-	else:
-		""" DEBUG Mode """
-		return False
-
-
-def backup_all_files() -> bool:
-	is_ok = True
-
+def backup_background_task(backup_delay: int):
 	for f in JSON_URL_LOOKUP:
 		path = os.path.join(constants.RESOURCES_DIR, f)
 
@@ -62,8 +51,10 @@ def backup_all_files() -> bool:
 
 		time_since_update = datetime.today() - modified_date
 
-		if time_since_update.total_seconds() >= MAX_TIME_SINCE_BACKUP:
-			if not upload_file(f):
-				is_ok = False
+		if time_since_update.total_seconds() >= backup_delay:
+			upload_file(f)
 
-	return is_ok
+
+def backup_all_files():
+	for f in JSON_URL_LOOKUP:
+		upload_file(f)

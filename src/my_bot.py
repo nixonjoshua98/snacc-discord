@@ -23,8 +23,7 @@ class MyBot(commands.Bot):
 
 			print(f"Added Cog: {c.__name__}")
 
-		# Check every 30 seconds which means that backups will occur at the fastest rate of every 30 seconds.
-		asycio_schedule.add_task(30, backup.backup_all_files)
+		asycio_schedule.add_task(60, backup.backup_background_task, 60 * 3)
 
 	async def on_command_error(self, ctx, esc):
 		if isinstance(esc, commands.CommandOnCooldown):

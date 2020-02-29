@@ -13,7 +13,7 @@ class Floor(commands.Cog):
 
 		self._coins_on_floor = 0
 
-		asycio_schedule.add_task(60 * 30, self.drop_coins)
+		asycio_schedule.add_task(4, self.drop_coins)
 
 	async def cog_check(self, ctx):
 		return await checks.in_game_room(ctx) and commands.guild_only()
