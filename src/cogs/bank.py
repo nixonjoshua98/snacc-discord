@@ -3,7 +3,7 @@ import discord
 
 from discord.ext import commands
 from src.common import checks
-from src.common import backup
+from src.common import myjson
 from src.common import data_reader
 
 from src.structures import PlayerCoins
@@ -13,7 +13,7 @@ class Bank(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-		backup.download_file("coins.json")
+		myjson.download_file("coins.json")
 
 	async def cog_check(self, ctx):
 		return await checks.in_game_room(ctx) and commands.guild_only()

@@ -1,6 +1,6 @@
 from discord.ext import commands
 
-from src.common import backup
+from src.common import myjson
 from src.common import checks
 
 
@@ -14,6 +14,13 @@ class Misc(commands.Cog, command_attrs=dict(hidden=True)):
 	@commands.is_owner()
 	@commands.command(name="backup")
 	async def backup(self, ctx):
-		backup.backup_all_files()
+		myjson.backup_all_files()
 
-		await ctx.send(f":thumbsup:")
+		await ctx.send(f"Done :thumbsup:")
+
+	@commands.is_owner()
+	@commands.command(name="download")
+	async def download(self, ctx):
+		myjson.download_all_files()
+
+		await ctx.send(f"Done :thumbsup:")

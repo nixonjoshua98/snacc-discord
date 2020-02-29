@@ -6,7 +6,7 @@ from src.structures import ServerGameStats
 from src.structures import PlayerGameStats
 
 from src.common import checks
-from src.common import backup
+from src.common import myjson
 
 
 class GameStats(commands.Cog):
@@ -15,7 +15,7 @@ class GameStats(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-		backup.download_file(self.FILE)
+		myjson.download_file(self.FILE)
 
 	async def cog_check(self, ctx):
 		return await checks.in_rank_room(ctx) and await checks.has_member_role(ctx) and commands.guild_only()
