@@ -10,7 +10,8 @@ from src.common import constants
 
 JSON_URL_LOOKUP = {
 	"game_stats.json": "https://api.myjson.com/bins/1d98rq",
-	"coins.json": "https://api.myjson.com/bins/fb9yk"
+	"coins.json": "https://api.myjson.com/bins/fb9yk",
+	"pet_stats.json": "https://api.myjson.com/bins/leyri",
 }
 
 headers = {
