@@ -128,9 +128,7 @@ class Bank(commands.Cog):
 			rank += 1
 
 		if user_rank > leaderboard_size:
-			user = ctx.author
-
-			username = user.display_name[0:max_username_length] if user else "> User Left <"
+			username = ctx.author.display_name[0:max_username_length]
 
 			row = f"\n#{user_rank:02d} {username}{' ' * (max_username_length - len(username)) + ' '}{user_data[1]:05d}"
 

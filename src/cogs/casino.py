@@ -1,9 +1,11 @@
+import random
+
 from discord.ext import commands
 
 from src.common import checks
+from src.common import FileReader
 
 from src.structures.casino import SpinMachine
-from src.structures.casino import CoinFlip
 
 
 class Casino(commands.Cog):
@@ -11,7 +13,7 @@ class Casino(commands.Cog):
 		self.bot = bot
 
 	async def cog_check(self, ctx):
-		return await checks.in_game_room(ctx) and commands.guild_only()
+		return await checks.in_game_room(ctx)
 
 	@checks.has_minimum_coins("coins.json", 10)
 	@commands.cooldown(25, 60 * 60 * 24, commands.BucketType.user)
@@ -29,9 +31,21 @@ class Casino(commands.Cog):
 	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
 	@commands.command(name="flip", aliases=["fl"], help="Flip a coin [HIGH RISK]")
 	async def flip(self, ctx):
-		coin = CoinFlip(ctx)
+		with FileReader("coins.json") as file:
+			# Initial player balance
+			start_balance = file.get(str(ctx.author.id), default_val=0)
 
-		winnings = await coin.flip()
+			win_amount = int(min(750, start_balance * 0.5))
+
+			if random.randint(0, 1) == 0:
+				file.increment(str(ctx.author.id), win_amount)
+			else:
+				file.decrement(str(ctx.author.id), win_amount)
+
+			# Balance after the flip
+			end_balance = file.get(str(ctx.author.id), default_val=0)
+
+		winnings = end_balance - start_balance
 
 		text = 'won' if winnings > 0 else 'lost'
 

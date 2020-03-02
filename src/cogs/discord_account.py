@@ -8,7 +8,7 @@ class DiscordAccount(commands.Cog, name="Account"):
 		self.bot = bot
 
 	async def cog_check(self, ctx):
-		return await checks.in_any_bot_channel(ctx) and commands.guild_only()
+		return await checks.in_any_bot_channel(ctx)
 
 	@commands.command(name="join", description="Date user joined the server")
 	async def joined(self, ctx):

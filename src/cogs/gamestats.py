@@ -18,7 +18,7 @@ class GameStats(commands.Cog):
 		myjson.download_file(self.FILE)
 
 	async def cog_check(self, ctx):
-		return await checks.in_rank_room(ctx) and await checks.has_member_role(ctx) and commands.guild_only()
+		return await checks.in_rank_room(ctx) and await checks.has_member_role(ctx)
 
 	@checks.id_exists_in_file(FILE)
 	@commands.command(name="me", help="Display your own stats")
