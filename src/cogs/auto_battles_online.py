@@ -26,7 +26,9 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 		total_removed = 0
 
 		with FileReader("game_stats.json") as file:
-			for member_id, _ in file.data().items():
+			data = file.data()
+
+			for member_id, _ in data.items():
 				member = ctx.guild.get_member(int(member_id))
 
 				if member is None:

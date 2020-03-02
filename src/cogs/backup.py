@@ -4,7 +4,7 @@ from src.common import myjson
 from src.common import checks
 
 
-class Misc(commands.Cog, command_attrs=dict(hidden=True), name="misc"):
+class Backup(commands.Cog, command_attrs=dict(hidden=True), name="misc"):
 	def __init__(self, bot):
 		self.bot = bot
 
