@@ -26,7 +26,7 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 		total_removed = 0
 
 		with FileReader("game_stats.json") as file:
-			data = file.data()
+			data = file.data().copy()
 
 			for member_id, _ in data.items():
 				member = ctx.guild.get_member(int(member_id))
@@ -36,7 +36,7 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 
 					total_removed += 1
 
-		await ctx.send(f"Removed {total_removed} ex-members")
+		await ctx.send(f"Removed **{total_removed}** ex-members")
 
 	@commands.command(name="me", help="Display your own stats")
 	async def get_stats(self, ctx: commands.Context):
