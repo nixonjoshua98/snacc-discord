@@ -63,13 +63,13 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 
 			file.set(str(ctx.author.id), data)
 
-		await ctx.send(f"**{ctx.display_name}** :thumbsup:")
+		await ctx.send(f"**{ctx.author.display_name}** :thumbsup:")
 
 	@commands.is_owner()
 	@commands.command(name="setuser", hidden=True)
 	async def set_user(self, ctx, user: discord.Member, level: int, trophies: int):
 		with FileReader("game_stats.json") as file:
-			data = [datetime.today(), level, trophies]
+			data = [datetime.today().strftime("%d/%m/%Y %H:%M:%S"), level, trophies]
 
 			file.set(str(ctx.author.id), data)
 
