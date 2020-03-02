@@ -20,6 +20,22 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 	async def cog_check(self, ctx):
 		return await checks.in_rank_room(ctx) and await checks.has_member_role(ctx)
 
+	@commands.is_owner()
+	@commands.command(name="cleanup", hidden=True)
+	async def cleanup(self, ctx: commands.Context):
+		total_removed = 0
+
+		with FileReader("game_stats.json") as file:
+			for member_id, _ in file.data().items():
+				member = ctx.guild.get_member(int(member_id))
+
+				if member is None:
+					file.remove(member_id)
+
+					total_removed += 1
+
+		await ctx.send(f"Removed {total_removed} ex-members")
+
 	@commands.command(name="me", help="Display your own stats")
 	async def get_stats(self, ctx: commands.Context):
 		with FileReader("game_stats.json") as file:

@@ -29,6 +29,10 @@ class FileReader:
 		self._file_updated = True
 		self._loaded_file = data
 
+	def remove(self, key: str):
+		self._file_updated = True
+		self._loaded_file.pop(key, None)
+
 	# - GETS -
 
 	def get(self, key: str, default_val=None):
