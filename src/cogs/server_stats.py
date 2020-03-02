@@ -11,5 +11,5 @@ class ServerStats(commands.Cog, name="server"):
 		return await checks.in_any_bot_channel(ctx)
 
 	@commands.command(name="size", help="Server Member count")
-	async def size(self, ctx):
-		await ctx.send(f"This server has ``{ctx.guild.member_count}`` members")
+	async def size(self, ctx: commands.Context):
+		await ctx.send(f"**{ctx.guild.name}** has **{ctx.guild.member_count}** members")
