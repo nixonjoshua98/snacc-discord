@@ -35,7 +35,7 @@ class MyBot(commands.Bot):
 		if os.getenv("DEBUG", False) and not await self.is_owner(message.author):
 			return
 
-		# Ignore DM's
+		# Ignore DMs
 		elif message.guild is None:
 			return
 

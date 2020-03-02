@@ -4,10 +4,10 @@ from discord.ext import commands
 from src.common import checks
 
 from src.common import asycio_schedule
-from src.structures import PlayerCoins
+from src.common import FileReader
 
 
-class Floor(commands.Cog):
+class Floor(commands.Cog, name="floor"):
 	def __init__(self, bot):
 		self.bot = bot
 
@@ -29,12 +29,13 @@ class Floor(commands.Cog):
 	@commands.command(name="pickup", help="Pick up something")
 	async def pickup(self, ctx):
 		if self._coins_on_floor > 0:
-			coins = PlayerCoins(ctx.author)
-			amount = self._coins_on_floor
-			self._coins_on_floor = 0
+			with FileReader("coins.json") as file:
+				amount = self._coins_on_floor
 
-			coins.add(amount)
+				file.increment(str(ctx.author.id), amount, default_val=0)
+
+				self._coins_on_floor = 0
 
 			return await ctx.send(f"**{ctx.author.display_name}** picked up **{amount}** coins!")
 
-		await ctx.send(f"**{ctx.author.display_name}** found no coins :cry:")
+		return await ctx.send(f"**{ctx.author.display_name}** found no coins :cry:")

@@ -5,7 +5,7 @@ from discord.ext import commands
 from src.common import checks
 
 
-class Pet(commands.Cog):
+class Pet(commands.Cog, name="pet"):
 	def __init__(self, bot):
 		self.bot = bot
 

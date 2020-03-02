@@ -8,7 +8,7 @@ from src.common import myjson
 from src.common import FileReader
 
 
-class Bank(commands.Cog):
+class Bank(commands.Cog, name="bank"):
 	def __init__(self, bot):
 		self.bot = bot
 

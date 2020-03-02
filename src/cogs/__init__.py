@@ -1,7 +1,7 @@
 
+from .auto_battles_online import AutoBattlesOnline
 from .discord_account import DiscordAccount
 from .server_stats import ServerStats
-from .gamestats import GameStats
 from .greetings import Greetings
 from .casino import Casino
 from .floor import Floor
@@ -10,9 +10,9 @@ from .misc import Misc
 from .pet import Pet
 
 ALL_COGS = (
+	AutoBattlesOnline,
 	DiscordAccount,
 	ServerStats,
-	GameStats,
 	Greetings,
 	Casino,
 	Floor,

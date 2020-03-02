@@ -9,7 +9,7 @@ from src.common import checks
 from src.common import myjson
 
 
-class GameStats(commands.Cog):
+class AutoBattlesOnline(commands.Cog, name="abo"):
 	FILE = "game_stats.json"
 
 	def __init__(self, bot):
