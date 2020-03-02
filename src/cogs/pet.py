@@ -38,11 +38,9 @@ class Pet(commands.Cog, name="pet"):
 
 		embed.set_thumbnail(url=ctx.author.avatar_url)
 
-		for k, v in self.DEFAULT_STATS.items():
-			if k in {"name", "level"}:
-				continue
-
-			embed.add_field(name=k.title(), value=v, inline=True)
+		embed.add_field(name="Health", 	value=pet_stats["health"], 								inline=True)
+		embed.add_field(name="Atk/Def",	value=f'{pet_stats["attack"]}/{pet_stats["defence"]}', 	inline=True)
+		embed.add_field(name="W/L",		value=f'{pet_stats["wins"]}/{pet_stats["loses"]}', 		inline=True)
 
 		await ctx.send(embed=embed)
 
