@@ -81,7 +81,7 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 
 		members.sort(key=lambda ele: ele[-1][-1], reverse=True)
 
-		name_length = 20
+		name_length = 15
 
 		msg = "```c++\nDarkness Family Leaderboard\n"
 		msg += f"\n    Username{' ' * (name_length - 7)}Lvl Trophies"
