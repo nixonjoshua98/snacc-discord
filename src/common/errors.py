@@ -7,3 +7,7 @@ class MinimumCoinError(CommandError):
 
 class NoStatsError(CommandError):
 	""" Has never set their ABO game stats """
+
+
+class WrongChannelError(CommandError):
+	""" Command invoked in wrong channel """
