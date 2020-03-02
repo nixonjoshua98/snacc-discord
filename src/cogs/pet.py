@@ -11,9 +11,9 @@ class Pet(commands.Cog, name="pet"):
 	DEFAULT_STATS = {
 		"name": "Pet",
 		"level": 1,
+		"health": 100,
 		"attack": 10,
 		"defence": 10,
-		"health": 100,
 		"wins": 0,
 		"loses": 0
 	}
@@ -31,12 +31,15 @@ class Pet(commands.Cog, name="pet"):
 		with FileReader("pet_stats.json") as file:
 			pet_stats = file.get(str(ctx.author.id), self.DEFAULT_STATS)
 
-		embed = discord.Embed(title=ctx.author.display_name, description=f"{pet_stats['name']}", color=0xff8000)
+		embed = discord.Embed(
+			title=ctx.author.display_name,
+			description=f"{pet_stats['name']} Level: {pet_stats['level']}",
+			color=0xff8000)
 
 		embed.set_thumbnail(url=ctx.author.avatar_url)
 
-		for k, v in pet_stats.items():
-			if k == "name":
+		for k, v in self.DEFAULT_STATS.items():
+			if k in {"name", "level"}:
 				continue
 
 			embed.add_field(name=k.title(), value=v, inline=True)
