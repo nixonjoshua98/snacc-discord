@@ -59,7 +59,7 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 	@commands.command(name="set", aliases=["s"], help="Set your game stats")
 	async def set_stats(self, ctx, level: int, trophies: int):
 		with FileReader("game_stats.json") as file:
-			data = [datetime.today(), level, trophies]
+			data = [datetime.today().strftime("%d/%m/%Y %H:%M:%S"), level, trophies]
 
 			file.set(str(ctx.author.id), data)
 

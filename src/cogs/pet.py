@@ -33,7 +33,7 @@ class Pet(commands.Cog, name="pet"):
 
 		embed = discord.Embed(
 			title=ctx.author.display_name,
-			description=f"{pet_stats['name']} Level: {pet_stats['level']}",
+			description=f"{pet_stats['name']} | Level: {pet_stats['level']}",
 			color=0xff8000)
 
 		embed.set_thumbnail(url=ctx.author.avatar_url)
