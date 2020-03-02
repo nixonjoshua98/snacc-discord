@@ -3,7 +3,8 @@ import json
 import os
 
 from datetime import datetime
-from src.common import data_reader
+
+from src.common import FileReader
 from src.common import constants
 
 
@@ -26,7 +27,8 @@ def download_file(file: str):
 	response = requests.get(url, headers=headers)
 
 	if response.status_code == requests.codes.ok:
-		data_reader.write_json(file, response.json())
+		with FileReader(file) as f:
+			f.overwrite(response.json())
 
 		print(f"Downloaded '{file}'")
 
@@ -40,7 +42,10 @@ def upload_file(file: str) :
 	url = JSON_URL_LOOKUP.get(file, None)
 
 	if not debug_mode and url is not None:
-		requests.put(url, headers=headers, data=json.dumps(data_reader.read_json(file)))
+		with FileReader(file) as f:
+			data = f.data()
+
+		requests.put(url, headers=headers, data=json.dumps(data))
 
 		print(f"Uploaded '{file}'")
 

@@ -2,12 +2,13 @@
 
 import discord
 from discord.ext import commands
-from src.common import data_reader
 
 from discord.ext.commands import CommandError
 from src.common.errors import MinimumCoinError
 
 from src.common.constants import MEMBER_ROLE_ID, GAME_CHANNELS, RANK_CHANNELS, BOT_CHANNELS
+
+from src.common import FileReader
 
 
 async def has_member_role(ctx):
@@ -42,7 +43,8 @@ async def in_rank_room(ctx):
 
 def id_exists_in_file(file):
 	async def predicate(ctx):
-		data = data_reader.read_json(file)
+		with FileReader(file) as f:
+			data = f.data()
 
 		if data.get(str(ctx.author.id), None) is None:
 			raise CommandError(f"**{ctx.author.display_name}** I found no stats for you.")
@@ -54,7 +56,8 @@ def id_exists_in_file(file):
 
 def has_minimum_coins(file, amount):
 	async def predicate(ctx):
-		data = data_reader.read_json(file)
+		with FileReader(file) as f:
+			data = f.data()
 
 		if data.get(str(ctx.author.id), 0) < amount:
 			raise MinimumCoinError(f"**{ctx.author.display_name}** you do you not enough coins to do that :frowning:")

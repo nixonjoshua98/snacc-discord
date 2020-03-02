@@ -1,10 +1,12 @@
+import os
+import json
 
-from src.common import data_reader
+from src.common.constants import RESOURCES_DIR
 
 
 class FileReader:
 	def __init__(self, file_name):
-		self._file_name = file_name
+		self._file_name = os.path.join(RESOURCES_DIR, file_name)
 
 		self._loaded_file = None
 		self._file_updated = False
@@ -23,6 +25,10 @@ class FileReader:
 		self._file_updated = True
 		self._loaded_file[str(key)] = value
 
+	def overwrite(self, data: dict):
+		self._file_updated = True
+		self._loaded_file = data
+
 	# - GETS -
 
 	def get(self, key: str, default_val=None):
@@ -34,10 +40,12 @@ class FileReader:
 	# - SPECIAL METHODS -
 
 	def __enter__(self):
-		self._loaded_file = data_reader.read_json(self._file_name)
+		with open(self._file_name, "r") as f:
+			self._loaded_file = json.load(f)
 
 		return self
 
 	def __exit__(self, exc_type, exc_value, exc_traceback):
 		if self._file_updated:
-			data_reader.write_json(self._file_name, self._loaded_file)
+			with open(self._file_name, "w") as f:
+				json.dump(self._loaded_file, f)

@@ -46,7 +46,7 @@ class Bank(commands.Cog, name="bank"):
 
 		await ctx.send(f"**{ctx.author.display_name}** gained **{amount}** coins!")
 
-	@commands.command(name="gift", help="Gift some coins to someone else")
+	@commands.command(name="gift", help="Gift some coins")
 	async def gift(self, ctx, target_user: discord.Member, amount: int):
 		"""
 		Move coins from one member to another.
@@ -129,9 +129,7 @@ class Bank(commands.Cog, name="bank"):
 
 		if user_rank > leaderboard_size:
 			username = ctx.author.display_name[0:max_username_length]
-
 			row = f"\n#{user_rank:02d} {username}{' ' * (max_username_length - len(username)) + ' '}{user_data[1]:05d}"
-
 			msg += "\n" + "-" * row_length + "\n" + row
 
 		msg += "```"
