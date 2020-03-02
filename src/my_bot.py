@@ -4,7 +4,6 @@ import os
 from src import cogs
 from src.common import myjson
 from src.common import asycio_schedule
-from src.common.constants import SNACC_ID
 
 from discord.ext import commands
 
@@ -32,12 +31,19 @@ class MyBot(commands.Bot):
 		return await ctx.send(esc)
 
 	async def on_message(self, message: discord.Message):
-		if os.getenv("DEBUG", False) and message.author.id != SNACC_ID:
+		# Debug - Only allow the owners' messages
+		if os.getenv("DEBUG", False) and not await self.is_owner(message.author):
 			return
 
+		# Ignore DM's
+		elif message.guild is None:
+			return
+
+		# Ignore itself
 		elif message.author.id == self.user.id:
 			return
 
+		# Valid command
 		elif message.content.startswith(self.command_prefix):
 			await self.process_commands(message)
 
