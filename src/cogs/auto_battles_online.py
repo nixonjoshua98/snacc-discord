@@ -126,18 +126,16 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 		await ctx.send(msg)
 
 	@staticmethod
-	async def get_members(ctx) -> list:
+	async def get_members(ctx: commands.Context) -> list:
 		member_role = discord.utils.get(ctx.guild.roles, id=MEMBER_ROLE_ID)
 
 		members = []
 
 		# Load the members with stats
 		with FileReader("game_stats.json") as file:
-			for member_id in file.data():
-				member = ctx.guild.get_member(int(member_id))
-
+			for member in ctx.guild.members:
 				# Ignore non-members
-				if member is None or member_role not in member.roles:
+				if member_role not in member.roles:
 					continue
 
 				stats = file.get(str(member.id), default_val=None)
