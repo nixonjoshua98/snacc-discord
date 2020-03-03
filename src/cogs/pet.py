@@ -53,4 +53,4 @@ class Pet(commands.Cog, name="pet"):
 
 			file.set(str(ctx.author.id), pet_stats)
 
-		await ctx.send(f"**{ctx.author.display_name}**s pet has been renamed to **{pet_name}**")
+		await ctx.send(f"**{ctx.author.display_name}** has renamed their pet to **{pet_name}**")

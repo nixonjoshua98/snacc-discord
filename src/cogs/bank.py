@@ -70,7 +70,7 @@ class Bank(commands.Cog, name="bank"):
 				file.increment(str(target_user.id), amount, default_val=0)
 
 		if transaction_done:
-			await ctx.send(f"**{ctx.author.display_name}** gifted **{target_user.display_name}** coins to **{amount:,}**")
+			await ctx.send(f"**{ctx.author.display_name}** gifted **{amount:,}** coins to **{target_user.display_name}**")
 
 		else:
 			await ctx.send(f"**{ctx.author.display_name}** failed to gift coins to **{target_user.display_name}**")
