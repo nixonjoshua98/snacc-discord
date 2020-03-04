@@ -110,23 +110,32 @@ class Bank(commands.Cog, name="bank"):
 
 			user_data = (str(ctx.author.id), file.get(str(ctx.author.id), default_val=0))
 
+		# Only show the top players
 		leaderboard_size = 10
 		top_players = data[0: leaderboard_size]
+
+		# maximum username length
 		max_username_length = 20
 		user_rank = get_user_rank(user_data)
+
+		# Used for '----'
 		row_length = 1
 
 		msg = f"```c++\nCoin Leaderboard\n\n    Username{' ' * (max_username_length - 7)}Coins"
 
 		for rank, (user_id, user_balance) in enumerate(top_players, start=1):
 			user = ctx.guild.get_member(int(user_id))
+
 			username = user.display_name[0:max_username_length] if user else "> User Left <"
+
 			row = f"\n#{rank:02d} {username}{' ' * (max_username_length - len(username)) + ' '}{user_balance:05d}"
 
 			msg += row
-			row_length = max(row_length, len(row))
 			rank += 1
 
+			row_length = max(row_length, len(row))
+
+		# Show the user if they are not in the top spots
 		if user_rank > leaderboard_size:
 			username = ctx.author.display_name[0:max_username_length]
 			row = f"\n#{user_rank:02d} {username}{' ' * (max_username_length - len(username)) + ' '}{user_data[1]:05d}"

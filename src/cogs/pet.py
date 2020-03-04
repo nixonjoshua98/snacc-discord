@@ -91,7 +91,7 @@ class Pet(commands.Cog, name="pet"):
 		# used for '---'
 		row_length = 1
 
-		msg = f"```c++\npet Leaderboard\n\n    Username{' ' * (max_username_length - 7)}Level"
+		msg = f"```c++\nPet Leaderboard\n\n    Username{' ' * (max_username_length - 7)}Level"
 
 		for rank, (user_id, pet_stats) in enumerate(top_players, start=1):
 			user = ctx.guild.get_member(int(user_id))
