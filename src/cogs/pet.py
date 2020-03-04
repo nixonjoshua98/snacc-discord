@@ -54,3 +54,62 @@ class Pet(commands.Cog, name="pet"):
 			file.set(str(ctx.author.id), pet_stats)
 
 		await ctx.send(f"**{ctx.author.display_name}** has renamed their pet to **{pet_name}**")
+
+	@commands.command(name="fight", aliases=["battle", "attack"], help="Attack another pet")
+	async def fight(self, ctx: commands.Context, target: discord.Member):
+		with FileReader("pet_stats.json") as file:
+			user_pet_stats = file.get(str(ctx.author.id), self.DEFAULT_STATS)
+
+			target_pet_stats = file.get(str(target.id), self.DEFAULT_STATS)
+
+	@commands.command(name="petlb", aliases=["plb"], help="Show the  pet leaderboard")
+	async def leaderboard(self, ctx: commands.Context):
+		def get_user_rank(val) -> int:
+			try:
+				return data.index(val) + 1
+			except IndexError:
+				return len(data)
+		"""
+		Shows the pet leaderboard
+
+		:param ctx: The message context
+		:return:
+		"""
+		with FileReader("pet_stats.json") as file:
+			data = sorted(file.data().items(), key=lambda k: k[1]["level"], reverse=True)
+
+			user_data = (str(ctx.author.id), file.get(str(ctx.author.id), default_val=0))
+
+		# Only show top 10 members
+		leaderboard_size = 10
+		top_players = data[0: leaderboard_size]
+
+		# Max username length
+		max_username_length = 25
+		user_rank = get_user_rank(user_data)
+
+		# used for '---'
+		row_length = 1
+
+		msg = f"```c++\npet Leaderboard\n\n    Username{' ' * (max_username_length - 7)}Level"
+
+		for rank, (user_id, pet_stats) in enumerate(top_players, start=1):
+			user = ctx.guild.get_member(int(user_id))
+
+			username = user.display_name + f" ({pet_stats['name']})"
+			username = username[0:max_username_length] if user else "> User Left <"
+
+			row = f"\n#{rank:02d} {username}{' ' * (max_username_length - len(username)) + ' '}{pet_stats['level']:02d}"
+
+			msg += row
+			row_length = max(row_length, len(row))
+			rank += 1
+
+		if user_rank > leaderboard_size:
+			username = ctx.author.display_name[0:max_username_length]
+			row = f"\n#{user_rank:02d} {username}{' ' * (max_username_length - len(username)) + ' '}{user_data[1]['level']:02d}"
+			msg += "\n" + "-" * row_length + "\n" + row
+
+		msg += "```"
+
+		await ctx.send(msg)

@@ -28,7 +28,7 @@ class Bank(commands.Cog, name="bank"):
 		with FileReader("coins.json") as file:
 			balance = file.get(str(ctx.author.id), default_val=0)
 
-		await ctx.send(f"**{ctx.author.display_name}** you have a total of **{balance:,}** coins")
+		await ctx.send(f"**{ctx.author.display_name}** has a total of **{balance:,}** coins")
 
 	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
 	@commands.command(name="free", help="Get free coins [1hr Cooldown]")
