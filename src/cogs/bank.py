@@ -135,11 +135,9 @@ class Bank(commands.Cog, name="bank"):
 
 			row_length = max(row_length, len(row))
 
-		# Show the user if they are not in the top spots
-		if user_rank > leaderboard_size:
-			username = ctx.author.display_name[0:max_username_length]
-			row = f"\n#{user_rank:02d} {username}{' ' * (max_username_length - len(username)) + ' '}{user_data[1]:05d}"
-			msg += "\n" + "-" * row_length + "\n" + row
+		username = ctx.author.display_name[0:max_username_length]
+		row = f"\n#{user_rank:02d} {username}{' ' * (max_username_length - len(username)) + ' '}{user_data[1]:05d}"
+		msg += "\n" + "-" * row_length + "\n" + row
 
 		msg += "```"
 
