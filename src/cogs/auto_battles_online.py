@@ -25,18 +25,20 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 	async def cleanup(self, ctx: commands.Context):
 		total_removed = 0
 
+		member_role = discord.utils.get(ctx.guild.roles, id=MEMBER_ROLE_ID)
+
 		with FileReader("game_stats.json") as file:
 			data = file.data().copy()
 
 			for member_id, _ in data.items():
 				member = ctx.guild.get_member(int(member_id))
 
-				if member is None:
+				if member is None or member_role not in member.roles:
 					file.remove(member_id)
 
 					total_removed += 1
 
-		await ctx.send(f"Removed **{total_removed}** ex-members")
+		await ctx.send(f"Removed **{total_removed}** users")
 
 	@commands.command(name="me", help="Display your own stats")
 	async def get_stats(self, ctx: commands.Context):
