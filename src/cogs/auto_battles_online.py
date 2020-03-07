@@ -47,7 +47,7 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 
 			# Never set stats before
 			if stats is None:
-				raise errors.NoStatsError("No Stats")
+				raise errors.AutoBattlesStatsError("No Stats")
 
 		embed = discord.Embed(title=ctx.author.display_name, description=f"Auto Battles Online", color=0xff8000)
 

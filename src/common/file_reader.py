@@ -13,14 +13,6 @@ class FileReader:
 
 	# - SETS -
 
-	def increment(self, key: str, value, default_val: int = 0):
-		self._file_updated = True
-		self._loaded_file[str(key)] = self._loaded_file.get(str(key), default_val) + value
-
-	def decrement(self, key: str, value, default_val: int = 0):
-		self._file_updated = True
-		self._loaded_file[str(key)] = self._loaded_file.get(str(key), default_val) - value
-
 	def set(self, key: str, value):
 		self._file_updated = True
 		self._loaded_file[str(key)] = value

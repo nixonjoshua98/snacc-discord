@@ -9,7 +9,7 @@ from discord.ext import commands
 
 class MyBot(commands.Bot):
 	def __init__(self):
-		super().__init__(command_prefix="!", case_insensitive=True)
+		super().__init__(command_prefix="-", case_insensitive=True)
 
 	async def on_ready(self):
 		await self.wait_until_ready()
@@ -27,7 +27,7 @@ class MyBot(commands.Bot):
 		if isinstance(esc, commands.CommandOnCooldown):
 			return await ctx.send(f"**{ctx.author.display_name}** you are on cooldown :frowning:")
 
-		elif isinstance(esc,  errors.NoStatsError):
+		elif isinstance(esc, errors.AutoBattlesStatsError):
 			return await ctx.send(f"**{ctx.author.display_name}** you need to set your stats first :slight_smile:")
 
 		return await ctx.send(esc)

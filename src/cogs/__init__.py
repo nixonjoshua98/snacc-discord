@@ -5,18 +5,18 @@ from .server_stats import ServerStats
 from .greetings import Greetings
 from .casino import Casino
 from .floor import Floor
-from .bank import Bank
 from .admin import Admin
+from .bank import Bank
 from .pet import Pet
 
 ALL_COGS = (
-	AutoBattlesOnline,
-	DiscordAccount,
-	ServerStats,
-	Greetings,
-	Casino,
-	Floor,
+	#AutoBattlesOnline,
+	#DiscordAccount,
+	#ServerStats,
+	#Greetings,
+	#Casino,
+	#Admin,
+	#Floor,
 	Bank,
-	Admin,
-	Pet
+	#Pet
 )

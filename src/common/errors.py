@@ -5,7 +5,7 @@ class MinimumCoinError(CommandError):
 	""" Has less than the minimum amount of coins """
 
 
-class NoStatsError(CommandError):
+class AutoBattlesStatsError(CommandError):
 	""" Has never set their ABO game stats """
 
 

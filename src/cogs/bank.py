@@ -28,11 +28,11 @@ class Bank(commands.Cog, name="bank"):
 		:return:
 		"""
 		with FileReader("coins.json") as file:
-			data = file.get(str(ctx.author.id), default_val={})
+			data = file.get(str(ctx.author.id), default_val=dict)
 
-			balance = data.get("coins", 0)
+			author_bal = data.get("coins", 0)
 
-		await ctx.send(f"**{ctx.author.display_name}** has a total of **{balance:,}** coins")
+		await ctx.send(f"**{ctx.author.display_name}** has a total of **{author_bal:,}** coins")
 
 	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
 	@commands.command(name="free", help="Get free coins [1hr Cooldown]")
@@ -46,10 +46,12 @@ class Bank(commands.Cog, name="bank"):
 		amount = random.randint(15, 35)
 
 		with FileReader("coins.json") as file:
-			data = file.get(str(ctx.author.id), default_val={})
+			data = file.get(str(ctx.author.id), default_val=dict)
 
+			# Increment data
 			data["coins"] = data.get("coins", 0) + amount
 
+			# Set the new data
 			file.set(str(ctx.author.id), data)
 
 		await ctx.send(f"**{ctx.author.display_name}** gained **{amount}** coins!")
@@ -64,29 +66,33 @@ class Bank(commands.Cog, name="bank"):
 		:param amount: The amount of coins to transfer to the target user
 		:return:
 		"""
+
+		# Ignore
 		if amount <= 0 or ctx.author.id == target_user.id:
 			return await ctx.send(f"Nice try **{ctx.author.display_name}** :smile:")
 
 		transaction_done = False
 
 		with FileReader("coins.json") as file:
-			author_data = file.get(str(ctx.author.id), default_val={})
-			target_data = file.get(str(target_user.id), default_val={})
+			author_data = file.get(str(ctx.author.id), default_val=dict)
+			target_data = file.get(str(target_user.id), default_val=dict)
 
+			# If the author has enough coins to gift
 			if author_data.get("coins", 0) >= amount:
 				transaction_done = True
 
-				author_data["coins"] = author_data.get("coins") - amount
-				target_data["coins"] = target_data.get("coins") + amount
+				# Modify the coin counts
+				author_data["coins"] = author_data.get("coins", 0) - amount
+				target_data["coins"] = target_data.get("coins", 0) + amount
 
+				# Set the new coin counts
 				file.set(str(ctx.author.id), author_data)
 				file.set(str(target_user.id), target_data)
 
 		if transaction_done:
-			await ctx.send(f"**{ctx.author.display_name}** gifted **{amount:,}** coins to **{target_user.display_name}**")
+			return await ctx.send(f"**{ctx.author.display_name}** gifted **{amount:,}** coins to **{target_user.display_name}**")
 
-		else:
-			await ctx.send(f"**{ctx.author.display_name}** failed to gift coins to **{target_user.display_name}**")
+		return await ctx.send(f"**{ctx.author.display_name}** failed to gift coins to **{target_user.display_name}**")
 
 	@commands.is_owner()
 	@commands.command(name="setcoins", hidden=True)
@@ -101,21 +107,16 @@ class Bank(commands.Cog, name="bank"):
 		"""
 
 		with FileReader("coins.json") as file:
-			target_data = file.get(str(user.id), default_val={})
+			data = file.get(str(user.id), default_val=dict)
 
-			target_data["coins"] = amount
+			data["coins"] = amount
 
-			file.set(str(user.id), target_data)
+			file.set(str(user.id), data)
 
 		await ctx.send(f"**{ctx.author.display_name}** done :thumbsup:")
 
 	@commands.command(name="coinlb", aliases=["clb"], help="Show the coin leaderboard")
 	async def leaderboard(self, ctx: commands.Context):
-		def get_user_rank(val) -> int:
-			try:
-				return data.index(val) + 1
-			except IndexError:
-				return len(data)
 		"""
 		Shows the coin leaderboard
 
@@ -123,42 +124,6 @@ class Bank(commands.Cog, name="bank"):
 		:return:
 		"""
 
-		await leaderboard.create_leaderboard(ctx.author, leaderboard.Type.COIN)
+		leaderboard_string = await leaderboard.create_leaderboard(ctx.author, leaderboard.Type.COIN)
 
-		with FileReader("coins.json") as file:
-			data = sorted(file.data().items(), key=lambda kv: kv[1]["coins"], reverse=True)
-
-			user_data = (str(ctx.author.id), file.get(str(ctx.author.id), default_val={}))
-
-		# Only show the top players
-		leaderboard_size = 10
-		top_players = data[0: leaderboard_size]
-
-		# maximum username length
-		max_username_length = 20
-		user_rank = get_user_rank(user_data)
-
-		# Used for '----'
-		row_length = 1
-
-		msg = f"```c++\nCoin Leaderboard\n\n    Username{' ' * (max_username_length - 7)}Coins"
-
-		for rank, (user_id, user_balance) in enumerate(top_players, start=1):
-			user = ctx.guild.get_member(int(user_id))
-
-			username = user.display_name[0:max_username_length] if user else "> User Left <"
-
-			row = f"\n#{rank:02d} {username}{' ' * (max_username_length - len(username)) + ' '}{user_balance['coins']:05d}"
-
-			msg += row
-			rank += 1
-
-			row_length = max(row_length, len(row))
-
-		username = ctx.author.display_name[0:max_username_length]
-		row = f"\n#{user_rank:02d} {username}{' ' * (max_username_length - len(username)) + ' '}{user_data[1]['coins']:05d}"
-		msg += "\n" + "-" * row_length + "\n" + row
-
-		msg += "```"
-
-		await ctx.send(msg)
+		await ctx.send(leaderboard_string)
