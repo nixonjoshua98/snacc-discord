@@ -24,12 +24,6 @@ class MyBot(commands.Bot):
 		asycio_schedule.add_task(60 * 3, myjson.backup_background_task, 60 * 3)
 
 	async def on_command_error(self, ctx, esc):
-		if isinstance(esc, commands.CommandOnCooldown):
-			return await ctx.send(f"**{ctx.author.display_name}** you are on cooldown :frowning:")
-
-		elif isinstance(esc, errors.AutoBattlesStatsError):
-			return await ctx.send(f"**{ctx.author.display_name}** you need to set your stats first :slight_smile:")
-
 		return await ctx.send(esc)
 
 	async def on_message(self, message: discord.Message):

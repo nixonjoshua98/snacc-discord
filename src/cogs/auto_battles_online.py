@@ -46,7 +46,9 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 
 			# Never set stats before
 			if stats is None:
-				raise errors.AutoBattlesStatsError("No Stats")
+				msg = f"**{ctx.author.display_name}** you need to set your stats first :slight_smile:"
+
+				raise errors.AutoBattlesStatsError(msg)
 
 		embed = discord.Embed(title=ctx.author.display_name, description=f"Auto Battles Online", color=0xff8000)
 
