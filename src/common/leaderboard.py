@@ -23,7 +23,7 @@ LOOKUP_TABLE = {
 	Type.PET: {
 		"title": "Pet Leaderboard",
 		"file": "pet_stats.json",
-		"sort_func": lambda kv: Pet.level_from_xp(kv[1]["xp"]),
+		"sort_func": lambda kv: kv[1]["xp"],
 		"columns": ["name", "xp"],
 		"column_funcs": {
 			"xp": lambda xp: Pet.level_from_xp(xp)
@@ -43,14 +43,15 @@ async def create_leaderboard(author: discord.Member, lb_type: Type) -> str:
 			data = sorted(data.items(), key=lookup["sort_func"], reverse=True)
 
 
-	MAX_COLUMN_SIZE = 20
+	MAX_COLUMN_SIZE = 15
 	LEADERBOARD_SIZE = 10
 
 	rows, column_lengths = [], []
 
 	author_row = None
 
-	rows.append(["#", "Member"] + [col.title() for col in lookup.get("columns", [])])
+	# Column headers
+	rows.append(["#", "MEMBER"] + [col.upper() for col in lookup.get("columns", [])])
 
 	for rank, (user_id, user_data) in enumerate(data, start=1):
 		member = author.guild.get_member(int(user_id))
@@ -88,10 +89,9 @@ async def create_leaderboard(author: discord.Member, lb_type: Type) -> str:
 
 			column_lengths[i] = max(column_lengths[i], len(col))
 
+	leaderboard_string = f"{lookup['title']}\n"
 
-	leaderboard_string = ""
-
-	leaderboard_string += f"{lookup['title']}\n\n"
+	leaderboard_string += "-" * (sum(column_lengths) + len(column_lengths)) + "\n"
 
 	# Build the leaderboard
 	for row in rows[0:LEADERBOARD_SIZE + 1]:
