@@ -20,7 +20,7 @@ async def has_member_role(ctx):
 
 async def in_any_bot_channel(ctx):
 	if ctx.channel.id not in BOT_CHANNELS:
-		raise CommandError(f"**{ctx.author.display_name}**, this command is disabled in this channel.")
+		raise WrongChannelError(f"**{ctx.author.display_name}**, this command is disabled in this channel.")
 
 	return True
 
