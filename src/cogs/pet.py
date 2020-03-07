@@ -105,7 +105,7 @@ class Pet(commands.Cog, name="pet"):
 			row_length = max(row_length, len(row))
 			rank += 1
 
-		username = ctx.author.display_name[0:max_username_length]
+		username = ctx.author.display_name[0:max_username_length] + f" ({user_data[1]['name']})"
 		row = f"\n#{user_rank:02d} {username}{' ' * (max_username_length - len(username)) + ' '}{user_data[1]['level']:02d}"
 		msg += "\n" + "-" * row_length + "\n" + row
 
