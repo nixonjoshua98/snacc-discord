@@ -32,7 +32,11 @@ class Floor(commands.Cog, name="floor"):
 			with FileReader("coins.json") as file:
 				amount = self._coins_on_floor
 
-				file.increment(str(ctx.author.id), amount, default_val=0)
+				data = file.get(str(ctx.author.id), default_val={})
+
+				data["coins"] = data.get("coins", 0) + amount
+
+				file.set(str(ctx.author.id), data)
 
 				self._coins_on_floor = 0
 
