@@ -67,7 +67,7 @@ class Pet(commands.Cog, name="pet"):
 		def get_user_rank(val) -> int:
 			try:
 				return data.index(val) + 1
-			except IndexError:
+			except ValueError:
 				return len(data)
 		"""
 		Shows the pet leaderboard
@@ -78,7 +78,7 @@ class Pet(commands.Cog, name="pet"):
 		with FileReader("pet_stats.json") as file:
 			data = sorted(file.data().items(), key=lambda k: k[1]["level"], reverse=True)
 
-			user_data = (str(ctx.author.id), file.get(str(ctx.author.id), default_val=0))
+			user_data = (str(ctx.author.id), file.get(str(ctx.author.id), default_val=self.DEFAULT_STATS))
 
 		# Only show top 10 members
 		leaderboard_size = 10
@@ -105,10 +105,9 @@ class Pet(commands.Cog, name="pet"):
 			row_length = max(row_length, len(row))
 			rank += 1
 
-		if user_rank > leaderboard_size:
-			username = ctx.author.display_name[0:max_username_length]
-			row = f"\n#{user_rank:02d} {username}{' ' * (max_username_length - len(username)) + ' '}{user_data[1]['level']:02d}"
-			msg += "\n" + "-" * row_length + "\n" + row
+		username = ctx.author.display_name[0:max_username_length]
+		row = f"\n#{user_rank:02d} {username}{' ' * (max_username_length - len(username)) + ' '}{user_data[1]['level']:02d}"
+		msg += "\n" + "-" * row_length + "\n" + row
 
 		msg += "```"
 
