@@ -7,6 +7,8 @@ from src.common import myjson
 
 from src.common import FileReader
 
+from src.common import leaderboard
+
 
 class Bank(commands.Cog, name="bank"):
 	def __init__(self, bot):
@@ -26,7 +28,9 @@ class Bank(commands.Cog, name="bank"):
 		:return:
 		"""
 		with FileReader("coins.json") as file:
-			balance = file.get(str(ctx.author.id), default_val=0)
+			data = file.get(str(ctx.author.id), default_val={})
+
+			balance = data.get("coins", 0)
 
 		await ctx.send(f"**{ctx.author.display_name}** has a total of **{balance:,}** coins")
 
@@ -42,7 +46,11 @@ class Bank(commands.Cog, name="bank"):
 		amount = random.randint(15, 35)
 
 		with FileReader("coins.json") as file:
-			file.increment(str(ctx.author.id), amount, default_val=0)
+			data = file.get(str(ctx.author.id), default_val={})
+
+			data["coins"] = data.get("coins", 0) + amount
+
+			file.set(str(ctx.author.id), data)
 
 		await ctx.send(f"**{ctx.author.display_name}** gained **{amount}** coins!")
 
@@ -62,12 +70,17 @@ class Bank(commands.Cog, name="bank"):
 		transaction_done = False
 
 		with FileReader("coins.json") as file:
-			from_user = file.get(str(ctx.author.id), default_val=0)
+			author_data = file.get(str(ctx.author.id), default_val={})
+			target_data = file.get(str(target_user.id), default_val={})
 
-			if from_user >= amount:
+			if author_data.get("coins", 0) >= amount:
 				transaction_done = True
-				file.decrement(str(ctx.author.id), amount, default_val=0)
-				file.increment(str(target_user.id), amount, default_val=0)
+
+				author_data["coins"] = author_data.get("coins") - amount
+				target_data["coins"] = target_data.get("coins") + amount
+
+				file.set(str(ctx.author.id), author_data)
+				file.set(str(target_user.id), target_data)
 
 		if transaction_done:
 			await ctx.send(f"**{ctx.author.display_name}** gifted **{amount:,}** coins to **{target_user.display_name}**")
@@ -88,7 +101,11 @@ class Bank(commands.Cog, name="bank"):
 		"""
 
 		with FileReader("coins.json") as file:
-			file.set(str(user.id), value=amount)
+			target_data = file.get(str(user.id), default_val={})
+
+			target_data["coins"] = amount
+
+			file.set(str(user.id), target_data)
 
 		await ctx.send(f"**{ctx.author.display_name}** done :thumbsup:")
 
@@ -105,10 +122,13 @@ class Bank(commands.Cog, name="bank"):
 		:param ctx: The message context
 		:return:
 		"""
-		with FileReader("coins.json") as file:
-			data = sorted(file.data().items(), key=lambda k: k[1], reverse=True)
 
-			user_data = (str(ctx.author.id), file.get(str(ctx.author.id), default_val=0))
+		await leaderboard.create_leaderboard(ctx.author, leaderboard.Type.COIN)
+
+		with FileReader("coins.json") as file:
+			data = sorted(file.data().items(), key=lambda kv: kv[1]["coins"], reverse=True)
+
+			user_data = (str(ctx.author.id), file.get(str(ctx.author.id), default_val={}))
 
 		# Only show the top players
 		leaderboard_size = 10
@@ -128,7 +148,7 @@ class Bank(commands.Cog, name="bank"):
 
 			username = user.display_name[0:max_username_length] if user else "> User Left <"
 
-			row = f"\n#{rank:02d} {username}{' ' * (max_username_length - len(username)) + ' '}{user_balance:05d}"
+			row = f"\n#{rank:02d} {username}{' ' * (max_username_length - len(username)) + ' '}{user_balance['coins']:05d}"
 
 			msg += row
 			rank += 1
@@ -136,7 +156,7 @@ class Bank(commands.Cog, name="bank"):
 			row_length = max(row_length, len(row))
 
 		username = ctx.author.display_name[0:max_username_length]
-		row = f"\n#{user_rank:02d} {username}{' ' * (max_username_length - len(username)) + ' '}{user_data[1]:05d}"
+		row = f"\n#{user_rank:02d} {username}{' ' * (max_username_length - len(username)) + ' '}{user_data[1]['coins']:05d}"
 		msg += "\n" + "-" * row_length + "\n" + row
 
 		msg += "```"

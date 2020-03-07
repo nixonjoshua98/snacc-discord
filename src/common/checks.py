@@ -42,9 +42,9 @@ async def in_rank_room(ctx):
 def has_minimum_coins(file, amount):
 	async def predicate(ctx):
 		with FileReader(file) as f:
-			data = f.data()
+			data = f.get(str(ctx.author.id), default_val={})
 
-		if data.get(str(ctx.author.id), 0) < amount:
+		if data.get("coins", 0) < amount:
 			raise MinimumCoinError(f"**{ctx.author.display_name}** you do you not enough coins to do that :frowning:")
 
 		return True

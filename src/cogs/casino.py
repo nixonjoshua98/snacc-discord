@@ -31,12 +31,20 @@ class Casino(commands.Cog, name="casino"):
 
 		# Add the winnings before the animation
 		with FileReader("coins.json") as file:
-			balance = file.get(str(ctx.author.id), default_val=0)
-			bet_amount = balance
-			file.decrement(str(ctx.author.id), bet_amount)
+			balance = file.get(str(ctx.author.id), default_val={})
+
+			bet_amount = balance["coins"]
+
+			balance["coins"] -= bet_amount
+
+			file.set(str(ctx.author.id), balance)
+
 			lower, upper = get_win_bounds(bet_amount)
 			winnings = max(0, random.randint(lower, upper))
-			file.increment(str(ctx.author.id), winnings)
+
+			balance["coins"] = winnings
+
+			file.set(str(ctx.author.id), balance)
 
 		# Initial animation message
 		message = await ctx.send(create_message(bet_amount))
@@ -61,19 +69,20 @@ class Casino(commands.Cog, name="casino"):
 	async def flip(self, ctx):
 		with FileReader("coins.json") as file:
 			# Initial player balance
-			start_balance = file.get(str(ctx.author.id), default_val=0)
+			data = file.get(str(ctx.author.id), default_val={})
 
-			win_amount = int(min(750, start_balance * 0.5))
+			start = data["coins"]
+
+			win_amount = int(min(750, data["coins"] * 0.5))
 
 			if random.randint(0, 1) == 0:
-				file.increment(str(ctx.author.id), win_amount)
+				data["coins"] += win_amount
 			else:
-				file.decrement(str(ctx.author.id), win_amount)
+				data["coins"] -= win_amount
 
-			# Balance after the flip
-			end_balance = file.get(str(ctx.author.id), default_val=0)
+			file.set(str(ctx.author.id), data)
 
-		winnings = end_balance - start_balance
+		winnings = data["coins"] - start
 
 		text = 'won' if winnings > 0 else 'lost'
 

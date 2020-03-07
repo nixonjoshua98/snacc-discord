@@ -6,7 +6,7 @@ from .greetings import Greetings
 from .casino import Casino
 from .floor import Floor
 from .bank import Bank
-from .backup import Backup
+from .admin import Admin
 from .pet import Pet
 
 ALL_COGS = (
@@ -17,6 +17,6 @@ ALL_COGS = (
 	Casino,
 	Floor,
 	Bank,
-	Backup,
+	Admin,
 	Pet
 )
