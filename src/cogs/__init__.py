@@ -10,13 +10,13 @@ from .bank import Bank
 from .pet import Pet
 
 ALL_COGS = (
-	#AutoBattlesOnline,
-	#DiscordAccount,
-	#ServerStats,
-	#Greetings,
-	#Casino,
-	#Admin,
-	#Floor,
+	AutoBattlesOnline,
+	DiscordAccount,
+	ServerStats,
+	Greetings,
+	Casino,
+	Admin,
+	Floor,
 	Bank,
-	#Pet
+	Pet
 )

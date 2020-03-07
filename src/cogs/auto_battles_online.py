@@ -8,7 +8,6 @@ from src.common import (checks, myjson, errors)
 
 from src.common.constants import (MEMBER_ROLE_ID, MAX_DAYS_NO_UPDATE)
 
-
 class AutoBattlesOnline(commands.Cog, name="abo"):
 	FILE = "game_stats.json"
 

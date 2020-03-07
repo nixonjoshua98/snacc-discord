@@ -2,11 +2,11 @@ import random
 import discord
 
 from discord.ext import commands
+
 from src.common import checks
 from src.common import myjson
 
 from src.common import FileReader
-
 from src.common import leaderboard
 
 
@@ -123,7 +123,6 @@ class Bank(commands.Cog, name="bank"):
 		:param ctx: The message context
 		:return:
 		"""
-
 		leaderboard_string = await leaderboard.create_leaderboard(ctx.author, leaderboard.Type.COIN)
 
 		await ctx.send(leaderboard_string)
