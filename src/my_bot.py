@@ -2,14 +2,17 @@ import discord
 import os
 
 from src import cogs
-from src.common import (asycio_schedule, myjson, errors)
+from src.common import myjson
+from src.common import asycio_schedule
 
 from discord.ext import commands
 
-
 class MyBot(commands.Bot):
 	def __init__(self):
-		super().__init__(command_prefix="-", case_insensitive=True)
+		super().__init__(command_prefix="!", case_insensitive=True)
+
+		if os.getenv("DEBUG", False):
+			self.command_prefix = "-"
 
 	async def on_ready(self):
 		await self.wait_until_ready()
