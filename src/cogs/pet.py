@@ -109,17 +109,15 @@ class Pet(commands.Cog, name="pet"):
 				check=lambda react, user: user.id == ctx.author.id and react.emoji in reactions and message.id == react.message.id
 			)
 
-			# Remove emoji
-			for emoji in reactions:
-				await message.remove_reaction(emoji, ctx.author)
-
-			# Remove 'Battle Status'
-			embed.remove_field(1)
+			embed.remove_field(1) # Remove 'Battle Status'
 
 			embed.add_field(name="Battle Status", value=f"Round: {round + 1}")
 
 			await message.edit(embed=embed)
 
+			# Remove all emoji from the user
+			for emoji in reactions:
+				await message.remove_reaction(emoji, ctx.author)
 
 	@commands.command(name="petlb", aliases=["plb"], help="Show the  pet leaderboard")
 	async def leaderboard(self, ctx: commands.Context):
