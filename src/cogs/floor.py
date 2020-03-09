@@ -12,13 +12,13 @@ class Floor(commands.Cog, name="floor"):
 
 		self._coins_on_floor = 25
 
-		asycio_schedule.add_task(60 * 30, self.drop_coins)
+		asycio_schedule.add_task(60 * 5, self.drop_coins)
 
 	async def cog_check(self, ctx):
 		return await checks.in_game_room(ctx)
 
 	async def drop_coins(self):
-		self._coins_on_floor += random.randint(10, 25)
+		self._coins_on_floor += random.randint(3, 7)
 
 	@commands.command(name="floor", help="See whats on the floor")
 	async def floor(self, ctx):

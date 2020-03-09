@@ -29,9 +29,10 @@ class MyBot(commands.Bot):
 
 	async def on_command_error(self, ctx, esc):
 		if isinstance(esc, commands.CommandInvokeError):
-			return
+			print(esc)
 
-		return await ctx.send(esc)
+		else:
+			return await ctx.send(esc)
 
 	async def on_message(self, message: discord.Message):
 		# Debug - Only allow the owners' messages
