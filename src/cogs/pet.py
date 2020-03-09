@@ -70,10 +70,11 @@ class Pet(commands.Cog, name="pet"):
 
 		await ctx.send(f"**{ctx.author.display_name}** has renamed their pet to **{pet_name}**")
 
-	@commands.command(name="fight", aliases=["battle", "attack"], help="Attack another pet")
+	@commands.cooldown(1, 60 * 15, commands.BucketType.user)
+	@commands.command(name="fight", aliases=["battle", "attack"], help="Attack! [15m Cooldown]")
 	async def fight(self, ctx: commands.Context, target: discord.Member):
 		if target.id == ctx.author.id:
-			return await ctx.send(f"**{ctx.author.display_name}** you cannot fight yourself")
+			return await ctx.send(f"**{ctx.author.display_name}** :face_with_raised_eyebrow:")
 
 		with FileReader("pet_stats.json") as file:
 			author_stats = file.get(str(ctx.author.id), self.DEFAULT_STATS)
@@ -87,7 +88,7 @@ class Pet(commands.Cog, name="pet"):
 
 		embed.set_thumbnail(url=ctx.author.avatar_url)
 
-		embed.add_field(name="How to Play", value="Choose a reaction")
+		embed.add_field(name="How to Play", value="Select a reaction")
 
 		# Send initial message
 		message = await ctx.send(embed=embed)
