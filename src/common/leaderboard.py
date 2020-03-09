@@ -25,9 +25,8 @@ LOOKUP_TABLE = {
 		"file": "pet_stats.json",
 		"sort_func": lambda kv: kv[1]["xp"],
 		"columns": ["name", "xp"],
-		"column_funcs": {
-			"xp": lambda xp: Pet.level_from_xp(xp)
-		}
+		"column_funcs": {"xp": lambda xp: Pet.level_from_xp(xp)},
+		"headers": {"xp": "lvl"}
 	}
 }
 
@@ -51,7 +50,7 @@ async def create_leaderboard(author: discord.Member, lb_type: Type) -> str:
 	author_row = None
 
 	# Column headers
-	rows.append(["#", "MEMBER"] + [col.upper() for col in lookup.get("columns", [])])
+	rows.append(["#", "MEMBER"] + [lookup.get("headers", dict).get(col, col).upper() for col in lookup.get("columns", [])])
 
 	for rank, (user_id, user_data) in enumerate(data, start=1):
 		member = author.guild.get_member(int(user_id))

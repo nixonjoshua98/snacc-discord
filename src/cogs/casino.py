@@ -64,7 +64,7 @@ class Casino(commands.Cog, name="casino"):
 		await ctx.send(f"**{ctx.author.display_name}** has {text} **{abs(balance_change):,}** coins!")
 
 	@checks.has_minimum_coins("coins.json", 10)
-	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
+	@commands.cooldown(1, 60 * 30, commands.BucketType.user)
 	@commands.command(name="flip", aliases=["fl"], help="Flip a coin [HIGH RISK]")
 	async def flip(self, ctx):
 		with FileReader("coins.json") as file:

@@ -70,8 +70,8 @@ class Pet(commands.Cog, name="pet"):
 
 		await ctx.send(f"**{ctx.author.display_name}** has renamed their pet to **{pet_name}**")
 
-	@commands.cooldown(1, 60 * 15, commands.BucketType.user)
-	@commands.command(name="fight", aliases=["battle", "attack"], help="Attack! [15m Cooldown]")
+	@commands.cooldown(1, 60, commands.BucketType.user)
+	@commands.command(name="fight", aliases=["battle", "attack"], help="Attack! [60s Cooldown]")
 	async def fight(self, ctx: commands.Context, target: discord.Member):
 		if target.id == ctx.author.id:
 			return await ctx.send(f"**{ctx.author.display_name}** :face_with_raised_eyebrow:")

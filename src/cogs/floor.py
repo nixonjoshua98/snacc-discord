@@ -6,12 +6,11 @@ from src.common import checks
 from src.common import asycio_schedule
 from src.common import FileReader
 
-
 class Floor(commands.Cog, name="floor"):
 	def __init__(self, bot):
 		self.bot = bot
 
-		self._coins_on_floor = 0
+		self._coins_on_floor = 25
 
 		asycio_schedule.add_task(60 * 30, self.drop_coins)
 
@@ -25,7 +24,6 @@ class Floor(commands.Cog, name="floor"):
 	async def floor(self, ctx):
 		await ctx.send(f"There are **{self._coins_on_floor}** coins on the floor")
 
-	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
 	@commands.command(name="pickup", help="Pick up something")
 	async def pickup(self, ctx):
 		if self._coins_on_floor > 0:

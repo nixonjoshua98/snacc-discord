@@ -11,13 +11,14 @@ class MyBot(commands.Bot):
 	def __init__(self):
 		super().__init__(command_prefix="!", case_insensitive=True)
 
-		if os.getenv("DEBUG", False):
-			self.command_prefix = "-"
-
 	async def on_ready(self):
 		await self.wait_until_ready()
 
 		print("Bot successfully started")
+
+		if os.getenv("DEBUG", False):
+			print("Changed prefix to '-'")
+			self.command_prefix = "-"
 
 		for c in cogs.ALL_COGS:
 			self.add_cog(c(self))
