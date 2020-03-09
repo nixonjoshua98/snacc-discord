@@ -36,11 +36,11 @@ class MyBot(commands.Bot):
 
 	async def on_message(self, message: discord.Message):
 		# Debug - Only allow the owners' messages
-		if os.getenv("DEBUG", False) and not await self.is_owner(message.author):
-			return
+		#if os.getenv("DEBUG", False) and not await self.is_owner(message.author):
+			#return
 
 		# Ignore DMs
-		elif message.guild is None:
+		if message.guild is None:
 			return
 
 		# Ignore itself

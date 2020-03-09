@@ -70,10 +70,10 @@ class Pet(commands.Cog, name="pet"):
 
 		await ctx.send(f"**{ctx.author.display_name}** has renamed their pet to **{pet_name}**")
 
-	@commands.cooldown(1, 60, commands.BucketType.user)
-	@commands.command(name="fight", aliases=["battle", "attack"], help="Attack! [60s Cooldown]")
+	@commands.cooldown(1, 60 * 5, commands.BucketType.user)
+	@commands.command(name="fight", aliases=["battle", "attack"], help="Attack! [5m Cooldown]")
 	async def fight(self, ctx: commands.Context, target: discord.Member):
-		if target.id == ctx.author.id:
+		if target.id == ctx.author.id or target.bot:
 			return await ctx.send(f"**{ctx.author.display_name}** :face_with_raised_eyebrow:")
 
 		with FileReader("pet_stats.json") as file:
@@ -89,6 +89,7 @@ class Pet(commands.Cog, name="pet"):
 		embed.set_thumbnail(url=ctx.author.avatar_url)
 
 		embed.add_field(name="How to Play", value="Select a reaction")
+		embed.add_field(name="Battle Status", value="Round: 1")
 
 		# Send initial message
 		message = await ctx.send(embed=embed)
@@ -96,18 +97,28 @@ class Pet(commands.Cog, name="pet"):
 		# Spade, Heart, Club, Diamond
 		reactions = ["\U00002660", "\U00002665", "\U00002663", "\U00002666"]
 
-		# Reactions
-		for emoji in reactions:
-			await message.add_reaction(emoji)
+		for round in range(5):
+			# Add reactions
+			for emoji in reactions:
+				await message.add_reaction(emoji)
 
-		# Wait for reaction from user
-		await self.bot.wait_for(
-			"reaction_add",
-			timeout=60,
-			check=lambda react, user: user.id == ctx.author.id and react.emoji in reactions
-		)
+			# Wait for reaction from user
+			await self.bot.wait_for(
+				"reaction_add",
+				timeout=60,
+				check=lambda react, user: user.id == ctx.author.id and react.emoji in reactions and message.id == react.message.id
+			)
 
-		await ctx.send(f"{ctx.author.display_name} has lost 10,000 coins for losing")
+			# Remove emoji
+			for emoji in reactions:
+				await message.remove_reaction(emoji, ctx.author)
+
+			# Remove 'Battle Status'
+			embed.remove_field(1)
+
+			embed.add_field(name="Battle Status", value=f"Round: {round + 1}")
+
+			await message.edit(embed=embed)
 
 
 	@commands.command(name="petlb", aliases=["plb"], help="Show the  pet leaderboard")
