@@ -88,8 +88,8 @@ class Pet(commands.Cog, name="pet"):
 
 		embed.set_thumbnail(url=ctx.author.avatar_url)
 
+		# Set fields
 		embed.add_field(name="How to Play", value="Select a reaction")
-		embed.add_field(name="Battle Status", value="Round: 1")
 
 		# Send initial message
 		message = await ctx.send(embed=embed)
@@ -97,27 +97,47 @@ class Pet(commands.Cog, name="pet"):
 		# Spade, Heart, Club, Diamond
 		reactions = ["\U00002660", "\U00002665", "\U00002663", "\U00002666"]
 
-		for round in range(5):
-			# Add reactions
-			for emoji in reactions:
-				await message.add_reaction(emoji)
+		# Add reactions
+		for emoji in reactions:
+			await message.add_reaction(emoji)
 
-			# Wait for reaction from user
-			await self.bot.wait_for(
-				"reaction_add",
-				timeout=60,
-				check=lambda react, user: user.id == ctx.author.id and react.emoji in reactions and message.id == react.message.id
-			)
+		# Wait for reaction from user
+		await self.bot.wait_for("reaction_add", timeout=60,
+			check=lambda react, user: user.id == ctx.author.id and react.emoji in reactions and message.id == react.message.id
+		)
 
-			embed.remove_field(1) # Remove 'Battle Status'
+		reaction_index = None
 
-			embed.add_field(name="Battle Status", value=f"Round: {round + 1}")
+		# Refresh the message
+		message = discord.utils.get(self.bot.cached_messages, id=message.id)
 
-			await message.edit(embed=embed)
+		# Find which reaction the user chose
+		for i, reaction in enumerate(message.reactions):
+			if reaction_index is not None:
+				break
 
-			# Remove all emoji from the user
-			for emoji in reactions:
-				await message.remove_reaction(emoji, ctx.author)
+			for user in await reaction.users().flatten():
+				if user.id == ctx.author.id:
+					reaction_index = i
+					break
+
+		if reaction_index is None:
+			return await ctx.send(f"**{ctx.author.display_name}**, your pet battle caused an error")
+
+		# Pet Battle
+
+		# Reward text
+		battle_report = (
+			f":heart: 0\n"
+			f":moneybag: 0\n"
+			f":star: 0"
+		)
+
+		embed.remove_field(0)
+
+		embed.add_field(name="Battle Report", value=battle_report)
+
+		await message.edit(embed=embed)
 
 	@commands.command(name="petlb", aliases=["plb"], help="Show the  pet leaderboard")
 	async def leaderboard(self, ctx: commands.Context):
