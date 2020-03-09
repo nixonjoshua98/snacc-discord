@@ -82,8 +82,10 @@ class Pet(commands.Cog, name="pet"):
 		# Create embed
 		embed = discord.Embed(
 			title="Pet Battle",
-			description=f"{author_stats['name']} vs {target_stats['name']}",
+			description=f"**'{author_stats['name']}'** vs **'{target_stats['name']}'**",
 			color=0xff8000)
+
+		embed.set_thumbnail(url=ctx.author.avatar_url)
 
 		embed.add_field(name="How to Play", value="Choose a reaction")
 
