@@ -9,7 +9,7 @@ from discord.ext import commands
 
 class MyBot(commands.Bot):
 	def __init__(self):
-		super().__init__(command_prefix="!", case_insensitive=True)
+		super().__init__(command_prefix="-", case_insensitive=True)
 
 	async def on_ready(self):
 		await self.wait_until_ready()
@@ -24,6 +24,9 @@ class MyBot(commands.Bot):
 		asycio_schedule.add_task(60 * 3, myjson.backup_background_task, 60 * 3)
 
 	async def on_command_error(self, ctx, esc):
+		if isinstance(esc, commands.CommandInvokeError):
+			return
+
 		return await ctx.send(esc)
 
 	async def on_message(self, message: discord.Message):

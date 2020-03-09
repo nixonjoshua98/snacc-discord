@@ -37,19 +37,30 @@ class Pet(commands.Cog, name="pet"):
 
 		embed = discord.Embed(
 			title=ctx.author.display_name,
-			description=f"{pet_stats['name']} | XP: {pet_stats['xp']}",
+			description=f"{pet_stats['name']} | Lvl: {self.level_from_xp(pet_stats['xp'])}",
 			color=0xff8000)
 
 		embed.set_thumbnail(url=ctx.author.avatar_url)
 
-		embed.add_field(name="Health", 	value=pet_stats["health"], 								inline=True)
-		embed.add_field(name="Atk/Def",	value=f'{pet_stats["attack"]}/{pet_stats["defence"]}', 	inline=True)
-		embed.add_field(name="W/L",		value=f'{pet_stats["wins"]}/{pet_stats["loses"]}', 		inline=True)
+		stats_text = (
+			f":heart: {pet_stats['health']:,}\n"
+			f":crossed_swords: {pet_stats['attack']:,}\n"
+			f":shield: {pet_stats['defence']:,}"
+		)
+
+		embed.add_field(name="Stats", value=stats_text)
 
 		await ctx.send(embed=embed)
 
 	@commands.command(name="setname", help="Set name of pet")
 	async def set_name(self, ctx: commands.Context, pet_name: str):
+		"""
+		Set name of the authors pet
+
+		:param ctx: Discord context
+		:param pet_name: New pet name
+		:return:
+		"""
 		with FileReader("pet_stats.json") as file:
 			pet_stats = file.get(str(ctx.author.id), self.DEFAULT_STATS)
 
@@ -61,7 +72,40 @@ class Pet(commands.Cog, name="pet"):
 
 	@commands.command(name="fight", aliases=["battle", "attack"], help="Attack another pet")
 	async def fight(self, ctx: commands.Context, target: discord.Member):
-		pass
+		if target.id == ctx.author.id:
+			return await ctx.send(f"**{ctx.author.display_name}** you cannot fight yourself")
+
+		with FileReader("pet_stats.json") as file:
+			author_stats = file.get(str(ctx.author.id), self.DEFAULT_STATS)
+			target_stats = file.get(str(target.id), self.DEFAULT_STATS)
+
+		# Create embed
+		embed = discord.Embed(
+			title="Pet Battle",
+			description=f"{author_stats['name']} vs {target_stats['name']}",
+			color=0xff8000)
+
+		embed.add_field(name="How to Play", value="Choose a reaction")
+
+		# Send initial message
+		message = await ctx.send(embed=embed)
+
+		# Spade, Heart, Club, Diamond
+		reactions = ["\U00002660", "\U00002665", "\U00002663", "\U00002666"]
+
+		# Reactions
+		for emoji in reactions:
+			await message.add_reaction(emoji)
+
+		# Wait for reaction from user
+		await self.bot.wait_for(
+			"reaction_add",
+			timeout=60,
+			check=lambda react, user: user.id == ctx.author.id and react.emoji in reactions
+		)
+
+		await ctx.send(f"{ctx.author.display_name} has lost 10,000 coins for losing")
+
 
 	@commands.command(name="petlb", aliases=["plb"], help="Show the  pet leaderboard")
 	async def leaderboard(self, ctx: commands.Context):
@@ -74,3 +118,12 @@ class Pet(commands.Cog, name="pet"):
 		leaderboard_string = await leaderboard.create_leaderboard(ctx.author, leaderboard.Type.PET)
 
 		await ctx.send(leaderboard_string)
+
+
+
+
+
+
+
+
+
