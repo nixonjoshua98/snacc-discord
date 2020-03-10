@@ -9,7 +9,6 @@ from src.common import myjson
 from src.common import FileReader
 from src.common import leaderboard
 
-
 class Bank(commands.Cog, name="bank"):
 	def __init__(self, bot):
 		self.bot = bot
@@ -28,7 +27,7 @@ class Bank(commands.Cog, name="bank"):
 		:return:
 		"""
 		with FileReader("coins.json") as file:
-			data = file.get(str(ctx.author.id), default_val=dict)
+			data = file.get(str(ctx.author.id), default_val={})
 
 			author_bal = data.get("coins", 0)
 
@@ -46,7 +45,7 @@ class Bank(commands.Cog, name="bank"):
 		amount = random.randint(15, 35)
 
 		with FileReader("coins.json") as file:
-			data = file.get(str(ctx.author.id), default_val=dict)
+			data = file.get(str(ctx.author.id), default_val={})
 
 			# Increment data
 			data["coins"] = data.get("coins", 0) + amount
@@ -74,8 +73,8 @@ class Bank(commands.Cog, name="bank"):
 		transaction_done = False
 
 		with FileReader("coins.json") as file:
-			author_data = file.get(str(ctx.author.id), default_val=dict)
-			target_data = file.get(str(target_user.id), default_val=dict)
+			author_data = file.get(str(ctx.author.id), default_val={})
+			target_data = file.get(str(target_user.id), default_val={})
 
 			# If the author has enough coins to gift
 			if author_data.get("coins", 0) >= amount:
@@ -107,7 +106,7 @@ class Bank(commands.Cog, name="bank"):
 		"""
 
 		with FileReader("coins.json") as file:
-			data = file.get(str(user.id), default_val=dict)
+			data = file.get(str(user.id), default_val={})
 
 			data["coins"] = amount
 

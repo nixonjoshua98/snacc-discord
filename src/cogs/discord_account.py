@@ -2,7 +2,6 @@ from discord.ext import commands
 
 from src.common import checks
 
-
 class DiscordAccount(commands.Cog, name="account"):
 	def __init__(self, bot):
 		self.bot = bot

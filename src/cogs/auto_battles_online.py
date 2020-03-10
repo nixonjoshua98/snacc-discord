@@ -62,6 +62,8 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 
 		await ctx.send(f"**{user.display_name}** :thumbsup:")
 
+	# Can be called once every 5 minutes per server
+	@commands.cooldown(1, 60 * 5, commands.BucketType.guild)
 	@commands.command(name="lb", help="Show guild trophy leaderboard")
 	async def leaderboard(self, ctx):
 		members = await self.get_members(ctx)
@@ -113,6 +115,7 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 		# Load the members with stats
 		with FileReader("game_stats.json") as file:
 			for member in ctx.guild.members:
+
 				# Ignore non-members
 				if member_role not in member.roles:
 					continue

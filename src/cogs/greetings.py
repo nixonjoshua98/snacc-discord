@@ -1,4 +1,5 @@
 import discord
+import os
 
 from discord.ext import commands
 
@@ -10,6 +11,8 @@ class Greetings(commands.Cog, name="greetings"):
 
 	@commands.Cog.listener()
 	async def on_member_join(self, member: discord.Member):
+		if os.getenv("DEBUG", False):
+			return
 
 		# Send welcome message to the system channel (if available)
 		if member.guild.system_channel:
@@ -27,5 +30,8 @@ class Greetings(commands.Cog, name="greetings"):
 
 	@commands.Cog.listener()
 	async def on_member_remove(self, member):
+		if os.getenv("DEBUG", False):
+			return
+
 		if member.guild.system_channel:
 			await member.guild.system_channel.send(f"**{member.display_name}** has left the server :frowning:")

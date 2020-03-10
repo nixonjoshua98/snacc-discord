@@ -17,8 +17,11 @@ class Config(commands.Cog):
 
 	@commands.group(name="config", help="Server Owner Stuff")
 	async def config(self, ctx: commands.Context):
-		if ctx.invoked_subcommand is None:
-			await ctx.send("Mhm")
+		if ctx.invoked_subcommand is not None:
+			return None
+
+		for parent, com in self.config.walk_commands():
+			print(parent, com)
 
 	@config.command(name="game", help="Register the channel as a game channel")
 	async def add_game_channel(self, ctx: commands.Context):
