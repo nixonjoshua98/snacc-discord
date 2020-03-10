@@ -33,17 +33,22 @@ LOOKUP_TABLE = {
 	Type.ABO: {
 		"title": "Auto Battles Online",
 		"file": "game_stats.json",
-		"sort_func": lambda kv: kv[1][2],
-		"columns": [1, 2, 3],
+		"sort_func": lambda kv: kv[1][2],  # Sort the data with this function
+		"columns": [1, 2, 3],  # Either indexes for lists for keys for dicts
+		# Optional column headers: replaces the column values with these
 		"headers": {1: "Lvl", 2: "", 3: "Updated"},
+		# Functions whose result becomes the value for that column
 		"column_funcs": {3: lambda data: functions.abo_days_since_column(data)},
 		"leaderboard_size": 30,
-		"members_only": True
+		"members_only": True  # Only display members who have the allocated member role
 	}
 }
 
+import time
 
 async def create_leaderboard(author: discord.Member, lb_type: Type) -> str:
+	now = time.time()
+
 	lookup = LOOKUP_TABLE[lb_type]
 
 	with FileReader(lookup["file"]) as stats, FileReader("server_settings.json") as server_settings:
@@ -68,7 +73,7 @@ async def create_leaderboard(author: discord.Member, lb_type: Type) -> str:
 	rows.append(["#", "MEMBER"] + [lookup.get("headers", {}).get(col, col).upper() for col in lookup.get("columns", [])])
 
 	# Initial column widths
-	for i, col in enumerate(rows[-1]):
+	for i, col in enumerate(rows[0]):
 		column_lengths.append(len(col))
 
 	rank = 0
@@ -78,6 +83,7 @@ async def create_leaderboard(author: discord.Member, lb_type: Type) -> str:
 	for user_id, user_data in data:
 		member = author.guild.get_member(int(user_id))
 
+		# If member is invalid, a bot, or not a member when it is members only
 		if member is None or member.bot or (member_role and member_role not in member.roles and MEMBERS_ONLY):
 			continue
 
@@ -96,7 +102,7 @@ async def create_leaderboard(author: discord.Member, lb_type: Type) -> str:
 			try:
 				col_val = user_data[extra_col]
 			except (IndexError, KeyError):
-				col_val = ""
+				col_val = "N/A"
 
 			func = lookup.get("column_funcs", {}).get(extra_col, None)
 
@@ -108,7 +114,8 @@ async def create_leaderboard(author: discord.Member, lb_type: Type) -> str:
 
 		rows.append(current_row)
 
-		if member and member.id == author.id:
+		# If author
+		if member.id == author.id:
 			author_row = current_row
 
 		# Update columns lengths
@@ -131,6 +138,8 @@ async def create_leaderboard(author: discord.Member, lb_type: Type) -> str:
 		leaderboard_string += "-" * (sum(column_lengths) + len(column_lengths)) + "\n"
 		for j, col in enumerate(author_row):
 			leaderboard_string += f"{col}{' ' * (column_lengths[j] - len(col))}" + " "
+
+	print(lb_type,  "Time taken to build leaderboard:", round(time.time() - now, 5), sep=" ")
 
 	return "```c++\n" + leaderboard_string + "```"
 
