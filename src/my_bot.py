@@ -25,19 +25,14 @@ class MyBot(commands.Bot):
 		asycio_schedule.add_task(60 * 5, myjson.backup_background_task, 60 * 5)
 
 	async def on_command_error(self, ctx, esc):
-		if isinstance(esc, commands.CommandInvokeError):
-			print(esc)
-
-		else:
-			return await ctx.send(esc)
+		return await ctx.send(esc)
 
 	async def on_message(self, message: discord.Message):
-		# Debug - Only allow the owners' messages
 		if os.getenv("DEBUG", False) and not await self.is_owner(message.author):
 			return
 
 		# Ignore DMs
-		elif message.guild is None:
+		if message.guild is None:
 			return
 
 		# Ignore itself
@@ -46,8 +41,7 @@ class MyBot(commands.Bot):
 
 		await self.process_commands(message)
 
-	@staticmethod
-	def prefix(bot: commands.Bot, message: discord.message):
+	def prefix(self, bot:commands.Bot, message: discord.message):
 		with FileReader("server_settings.json") as f:
 			data = f.get(str(message.guild.id), default_val={})
 

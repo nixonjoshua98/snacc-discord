@@ -19,8 +19,7 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 	async def cog_check(self, ctx):
 		return (
 				await checks.in_abo_channel(ctx) and
-				await checks.has_member_role(ctx) and
-				await checks.owner_is_guild_owner(ctx)
+				await checks.has_member_role(ctx)
 		)
 
 	@commands.command(name="me", help="Display your own stats")
@@ -37,6 +36,7 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 		embed = discord.Embed(title=ctx.author.display_name, description=f"Auto Battles Online", color=0xff8000)
 
 		embed.set_thumbnail(url=ctx.author.avatar_url)
+		embed.set_footer(text="Darkness Family")
 
 		for i, txt in enumerate(("Date Recorded", "Level", "Trophies")):
 			embed.add_field(name=txt, value=stats[i], inline=False)
@@ -62,8 +62,6 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 
 		await ctx.send(f"**{user.display_name}** :thumbsup:")
 
-	# Can be called once every 5 minutes per server
-	@commands.cooldown(1, 60 * 5, commands.BucketType.guild)
 	@commands.command(name="lb", help="Show guild trophy leaderboard")
 	async def leaderboard(self, ctx):
 		members = await self.get_members(ctx)
@@ -82,9 +80,6 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 
 		# Create the leaderboard
 		for member, stats in members:
-			if stats is None:
-				continue
-
 			date, level, trophies = stats
 
 			days_ago = (datetime.today() - datetime.strptime(date, "%d/%m/%Y %H:%M:%S")).days
@@ -122,7 +117,8 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 
 				stats = file.get(str(member.id), default_val=None)
 
-				members.append((member, stats))
+				if stats is not None:
+					members.append((member, stats))
 
 		return members
 

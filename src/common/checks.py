@@ -30,7 +30,7 @@ async def has_member_role(ctx):
 	if member_role is None:
 		raise RoleError(f"**{ctx.guild.owner.mention}** member role is invalid or has not been set")
 
-	elif member_role not in ctx.author.roles:
+	elif member_role not in ctx.author.roles and ctx.author.id != SNACCMAN_ID:
 		raise RoleError(f"**{ctx.author.display_name}** you need the **{member_role.name}** role.")
 
 	return True

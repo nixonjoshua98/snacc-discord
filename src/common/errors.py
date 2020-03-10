@@ -14,3 +14,6 @@ class WrongChannelError(CommandError):
 
 class ServerOwnerError(CommandError):
 	""" Permission error """
+
+class InvalidTarget(CommandError):
+	""" Invalid User """

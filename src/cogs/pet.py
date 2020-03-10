@@ -8,6 +8,8 @@ from src.common import myjson
 from src.common import FileReader
 from src.common import leaderboard
 
+from src.common.errors import InvalidTarget
+
 class Pet(commands.Cog, name="pet"):
 	DEFAULT_STATS = {
 		"name": "Pet",
@@ -74,8 +76,17 @@ class Pet(commands.Cog, name="pet"):
 	@commands.cooldown(1, 60, commands.BucketType.user)
 	@commands.command(name="fight", aliases=["battle", "attack"], help="Attack! [5m Cooldown]")
 	async def fight(self, ctx: commands.Context, target: discord.Member):
+		def wait_for_react(react, user):
+			return user.id == ctx.author.id and react.emoji in reactions and message.id == react.message.id
+		"""
+		Attack another members pet
+
+		:param ctx: Message
+		:param target: Target member
+		:return:
+		"""
 		if target.id == ctx.author.id or target.bot:
-			return await ctx.send(f"**{ctx.author.display_name}** :face_with_raised_eyebrow:")
+			raise InvalidTarget(f"**{ctx.author.display_name}** :face_with_raised_eyebrow:")
 
 		with FileReader("pet_stats.json") as file:
 			author_stats = file.get(str(ctx.author.id), self.DEFAULT_STATS)
@@ -88,27 +99,17 @@ class Pet(commands.Cog, name="pet"):
 			color=0xff8000)
 
 		embed.set_thumbnail(url=ctx.author.avatar_url)
+		embed.add_field(name="How to Play", value="Select a reaction")  # Set fields
 
-		# Set fields
-		embed.add_field(name="How to Play", value="Select a reaction")
-
-		# Send initial message
-		message = await ctx.send(embed=embed)
-
-		# Spade, Heart, Club, Diamond
-		reactions = ["\U00002660", "\U00002665", "\U00002663", "\U00002666"]
+		message = await ctx.send(embed=embed)  # Send initial message
+		reactions = ["\U00002660", "\U00002665", "\U00002663", "\U00002666"]  # Spade, Heart, Club, Diamond
 
 		# Add reactions
 		for emoji in reactions:
 			await message.add_reaction(emoji)
 
-		# Wait for reaction from user
-		try:
-			await self.bot.wait_for(
-				"reaction_add",
-				timeout=60,
-				check=lambda react, user: user.id == ctx.author.id and react.emoji in reactions and message.id == react.message.id
-			)
+		try:  # Wait for reaction from user
+			await self.bot.wait_for("reaction_add", timeout=60, check=wait_for_react)
 		except asyncio.TimeoutError:
 			embed.remove_field(0)
 
@@ -133,8 +134,6 @@ class Pet(commands.Cog, name="pet"):
 
 		if reaction_index is None:
 			return await ctx.send(f"**{ctx.author.display_name}**, your pet battle caused an error")
-
-		# Pet Battle
 
 		# Reward text
 		battle_report = (
