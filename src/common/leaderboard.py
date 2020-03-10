@@ -30,11 +30,11 @@ LOOKUP_TABLE = {
 	},
 
 	Type.ABO: {
-		"title": "Auto Battle Online",
-		"file": "pet_stats.json",
-		"sort_func": lambda kv: kv[1]["xp"],
-		"columns": ["name", "poop"],
-		"column_funcs": {"poop": 79},
+		"title": "Auto Battles Online",
+		"file": "game_stats.json",
+		"sort_func": lambda kv: kv[1][2],
+		"columns": [1, 2],
+		"headers": {1: "Level", 2: "Trophies"}
 	}
 }
 

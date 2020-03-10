@@ -3,8 +3,8 @@ import discord
 from discord.ext import commands
 from datetime import datetime
 
-from src.common import (FileReader,)
-from src.common import (checks, myjson, errors)
+from src.common import FileReader
+from src.common import (checks, myjson, errors, leaderboard)
 
 from src.common.constants import MAX_DAYS_NO_UPDATE
 
@@ -62,8 +62,12 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 
 		await ctx.send(f"**{user.display_name}** :thumbsup:")
 
-	@commands.command(name="lb", help="Show guild trophy leaderboard")
-	async def leaderboard(self, ctx):
+	@commands.command(name="alb", help="Show guild trophy leaderboard")
+	async def leaderboard(self, ctx: commands.Context):
+		leaderboard_string = await leaderboard.create_leaderboard(ctx.author, leaderboard.Type.ABO)
+
+		return await ctx.send(leaderboard_string)
+
 		members = await self.get_members(ctx)
 
 		if not members:
