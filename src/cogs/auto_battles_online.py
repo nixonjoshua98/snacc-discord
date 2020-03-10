@@ -36,7 +36,7 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 		embed = discord.Embed(title=ctx.author.display_name, description=f"Auto Battles Online", color=0xff8000)
 
 		embed.set_thumbnail(url=ctx.author.avatar_url)
-		embed.set_footer(text="Darkness Family")
+		embed.set_footer(text="Darkness")
 
 		for i, txt in enumerate(("Date Recorded", "Level", "Trophies")):
 			embed.add_field(name=txt, value=stats[i], inline=False)

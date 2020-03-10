@@ -111,9 +111,7 @@ class Pet(commands.Cog, name="pet"):
 		try:  # Wait for reaction from user
 			await self.bot.wait_for("reaction_add", timeout=60, check=wait_for_react)
 		except asyncio.TimeoutError:
-			embed.remove_field(0)
-
-			embed.add_field(name="Battle Report", value="Timed out")
+			embed.set_field_at(0, name="Battle Report", value="Timed out")
 
 			return await message.edit(embed=embed)
 
@@ -142,9 +140,8 @@ class Pet(commands.Cog, name="pet"):
 			f":star: 0"
 		)
 
-		embed.remove_field(0)
-
-		embed.add_field(name="Battle Report", value=battle_report)
+		embed.set_field_at(0, name="Battle Report", value=battle_report)
+		embed.set_footer(text="Darkness")
 
 		await message.edit(embed=embed)
 
