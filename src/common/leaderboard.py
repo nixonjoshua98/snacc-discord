@@ -1,9 +1,10 @@
 import enum
+
 import discord
 
 from src.common import FileReader
 
-from src.cogs.pet import Pet
+from src.common import functions
 
 
 class Type(enum.IntEnum):
@@ -25,7 +26,7 @@ LOOKUP_TABLE = {
 		"file": "pet_stats.json",
 		"sort_func": lambda kv: kv[1]["xp"],
 		"columns": ["name", "xp"],
-		"column_funcs": {"xp": lambda xp: Pet.level_from_xp(xp)},
+		"column_funcs": {"xp": lambda data: functions.pet_level_from_xp(data)},
 		"headers": {"xp": "lvl"}
 	},
 
@@ -33,8 +34,11 @@ LOOKUP_TABLE = {
 		"title": "Auto Battles Online",
 		"file": "game_stats.json",
 		"sort_func": lambda kv: kv[1][2],
-		"columns": [1, 2],
-		"headers": {1: "Level", 2: "Trophies"}
+		"columns": [1, 2, 3],
+		"headers": {1: "Lvl", 2: "", 3: "Updated"},
+		"column_funcs": {3: lambda data: functions.abo_days_since_column(data)},
+		"leaderboard_size": 30,
+		"members_only": True
 	}
 }
 
@@ -42,16 +46,19 @@ LOOKUP_TABLE = {
 async def create_leaderboard(author: discord.Member, lb_type: Type) -> str:
 	lookup = LOOKUP_TABLE[lb_type]
 
-	with FileReader(lookup["file"]) as f:
-		data = f.data()
+	with FileReader(lookup["file"]) as stats, FileReader("server_settings.json") as server_settings:
+		data = stats.data()
 
 		# Sort the data if needed
 		if lookup.get("sort_func", None) is not None:
 			data = sorted(data.items(), key=lookup["sort_func"], reverse=True)
 
+		member_role_id = server_settings.get(author.guild.id, default_val={}).get("member_role", None)
+
 
 	MAX_COLUMN_SIZE = 15
-	LEADERBOARD_SIZE = 10
+	LEADERBOARD_SIZE = lookup.get("leaderboard_size", 10)
+	MEMBERS_ONLY = lookup.get("members_only", False)
 
 	rows, column_lengths = [], []
 
@@ -66,10 +73,12 @@ async def create_leaderboard(author: discord.Member, lb_type: Type) -> str:
 
 	rank = 0
 
+	member_role = discord.utils.get(author.guild.roles, id=member_role_id)
+
 	for user_id, user_data in data:
 		member = author.guild.get_member(int(user_id))
 
-		if member is None or member.bot:
+		if member is None or member.bot or (member_role not in member.roles and MEMBERS_ONLY):
 			continue
 
 		rank += 1
@@ -84,14 +93,16 @@ async def create_leaderboard(author: discord.Member, lb_type: Type) -> str:
 
 		# Additional columns
 		for extra_col in lookup.get("columns", []):
-			col_val = user_data[extra_col]
+			try:
+				col_val = user_data[extra_col]
+			except (IndexError, KeyError):
+				col_val = ""
+
+			func = lookup.get("column_funcs", {}).get(extra_col, None)
 
 			# Does a function need to be called?
-			if lookup.get("column_funcs", None) is not None:
-				# Get the function for the column, otherwise create a lambda which does nothing
-				func = lookup.get("column_funcs", dict).get(extra_col, lambda col: col)
-
-				col_val = func(col_val)
+			if func is not None:
+				col_val = func(user_data)
 
 			current_row.append(str(col_val)[0:MAX_COLUMN_SIZE])
 

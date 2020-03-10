@@ -29,10 +29,6 @@ class Pet(commands.Cog, name="pet"):
 	async def cog_check(self, ctx):
 		return await checks.in_game_channel(ctx)
 
-	@staticmethod
-	def level_from_xp(xp: int) -> int:
-		return 0
-
 	@commands.command(name="pet", aliases=["p"], help="Display your pet stats")
 	async def pet(self, ctx: commands.Context):
 		with FileReader("pet_stats.json") as file:
@@ -104,7 +100,6 @@ class Pet(commands.Cog, name="pet"):
 
 		message = await ctx.send(embed=embed)  # Send initial message
 		reactions = ["\U00002660", "\U00002665", "\U00002663", "\U00002666"]  # Spade, Heart, Club, Diamond
-
 		# Add reactions
 		for emoji in reactions:
 			await message.add_reaction(emoji)

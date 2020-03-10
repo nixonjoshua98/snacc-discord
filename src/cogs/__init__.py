@@ -19,5 +19,5 @@ ALL_COGS = (
 	Config,
 	Floor,
 	Bank,
-
+	Pet
 )
