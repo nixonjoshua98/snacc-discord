@@ -60,6 +60,10 @@ async def create_leaderboard(author: discord.Member, lb_type: Type) -> str:
 	# Column headers
 	rows.append(["#", "MEMBER"] + [lookup.get("headers", {}).get(col, col).upper() for col in lookup.get("columns", [])])
 
+	# Initial column widths
+	for i, col in enumerate(rows[-1]):
+		column_lengths.append(len(col))
+
 	rank = 0
 
 	for user_id, user_data in data:
@@ -98,10 +102,9 @@ async def create_leaderboard(author: discord.Member, lb_type: Type) -> str:
 
 		# Update columns lengths
 		for i, col in enumerate(current_row):
-			if i == len(column_lengths):
-				column_lengths.append(0)
-
 			column_lengths[i] = max(column_lengths[i], len(col))
+
+	print(column_lengths)
 
 	leaderboard_string = f"{lookup['title']}\n"
 

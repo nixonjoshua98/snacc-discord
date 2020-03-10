@@ -64,66 +64,12 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 
 	@commands.command(name="alb", help="Show guild trophy leaderboard")
 	async def leaderboard(self, ctx: commands.Context):
+		"""
+		Shows the ABO leaderboard
+
+		:param ctx: The message context
+		:return:
+		"""
 		leaderboard_string = await leaderboard.create_leaderboard(ctx.author, leaderboard.Type.ABO)
 
 		return await ctx.send(leaderboard_string)
-
-		members = await self.get_members(ctx)
-
-		if not members:
-			return await ctx.send("Not enough data :frowning:")
-
-		members.sort(key=lambda ele: ele[-1][-1], reverse=True)
-
-		name_length = 15
-
-		msg = f"```c++\n{ctx.guild.name} Leaderboard\n"
-		msg += f"\n    Username{' ' * (name_length - 7)}Lvl Trophies"
-
-		rank = 1
-
-		# Create the leaderboard
-		for member, stats in members:
-			date, level, trophies = stats
-
-			days_ago = (datetime.today() - datetime.strptime(date, "%d/%m/%Y %H:%M:%S")).days
-			username_gap = " " * (name_length - len(member.display_name)) + " "
-
-			msg += f"\n#{rank:02d} {member.display_name[0:name_length]}"
-			msg += f"{username_gap}{level:03d} {trophies:04d}"
-			msg += f" {days_ago} days ago" if days_ago >= MAX_DAYS_NO_UPDATE else ""
-
-			rank += 1
-
-		msg += "```"
-
-		await ctx.send(msg)
-
-	@staticmethod
-	async def get_members(ctx: commands.Context) -> list:
-		with FileReader("server_settings.json") as f:
-			member_role_id = f.get(ctx.guild.id, {}).get("member_role", None)
-
-		member_role = discord.utils.get(ctx.guild.roles, id=member_role_id)
-
-		if member_role is None:
-			return []
-
-		members = []
-
-		# Load the members with stats
-		with FileReader("game_stats.json") as file:
-			for member in ctx.guild.members:
-
-				# Ignore non-members
-				if member_role not in member.roles:
-					continue
-
-				stats = file.get(str(member.id), default_val=None)
-
-				if stats is not None:
-					members.append((member, stats))
-
-		return members
-
-
