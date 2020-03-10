@@ -21,7 +21,7 @@ class Greetings(commands.Cog, name="greetings"):
 		member_role = discord.utils.get(member.guild.roles, id=initial_role_id)
 
 		if member_role is not None:
-			await member.add_roles(member_role)
+			await member.add_roles(member_role, atomic=True)
 
 	@commands.Cog.listener()
 	async def on_member_remove(self, member):
