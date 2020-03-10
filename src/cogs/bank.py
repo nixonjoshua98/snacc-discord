@@ -17,7 +17,7 @@ class Bank(commands.Cog, name="bank"):
 		myjson.download_file("coins.json")
 
 	async def cog_check(self, ctx):
-		return await checks.in_game_room(ctx)
+		return await checks.in_game_channel(ctx)
 
 	@commands.command(name="balance", aliases=["bal"], help="Display your coin count")
 	async def balance(self, ctx: commands.Context):

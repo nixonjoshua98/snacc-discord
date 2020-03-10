@@ -17,7 +17,7 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 		myjson.download_file(self.FILE)
 
 	async def cog_check(self, ctx):
-		return await checks.in_rank_room(ctx) and await checks.has_member_role(ctx)
+		return await checks.in_abo_channel(ctx) and await checks.has_member_role(ctx)
 
 	@commands.is_owner()
 	@commands.command(name="cleanup", hidden=True)
@@ -86,7 +86,7 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 
 		name_length = 15
 
-		msg = "```c++\nDarkness Family Leaderboard\n"
+		msg = f"```c++\n{ctx.guild.name} Leaderboard\n"
 		msg += f"\n    Username{' ' * (name_length - 7)}Lvl Trophies"
 
 		rank = 1

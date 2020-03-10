@@ -2,7 +2,6 @@ from discord.ext import commands
 
 from src.common import checks
 
-
 class ServerStats(commands.Cog, name="server"):
 	def __init__(self, bot):
 		self.bot = bot

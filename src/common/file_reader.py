@@ -3,7 +3,6 @@ import json
 
 from src.common.constants import RESOURCES_DIR
 
-
 class FileReader:
 	def __init__(self, file_name):
 		self._file_name = os.path.join(RESOURCES_DIR, file_name)
@@ -13,13 +12,13 @@ class FileReader:
 
 	# - SETS -
 
-	def set(self, key: str, value):
-		self._file_updated = True
-		self._loaded_file[str(key)] = value
-
 	def overwrite(self, data: dict):
 		self._file_updated = True
 		self._loaded_file = data
+
+	def set(self, key: str, value):
+		self._file_updated = True
+		self._loaded_file[str(key)] = value
 
 	def remove(self, key: str):
 		self._file_updated = True

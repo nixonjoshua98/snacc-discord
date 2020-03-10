@@ -24,7 +24,7 @@ class Pet(commands.Cog, name="pet"):
 		myjson.download_file("pet_stats.json")
 
 	async def cog_check(self, ctx):
-		return await checks.in_game_room(ctx)
+		return await checks.in_game_channel(ctx)
 
 	@staticmethod
 	def level_from_xp(xp: int) -> int:

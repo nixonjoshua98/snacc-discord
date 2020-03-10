@@ -3,6 +3,8 @@ import os
 # Paths
 RESOURCES_DIR = os.path.join(os.getcwd(), "src", "resources")
 
+SNACCMAN_ID = 281171949298647041
+
 # Roles
 MEMBER_ROLE_ID = 666615010579054614
 

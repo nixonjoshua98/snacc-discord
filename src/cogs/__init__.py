@@ -5,7 +5,8 @@ from .server_stats import ServerStats
 from .greetings import Greetings
 from .casino import Casino
 from .floor import Floor
-from .admin import Admin
+from .backup import Backup
+from .config import Config
 from .bank import Bank
 from .pet import Pet
 
@@ -15,7 +16,8 @@ ALL_COGS = (
 	ServerStats,
 	Greetings,
 	Casino,
-	Admin,
+	Backup,
+	Config,
 	Floor,
 	Bank,
 	Pet

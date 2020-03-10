@@ -3,22 +3,19 @@ import os
 
 from src import cogs
 from src.common import myjson
+from src.common import FileReader
 from src.common import asycio_schedule
 
 from discord.ext import commands
 
 class MyBot(commands.Bot):
 	def __init__(self):
-		super().__init__(command_prefix="!", case_insensitive=True)
+		super().__init__(command_prefix=self.prefix, case_insensitive=True)
 
 	async def on_ready(self):
 		await self.wait_until_ready()
 
 		print("Bot successfully started")
-
-		if os.getenv("DEBUG", False):
-			print("Changed prefix to '-'")
-			self.command_prefix = "-"
 
 		for c in cogs.ALL_COGS:
 			self.add_cog(c(self))
@@ -47,9 +44,14 @@ class MyBot(commands.Bot):
 		elif message.author.id == self.user.id:
 			return
 
-		# Valid command
-		elif message.content.startswith(self.command_prefix):
-			await self.process_commands(message)
+		await self.process_commands(message)
+
+	@staticmethod
+	def prefix(bot: commands.Bot, message: discord.message):
+		with FileReader("server_settings.json") as f:
+			data = f.get(str(message.guild.id), default_val={})
+
+		return data.get("prefix", "!")
 
 	def run(self):
 		super().run("NjY2NjE2NTE1NDM2NDc4NDcz.Xh2xCA.X8d9IFcSW_2e4c_maBMoXlxmI7Y")
