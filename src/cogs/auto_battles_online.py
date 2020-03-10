@@ -67,7 +67,7 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 		members = await self.get_members(ctx)
 
 		if not members:
-			return ctx.send("Not enough data :frowning:")
+			return await ctx.send("Not enough data :frowning:")
 
 		members.sort(key=lambda ele: ele[-1][-1], reverse=True)
 
@@ -104,6 +104,9 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 			member_role_id = f.get(ctx.guild.id, None)
 
 		member_role = discord.utils.get(ctx.guild.roles, id=member_role_id)
+
+		if member_role is None:
+			return []
 
 		members = []
 
