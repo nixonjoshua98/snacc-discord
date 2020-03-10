@@ -44,6 +44,7 @@ class Pet(commands.Cog, name="pet"):
 			color=0xff8000)
 
 		embed.set_thumbnail(url=ctx.author.avatar_url)
+		embed.set_footer(text="Darkness")
 
 		stats_text = (
 			f":heart: {pet_stats['health']:,}\n"

@@ -27,6 +27,14 @@ LOOKUP_TABLE = {
 		"columns": ["name", "xp"],
 		"column_funcs": {"xp": lambda xp: Pet.level_from_xp(xp)},
 		"headers": {"xp": "lvl"}
+	},
+
+	Type.ABO: {
+		"title": "Auto Battle Online",
+		"file": "pet_stats.json",
+		"sort_func": lambda kv: kv[1]["xp"],
+		"columns": ["name", "poop"],
+		"column_funcs": {"poop": 79},
 	}
 }
 
