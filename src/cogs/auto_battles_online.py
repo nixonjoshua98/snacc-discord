@@ -95,23 +95,6 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 
 		await ctx.send(msg)
 
-	@commands.is_owner()
-	@commands.command(name="shame", hidden=True)
-	async def shame(self, ctx):
-		shame_members = []
-		for member, stats in await self.get_members(ctx):
-			if stats is not None:
-				date, level, trophies = stats
-				days_ago = (datetime.today() - datetime.strptime(date, "%d/%m/%Y %H:%M:%S")).days
-				if days_ago < MAX_DAYS_NO_UPDATE:
-					continue
-
-			shame_members.append(member)
-
-		msg = "**Lacking Activity**\n" + " ".join(tuple(map(lambda m: m.mention, shame_members)))
-
-		await ctx.send(msg)
-
 	@staticmethod
 	async def get_members(ctx: commands.Context) -> list:
 		with FileReader("server_settings.json") as f:
