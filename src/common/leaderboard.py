@@ -52,14 +52,21 @@ async def create_leaderboard(author: discord.Member, lb_type: Type) -> str:
 	# Column headers
 	rows.append(["#", "MEMBER"] + [lookup.get("headers", {}).get(col, col).upper() for col in lookup.get("columns", [])])
 
-	for rank, (user_id, user_data) in enumerate(data, start=1):
+	rank = 0
+
+	for user_id, user_data in data:
 		member = author.guild.get_member(int(user_id))
+
+		if member is None:
+			continue
+
+		rank += 1
 
 		# Rank
 		rank_string = f"#{rank:02d}"
 
 		# Get username to show on the row
-		username = member.display_name[0:MAX_COLUMN_SIZE] if member else ">> User Left <<"
+		username = member.display_name[0:MAX_COLUMN_SIZE]
 
 		current_row = [rank_string, username]
 
