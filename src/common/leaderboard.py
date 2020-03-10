@@ -78,7 +78,7 @@ async def create_leaderboard(author: discord.Member, lb_type: Type) -> str:
 	for user_id, user_data in data:
 		member = author.guild.get_member(int(user_id))
 
-		if member is None or member.bot or (member_role not in member.roles and MEMBERS_ONLY):
+		if member is None or member.bot or (member_role and member_role not in member.roles and MEMBERS_ONLY):
 			continue
 
 		rank += 1
