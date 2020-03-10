@@ -1,4 +1,5 @@
 import discord
+import asyncio
 
 from discord.ext import commands
 
@@ -102,9 +103,18 @@ class Pet(commands.Cog, name="pet"):
 			await message.add_reaction(emoji)
 
 		# Wait for reaction from user
-		await self.bot.wait_for("reaction_add", timeout=60,
-			check=lambda react, user: user.id == ctx.author.id and react.emoji in reactions and message.id == react.message.id
-		)
+		try:
+			await self.bot.wait_for(
+				"reaction_add",
+				timeout=60,
+				check=lambda react, user: user.id == ctx.author.id and react.emoji in reactions and message.id == react.message.id
+			)
+		except asyncio.TimeoutError:
+			embed.remove_field(0)
+
+			embed.add_field(name="Battle Report", value="Timed out")
+
+			return await message.edit(embed=embed)
 
 		reaction_index = None
 

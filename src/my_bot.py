@@ -3,14 +3,14 @@ import os
 
 from src import cogs
 from src.common import myjson
-from src.common import FileReader
+from src.common import (CustomHelpCommand, FileReader)
 from src.common import asycio_schedule
 
 from discord.ext import commands
 
 class MyBot(commands.Bot):
 	def __init__(self):
-		super().__init__(command_prefix=self.prefix, case_insensitive=True)
+		super().__init__(command_prefix=self.prefix, case_insensitive=True, help_command=CustomHelpCommand())
 
 	async def on_ready(self):
 		await self.wait_until_ready()

@@ -20,9 +20,6 @@ class Config(commands.Cog):
 		if ctx.invoked_subcommand is not None:
 			return None
 
-		for parent, com in self.config.walk_commands():
-			print(parent, com)
-
 	@config.command(name="game", help="Register the channel as a game channel")
 	async def add_game_channel(self, ctx: commands.Context):
 		with FileReader("server_settings.json") as f:
@@ -54,7 +51,7 @@ class Config(commands.Cog):
 
 			f.set(str(ctx.guild.id), data)
 
-			await ctx.send(f"Prefix has been updated to **{new_prefix}**")
+		await ctx.send(f"Prefix has been updated to **{new_prefix}**")
 
 	@config.command(name="member", help="Set the member role")
 	async def set_member_role(self, ctx: commands.Context, new_role: discord.Role):
