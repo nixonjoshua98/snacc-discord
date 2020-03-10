@@ -4,8 +4,8 @@ import os
 from discord.ext import commands
 
 from src import cogs
-from src.common import (myjson, checks, asycio_schedule)
-from src.common import FileReader
+from src.common import (myjson, asycio_schedule)
+from src.common import (FileReader, CustomHelpCommand)
 
 class MyBot(commands.Bot):
 	def __init__(self):
@@ -27,8 +27,6 @@ class MyBot(commands.Bot):
 		return await ctx.send(esc)
 
 	async def on_message(self, message: discord.Message):
-		if os.getenv("DEBUG", False) and not await self.is_owner(message.author):
-			return
 
 		# Ignore DMs
 		if message.guild is None:
