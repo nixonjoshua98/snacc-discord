@@ -104,8 +104,6 @@ async def create_leaderboard(author: discord.Member, lb_type: Type) -> str:
 		for i, col in enumerate(current_row):
 			column_lengths[i] = max(column_lengths[i], len(col))
 
-	print(column_lengths)
-
 	leaderboard_string = f"{lookup['title']}\n"
 
 	leaderboard_string += "-" * (sum(column_lengths) + len(column_lengths)) + "\n"

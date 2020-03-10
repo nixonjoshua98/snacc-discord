@@ -8,7 +8,7 @@ class Backup(commands.Cog, command_attrs=dict(hidden=True), name="backup"):
 		self.bot = bot
 
 	async def cog_check(self, ctx):
-		return await checks.in_any_bot_channel(ctx) and await checks.is_snaccman(ctx)
+		return await checks.in_any_bot_channel(ctx) and commands.is_owner()
 
 	@commands.command(name="backup")
 	async def backup(self, ctx):

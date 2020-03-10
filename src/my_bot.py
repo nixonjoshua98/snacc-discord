@@ -1,12 +1,11 @@
 import discord
 import os
 
-from src import cogs
-from src.common import myjson
-from src.common import (CustomHelpCommand, FileReader)
-from src.common import asycio_schedule
-
 from discord.ext import commands
+
+from src import cogs
+from src.common import (myjson, checks, asycio_schedule)
+from src.common import FileReader
 
 class MyBot(commands.Bot):
 	def __init__(self):

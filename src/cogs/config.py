@@ -20,6 +20,8 @@ class Config(commands.Cog):
 		if ctx.invoked_subcommand is not None:
 			return None
 
+		return await ctx.send("**Configuring...not really**")
+
 	@config.command(name="game", help="Register the channel as a game channel")
 	async def add_game_channel(self, ctx: commands.Context):
 		with FileReader("server_settings.json") as f:

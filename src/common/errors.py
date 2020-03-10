@@ -17,6 +17,3 @@ class ServerOwnerError(CommandError):
 
 class InvalidTarget(CommandError):
 	""" Invalid User """
-
-class SnaccmanError(CommandError):
-	""" You are not me """

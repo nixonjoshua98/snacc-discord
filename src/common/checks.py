@@ -3,27 +3,13 @@
 import discord
 from discord.ext import commands
 
-from src.common.errors import (MinimumCoinError, WrongChannelError, ServerOwnerError, RoleError, SnaccmanError)
-
 from src.common import FileReader
-
 from src.common.constants import SNACCMAN_ID
-
-async def owner_is_guild_owner(ctx):
-	if ctx.guild.owner.id != SNACCMAN_ID:
-		raise ServerOwnerError("**This is currently disabled in this server**")
-
-	return True
-
-async def is_snaccman(ctx):
-	if ctx.author.id != SNACCMAN_ID:
-		raise SnaccmanError("You do not have access to this command")
-
-	return True
+from src.common.errors import (MinimumCoinError, WrongChannelError, ServerOwnerError, RoleError)
 
 async def is_server_owner(ctx):
 	if ctx.author.id not in (ctx.guild.owner.id, SNACCMAN_ID):
-		raise ServerOwnerError("**Server Owner Only**")
+		raise ServerOwnerError(f"**{ctx.author.display_name}**, you do not have access to this command")
 
 	return True
 
