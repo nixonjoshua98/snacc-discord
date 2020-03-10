@@ -20,7 +20,7 @@ class Config(commands.Cog):
 		if ctx.invoked_subcommand is None:
 			await ctx.send("Mhm")
 
-	@config.command(name="setgame", help="Register the channel as a game channel")
+	@config.command(name="game", help="Register the channel as a game channel")
 	async def add_game_channel(self, ctx: commands.Context):
 		with FileReader("server_settings.json") as f:
 			server_data = f.get(ctx.guild.id, {})
@@ -31,7 +31,7 @@ class Config(commands.Cog):
 
 			await ctx.send(f"**{ctx.channel.name}** has been registered as a game channel :smile:")
 
-	@config.command(name="setabo", help="Register the channel as an ABO channel")
+	@config.command(name="abo", help="Register the channel as an ABO channel")
 	async def add_abo_channel(self, ctx: commands.Context):
 		with FileReader("server_settings.json") as f:
 			server_data = f.get(ctx.guild.id, {})
@@ -63,3 +63,14 @@ class Config(commands.Cog):
 			f.set(str(ctx.guild.id), data)
 
 			await ctx.send(f"Member role has been updated to **{new_role.name}**")
+
+	@config.command(name="entryrole", help="Set the member role")
+	async def set_entry_role(self, ctx: commands.Context, new_role: discord.Role):
+		with FileReader("server_settings.json") as f:
+			data = f.get(str(ctx.guild.id), default_val={})
+
+			data["entry_role"] = new_role.id
+
+			f.set(str(ctx.guild.id), data)
+
+			await ctx.send(f"Entry role has been updated to **{new_role.name}**")
