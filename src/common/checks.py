@@ -10,7 +10,7 @@ from src.common import FileReader
 from src.common.constants import SNACCMAN_ID
 
 async def owner_is_guild_owner(ctx):
-	if ctx.author.id != SNACCMAN_ID:
+	if ctx.guild.id != SNACCMAN_ID:
 		raise ServerOwnerError("**This is currently disabled in this server**")
 
 	return True
@@ -20,7 +20,6 @@ async def is_server_owner(ctx):
 		raise ServerOwnerError("**Server Owner Only...and Snaccman**")
 
 	return True
-
 
 async def has_member_role(ctx):
 	with FileReader("server_settings.json") as f:
@@ -36,7 +35,6 @@ async def has_member_role(ctx):
 
 	return True
 
-
 async def in_any_bot_channel(ctx):
 	with FileReader("server_settings.json") as f:
 		abo_channels = f.get(ctx.guild.id, default_val={}).get("abo_channels", [])
@@ -49,7 +47,6 @@ async def in_any_bot_channel(ctx):
 
 	return True
 
-
 async def in_game_channel(ctx):
 	with FileReader("server_settings.json") as f:
 		game_channels = f.get(ctx.guild.id, default_val={}).get("game_channels", [])
@@ -59,7 +56,6 @@ async def in_game_channel(ctx):
 
 	return True
 
-
 async def in_abo_channel(ctx):
 	with FileReader("server_settings.json") as f:
 		abo_channels = f.get(ctx.guild.id, default_val={}).get("abo_channels", [])
@@ -68,7 +64,6 @@ async def in_abo_channel(ctx):
 		raise WrongChannelError(f"**{ctx.author.display_name}**, this command is disabled in this channel.")
 
 	return True
-
 
 def has_minimum_coins(file, amount):
 	async def predicate(ctx):
