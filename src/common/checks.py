@@ -10,7 +10,7 @@ from src.common import FileReader
 from src.common.constants import SNACCMAN_ID
 
 async def owner_is_guild_owner(ctx):
-	if ctx.guild.id != SNACCMAN_ID:
+	if ctx.guild.owner.id != SNACCMAN_ID:
 		raise ServerOwnerError("**This is currently disabled in this server**")
 
 	return True

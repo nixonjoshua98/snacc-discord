@@ -66,6 +66,9 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 	async def leaderboard(self, ctx):
 		members = await self.get_members(ctx)
 
+		if not members:
+			return ctx.send("Not enough data :frowning:")
+
 		members.sort(key=lambda ele: ele[-1][-1], reverse=True)
 
 		name_length = 15
