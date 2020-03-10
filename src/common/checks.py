@@ -13,6 +13,8 @@ async def owner_is_guild_owner(ctx):
 	if ctx.author.id != SNACCMAN_ID:
 		raise ServerOwnerError("**This is currently disabled in this server**")
 
+	return True
+
 async def is_server_owner(ctx):
 	if ctx.author.id not in (ctx.guild.owner.id, SNACCMAN_ID):
 		raise ServerOwnerError("**Server Owner Only...and Snaccman**")
@@ -26,7 +28,7 @@ async def has_member_role(ctx):
 
 	member_role = discord.utils.get(ctx.guild.roles, id=member_role_id)
 
-	if member_role_id is None or member_role is None:
+	if member_role is None:
 		raise RoleError(f"**{ctx.guild.owner.mention}** member role is invalid or has not been set")
 
 	elif member_role not in ctx.author.roles:
