@@ -15,7 +15,7 @@ class Greetings(commands.Cog, name="greetings"):
 		if sys_channel:
 			await sys_channel.send(f"Welcome {member.mention} to {member.guild.name}!")
 
-		with FileReader("server_settings") as f:
+		with FileReader("server_settings.json") as f:
 			initial_role_id = f.get(member.guild.id, default_val={}).get("entry_role", None)
 
 		member_role = discord.utils.get(member.guild.roles, id=initial_role_id)

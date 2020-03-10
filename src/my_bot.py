@@ -18,9 +18,9 @@ class MyBot(commands.Bot):
 		print("Bot successfully started")
 
 		for c in cogs.ALL_COGS:
-			self.add_cog(c(self))
-
 			print(f"Added Cog: {c.__name__}")
+
+			self.add_cog(c(self))
 
 		asycio_schedule.add_task(60 * 5, myjson.backup_background_task, 60 * 5)
 
