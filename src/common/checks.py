@@ -7,7 +7,11 @@ from src.common.errors import (MinimumCoinError, WrongChannelError, ServerOwnerE
 
 from src.common import FileReader
 
-from src.common.constants import (MEMBER_ROLE_ID, GAME_CHANNELS, RANK_CHANNELS, BOT_CHANNELS, SNACCMAN_ID)
+from src.common.constants import SNACCMAN_ID
+
+async def owner_is_guild_owner(ctx):
+	if ctx.author.id != SNACCMAN_ID:
+		raise ServerOwnerError("**This is currently disabled in this server**")
 
 async def is_server_owner(ctx):
 	if ctx.author.id not in (ctx.guild.owner.id, SNACCMAN_ID):

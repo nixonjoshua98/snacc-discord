@@ -6,7 +6,7 @@ from datetime import datetime
 from src.common import (FileReader,)
 from src.common import (checks, myjson, errors)
 
-from src.common.constants import (MEMBER_ROLE_ID, MAX_DAYS_NO_UPDATE)
+from src.common.constants import MAX_DAYS_NO_UPDATE
 
 class AutoBattlesOnline(commands.Cog, name="abo"):
 	FILE = "game_stats.json"
@@ -17,27 +17,11 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 		myjson.download_file(self.FILE)
 
 	async def cog_check(self, ctx):
-		return await checks.in_abo_channel(ctx) and await checks.has_member_role(ctx)
-
-	@commands.is_owner()
-	@commands.command(name="cleanup", hidden=True)
-	async def cleanup(self, ctx: commands.Context):
-		total_removed = 0
-
-		member_role = discord.utils.get(ctx.guild.roles, id=MEMBER_ROLE_ID)
-
-		with FileReader("game_stats.json") as file:
-			data = file.data().copy()
-
-			for member_id, _ in data.items():
-				member = ctx.guild.get_member(int(member_id))
-
-				if member is None or member_role not in member.roles:
-					file.remove(member_id)
-
-					total_removed += 1
-
-		await ctx.send(f"Removed **{total_removed}** users")
+		return (
+				await checks.in_abo_channel(ctx) and
+				await checks.has_member_role(ctx) and
+				await checks.owner_is_guild_owner(ctx)
+		)
 
 	@commands.command(name="me", help="Display your own stats")
 	async def get_stats(self, ctx: commands.Context):
@@ -130,7 +114,13 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 
 	@staticmethod
 	async def get_members(ctx: commands.Context) -> list:
-		member_role = discord.utils.get(ctx.guild.roles, id=MEMBER_ROLE_ID)
+		with FileReader("server_settings.json") as f:
+			member_role_id = f.get(ctx.guild.id, None)
+
+		member_role = discord.utils.get(ctx.guild.roles, id=member_role_id)
+
+		if member_role is None:
+			return []
 
 		members = []
 

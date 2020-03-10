@@ -6,7 +6,7 @@ from src.common import checks
 from src.common import FileReader
 from src.common import myjson
 
-class Config(commands.Cog, name="config"):
+class Config(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
