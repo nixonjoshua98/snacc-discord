@@ -105,9 +105,6 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 
 		member_role = discord.utils.get(ctx.guild.roles, id=member_role_id)
 
-		if member_role is None:
-			return []
-
 		members = []
 
 		# Load the members with stats
