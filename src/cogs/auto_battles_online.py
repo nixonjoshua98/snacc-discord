@@ -101,7 +101,7 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 	@staticmethod
 	async def get_members(ctx: commands.Context) -> list:
 		with FileReader("server_settings.json") as f:
-			member_role_id = f.get(ctx.guild.id, None)
+			member_role_id = f.get(ctx.guild.id, {}).get("member_role", None)
 
 		member_role = discord.utils.get(ctx.guild.roles, id=member_role_id)
 
