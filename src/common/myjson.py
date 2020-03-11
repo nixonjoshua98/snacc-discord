@@ -68,7 +68,7 @@ def backup_background_task(backup_cooldown: int):
 
 		modified_date = datetime.fromtimestamp(os.path.getmtime(path))
 
-		if (datetime.today() - modified_date).total_seconds() <= backup_cooldown:
+		if (datetime.today() - modified_date).total_seconds() < backup_cooldown:
 			return upload_file(f)
 
 	with multiprocessing.dummy.Pool(processes=4) as pool:

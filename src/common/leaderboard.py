@@ -139,7 +139,7 @@ async def create_leaderboard(author: discord.Member, lb_type: Type) -> str:
 		for j, col in enumerate(author_row):
 			leaderboard_string += f"{col}{' ' * (column_lengths[j] - len(col))}" + " "
 
-	print(f"Time taken to build leaderboard ({lb_type}):", round(time.time() - now, 5), sep=" ")
+	print(f"Time taken to build leaderboard ({lb_type.name}):", round(time.time() - now, 5), sep=" ")
 
 	return "```c++\n" + leaderboard_string + "```"
 
