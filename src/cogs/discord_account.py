@@ -2,14 +2,14 @@ from discord.ext import commands
 
 from src.common import checks
 
-class DiscordAccount(commands.Cog, name="account"):
+class DiscordAccount(commands.Cog, command_attrs=dict(hidden=True), name="account"):
 	def __init__(self, bot):
 		self.bot = bot
 
 	async def cog_check(self, ctx):
 		return await checks.in_any_bot_channel(ctx)
 
-	@commands.command(name="join", help="Date user joined the server")
+	@commands.command(name="joined", help="Date user joined the server")
 	async def joined(self, ctx):
 		date = ctx.author.joined_at.strftime("%B %d, %Y")
 

@@ -2,7 +2,7 @@ from discord.ext import commands
 
 from src.common import checks
 
-class ServerStats(commands.Cog, name="server"):
+class ServerStats(commands.Cog, command_attrs=dict(hidden=True), name="server"):
 	def __init__(self, bot):
 		self.bot = bot
 
