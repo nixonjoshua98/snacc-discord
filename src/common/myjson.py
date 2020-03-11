@@ -20,6 +20,14 @@ headers = {
 	"Content-Type": "application/json"
 }
 
+def _output_results(results: list, method: str):
+	for i, k in enumerate(JSON_URL_LOOKUP):
+		if results[i] is True:
+			print(f"{method}ed {k}")
+
+		elif results[i] is False:
+			print(f"Failed to {method} {k}")
+
 
 def download_file(file: str):
 	url = JSON_URL_LOOKUP.get(file, None)
@@ -33,10 +41,7 @@ def download_file(file: str):
 		with FileReader(file) as f:
 			f.overwrite(response.json())
 
-		print(f"Downloaded '{file}'")
-
-	else:
-		print(f"Failed to download '{file}'")
+	return response.status_code == requests.codes.ok
 
 
 def upload_file(file: str) :
@@ -44,13 +49,17 @@ def upload_file(file: str) :
 
 	url = JSON_URL_LOOKUP.get(file, None)
 
-	if not debug_mode and url is not None:
+	if url is None:
+		return
+
+	if not debug_mode:
 		with FileReader(file) as f:
 			data = f.data()
 
-		requests.put(url, headers=headers, data=json.dumps(data))
+		response = requests.put(url, headers=headers, data=json.dumps(data))
 
-		print(f"Uploaded '{file}'")
+		return response.status_code == requests.codes.ok
+
 
 
 def backup_background_task(backup_cooldown: int):
@@ -60,17 +69,23 @@ def backup_background_task(backup_cooldown: int):
 		modified_date = datetime.fromtimestamp(os.path.getmtime(path))
 
 		if (datetime.today() - modified_date).total_seconds() <= backup_cooldown:
-			upload_file(f)
+			return upload_file(f)
 
 	with multiprocessing.dummy.Pool(processes=4) as pool:
-		pool.map(upload, list(JSON_URL_LOOKUP.keys()))
+		results = pool.map(upload, list(JSON_URL_LOOKUP.keys()))
+
+	_output_results(results, "upload")
 
 
 def backup_all_files():
 	with multiprocessing.dummy.Pool(processes=4) as pool:
-		pool.map(upload_file, list(JSON_URL_LOOKUP.keys()))
+		results = pool.map(upload_file, list(JSON_URL_LOOKUP.keys()))
+
+	_output_results(results, "upload")
 
 
 def download_all_files():
 	with multiprocessing.dummy.Pool(processes=4) as pool:
-		pool.map(download_file, list(JSON_URL_LOOKUP.keys()))
+		results = pool.map(download_file, list(JSON_URL_LOOKUP.keys()))
+
+	_output_results(results, "download")

@@ -4,7 +4,6 @@ import asyncio
 from discord.ext import commands
 
 from src.common import checks
-from src.common import myjson
 from src.common import functions
 from src.common import FileReader
 from src.common import leaderboard
@@ -24,8 +23,6 @@ class Pet(commands.Cog, name="pet"):
 
 	def __init__(self, bot):
 		self.bot = bot
-
-		myjson.download_file("pet_stats.json")
 
 	async def cog_check(self, ctx):
 		return await checks.in_game_channel(ctx)

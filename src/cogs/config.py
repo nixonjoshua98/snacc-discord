@@ -4,13 +4,10 @@ from discord.ext import commands
 
 from src.common import checks
 from src.common import FileReader
-from src.common import myjson
 
 class Config(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
-
-		myjson.download_file("server_settings.json")
 
 	async def cog_check(self, ctx: commands.Context):
 		return await checks.is_server_owner(ctx)

@@ -6,7 +6,6 @@ from .greetings import Greetings
 from .backup import Backup
 from .config import Config
 from .casino import Casino
-from .floor import Floor
 from .bank import Bank
 from .pet import Pet
 
@@ -17,7 +16,6 @@ ALL_COGS = (
 	Casino,
 	Backup,
 	Config,
-	Floor,
 	Bank,
 	Pet
 )

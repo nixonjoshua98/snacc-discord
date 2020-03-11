@@ -4,7 +4,6 @@ import discord
 from discord.ext import commands
 
 from src.common import checks
-from src.common import myjson
 
 from src.common import FileReader
 from src.common import leaderboard
@@ -12,8 +11,6 @@ from src.common import leaderboard
 class Bank(commands.Cog, name="bank"):
 	def __init__(self, bot):
 		self.bot = bot
-
-		myjson.download_file("coins.json")
 
 	async def cog_check(self, ctx):
 		return await checks.in_game_channel(ctx)
@@ -33,8 +30,8 @@ class Bank(commands.Cog, name="bank"):
 
 		await ctx.send(f"**{ctx.author.display_name}** has a total of **{author_bal:,}** coins")
 
-	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
-	@commands.command(name="free", help="Get free coins [1hr Cooldown]")
+	@commands.cooldown(1, 60 * 15, commands.BucketType.user)
+	@commands.command(name="free", aliases=["pickup"], help="Get free coins [15m Cooldown]")
 	async def free(self, ctx: commands.Context):
 		"""
 		Gives the member a few coins, has a cooldown between uses.

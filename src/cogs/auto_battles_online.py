@@ -4,15 +4,11 @@ from discord.ext import commands
 from datetime import datetime
 
 from src.common import FileReader
-from src.common import (checks, myjson, errors, leaderboard)
+from src.common import (checks, errors, leaderboard)
 
 class AutoBattlesOnline(commands.Cog, name="abo"):
-	FILE = "game_stats.json"
-
 	def __init__(self, bot):
 		self.bot = bot
-
-		myjson.download_file(self.FILE)
 
 	async def cog_check(self, ctx):
 		return (
