@@ -60,7 +60,7 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 
 		await ctx.send(f"**{user.display_name}** :thumbsup:")
 
-	@commands.command(name="alb", help="Show guild trophy leaderboard")
+	@commands.command(name="alb", help="Show guild Auto battles Onlin")
 	async def leaderboard(self, ctx: commands.Context):
 		"""
 		Shows the ABO leaderboard

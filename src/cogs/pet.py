@@ -5,6 +5,7 @@ from discord.ext import commands
 
 from src.common import checks
 from src.common import myjson
+from src.common import functions
 from src.common import FileReader
 from src.common import leaderboard
 
@@ -36,7 +37,7 @@ class Pet(commands.Cog, name="pet"):
 
 		embed = discord.Embed(
 			title=ctx.author.display_name,
-			description=f"{pet_stats['name']} | Lvl: {self.level_from_xp(pet_stats['xp'])}",
+			description=f"{pet_stats['name']} | Lvl: {functions.pet_level_from_xp(pet_stats['xp'])}",
 			color=0xff8000)
 
 		embed.set_thumbnail(url=ctx.author.avatar_url)
@@ -92,14 +93,15 @@ class Pet(commands.Cog, name="pet"):
 		# Create embed
 		embed = discord.Embed(
 			title="Pet Battle",
-			description=f"**'{author_stats['name']}'** vs **'{target_stats['name']}'**",
-			color=0xff8000)
+			color=0xff8000,
+			description=f"**'{author_stats['name']}'** vs **'{target_stats['name']}'**")
 
 		embed.set_thumbnail(url=ctx.author.avatar_url)
 		embed.add_field(name="How to Play", value="Select a reaction")  # Set fields
 
 		message = await ctx.send(embed=embed)  # Send initial message
 		reactions = ["\U00002660", "\U00002665", "\U00002663", "\U00002666"]  # Spade, Heart, Club, Diamond
+
 		# Add reactions
 		for emoji in reactions:
 			await message.add_reaction(emoji)

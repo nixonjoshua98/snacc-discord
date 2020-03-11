@@ -1,3 +1,4 @@
+import multiprocessing.dummy
 import requests
 import json
 import os
@@ -53,22 +54,23 @@ def upload_file(file: str) :
 
 
 def backup_background_task(backup_cooldown: int):
-	for f in JSON_URL_LOOKUP:
+	def upload(f):
 		path = os.path.join(constants.RESOURCES_DIR, f)
 
 		modified_date = datetime.fromtimestamp(os.path.getmtime(path))
 
-		time_since_update = datetime.today() - modified_date
-
-		if time_since_update.total_seconds() <= backup_cooldown:
+		if (datetime.today() - modified_date).total_seconds() <= backup_cooldown:
 			upload_file(f)
+
+	with multiprocessing.dummy.Pool(processes=4) as pool:
+		pool.map(upload, list(JSON_URL_LOOKUP.keys()))
 
 
 def backup_all_files():
-	for f in JSON_URL_LOOKUP:
-		upload_file(f)
+	with multiprocessing.dummy.Pool(processes=4) as pool:
+		pool.map(upload_file, list(JSON_URL_LOOKUP.keys()))
 
 
 def download_all_files():
-	for f in JSON_URL_LOOKUP:
-		download_file(f)
+	with multiprocessing.dummy.Pool(processes=4) as pool:
+		pool.map(download_file, list(JSON_URL_LOOKUP.keys()))
