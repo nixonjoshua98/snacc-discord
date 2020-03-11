@@ -5,7 +5,7 @@ from discord.ext import commands
 from src.common import checks
 from src.common import FileReader
 
-class Config(commands.Cog, command_attrs=dict(hidden=True), name="owner"):
+class Config(commands.Cog, name="owner"):
 	def __init__(self, bot):
 		self.bot = bot
 
