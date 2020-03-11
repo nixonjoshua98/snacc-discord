@@ -37,8 +37,6 @@ class Casino(commands.Cog, name="casino"):
 
 			balance["coins"] -= bet_amount
 
-			file.set(str(ctx.author.id), balance)
-
 			lower, upper = get_win_bounds(bet_amount)
 			winnings = max(0, random.randint(lower, upper))
 
@@ -64,7 +62,7 @@ class Casino(commands.Cog, name="casino"):
 		await ctx.send(f"**{ctx.author.display_name}** has {text} **{abs(balance_change):,}** coins!")
 
 	@checks.has_minimum_coins("coins.json", 10)
-	@commands.cooldown(1, 60 * 30, commands.BucketType.user)
+	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
 	@commands.command(name="flip", aliases=["fl"], help="Flip a coin [HIGH RISK]")
 	async def flip(self, ctx):
 		with FileReader("coins.json") as file:
@@ -73,7 +71,7 @@ class Casino(commands.Cog, name="casino"):
 
 			start = data["coins"]
 
-			win_amount = int(min(750, data["coins"] * 0.5))
+			win_amount = int(min(2500, data["coins"] * 0.5))
 
 			if random.randint(0, 1) == 0:
 				data["coins"] += win_amount
