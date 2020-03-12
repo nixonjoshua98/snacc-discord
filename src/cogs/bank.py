@@ -61,14 +61,14 @@ class Bank(commands.Cog, name="bank"):
 		:param target:
 		:return:
 		"""
-		if random.randint(0, 4) == 0:
+		if random.randint(0, 5) == 0:
 			with FileReader("coins.json") as file:
 				author_data = file.get(str(ctx.author.id), default_val={})
 				target_data = file.get(str(target.id), default_val={})
 
-				# Limit the steal amount to 10% of the lowest users coin balance
-				steal_amount = int(min(target_data.get("coins", 10) * 0.1, author_data.get("coins", 10) * 0.1))
-				steal_amount = random.randint(steal_amount * 0.25, steal_amount)
+				# Limit the steal amount to X% of the lowest users coin balance
+				steal_amount = int(min(target_data.get("coins", 10) * 0.05, author_data.get("coins", 10) * 0.05))
+				steal_amount = random.randint(0, steal_amount)
 
 				if steal_amount > 0:
 					author_data["coins"] = author_data.get("coins", 0) + steal_amount

@@ -17,7 +17,7 @@ class Casino(commands.Cog, name="casino"):
 		return await checks.in_game_channel(ctx)
 
 	@checks.has_minimum_coins("coins.json", 10)
-	@commands.cooldown(25, 60 * 60 * 24, commands.BucketType.user)
+	@commands.cooldown(25, 60 * 60 * 6, commands.BucketType.user)
 	@commands.command(name="spin", aliases=["sp"], help="Slot machine [LOW RISK]")
 	async def spin(self, ctx):
 		def get_win_bounds(amount) -> tuple:
