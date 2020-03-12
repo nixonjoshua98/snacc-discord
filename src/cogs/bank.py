@@ -8,6 +8,8 @@ from src.common import checks
 from src.common import FileReader
 from src.common import leaderboard
 
+from src.common.errors import InvalidTarget
+
 class Bank(commands.Cog, name="bank"):
 	def __init__(self, bot):
 		self.bot = bot
@@ -61,6 +63,9 @@ class Bank(commands.Cog, name="bank"):
 		:param target:
 		:return:
 		"""
+		if target.id == ctx.author.id or target.bot:
+			raise InvalidTarget(f"**{ctx.author.display_name}** :face_with_raised_eyebrow:")
+
 		if random.randint(0, 5) == 0:
 			with FileReader("coins.json") as file:
 				author_data = file.get(str(ctx.author.id), default_val={})
@@ -90,7 +95,7 @@ class Bank(commands.Cog, name="bank"):
 		"""
 
 		# Ignore
-		if amount <= 0 or ctx.author.id == target_user.id:
+		if amount <= 0 or ctx.author.id == target_user.id or target_user.bot:
 			return await ctx.send(f"Nice try **{ctx.author.display_name}** :smile:")
 
 		transaction_done = False
