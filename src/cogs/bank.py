@@ -68,6 +68,7 @@ class Bank(commands.Cog, name="bank"):
 
 				# Limit the steal amount to 10% of the lowest users coin balance
 				steal_amount = int(min(target_data.get("coins", 10) * 0.1, author_data.get("coins", 10) * 0.1))
+				steal_amount = random.randint(steal_amount * 0.25, steal_amount)
 
 				if steal_amount > 0:
 					author_data["coins"] = author_data.get("coins", 0) + steal_amount
