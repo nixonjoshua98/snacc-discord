@@ -52,7 +52,7 @@ class Bank(commands.Cog, name="bank"):
 
 		await ctx.send(f"**{ctx.author.display_name}** gained **{amount}** coins!")
 
-	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
+	@commands.cooldown(1, 60 * 60 * 3, commands.BucketType.user)
 	@commands.command(name="steal", help="Attempt to steal coins")
 	async def steal_coins(self, ctx: commands.Context, target: discord.Member):
 		"""
