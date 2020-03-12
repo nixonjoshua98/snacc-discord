@@ -52,6 +52,31 @@ class Bank(commands.Cog, name="bank"):
 
 		await ctx.send(f"**{ctx.author.display_name}** gained **{amount}** coins!")
 
+	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
+	@commands.command(name="steal", help="Attempt to steal coins")
+	async def steal_coins(self, ctx: commands.Context, target: discord.Member):
+		"""
+
+		:param ctx:
+		:param target:
+		:return:
+		"""
+		if random.randint(0, 4) == 0:
+			with FileReader("coins.json") as file:
+				author_data = file.get(str(ctx.author.id), default_val={})
+				target_data = file.get(str(target.id), default_val={})
+
+				# Limit the steal amount to 10% of the lowest users coin balance
+				steal_amount = int(min(target_data.get("coins", 10) * 0.1, author_data.get("coins", 10) * 0.1))
+
+				if steal_amount > 0:
+					author_data["coins"] = author_data.get("coins", 0) + steal_amount
+					target_data["coins"] = target_data.get("coins", 0) - steal_amount
+
+					return await ctx.send(f"**{ctx.author.display_name}** stole **{steal_amount:,}** coins from **{target.display_name}**")
+
+		await ctx.send(f"**{ctx.author.display_name}** stole nothing")
+
 	@commands.command(name="gift", help="Gift some coins")
 	async def gift(self, ctx, target_user: discord.Member, amount: int):
 		"""
