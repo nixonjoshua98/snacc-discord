@@ -18,7 +18,7 @@ class Casino(commands.Cog, name="casino"):
 
 	@checks.has_minimum_coins("coins.json", 10)
 	@commands.cooldown(25, 60 * 60 * 12, commands.BucketType.user)
-	@commands.command(name="spin", aliases=["sp"], help="Slot machine [LOW RISK]")
+	@commands.command(name="spin", aliases=["sp"], help="Slot machine [25/12hrs]")
 	async def spin(self, ctx):
 		def get_win_bounds(amount) -> tuple:
 			low = max([amount * 0.75, amount - (25 + (7.50 * amount / 1000))])
@@ -63,7 +63,7 @@ class Casino(commands.Cog, name="casino"):
 
 	@checks.has_minimum_coins("coins.json", 10)
 	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
-	@commands.command(name="flip", aliases=["fl"], help="Flip a coin [HIGH RISK]")
+	@commands.command(name="flip", aliases=["fl"], help="Flip a coin [1hr]")
 	async def flip(self, ctx):
 		with FileReader("coins.json") as file:
 			# Initial player balance

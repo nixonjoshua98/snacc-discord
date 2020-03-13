@@ -69,7 +69,7 @@ class Pet(commands.Cog, name="pet"):
 		await ctx.send(f"**{ctx.author.display_name}** has renamed their pet to **{pet_name}**")
 
 	@commands.cooldown(1, 60, commands.BucketType.user)
-	@commands.command(name="fight", aliases=["battle", "attack"], help="Attack! [5m Cooldown]")
+	@commands.command(name="fight", aliases=["battle", "attack"], help="Attack! [60s]")
 	async def fight(self, ctx: commands.Context, target: discord.Member):
 		def wait_for_react(react, user):
 			return user.id == ctx.author.id and react.emoji in reactions and message.id == react.message.id

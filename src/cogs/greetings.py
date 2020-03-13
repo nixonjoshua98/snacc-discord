@@ -5,6 +5,7 @@ from discord.ext import commands
 
 from src.common import FileReader
 
+
 class Greetings(commands.Cog, name="greetings"):
 	def __init__(self, bot):
 		self.bot = bot

@@ -61,7 +61,6 @@ def upload_file(file: str) :
 		return response.status_code == requests.codes.ok
 
 
-
 def backup_background_task(backup_cooldown: int):
 	def upload(f):
 		path = os.path.join(constants.RESOURCES_DIR, f)
