@@ -30,10 +30,10 @@ async def is_server_owner(ctx):
 
 
 async def has_member_role(ctx):
-	with FileReader("server_settings.json") as f:
-		member_role_id = f.get(ctx.guild.id, default_val={}).get("member_role", None)
+	with FileReader("server_settings.json") as server_settings:
+		role_id = server_settings.get_inner_key(str(ctx.guild.id), "member_role", None)
 
-	member_role = discord.utils.get(ctx.guild.roles, id=member_role_id)
+	member_role = discord.utils.get(ctx.guild.roles, id=role_id)
 
 	if member_role is None:
 		raise CommandError(f"**{ctx.guild.owner.mention}** member role is invalid or has not been set")
@@ -45,21 +45,12 @@ async def has_member_role(ctx):
 
 
 async def in_any_bot_channel(ctx):
-	with FileReader("server_settings.json") as f:
-		abo_channels = f.get(ctx.guild.id, default_val={}).get("abo_channels", [])
-		game_channels = f.get(ctx.guild.id, default_val={}).get("game_channels", [])
-
-	channels = abo_channels + game_channels
-
-	if ctx.channel.id not in channels:
-		raise CommandError(f"**{ctx.author.display_name}**, this command is disabled in this channel.")
-
-	return True
+	return await in_game_channel(ctx) and await in_abo_channel(ctx)
 
 
 async def in_game_channel(ctx):
-	with FileReader("server_settings.json") as f:
-		game_channels = f.get(ctx.guild.id, default_val={}).get("game_channels", [])
+	with FileReader("server_settings.json") as server_settings:
+		game_channels = server_settings.get_inner_key(str(ctx.guild.id), "game_channels", None)
 
 	if ctx.channel.id not in game_channels:
 		raise CommandError(f"**{ctx.author.display_name}**, this command is disabled in this channel.")
@@ -68,8 +59,8 @@ async def in_game_channel(ctx):
 
 
 async def in_abo_channel(ctx):
-	with FileReader("server_settings.json") as f:
-		abo_channels = f.get(ctx.guild.id, default_val={}).get("abo_channels", [])
+	with FileReader("server_settings.json") as server_settings:
+		abo_channels = server_settings.get_inner_key(str(ctx.guild.id), "abo_channels", None)
 
 	if ctx.channel.id not in abo_channels:
 		raise CommandError(f"**{ctx.author.display_name}**, this command is disabled in this channel.")
@@ -80,9 +71,9 @@ async def in_abo_channel(ctx):
 def has_minimum_coins(file, amount):
 	async def predicate(ctx):
 		with FileReader(file) as f:
-			data = f.get(str(ctx.author.id), default_val={})
+			balance = f.get_inner_key(str(ctx.author.id), "coins", 0)
 
-		if data.get("coins", 0) < amount:
+		if balance < amount:
 			raise CommandError(f"**{ctx.author.display_name}** you do you not enough coins to do that :frowning:")
 
 		return True
