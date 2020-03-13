@@ -72,15 +72,21 @@ class Bank(commands.Cog, name="bank"):
 				author_data = file.get(str(ctx.author.id), default_val={})
 				target_data = file.get(str(target.id), default_val={})
 
-				# Limit the steal amount to X% of the lowest users coin balance
-				steal_amount = int(min(target_data.get("coins", 10) * 0.05, author_data.get("coins", 10) * 0.05))
-				steal_amount = random.randint(int(steal_amount * 0.5), steal_amount)
+				author_coins = author_data.get("coins", 0)
+				target_coins = target_data.get("coins", 0)
+
+				# Limit the steal amount to X% of the lowest users coin balance - MAX: 1000
+				steal_amount = int(max(min(author_coins * 0.05, target_coins * 0.05)), 1000)
+
+				steal_amount = random.randint(int(steal_amount * 0.25), steal_amount)
 
 				if steal_amount > 0:
 					author_data["coins"] = author_data.get("coins", 0) + steal_amount
 					target_data["coins"] = target_data.get("coins", 0) - steal_amount
 
-					return await ctx.send(f"**{ctx.author.display_name}** stole **{steal_amount:,}** coins from **{target.display_name}**")
+					msg = f"**{ctx.author.display_name}** stole **{steal_amount:,}** coins from **{target.display_name}**"
+
+					return await ctx.send(msg)
 
 		await ctx.send(f"**{ctx.author.display_name}** stole nothing from **{target.display_name}**")
 
