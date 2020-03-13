@@ -1,5 +1,4 @@
 import enum
-
 import discord
 
 from src.common import FileReader

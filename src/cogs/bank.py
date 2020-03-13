@@ -5,10 +5,8 @@ from discord.ext import commands
 
 from src.common import checks
 
-from src.common import FileReader
+from src.common import FileReader, ValidUser, GiftableCoins
 from src.common import leaderboard
-
-from src.common.errors import InvalidTarget
 
 
 class Bank(commands.Cog, name="bank"):
@@ -20,145 +18,63 @@ class Bank(commands.Cog, name="bank"):
 
 	@commands.command(name="balance", aliases=["bal"], help="Display your coin count")
 	async def balance(self, ctx: commands.Context):
-		"""
-		Send a message containing the member balance
+		with FileReader("coins.json") as coins_file:
+			balance = coins_file.get_inner_key(str(ctx.author.id), "coins", 0)
 
-		:param ctx: The message context
-		:return:
-		"""
-		with FileReader("coins.json") as file:
-			data = file.get(str(ctx.author.id), default_val={})
-
-			author_bal = data.get("coins", 0)
-
-		await ctx.send(f"**{ctx.author.display_name}** has a total of **{author_bal:,}** coins")
+		await ctx.send(f"**{ctx.author.display_name}** has a total of **{balance:,}** coins")
 
 	@commands.cooldown(1, 60 * 15, commands.BucketType.user)
 	@commands.command(name="free", aliases=["pickup"], help="Get free coins [15m]")
 	async def free(self, ctx: commands.Context):
-		"""
-		Gives the member a few coins, has a cooldown between uses.
+		amount = random.randint(15, 50)
 
-		:param ctx: The message context
-		:return:
-		"""
-		amount = random.randint(15, 35)
+		with FileReader("coins.json") as coins_file:
+			balance = coins_file.get_inner_key(str(ctx.author.id), "coins", 0)
 
-		with FileReader("coins.json") as file:
-			data = file.get(str(ctx.author.id), default_val={})
-
-			# Increment data
-			data["coins"] = data.get("coins", 0) + amount
-
-			# Set the new data
-			file.set(str(ctx.author.id), data)
+			coins_file.set_inner_key(str(ctx.author.id), "coins", balance + amount)
 
 		await ctx.send(f"**{ctx.author.display_name}** gained **{amount}** coins!")
 
 	@commands.cooldown(1, 60 * 60 * 3, commands.BucketType.user)
+	@checks.percent_chance_to_run(20, "failed to steal any coins")
 	@commands.command(name="steal", help="Attempt to steal coins [3hrs]")
-	async def steal_coins(self, ctx: commands.Context, target: discord.Member):
-		"""
+	async def steal_coins(self, ctx: commands.Context, target: ValidUser()):
+		with FileReader("coins.json") as file:
+			author_coins = file.get_inner_key(str(ctx.author.id), "coins", 0)
+			target_coins = file.get_inner_key(str(target.id), "coins", 0)
 
-		:param ctx:
-		:param target:
-		:return:
-		"""
-		if target.id == ctx.author.id or target.bot:
-			raise InvalidTarget(f"**{ctx.author.display_name}** :face_with_raised_eyebrow:")
+			max_coins = int(min(author_coins * 0.05, target_coins * 0.05, 1000))
 
-		if random.randint(0, 4) == 0:  # 20%
-			with FileReader("coins.json") as file:
-				author_data = file.get(str(ctx.author.id), default_val={})
-				target_data = file.get(str(target.id), default_val={})
+			amount = random.randint(0, max(0, max_coins))
 
-				author_coins = author_data.get("coins", 0)
-				target_coins = target_data.get("coins", 0)
+			file.set_inner_key(str(ctx.author.id), "coins", author_coins + amount)
+			file.set_inner_key(str(target.id), "coins", author_coins - amount)
 
-				# Limit the steal amount to X% of the lowest users coin balance - MAX: 1000
-				ten_percent = min(author_coins * 0.025, target_coins * 0.025)
+		msg = f"**{ctx.author.display_name}** stole **{amount:,}** coins from **{target.display_name}**"
 
-				amount = int(min(ten_percent, 1000))
-
-				amount = random.randint(0, amount)
-
-				if amount > 0:
-					author_data["coins"] = author_data.get("coins", 0) + amount
-					target_data["coins"] = target_data.get("coins", 0) - amount
-
-					msg = f"**{ctx.author.display_name}** stole **{amount:,}** coins from **{target.display_name}**"
-
-					return await ctx.send(msg)
-
-		await ctx.send(f"**{ctx.author.display_name}** stole nothing from **{target.display_name}**")
+		await ctx.send(msg)
 
 	@commands.command(name="gift", help="Gift some coins")
-	async def gift(self, ctx, target: discord.Member, amount: int):
-		"""
-		Move coins from one member to another.
-
-		:param ctx: The message context
-		:param target: The user which the coins will be given too
-		:param amount: The amount of coins to transfer to the target user
-		:return:
-		"""
-
-		# Ignore
-		if amount <= 0 or ctx.author.id == target.id or target.bot:
-			return await ctx.send(f"Nice try **{ctx.author.display_name}** :smile:")
-
-		transaction_done = False
-
+	async def gift(self, ctx, target: ValidUser(), amount: GiftableCoins()):
 		with FileReader("coins.json") as file:
-			author_data = file.get(str(ctx.author.id), default_val={})
-			target_data = file.get(str(target.id), default_val={})
+			author_coins = file.get_inner_key(str(ctx.author.id), "coins", 0)
+			target_coins = file.get_inner_key(str(target.id), "coins", 0)
 
-			# If the author has enough coins to gift
-			if author_data.get("coins", 0) >= amount:
-				transaction_done = True
+			file.set_inner_key(str(ctx.author.id), "coins", author_coins - amount)
+			file.set_inner_key(str(target.id), "coins", target_coins + amount)
 
-				# Modify the coin counts
-				author_data["coins"] = author_data.get("coins", 0) - amount
-				target_data["coins"] = target_data.get("coins", 0) + amount
-
-				# Set the new coin counts
-				file.set(str(ctx.author.id), author_data)
-				file.set(str(target.id), target_data)
-
-		if transaction_done:
-			return await ctx.send(f"**{ctx.author.display_name}** gifted **{amount:,}** coins to **{target.display_name}**")
-
-		return await ctx.send(f"**{ctx.author.display_name}** failed to gift coins to **{target.display_name}**")
+		return await ctx.send(f"**{ctx.author.display_name}** gifted **{amount:,}** coins to **{target.display_name}**")
 
 	@commands.is_owner()
 	@commands.command(name="setcoins", hidden=True)
 	async def set_coins(self, ctx, user: discord.Member, amount: int):
-		"""
-		Admin Command: Sets a users coin balance to a specified amount
-
-		:param ctx: The message context
-		:param user: The user whose coin balance will be set
-		:param amount: The new coin balance
-		:return:
-		"""
-
 		with FileReader("coins.json") as file:
-			data = file.get(str(user.id), default_val={})
-
-			data["coins"] = amount
-
-			file.set(str(user.id), data)
+			file.set_inner_key(str(user.id), "coins", amount)
 
 		await ctx.send(f"**{ctx.author.display_name}** done :thumbsup:")
 
 	@commands.command(name="coinlb", aliases=["clb"], help="Show the coin leaderboard")
 	async def leaderboard(self, ctx: commands.Context):
-		"""
-		Shows the coin leaderboard
-
-		:param ctx: The message context
-		:return:
-		"""
 		leaderboard_string = await leaderboard.create_leaderboard(ctx.author, leaderboard.Type.COIN)
 
 		await ctx.send(leaderboard_string)

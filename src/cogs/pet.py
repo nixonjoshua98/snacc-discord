@@ -5,12 +5,14 @@ from discord.ext import commands
 
 from src.common import checks
 from src.common import functions
-from src.common import FileReader
 from src.common import leaderboard
 
-from src.common.errors import InvalidTarget
+from src.common import ValidUser, FileReader
+
 
 class Pet(commands.Cog, name="pet"):
+	ATTACK_REACTIONS = ["\U00002660", "\U00002665", "\U00002663", "\U00002666"]
+
 	DEFAULT_STATS = {
 		"name": "Pet",
 		"xp": 0,
@@ -32,107 +34,58 @@ class Pet(commands.Cog, name="pet"):
 		with FileReader("pet_stats.json") as file:
 			pet_stats = file.get(str(ctx.author.id), self.DEFAULT_STATS)
 
-		embed = discord.Embed(
-			title=ctx.author.display_name,
-			description=f"{pet_stats['name']} | Lvl: {functions.pet_level_from_xp(pet_stats['xp'])}",
-			color=0xff8000)
-
-		embed.set_thumbnail(url=ctx.author.avatar_url)
-		embed.set_footer(text="Darkness")
-
 		stats_text = (
 			f":heart: {pet_stats['health']:,}\n"
 			f":crossed_swords: {pet_stats['attack']:,}\n"
 			f":shield: {pet_stats['defence']:,}"
 		)
 
+		desc = f"{pet_stats['name']} | Lvl: {functions.pet_level_from_xp(pet_stats)}"
+		embed = functions.create_embed(ctx.author.display_name, desc, ctx.author.avatar_url)
 		embed.add_field(name="Stats", value=stats_text)
 
 		await ctx.send(embed=embed)
 
 	@commands.command(name="setname", help="Set name of pet")
-	async def set_name(self, ctx: commands.Context, pet_name: str):
-		"""
-		Set name of the authors pet
+	async def set_name(self, ctx: commands.Context, new_pet_name: str):
+		with FileReader("pet_stats.json") as pet_stats:
+			pet_stats.set_inner_key(str(ctx.author.id), "name", new_pet_name)
 
-		:param ctx: Discord context
-		:param pet_name: New pet name
-		:return:
-		"""
-		with FileReader("pet_stats.json") as file:
-			pet_stats = file.get(str(ctx.author.id), self.DEFAULT_STATS)
-
-			pet_stats["name"] = pet_name
-
-			file.set(str(ctx.author.id), pet_stats)
-
-		await ctx.send(f"**{ctx.author.display_name}** has renamed their pet to **{pet_name}**")
+		await ctx.send(f"**{ctx.author.display_name}** has renamed their pet to **{new_pet_name}**")
 
 	@commands.cooldown(1, 60, commands.BucketType.user)
-	@commands.command(name="fight", aliases=["battle", "attack"], help="Attack! [60s]")
-	async def fight(self, ctx: commands.Context, target: discord.Member):
-		def wait_for_react(react, user):
-			return user.id == ctx.author.id and react.emoji in reactions and message.id == react.message.id
-		"""
-		Attack another members pet
+	@commands.command(name="fight", help="Attack! [60s]")
+	async def fight(self, ctx: commands.Context, defender: ValidUser()):
+		def wait_for_react(react, user_):
+			return user_.id == ctx.author.id and react.emoji in self.ATTACK_REACTIONS
 
-		:param ctx: Message
-		:param target: Target member
-		:return:
-		"""
-		if target.id == ctx.author.id or target.bot:
-			raise InvalidTarget(f"**{ctx.author.display_name}** :face_with_raised_eyebrow:")
-
+		# Load stats
 		with FileReader("pet_stats.json") as file:
 			author_stats = file.get(str(ctx.author.id), self.DEFAULT_STATS)
-			target_stats = file.get(str(target.id), self.DEFAULT_STATS)
+			target_stats = file.get(str(defender.id), self.DEFAULT_STATS)
 
-		# Create embed
-		embed = discord.Embed(
-			title="Pet Battle",
-			color=0xff8000,
-			description=f"**'{author_stats['name']}'** vs **'{target_stats['name']}'**")
+		message = await self.create_pet_attack_menu(ctx, author_stats, target_stats)
 
-		embed.set_thumbnail(url=ctx.author.avatar_url)
-		embed.add_field(name="How to Play", value="Select a reaction")  # Set fields
+		embed = message.embeds[0]
 
-		message = await ctx.send(embed=embed)  # Send initial message
-		reactions = ["\U00002660", "\U00002665", "\U00002663", "\U00002666"]  # Spade, Heart, Club, Diamond
-
-		# Add reactions
-		for emoji in reactions:
-			await message.add_reaction(emoji)
-
-		try:  # Wait for reaction from user
+		# - - - WAIT FOR USER INPUT - - -
+		try:
 			await self.bot.wait_for("reaction_add", timeout=60, check=wait_for_react)
 		except asyncio.TimeoutError:
 			embed.set_field_at(0, name="Battle Report", value="Timed out")
 
 			return await message.edit(embed=embed)
+		# - - -
 
-		reaction_index = None
-
-		# Refresh the message
 		message = discord.utils.get(self.bot.cached_messages, id=message.id)
 
-		# Find which reaction the user chose
-		for i, reaction in enumerate(message.reactions):
-			if reaction_index is not None:
-				break
+		attack_index = await functions.get_reaction_index(ctx.author, message)
+		fight_rewards = await self.perform_pet_attack(attack_index, ctx.author, defender)
 
-			for user in await reaction.users().flatten():
-				if user.id == ctx.author.id:
-					reaction_index = i
-					break
-
-		if reaction_index is None:
-			return await ctx.send(f"**{ctx.author.display_name}**, your pet battle caused an error")
-
-		# Reward text
 		battle_report = (
-			f":heart: 0\n"
-			f":moneybag: 0\n"
-			f":star: 0"
+			f":heart: {fight_rewards['health']}\n"
+			f":moneybag: {fight_rewards['coins']}\n"
+			f":star: {fight_rewards['xp']}"
 		)
 
 		embed.set_field_at(0, name="Battle Report", value=battle_report)
@@ -142,15 +95,34 @@ class Pet(commands.Cog, name="pet"):
 
 	@commands.command(name="petlb", aliases=["plb"], help="Show the  pet leaderboard")
 	async def leaderboard(self, ctx: commands.Context):
-		"""
-		Shows the pet leaderboard
-
-		:param ctx: The message context
-		:return:
-		"""
 		leaderboard_string = await leaderboard.create_leaderboard(ctx.author, leaderboard.Type.PET)
 
 		await ctx.send(leaderboard_string)
+
+	async def create_pet_attack_menu(self, ctx: commands.Context, attacker: dict, defender: dict) -> discord.Message:
+		description = f"**'{attacker['name']}'** vs **'{defender['name']}'**"
+
+		# - - - Create Embed - - -
+		embed = discord.Embed(title="Pet Battle", color=0xff8000, description=description)
+
+		embed.set_thumbnail(url=ctx.author.avatar_url)
+
+		embed.add_field(name="How to Play", value="Select a reaction")
+		# - - -
+
+		msg = await ctx.send(embed=embed)
+
+		for emoji in self.ATTACK_REACTIONS:
+			await msg.add_reaction(emoji)
+
+		return msg
+
+	async def perform_pet_attack(self, attack: int, attacker: discord.Member, defender: discord.Member):
+		with FileReader("pet_stats.json") as file:
+			_ = file.get(str(attacker.id), self.DEFAULT_STATS)
+			_ = file.get(str(defender.id), self.DEFAULT_STATS)
+
+		return {"health": 0, "coins": 0, "xp": 0}
 
 
 

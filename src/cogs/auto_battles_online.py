@@ -1,10 +1,13 @@
 import discord
 
 from discord.ext import commands
+from discord.ext.commands import CommandError
+
 from datetime import datetime
 
 from src.common import FileReader
-from src.common import (checks, errors, leaderboard)
+from src.common import (checks, leaderboard)
+
 
 class AutoBattlesOnline(commands.Cog, name="abo"):
 	def __init__(self, bot):
@@ -25,7 +28,7 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 			if stats is None:
 				msg = f"**{ctx.author.display_name}** you need to set your stats first :slight_smile:"
 
-				raise errors.AutoBattlesStatsError(msg)
+				raise CommandError(msg)
 
 		embed = discord.Embed(title=ctx.author.display_name, description=f"Auto Battles Online", color=0xff8000)
 
@@ -58,12 +61,6 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 
 	@commands.command(name="alb", help="Show guild Auto battles Onlin")
 	async def leaderboard(self, ctx: commands.Context):
-		"""
-		Shows the ABO leaderboard
-
-		:param ctx: The message context
-		:return:
-		"""
 		leaderboard_string = await leaderboard.create_leaderboard(ctx.author, leaderboard.Type.ABO)
 
 		return await ctx.send(leaderboard_string)

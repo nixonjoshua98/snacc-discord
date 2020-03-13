@@ -3,6 +3,8 @@ import json
 
 from src.common.constants import RESOURCES_DIR
 
+
+
 class FileReader:
 	def __init__(self, file_name):
 		self._file_name = os.path.join(RESOURCES_DIR, file_name)
@@ -20,6 +22,13 @@ class FileReader:
 		self._file_updated = True
 		self._loaded_file[str(key)] = value
 
+	def set_inner_key(self, key: str, inner_key: str, value):
+		key, inner_key = str(key), str(inner_key)
+		self._file_updated = True
+		data = self._loaded_file.get(key, {})
+		data[inner_key] = value
+		self._loaded_file[key] = data
+
 	def remove(self, key: str):
 		self._file_updated = True
 		self._loaded_file.pop(key, None)
@@ -28,6 +37,11 @@ class FileReader:
 
 	def get(self, key: str, default_val=None):
 		return self._loaded_file.get(str(key), default_val)
+
+	def get_inner_key(self, key: str, inner_key: str, default_value=None):
+		key, inner_key = str(key), str(inner_key)
+
+		return self._loaded_file.get(key, {}).get(inner_key, default_value)
 
 	def data(self):
 		return self._loaded_file

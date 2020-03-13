@@ -26,63 +26,50 @@ class Casino(commands.Cog, name="casino"):
 			return int(low), int(upp)
 
 		def create_message(amount):
-			number_emoji = "".join([f":{num2words(digit)}:" for digit in f"{amount:05d}"])
-			return f":arrow_right:{number_emoji}:arrow_left:\n"
+			return f":arrow_right:{''.join([f':{num2words(digit)}:' for digit in f'{amount:05d}'])}:arrow_left:\n"
 
 		# Add the winnings before the animation
-		with FileReader("coins.json") as file:
-			balance = file.get(str(ctx.author.id), default_val={})
+		with FileReader("coins.json") as coins_file:
+			initial_balance = coins_file.get_inner_key(str(ctx.author.id), "coins", 0)
 
-			bet_amount = balance["coins"]
+			lower, upper = get_win_bounds(initial_balance)
 
-			balance["coins"] -= bet_amount
+			final_balance = max(0, random.randint(lower, upper))
 
-			lower, upper = get_win_bounds(bet_amount)
-			winnings = max(0, random.randint(lower, upper))
+			coins_file.set_inner_key(str(ctx.author.id), "coins", final_balance)
 
-			balance["coins"] = winnings
-
-			file.set(str(ctx.author.id), balance)
-
-		# Initial animation message
-		message = await ctx.send(create_message(bet_amount))
-
-		# Animation
-		for i in range(2):
-			await asyncio.sleep(1.0)
-			temp_num = max(0, random.randint(lower, upper))
-			temp_num = temp_num + 1 if temp_num == bet_amount else temp_num
-			await message.edit(content=create_message(temp_num))
+		message = await ctx.send(create_message(initial_balance))
 
 		await asyncio.sleep(1.0)
-		await message.edit(content=create_message(winnings))
 
-		balance_change = winnings - bet_amount
+		for i in range(2):
+			await message.edit(content=create_message(max(0, random.randint(lower, upper))))
+			await asyncio.sleep(1.0)
+
+		await message.edit(content=create_message(final_balance))
+
+		balance_change = final_balance - initial_balance
 		text = 'won' if balance_change > 0 else 'lost'
+
 		await ctx.send(f"**{ctx.author.display_name}** has {text} **{abs(balance_change):,}** coins!")
 
 	@checks.has_minimum_coins("coins.json", 10)
 	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
 	@commands.command(name="flip", aliases=["fl"], help="Flip a coin [1hr]")
 	async def flip(self, ctx):
-		with FileReader("coins.json") as file:
-			# Initial player balance
-			data = file.get(str(ctx.author.id), default_val={})
+		with FileReader("coins.json") as coins_file:
+			initial_balance = coins_file.get_inner_key(str(ctx.author.id), "coins", 0)
 
-			start = data["coins"]
-
-			win_amount = int(min(2500, data["coins"] * 0.5))
+			win_amount = int(min(2500, initial_balance * 0.5))
 
 			if random.randint(0, 1) == 0:
-				data["coins"] += win_amount
+				final_balance = initial_balance + win_amount
 			else:
-				data["coins"] -= win_amount
+				final_balance = initial_balance - win_amount
 
-			file.set(str(ctx.author.id), data)
+			coins_file.set_inner_key(str(ctx.author.id), "coins", final_balance)
 
-		winnings = data["coins"] - start
+		text = 'won' if final_balance > 0 else 'lost'
 
-		text = 'won' if winnings > 0 else 'lost'
-
-		await ctx.send(f"**{ctx.author.display_name}** has {text} **{abs(winnings):,}** coins by flipping a coin!")
+		await ctx.send(f"**{ctx.author.display_name}** has {text} **{abs(win_amount):,}** coins by flipping a coin!")
 

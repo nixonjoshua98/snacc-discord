@@ -7,9 +7,10 @@ from src import cogs
 from src.common import (myjson, asycio_schedule)
 from src.common import FileReader
 
+
 class MyBot(commands.Bot):
 	def __init__(self):
-		super().__init__(command_prefix=self.prefix, case_insensitive=True)
+		super().__init__(command_prefix=MyBot.prefix, case_insensitive=True)
 
 		myjson.download_all_files()
 
@@ -29,24 +30,20 @@ class MyBot(commands.Bot):
 		return await ctx.send(esc)
 
 	async def on_message(self, message: discord.Message):
-		if os.getenv("DEBUG", False) and not await self.is_owner(message.author):
-			return
-
-		# Ignore DMs
 		if message.guild is None:
-			return
-
-		# Ignore itself
-		elif message.author.id == self.user.id:
 			return
 
 		await self.process_commands(message)
 
-	def prefix(self, bot:commands.Bot, message: discord.message):
-		with FileReader("server_settings.json") as f:
-			data = f.get(str(message.guild.id), default_val={})
+	@staticmethod
+	def prefix(bot: commands.Bot, message: discord.message):
+		if os.getenv("DEBUG", False):
+			return "-"
 
-		return data.get("prefix", "!")
+		with FileReader("server_settings.json") as server_settings:
+			prefix = server_settings.get_inner_key(str(message.guild.id), "prefix", "!")
+
+		return prefix
 
 	def run(self):
 		super().run("NjY2NjE2NTE1NDM2NDc4NDcz.Xh2xCA.X8d9IFcSW_2e4c_maBMoXlxmI7Y")

@@ -20,6 +20,7 @@ headers = {
 	"Content-Type": "application/json"
 }
 
+
 def _output_results(results: list, method: str):
 	for i, k in enumerate(JSON_URL_LOOKUP):
 		if results[i] is True:

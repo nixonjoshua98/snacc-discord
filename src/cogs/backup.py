@@ -3,6 +3,7 @@ from discord.ext import commands
 from src.common import myjson
 from src.common import checks
 
+
 class Backup(commands.Cog, command_attrs=dict(hidden=True), name="backup"):
 	def __init__(self, bot):
 		self.bot = bot
