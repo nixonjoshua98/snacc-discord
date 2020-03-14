@@ -19,7 +19,7 @@ class Greetings(commands.Cog, name="greetings"):
 	async def on_member_join(self, member: discord.Member):
 		await self._send_system_channel(member.guild, f"Welcome {member.mention} to {member.guild.name}!")
 
-		with FileReader("server_Settings.json") as file:
+		with FileReader("server_settings.json") as file:
 			role = file.get_inner_key(str(member.guild.id), "roles", {}).get("default", None)
 
 		discord_role = discord.utils.get(member.guild.roles, id=role)
