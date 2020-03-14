@@ -1,5 +1,6 @@
 import enum
 import discord
+import time
 
 from src.common import FileReader
 
@@ -43,7 +44,6 @@ LOOKUP_TABLE = {
 	}
 }
 
-import time
 
 async def create_leaderboard(author: discord.Member, lb_type: Type) -> str:
 	now = time.time()
@@ -57,8 +57,7 @@ async def create_leaderboard(author: discord.Member, lb_type: Type) -> str:
 		if lookup.get("sort_func", None) is not None:
 			data = sorted(data.items(), key=lookup["sort_func"], reverse=True)
 
-		member_role_id = server_settings.get(author.guild.id, default_val={}).get("member_role", None)
-
+		member_role_id = server_settings.get_inner_key(author.guild.id, "roles", {}).get("member", None)
 
 	MAX_COLUMN_SIZE = 15
 	LEADERBOARD_SIZE = lookup.get("leaderboard_size", 10)
