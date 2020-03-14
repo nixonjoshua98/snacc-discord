@@ -12,8 +12,6 @@ class MyBot(commands.Bot):
 	def __init__(self):
 		super().__init__(command_prefix=MyBot.prefix, case_insensitive=True)
 
-		self.help_command = commands.DefaultHelpCommand()
-
 		myjson.download_all_files()
 
 	async def on_ready(self):

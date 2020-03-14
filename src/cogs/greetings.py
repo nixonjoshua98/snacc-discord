@@ -16,6 +16,14 @@ class Greetings(commands.Cog, name="greetings"):
 			await guild.system_channel.send(message)
 
 	@commands.Cog.listener()
+	async def on_guild_join(self, guild: discord.Guild):
+		await self._send_system_channel(guild, f"I have arrived!")
+
+		info = await self.bot.application_info()
+
+		await info.owner.send(f"I joined the server **{guild.name}** which is owned by **{guild.owner}**")
+
+	@commands.Cog.listener()
 	async def on_member_join(self, member: discord.Member):
 		await self._send_system_channel(member.guild, f"Welcome {member.mention} to {member.guild.name}!")
 
