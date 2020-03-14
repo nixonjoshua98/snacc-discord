@@ -44,12 +44,12 @@ async def is_server_owner(ctx):
 
 async def has_member_role(ctx):
 	with FileReader("server_settings.json") as server_settings:
-		role_id = server_settings.get_inner_key(str(ctx.guild.id), "member_role", None)
+		role = server_settings.get_inner_key(str(ctx.guild.id), "roles", {}).get("member", None)
 
-	member_role = discord.utils.get(ctx.guild.roles, id=role_id)
+	member_role = discord.utils.get(ctx.guild.roles, id=role)
 
 	if member_role is None:
-		raise CommandError(f"**{ctx.guild.owner.mention}** member role is invalid or has not been set")
+		raise CommandError("Member role is invalid or has not been set")
 
 	elif member_role not in ctx.author.roles and ctx.author.id != SNACCMAN_ID:
 		raise CommandError(f"**{ctx.author.display_name}** you need the **{member_role.name}** role.")
