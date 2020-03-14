@@ -36,6 +36,6 @@ class ValidTag(commands.Converter):
 		argument = argument.lower()
 
 		if argument not in self._valid_tags:
-			raise CommandError(f"Tag must be in **({', '.join(self._valid_tags)})**")
+			raise CommandError(f"Invalid tag: ({' or '.join([f'**{t}**' for t in self._valid_tags])})")
 
 		return argument
