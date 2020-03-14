@@ -69,7 +69,7 @@ class Casino(commands.Cog, name="casino"):
 
 			coins_file.set_inner_key(str(ctx.author.id), "coins", final_balance)
 
-		text = 'won' if final_balance > 0 else 'lost'
+		text = 'won' if final_balance > initial_balance else 'lost'
 
 		await ctx.send(f"**{ctx.author.display_name}** has {text} **{abs(win_amount):,}** coins by flipping a coin!")
 
