@@ -45,7 +45,7 @@ async def has_member_role(ctx):
 
 
 async def in_any_bot_channel(ctx):
-	return await in_game_channel(ctx) and await in_abo_channel(ctx)
+	return await in_game_channel(ctx) or await in_abo_channel(ctx)
 
 
 async def in_game_channel(ctx):
