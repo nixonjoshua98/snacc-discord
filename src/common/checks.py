@@ -10,6 +10,19 @@ from src.common import FileReader
 from src.common.constants import SNACCMAN_ID
 
 
+def requires_channel_tag(tag):
+	async def predicate(ctx):
+		with FileReader("server_settings.json") as server_settings:
+			channels = server_settings.get_inner_key((str(ctx.guild.id)), "channels", {})
+
+		if ctx.channel.id not in channels.get(tag, []):
+			raise CommandError(f"**{ctx.author.display_name}**, this command is disabled in this channel.")
+
+		return True
+
+	return predicate
+
+
 def percent_chance_to_run(percentage, fail_message):
 	async def predicate(ctx):
 		can_run = random.randint(1, 100) <= percentage
@@ -40,30 +53,6 @@ async def has_member_role(ctx):
 
 	elif member_role not in ctx.author.roles and ctx.author.id != SNACCMAN_ID:
 		raise CommandError(f"**{ctx.author.display_name}** you need the **{member_role.name}** role.")
-
-	return True
-
-
-async def in_any_bot_channel(ctx):
-	return await in_game_channel(ctx) or await in_abo_channel(ctx)
-
-
-async def in_game_channel(ctx):
-	with FileReader("server_settings.json") as server_settings:
-		game_channels = server_settings.get_inner_key(str(ctx.guild.id), "game_channels", None)
-
-	if ctx.channel.id not in game_channels:
-		raise CommandError(f"**{ctx.author.display_name}**, this command is disabled in this channel.")
-
-	return True
-
-
-async def in_abo_channel(ctx):
-	with FileReader("server_settings.json") as server_settings:
-		abo_channels = server_settings.get_inner_key(str(ctx.guild.id), "abo_channels", None)
-
-	if ctx.channel.id not in abo_channels:
-		raise CommandError(f"**{ctx.author.display_name}**, this command is disabled in this channel.")
 
 	return True
 

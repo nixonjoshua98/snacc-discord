@@ -6,8 +6,9 @@ from discord.ext import commands
 from src.common import checks
 from src.common import functions
 from src.common import leaderboard
+from src.common import converters
 
-from src.common import ValidUser, FileReader
+from src.common import FileReader
 
 
 class Pet(commands.Cog, name="pet"):
@@ -27,7 +28,7 @@ class Pet(commands.Cog, name="pet"):
 		self.bot = bot
 
 	async def cog_check(self, ctx):
-		return await checks.in_game_channel(ctx)
+		return await checks.requires_channel_tag("game")(ctx)
 
 	@commands.command(name="pet", aliases=["p"], help="Display your pet stats")
 	async def pet(self, ctx: commands.Context):
@@ -55,7 +56,7 @@ class Pet(commands.Cog, name="pet"):
 
 	@commands.cooldown(1, 60, commands.BucketType.user)
 	@commands.command(name="fight", help="Attack! [60s]")
-	async def fight(self, ctx: commands.Context, defender: ValidUser()):
+	async def fight(self, ctx: commands.Context, defender: converters.ValidUser()):
 		def wait_for_react(react, user_):
 			return user_.id == ctx.author.id and react.emoji in self.ATTACK_REACTIONS
 

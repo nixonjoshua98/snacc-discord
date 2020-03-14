@@ -4,6 +4,9 @@ from discord.ext import commands
 
 from src.common import checks
 from src.common import FileReader
+from src.common import converters
+
+from src.common.constants import ALL_CHANNEL_TAGS, ALL_ROLE_TAGS
 
 
 class Config(commands.Cog, name="owner"):
@@ -13,64 +16,39 @@ class Config(commands.Cog, name="owner"):
 	async def cog_check(self, ctx: commands.Context):
 		return await checks.is_server_owner(ctx)
 
-	@commands.group(name="config", help="Server Owner Stuff")
+	# - - - CONFIG COMMAND GROUP - - -
+
+	@commands.group(name="config", help="Server Configuration")
 	async def config(self, ctx: commands.Context):
-		if ctx.invoked_subcommand is not None:
-			return None
+		if ctx.invoked_subcommand is None:
+			return await ctx.send_help(ctx.command)
 
-		return await ctx.send("**Configuring...not really**")
+	@config.command(name="channel", help="Register current channel")
+	async def set_channel(self, ctx: commands.Context, tag: converters.ValidTag(ALL_CHANNEL_TAGS)):
+		with FileReader("server_settings.json") as server_settings:
+			channels = server_settings.get_inner_key((str(ctx.guild.id)), "channels", {})
 
-	@config.command(name="game", help="Register the channel as a game channel")
-	async def add_game_channel(self, ctx: commands.Context):
-		with FileReader("server_settings.json") as f:
-			server_data = f.get(ctx.guild.id, {})
+			channels[tag] = channels.get(tag, []) + [ctx.channel.id]
+			channels[tag] = list(set(channels[tag]))
 
-			server_data["game_channels"] = list(set(server_data.get("game_channels", []) + [ctx.channel.id]))
+			server_settings.set_inner_key((str(ctx.guild.id)), "channels", channels)
 
-			f.set(ctx.guild.id, server_data)
+		await ctx.send(f"{ctx.channel.mention} has been registered as an **{tag}** channel")
 
-			await ctx.send(f"**{ctx.channel.name}** has been registered as a game channel :smile:")
+	@config.command(name="role", help="Register a role")
+	async def set_role(self, ctx: commands.Context, tag: converters.ValidTag(ALL_ROLE_TAGS), role: discord.Role):
+		with FileReader("server_settings.json") as server_settings:
+			roles = server_settings.get_inner_key((str(ctx.guild.id)), "roles", {})
 
-	@config.command(name="abo", help="Register the channel as an ABO channel")
-	async def add_abo_channel(self, ctx: commands.Context):
-		with FileReader("server_settings.json") as f:
-			server_data = f.get(ctx.guild.id, {})
+			roles[tag] = role.id
 
-			server_data["abo_channels"] = list(set(server_data.get("abo_channels", []) + [ctx.channel.id]))
+			server_settings.set_inner_key(str(ctx.guild.id), "roles", roles)
 
-			f.set(ctx.guild.id, server_data)
-
-			await ctx.send(f"**{ctx.channel.name}** has been registered as an ABO channel :smile:")
+		await ctx.send(f"Member role has been updated to **{role.name}**")
 
 	@config.command(name="prefix", help="Set the server prefix")
-	async def set_server_prefix(self, ctx: commands.Context, new_prefix: str):
-		with FileReader("server_settings.json") as f:
-			data = f.get(str(ctx.guild.id), default_val={})
+	async def set_prefix(self, ctx: commands.Context, prefix: str):
+		with FileReader("server_settings.json") as server_settings:
+			server_settings.set_inner_key(str(ctx.guild.id), "prefix", prefix)
 
-			data["prefix"] = new_prefix
-
-			f.set(str(ctx.guild.id), data)
-
-		await ctx.send(f"Prefix has been updated to **{new_prefix}**")
-
-	@config.command(name="member", help="Set the member role")
-	async def set_member_role(self, ctx: commands.Context, new_role: discord.Role):
-		with FileReader("server_settings.json") as f:
-			data = f.get(str(ctx.guild.id), default_val={})
-
-			data["member_role"] = new_role.id
-
-			f.set(str(ctx.guild.id), data)
-
-			await ctx.send(f"Member role has been updated to **{new_role.name}**")
-
-	@config.command(name="entryrole", help="Set the member role")
-	async def set_entry_role(self, ctx: commands.Context, new_role: discord.Role):
-		with FileReader("server_settings.json") as f:
-			data = f.get(str(ctx.guild.id), default_val={})
-
-			data["entry_role"] = new_role.id
-
-			f.set(str(ctx.guild.id), data)
-
-			await ctx.send(f"Entry role has been updated to **{new_role.name}**")
+		await ctx.send(f"Prefix has been updated to **{prefix}**")

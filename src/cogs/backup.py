@@ -1,15 +1,11 @@
 from discord.ext import commands
 
 from src.common import myjson
-from src.common import checks
 
 
 class Backup(commands.Cog, command_attrs=dict(hidden=True), name="backup"):
 	def __init__(self, bot):
 		self.bot = bot
-
-	async def cog_check(self, ctx):
-		return await checks.in_any_bot_channel(ctx)
 
 	@commands.is_owner()
 	@commands.command(name="backup")

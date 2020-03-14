@@ -20,10 +20,12 @@ class Greetings(commands.Cog, name="greetings"):
 		await self._send_system_channel(member.guild, f"Welcome {member.mention} to {member.guild.name}!")
 
 		with FileReader("server_Settings.json") as file:
-			role = file.get_inner_key(str(member.guild.id), "entry_role", None)
+			role = file.get_inner_key(str(member.guild.id), "roles", {}).get("default", None)
 
-		if role is not None:
-			await member.add_roles(role, atomic=True)
+		discord_role = discord.utils.get(member.guild.roles, id=role)
+
+		if discord_role is not None:
+			await member.add_roles(discord_role, atomic=True)
 
 	@commands.Cog.listener()
 	async def on_member_remove(self, member: discord.Member):

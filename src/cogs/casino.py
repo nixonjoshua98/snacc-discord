@@ -14,7 +14,7 @@ class Casino(commands.Cog, name="casino"):
 		self.bot = bot
 
 	async def cog_check(self, ctx):
-		return await checks.in_game_channel(ctx)
+		return await checks.requires_channel_tag("game")(ctx)
 
 	@checks.has_minimum_coins("coins.json", 10)
 	@commands.cooldown(25, 60 * 60 * 12, commands.BucketType.user)

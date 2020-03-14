@@ -14,10 +14,7 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 		self.bot = bot
 
 	async def cog_check(self, ctx):
-		return (
-				await checks.in_abo_channel(ctx) and
-				await checks.has_member_role(ctx)
-		)
+		return await checks.requires_channel_tag("abo")(ctx) and await checks.has_member_role(ctx)
 
 	@commands.command(name="me", help="Display your own stats")
 	async def get_stats(self, ctx: commands.Context):

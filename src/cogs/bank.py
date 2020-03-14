@@ -5,8 +5,10 @@ from discord.ext import commands
 
 from src.common import checks
 
-from src.common import FileReader, ValidUser, GiftableCoins
+from src.common import FileReader
 from src.common import leaderboard
+
+from src.common import converters
 
 
 class Bank(commands.Cog, name="bank"):
@@ -14,7 +16,7 @@ class Bank(commands.Cog, name="bank"):
 		self.bot = bot
 
 	async def cog_check(self, ctx):
-		return await checks.in_game_channel(ctx)
+		return await checks.requires_channel_tag("game")(ctx)
 
 	@commands.command(name="balance", aliases=["bal"], help="Display your coin count")
 	async def balance(self, ctx: commands.Context):
@@ -38,7 +40,7 @@ class Bank(commands.Cog, name="bank"):
 	@commands.cooldown(1, 60 * 60 * 3, commands.BucketType.user)
 	@checks.percent_chance_to_run(20, "failed to steal any coins")
 	@commands.command(name="steal", help="Attempt to steal coins [3hrs]")
-	async def steal_coins(self, ctx: commands.Context, target: ValidUser()):
+	async def steal_coins(self, ctx: commands.Context, target: converters.ValidUser()):
 		with FileReader("coins.json") as file:
 			author_coins = file.get_inner_key(str(ctx.author.id), "coins", 0)
 			target_coins = file.get_inner_key(str(target.id), "coins", 0)
@@ -55,7 +57,7 @@ class Bank(commands.Cog, name="bank"):
 		await ctx.send(msg)
 
 	@commands.command(name="gift", help="Gift some coins")
-	async def gift(self, ctx, target: ValidUser(), amount: GiftableCoins()):
+	async def gift(self, ctx, target: converters.ValidUser(), amount: converters.GiftableCoins()):
 		with FileReader("coins.json") as file:
 			author_coins = file.get_inner_key(str(ctx.author.id), "coins", 0)
 			target_coins = file.get_inner_key(str(target.id), "coins", 0)
