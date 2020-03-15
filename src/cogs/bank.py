@@ -58,7 +58,7 @@ class Bank(commands.Cog, name="bank"):
 			amount = random.randint(0, max(0, max_coins))
 
 			file.set_inner_key(str(ctx.author.id), "coins", author_coins + amount)
-			file.set_inner_key(str(target.id), "coins", author_coins - amount)
+			file.set_inner_key(str(target.id), "coins", target_coins - amount)
 
 		msg = f"**{ctx.author.display_name}** stole **{amount:,}** coins from **{target.display_name}**"
 
