@@ -151,7 +151,7 @@ class Pet(commands.Cog, name="pet"):
 			# - - - CALCULATE REWARDS - - -
 			health_lost = 0  # min(15, max(1, def_def - atk_atk))
 
-			coins_gained = random.randint(10, 25) # + (max(0, def_def - atk_atk) * random.randint(3, 5))
+			coins_gained = random.randint(10, 25)  # + (max(0, def_def - atk_atk) * random.randint(3, 5))
 
 			xp_gained = random.randint(10, 25)
 			# - - - - - - - - - - - - - - -
