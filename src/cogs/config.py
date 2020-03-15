@@ -14,7 +14,7 @@ class Config(commands.Cog):
 		self.bot = bot
 
 	async def cog_check(self, ctx: commands.Context):
-		return await self.bot.is_owner(ctx.author) or checks.is_server_owner(ctx)
+		return await self.bot.is_owner(ctx.author) or await checks.is_server_owner(ctx)
 
 	@commands.group(name="config", help="Server Configuration")
 	async def config(self, ctx: commands.Context):
