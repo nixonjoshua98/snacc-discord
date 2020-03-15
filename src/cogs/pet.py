@@ -49,7 +49,7 @@ class Pet(commands.Cog, name="pet"):
 			pet_stats = file.get(str(ctx.author.id), self.DEFAULT_STATS)
 
 		stats_text = (
-			f":heart: {pet_stats['health']:,}\n"
+			f":heart: {pet_stats.get('health', 100):,}\n"
 			f":crossed_swords: {Pet.get_pet_attack(pet_stats):,}\n"
 			f":shield: {Pet.get_pet_defence(pet_stats):,}"
 		)
