@@ -16,8 +16,6 @@ class Config(commands.Cog, name="owner"):
 	async def cog_check(self, ctx: commands.Context):
 		return await self.bot.is_owner(ctx.author) or checks.is_server_owner(ctx)
 
-	# - - - CONFIG COMMAND GROUP - - -
-
 	@commands.group(name="config", help="Server Configuration")
 	async def config(self, ctx: commands.Context):
 		if ctx.invoked_subcommand is None:

@@ -30,6 +30,11 @@ class Pet(commands.Cog, name="pet"):
 	async def cog_check(self, ctx):
 		return await checks.requires_channel_tag("game")(ctx)
 
+	@commands.group(name="test", help="Pet System")
+	async def test(self, ctx: commands.Context):
+		if ctx.invoked_subcommand is None:
+			return await ctx.send_help(ctx.command)
+
 	@commands.command(name="pet", aliases=["p"], help="Display your pet stats")
 	async def pet(self, ctx: commands.Context):
 		with FileReader("pet_stats.json") as file:
