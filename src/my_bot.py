@@ -4,7 +4,7 @@ import os
 from discord.ext import commands
 
 from src import cogs
-from src.common import (myjson, asycio_schedule)
+from src.common import myjson
 from src.common import FileReader
 
 
@@ -12,19 +12,17 @@ class MyBot(commands.Bot):
 	def __init__(self):
 		super().__init__(command_prefix=MyBot.prefix, case_insensitive=True)
 
-		myjson.download_all_files()
-
 	async def on_ready(self):
 		await self.wait_until_ready()
 
 		print("Bot successfully started")
 
+		myjson.download_all()
+
 		for c in cogs.ALL_COGS:
 			print(f"Added Cog: {c.__name__}")
 
 			self.add_cog(c(self))
-
-		asycio_schedule.add_task(60 * 5, myjson.backup_background_task, 60 * 5)
 
 	async def on_command_error(self, ctx, esc):
 		return await ctx.send(esc)

@@ -23,8 +23,11 @@ def add_task(delay: int, func, *args):
 	return asyncio.create_task(task_loop(delay, func, args))
 
 
-async def cancel_task(task: asyncio.Task):
+async def cancel_task(task: asyncio.Task, name: str = None):
 	task.cancel()
+
+	if name is not None:
+		print(f"Cancelled task: {name}")
 
 	try:
 		await task
