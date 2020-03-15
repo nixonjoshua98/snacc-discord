@@ -163,7 +163,7 @@ class Pet(commands.Cog, name="pet"):
 			# - - - UPDATE LOCAL STATS - - -
 			attacker_pet["health"] = attacker_pet.get("health", 100) - health_lost
 			attacker_coins += coins_gained
-			attacker_pet["xp"] += xp_gained
+			attacker_pet["xp"] = attacker_pet.get("xp", 0) + xp_gained
 			# - - - - - - - - - - - - - - -
 
 			# - - - LEVEL UP - -
