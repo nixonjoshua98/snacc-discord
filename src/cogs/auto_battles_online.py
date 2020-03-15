@@ -16,7 +16,7 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 		self.bot = bot
 
 		self._leaderboard = Leaderboard(
-			title="Server Trophy Leaderboard",
+			title="Trophy Leaderboard",
 			file="game_stats.json",
 			columns=[1, 2, 3],
 			members_only=True,

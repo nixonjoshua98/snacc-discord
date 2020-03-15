@@ -1,3 +1,4 @@
+import time
 import discord
 
 from src.common import FileReader
@@ -6,15 +7,15 @@ from src.common import FileReader
 class Leaderboard:
 	MAX_COLUMN_WIDTH = 15
 
-	def __init__(self, *, title: str, file: str, columns: list, members_only: bool = False, size: int = 10, sort_func=None):
+	def __init__(self, *, title: str, file: str, columns: list, **options):
 		self._title = title
 		self._file = file
 		self._columns = columns
 		self._col_headers = {}
 		self._col_funcs = {}
-		self._show_members_only = members_only
-		self._size = size
-		self._sort_func = sort_func
+		self._show_members_only = options.get("members_only", False)
+		self._size = options.get("size", 10)
+		self._sort_func = options.get("sort_func", None)
 
 	def update_column(self, col: str, name: str, func=None):
 		if col not in self._columns:
@@ -40,6 +41,13 @@ class Leaderboard:
 				continue
 
 			current_rank += 1
+
+			# Only look for the author if we have reached the leaderboard size - could be replaced with a search
+			if current_rank > self._size:
+				if member_id == str(author.id):
+					author_row = self._create_row(current_rank, author, member_data)
+					break
+				continue
 
 			row = self._create_row(current_rank, member, member_data)
 

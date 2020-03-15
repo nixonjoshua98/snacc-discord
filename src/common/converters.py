@@ -23,7 +23,7 @@ class GiftableCoins(commands.Converter):
 			coins = file.get_inner_key(str(ctx.author.id), "coins", 0)
 
 		if amount <= 0 or amount > coins:
-			raise CommandError(f"Nice try **{ctx.author.display_name}** :smile:")
+			raise CommandError(f"**{ctx.author.display_name}**, you cannot do that :slight_frown:")
 
 		return amount
 
