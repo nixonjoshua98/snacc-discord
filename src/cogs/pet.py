@@ -23,7 +23,7 @@ class Pet(commands.Cog, name="pet"):
 			title="Global Pet Leaderboard",
 			file="pet_stats.json",
 			columns=["name", "xp"],
-			sort_func=lambda kv: kv[1]["xp"]
+			sort_func=lambda kv: kv[1].get("xp", 0)
 		)
 
 		self._leaderboard.update_column("xp", "level", lambda data: Pet.get_pet_level(data))
