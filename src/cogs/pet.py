@@ -67,7 +67,7 @@ class Pet(commands.Cog, name="pet"):
 
 		await ctx.send(f"**{ctx.author.display_name}** has renamed their pet to **{new_pet_name}**")
 
-	#@commands.cooldown(1, 30, commands.BucketType.user)
+	@commands.cooldown(1, 30, commands.BucketType.user)
 	@commands.command(name="fight", help="Attack! [60s]")
 	async def fight(self, ctx: commands.Context, defender: converters.ValidUser()):
 		def wait_for_react(react, user_):
