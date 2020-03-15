@@ -17,6 +17,8 @@ class MyBot(commands.Bot):
 
 		print("Bot successfully started")
 
+		myjson.download_all()
+
 		for c in cogs.ALL_COGS:
 			print(f"Added Cog: {c.__name__}")
 
