@@ -20,14 +20,15 @@ class ActivityCog(commands.Cog):
 		max_column_width = 15
 		leaderboard_size = leaderboard_config.get("leaderboard_size", 10)
 		show_members_only = leaderboard_config.get("members_only", False)
+		columns = leaderboard_config.get("columns", [])
+		column_headers = leaderboard_config.get("headers", {})
 
 		rows, column_lengths = [], []
 
 		author_row = None
 
 		# Column headers
-		rows.append(
-			["#", "MEMBER"] + [leaderboard_config.get("headers", {}).get(col, col).upper() for col in leaderboard_config.get("columns", [])])
+		rows.append(["#", "MEMBER"] + [column_headers.get(col, col).upper() for col in columns])
 
 		# Initial column widths
 		for i, col in enumerate(rows[0]):

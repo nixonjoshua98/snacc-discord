@@ -8,7 +8,7 @@ from datetime import datetime
 from src.common import FileReader
 from src.common import checks
 
-from src.cogs.activitycog import ActivityCog, ActivityEnum
+from src.cogs.activitycog import ActivityCog
 
 
 class AutoBattlesOnline(ActivityCog, name="abo"):
@@ -27,8 +27,6 @@ class AutoBattlesOnline(ActivityCog, name="abo"):
 			"leaderboard_size": 30,
 			"members_only": True  # Only display members who have the allocated member role
 			}
-
-		self._activity_enum = ActivityEnum.ABO
 
 	async def cog_check(self, ctx):
 		return await checks.requires_channel_tag("abo")(ctx) and await checks.has_member_role(ctx)
