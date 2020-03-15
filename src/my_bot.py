@@ -17,8 +17,6 @@ class MyBot(commands.Bot):
 
 		print("Bot successfully started")
 
-		# myjson.download_all()
-
 		for c in cogs.ALL_COGS:
 			print(f"Added Cog: {c.__name__}")
 
@@ -34,7 +32,7 @@ class MyBot(commands.Bot):
 		await self.process_commands(message)
 
 	@staticmethod
-	def prefix(bot: commands.Bot, message: discord.message):
+	def prefix(_: commands.Bot, message: discord.message):
 		if os.getenv("DEBUG", False):
 			return "-"
 
