@@ -33,7 +33,7 @@ class Pet(commands.Cog, name="pet"):
 
 	@staticmethod
 	def get_pet_level(data: dict) -> int:
-		return data["xp"] // 50
+		return data.get("xp", 0) // 50
 
 	@staticmethod
 	def get_pet_attack(data: dict) -> int:
