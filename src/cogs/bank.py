@@ -38,9 +38,11 @@ class Bank(commands.Cog, name="bank"):
 		await ctx.send(f"**{ctx.author.display_name}** gained **{amount}** coins!")
 
 	@commands.cooldown(1, 60 * 60 * 3, commands.BucketType.user)
-	@checks.percent_chance_to_run(20, "failed to steal any coins")
 	@commands.command(name="steal", help="Attempt to steal coins [3hrs]")
 	async def steal_coins(self, ctx: commands.Context, target: converters.ValidUser()):
+		if random.randint(0, 3) != 0:
+			return await ctx.send(f"**{ctx.author.display_name}** is a terrible thief and failed")
+
 		with FileReader("coins.json") as file:
 			author_coins = file.get_inner_key(str(ctx.author.id), "coins", 0)
 			target_coins = file.get_inner_key(str(target.id), "coins", 0)

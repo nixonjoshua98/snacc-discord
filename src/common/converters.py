@@ -17,7 +17,7 @@ class ValidUser(commands.MemberConverter):
 
 class GiftableCoins(commands.Converter):
 	async def convert(self, ctx: commands.Context, argument: str) -> int:
-		amount = int(argument)
+		amount = int(argument) if argument.isdigit() else 0
 
 		with FileReader("coins.json") as file:
 			coins = file.get_inner_key(str(ctx.author.id), "coins", 0)
@@ -36,6 +36,6 @@ class ValidTag(commands.Converter):
 		argument = argument.lower()
 
 		if argument not in self._valid_tags:
-			raise CommandError(f"Invalid tag: ({' or '.join([f'**{t}**' for t in self._valid_tags])})")
+			raise CommandError(f"Invalid tag ({' or '.join([f'**{t}**' for t in self._valid_tags])})")
 
 		return argument

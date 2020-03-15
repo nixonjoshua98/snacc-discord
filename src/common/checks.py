@@ -22,18 +22,6 @@ def requires_channel_tag(tag):
 	return predicate
 
 
-def percent_chance_to_run(percentage, fail_message):
-	async def predicate(ctx):
-		can_run = random.randint(1, 100) <= percentage
-
-		if not can_run:
-			raise CommandError(f"**{ctx.author.display_name}** " + fail_message)
-
-		return True
-
-	return commands.check(predicate)
-
-
 async def is_server_owner(ctx):
 	if ctx.author.id != ctx.guild.owner.id:
 		raise CommandError(f"**{ctx.author.display_name}**, you do not have access to this command")
