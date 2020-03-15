@@ -156,7 +156,7 @@ class Pet(commands.Cog, name="pet"):
 			# - - - - - - - - - - - - - - -
 
 			# - - - CHECK ATTACKER FAINT - - -
-			if health_lost > attacker_pet["health"]:
+			if health_lost > attacker_pet.get("health", 100):
 				return {"error": f"{attacker_pet['name']} fainted during battle**"}
 			# - - - - - - - - - - - - - - - - -
 
