@@ -5,13 +5,13 @@ from discord.ext import commands
 
 from src.common import checks
 from src.common import functions
-from src.common import leaderboard
 from src.common import converters
-
 from src.common import FileReader
 
+from src.cogs.activitycog import ActivityCog
 
-class Pet(commands.Cog, name="pet"):
+
+class Pet(ActivityCog, name="pet"):
 	ATTACK_REACTIONS = ["\U00002660", "\U00002665", "\U00002663", "\U00002666"]
 
 	DEFAULT_STATS = {
@@ -26,6 +26,15 @@ class Pet(commands.Cog, name="pet"):
 
 	def __init__(self, bot):
 		self.bot = bot
+
+		self._leaderboard_config = {
+			"title": "Pet Leaderboard",
+			"file": "pet_stats.json",
+			"sort_func": lambda kv: kv[1]["xp"],
+			"columns": ["name", "xp"],
+			"column_funcs": {"xp": lambda data: functions.pet_level_from_xp(data)},
+			"headers": {"xp": "lvl"}
+		}
 
 	async def cog_check(self, ctx):
 		return await checks.requires_channel_tag("game")(ctx)
@@ -96,7 +105,7 @@ class Pet(commands.Cog, name="pet"):
 
 	@commands.command(name="petlb", aliases=["plb"], help="Show the pet leaderboard")
 	async def leaderboard(self, ctx: commands.Context):
-		leaderboard_string = await leaderboard.create_leaderboard(ctx.author, leaderboard.Type.PET)
+		leaderboard_string = await self.create_leaderboard(ctx.author, self._leaderboard_config)
 
 		await ctx.send(leaderboard_string)
 

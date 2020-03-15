@@ -6,15 +6,38 @@ from discord.ext.commands import CommandError
 from datetime import datetime
 
 from src.common import FileReader
-from src.common import (checks, leaderboard)
+from src.common import checks
+
+from src.cogs.activitycog import ActivityCog, ActivityEnum
 
 
-class AutoBattlesOnline(commands.Cog, name="abo"):
+class AutoBattlesOnline(ActivityCog, name="abo"):
 	def __init__(self, bot):
 		self.bot = bot
 
+		self._leaderboard_config = {
+			"title": "Auto Battles Online",
+			"file": "game_stats.json",
+			"sort_func": lambda kv: kv[1][2],  # Sort the data with this function
+			"columns": [1, 2, 3],  # Either indexes for lists for keys for dicts
+			# Optional column headers: replaces the column values with these
+			"headers": {1: "Lvl", 2: "", 3: "Updated"},
+			# Functions whose result becomes the value for that column
+			"column_funcs": {3: lambda data: AutoBattlesOnline.get_days_since_update(data)},
+			"leaderboard_size": 30,
+			"members_only": True  # Only display members who have the allocated member role
+			}
+
+		self._activity_enum = ActivityEnum.ABO
+
 	async def cog_check(self, ctx):
 		return await checks.requires_channel_tag("abo")(ctx) and await checks.has_member_role(ctx)
+
+	@staticmethod
+	def get_days_since_update(data: dict):
+		days = (datetime.today() - datetime.strptime(data[0], "%d/%m/%Y %H:%M:%S")).days
+
+		return f"{days} days ago" if days >= 7 else ""
 
 	@commands.command(name="me", help="Display your own stats")
 	async def get_stats(self, ctx: commands.Context):
@@ -58,6 +81,6 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 
 	@commands.command(name="alb", help="Display ABO trophy leaderboard")
 	async def leaderboard(self, ctx: commands.Context):
-		leaderboard_string = await leaderboard.create_leaderboard(ctx.author, leaderboard.Type.ABO)
+		leaderboard_string = await self.create_leaderboard(ctx.author, self._leaderboard_config)
 
 		return await ctx.send(leaderboard_string)
