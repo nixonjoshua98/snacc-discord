@@ -83,7 +83,7 @@ class Leaderboard:
 
 			leaderboard_string += "\n"
 
-		self._add_author_rank(leaderboard_string, author_row, column_lengths)
+		leaderboard_string = self._add_author_rank(leaderboard_string, author_row, column_lengths)
 
 		return "```c++\n" + leaderboard_string + "```"
 
