@@ -4,24 +4,22 @@ import discord
 from discord.ext import commands
 
 from src.common import checks
-
 from src.common import FileReader
-
 from src.common import converters
 
-from src.cogs.activitycog import ActivityCog
+from src.structures import Leaderboard
 
 
-class Bank(ActivityCog, name="bank"):
+class Bank(commands.Cog, name="bank"):
 	def __init__(self, bot):
 		self.bot = bot
 
-		self._leaderboard_config = {
-			"title": "Coin Leaderboard",
-			"file": "coins.json",
-			"sort_func": lambda kv: kv[1]["coins"],
-			"columns": ["coins"]
-		}
+		self._leaderboard = Leaderboard(
+			title="Global Coin Leaderboard",
+			file="coins.json",
+			columns=["coins"],
+			sort_func=lambda kv: kv[1]["coins"]
+		)
 
 	async def cog_check(self, ctx):
 		return await checks.requires_channel_tag("game")(ctx)
@@ -87,6 +85,6 @@ class Bank(ActivityCog, name="bank"):
 
 	@commands.command(name="coinlb", aliases=["clb"], help="Show the coin leaderboard")
 	async def leaderboard(self, ctx: commands.Context):
-		leaderboard_string = await self.create_leaderboard(ctx.author, self._leaderboard_config)
+		leaderboard_string = await self._leaderboard.create(ctx.author)
 
 		await ctx.send(leaderboard_string)

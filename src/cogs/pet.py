@@ -8,33 +8,24 @@ from src.common import functions
 from src.common import converters
 from src.common import FileReader
 
-from src.cogs.activitycog import ActivityCog
+from src.structures import Leaderboard
 
 
-class Pet(ActivityCog, name="pet"):
+class Pet(commands.Cog, name="pet"):
 	ATTACK_REACTIONS = ["\U00002660", "\U00002665", "\U00002663", "\U00002666"]
-
-	DEFAULT_STATS = {
-		"name": "Pet",
-		"xp": 0,
-		"health": 100,
-		"attack": 10,
-		"defence": 10,
-		"wins": 0,
-		"loses": 0
-	}
+	DEFAULT_STATS = {"name": "Pet", "xp": 0, "health": 100, "attack": 10, "defence": 10, "wins": 0, "loses": 0}
 
 	def __init__(self, bot):
 		self.bot = bot
 
-		self._leaderboard_config = {
-			"title": "Pet Leaderboard",
-			"file": "pet_stats.json",
-			"sort_func": lambda kv: kv[1]["xp"],
-			"columns": ["name", "xp"],
-			"column_funcs": {"xp": lambda data: functions.pet_level_from_xp(data)},
-			"headers": {"xp": "lvl"}
-		}
+		self._leaderboard = Leaderboard(
+			title="Global Pet Leaderboard",
+			file="pet_stats.json",
+			columns=["name", "xp"],
+			sort_func=lambda kv: kv[1]["xp"]
+		)
+
+		self._leaderboard.update_column("xp", "level", lambda data: functions.pet_level_from_xp(data))
 
 	async def cog_check(self, ctx):
 		return await checks.requires_channel_tag("game")(ctx)
@@ -103,12 +94,6 @@ class Pet(ActivityCog, name="pet"):
 
 		await message.edit(embed=embed)
 
-	@commands.command(name="petlb", aliases=["plb"], help="Show the pet leaderboard")
-	async def leaderboard(self, ctx: commands.Context):
-		leaderboard_string = await self.create_leaderboard(ctx.author, self._leaderboard_config)
-
-		await ctx.send(leaderboard_string)
-
 	async def create_pet_attack_menu(self, ctx: commands.Context, attacker: dict, defender: dict) -> discord.Message:
 		description = f"**'{attacker['name']}'** vs **'{defender['name']}'**"
 
@@ -133,6 +118,12 @@ class Pet(ActivityCog, name="pet"):
 			_ = file.get(str(defender.id), self.DEFAULT_STATS)
 
 		return {"health": 0, "coins": 0, "xp": 0}
+
+	@commands.command(name="petlb", aliases=["plb"], help="Show the pet leaderboard")
+	async def leaderboard(self, ctx: commands.Context):
+		leaderboard_string = await self._leaderboard.create(ctx.author)
+
+		await ctx.send(leaderboard_string)
 
 
 

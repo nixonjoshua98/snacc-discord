@@ -8,12 +8,24 @@ from datetime import datetime
 from src.common import FileReader
 from src.common import checks
 
-from src.cogs.activitycog import ActivityCog
+from src.structures import Leaderboard
 
 
-class AutoBattlesOnline(ActivityCog, name="abo"):
+class AutoBattlesOnline(commands.Cog, name="abo"):
 	def __init__(self, bot):
 		self.bot = bot
+
+		self._leaderboard = Leaderboard(
+			title="Server Trophy Leaderboard",
+			file="game_stats.json",
+			columns=[1, 2, 3],
+			members_only=True,
+			sort_func=lambda kv: kv[1][2]
+		)
+
+		self._leaderboard.update_column(1, "Lvl")
+		self._leaderboard.update_column(2, "")
+		self._leaderboard.update_column(3, "Updated", lambda data: AutoBattlesOnline.get_days_since_update(data))
 
 		self._leaderboard_config = {
 			"title": "Auto Battles Online",
@@ -79,6 +91,6 @@ class AutoBattlesOnline(ActivityCog, name="abo"):
 
 	@commands.command(name="alb", help="Display ABO trophy leaderboard")
 	async def leaderboard(self, ctx: commands.Context):
-		leaderboard_string = await self.create_leaderboard(ctx.author, self._leaderboard_config)
+		leaderboard_string = await self._leaderboard.create(ctx.author)
 
 		return await ctx.send(leaderboard_string)
