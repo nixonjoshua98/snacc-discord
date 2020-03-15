@@ -33,7 +33,7 @@ class Pet(commands.Cog, name="pet"):
 
 	@staticmethod
 	def get_pet_level(data: dict) -> int:
-		return data.get("xp", 0) // 50
+		return 1 + (data.get("xp", 0) // 50)
 
 	@staticmethod
 	def get_pet_attack(data: dict) -> int:
@@ -67,7 +67,7 @@ class Pet(commands.Cog, name="pet"):
 
 		await ctx.send(f"**{ctx.author.display_name}** has renamed their pet to **{new_pet_name}**")
 
-	@commands.cooldown(1, 60 * 3, commands.BucketType.user)
+	@commands.cooldown(1, 60, commands.BucketType.user)
 	@commands.command(name="fight", help="Attack! [60s]")
 	async def fight(self, ctx: commands.Context, defender: converters.ValidUser()):
 		def wait_for_react(react, user_):
@@ -87,7 +87,7 @@ class Pet(commands.Cog, name="pet"):
 
 		# - - - WAIT FOR USER INPUT - - -
 		try:
-			await self.bot.wait_for("reaction_add", timeout=60, check=wait_for_react)
+			await self.bot.wait_for("reaction_add", timeout=45, check=wait_for_react)
 		except asyncio.TimeoutError:
 			embed.set_field_at(0, name="Battle Report", value="Timed out")
 
