@@ -9,7 +9,7 @@ from src.common import converters
 from src.common.constants import ALL_CHANNEL_TAGS, ALL_ROLE_TAGS
 
 
-class Config(commands.Cog, name="owner"):
+class Config(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 

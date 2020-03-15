@@ -44,4 +44,4 @@ def upload_file(file: str):
 
 		return response.status_code == requests.codes.ok
 
-	print(f"'{file}' '{url}' was not uploaded due to being in debug mode ")
+	print(f"'{file}' was not uploaded due to being in debug mode ")

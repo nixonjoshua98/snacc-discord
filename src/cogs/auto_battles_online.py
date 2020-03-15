@@ -7,6 +7,7 @@ from datetime import datetime
 
 from src.common import FileReader
 from src.common import checks
+from src.common import functions
 
 from src.structures import Leaderboard
 
@@ -20,25 +21,13 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 			file="game_stats.json",
 			columns=[1, 2, 3],
 			members_only=True,
+			size=30,
 			sort_func=lambda kv: kv[1][2]
 		)
 
 		self._leaderboard.update_column(1, "Lvl")
 		self._leaderboard.update_column(2, "")
 		self._leaderboard.update_column(3, "Updated", lambda data: AutoBattlesOnline.get_days_since_update(data))
-
-		self._leaderboard_config = {
-			"title": "Auto Battles Online",
-			"file": "game_stats.json",
-			"sort_func": lambda kv: kv[1][2],  # Sort the data with this function
-			"columns": [1, 2, 3],  # Either indexes for lists for keys for dicts
-			# Optional column headers: replaces the column values with these
-			"headers": {1: "Lvl", 2: "", 3: "Updated"},
-			# Functions whose result becomes the value for that column
-			"column_funcs": {3: lambda data: AutoBattlesOnline.get_days_since_update(data)},
-			"leaderboard_size": 30,
-			"members_only": True  # Only display members who have the allocated member role
-			}
 
 	async def cog_check(self, ctx):
 		return await checks.requires_channel_tag("abo")(ctx) and await checks.has_member_role(ctx)
@@ -60,10 +49,7 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 
 				raise CommandError(msg)
 
-		embed = discord.Embed(title=ctx.author.display_name, description=f"Auto Battles Online", color=0xff8000)
-
-		embed.set_thumbnail(url=ctx.author.avatar_url)
-		embed.set_footer(text="Darkness")
+		embed = functions.create_embed(ctx.author.display_name, f"Auto Battles Online", ctx.author.avatar_url)
 
 		for i, txt in enumerate(("Date Recorded", "Level", "Trophies")):
 			embed.add_field(name=txt, value=stats[i], inline=False)
