@@ -43,6 +43,21 @@ class Pet(commands.Cog, name="pet"):
 	def get_pet_defence(data: dict) -> int:
 		return 10 + (Pet.get_pet_level(data) * 5)
 
+	@commands.is_owner()
+	@commands.command(name="setpetxp", hidden=True)
+	async def set_pet_xp_with_id(self, ctx: commands.Context, id_: int, xp: int):
+		with FileReader("pet_stats.json") as file:
+			pet_stats = file.get(str(id_), None)
+
+			if pet_stats is None:
+				return await ctx.send(":frowning:")
+
+			pet_stats["xp"] = xp
+
+			file.set(str(id_), pet_stats)
+
+		return await ctx.send(":smile:")
+
 	@commands.command(name="pet", aliases=["p"], help="Display your pet stats")
 	async def pet(self, ctx: commands.Context):
 		with FileReader("pet_stats.json") as file:
