@@ -42,7 +42,7 @@ class Config(commands.Cog):
 
 			server_settings.set_inner_key(str(ctx.guild.id), "roles", roles)
 
-		await ctx.send(f"Member role has been updated to **{role.name}**")
+		await ctx.send(f"**{tag.title()}** role has been updated to **{role.name}**")
 
 	@config.command(name="prefix", help="Set the server prefix")
 	async def set_prefix(self, ctx: commands.Context, prefix: str):
