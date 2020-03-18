@@ -71,7 +71,7 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 		with FileReader("game_stats.json") as file:
 			data = [datetime.today().strftime("%d/%m/%Y %H:%M:%S"), level, trophies]
 
-			file.set(str(ctx.author.id), data)
+			file.set(str(user.id), data)
 
 		await ctx.send(f"**{user.display_name}** :thumbsup:")
 
