@@ -15,9 +15,10 @@ class Bank(commands.Cog, name="bank"):
 		self.bot = bot
 
 		self._leaderboard = Leaderboard(
-			title="Global Coin Leaderboard",
+			title="Coin Leaderboard",
 			file="coins.json",
 			columns=["coins"],
+			bot=self.bot,
 			sort_func=lambda kv: kv[1]["coins"]
 		)
 
@@ -83,8 +84,14 @@ class Bank(commands.Cog, name="bank"):
 
 		await ctx.send(f"**{ctx.author.display_name}** done :thumbsup:")
 
-	@commands.command(name="coinlb", aliases=["clb"], help="Show the coin leaderboard")
+	@commands.command(name="coinlb", aliases=["clb"], help="Show the server coin leaderboard")
 	async def leaderboard(self, ctx: commands.Context):
 		leaderboard_string = await self._leaderboard.create(ctx.author)
+
+		await ctx.send(leaderboard_string)
+
+	@commands.command(name="coinglb", aliases=["clbg"], help="Show the global coin leaderboard")
+	async def global_leaderboard(self, ctx: commands.Context):
+		leaderboard_string = await self._leaderboard.create(ctx.author, server_only=False)
 
 		await ctx.send(leaderboard_string)

@@ -20,9 +20,10 @@ class Pet(commands.Cog, name="pet"):
 		self.bot = bot
 
 		self._leaderboard = Leaderboard(
-			title="Global Pet Leaderboard",
+			title="Pet Leaderboard",
 			file="pet_stats.json",
 			columns=["name", "xp"],
+			bot=self.bot,
 			sort_func=lambda kv: kv[1].get("xp", 0)
 		)
 
@@ -198,6 +199,12 @@ class Pet(commands.Cog, name="pet"):
 	@commands.command(name="petlb", aliases=["plb"], help="Show the pet leaderboard")
 	async def leaderboard(self, ctx: commands.Context):
 		leaderboard_string = await self._leaderboard.create(ctx.author)
+
+		await ctx.send(leaderboard_string)
+
+	@commands.command(name="petlbg", aliases=["plbg"], help="Show the global pet leaderboard")
+	async def global_leaderboard(self, ctx: commands.Context):
+		leaderboard_string = await self._leaderboard.create(ctx.author, server_only=False)
 
 		await ctx.send(leaderboard_string)
 

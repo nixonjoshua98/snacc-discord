@@ -1,4 +1,3 @@
-import time
 import discord
 
 from src.common import FileReader
@@ -7,12 +6,13 @@ from src.common import FileReader
 class Leaderboard:
 	MAX_COLUMN_WIDTH = 15
 
-	def __init__(self, *, title: str, file: str, columns: list, **options):
+	def __init__(self, *, title: str, file: str, columns: list, bot, **options):
 		self._title = title
 		self._file = file
 		self._columns = columns
 		self._col_headers = {}
 		self._col_funcs = {}
+		self._bot = bot
 		self._show_members_only = options.get("members_only", False)
 		self._size = options.get("size", 10)
 		self._sort_func = options.get("sort_func", None)
@@ -24,7 +24,7 @@ class Leaderboard:
 		self._col_headers[col] = name
 		self._col_funcs[col] = func
 
-	async def create(self, author: discord.Member):
+	async def create(self, author: discord.Member, server_only: bool = True):
 		guild = author.guild
 		data = self._get_data()
 		rows = [["#", "MEMBER"] + [self._col_headers.get(col, col).upper() for col in self._columns]]
@@ -37,7 +37,16 @@ class Leaderboard:
 		for member_id, member_data in data:
 			member = guild.get_member(int(member_id))
 
-			if member is None or member.bot or (member_role not in member.roles and self._show_members_only):
+			# Server only
+			if server_only and member is None:
+				continue
+
+			# Ignore other bots
+			if member and member.bot:
+				continue
+
+			# Members only
+			if member and member_role not in member.roles and self._show_members_only:
 				continue
 
 			current_rank += 1
@@ -49,19 +58,28 @@ class Leaderboard:
 					break
 				continue
 
-			row = self._create_row(current_rank, member, member_data)
+			row = self._create_row(current_rank, member if member else member_id, member_data)
 
 			rows.append(row)
 
-			if member.id == author.id:
+			if member and member.id == author.id:
 				author_row = row
 
 			column_lengths = [max(column_lengths[i], len(col)) for i, col in enumerate(row)]
 
 		return self._create_leaderboard_string(rows, author_row, column_lengths)
 
-	def _create_row(self, member_rank: int, member: discord.Member, member_data: dict):
-		username = member.display_name[0:self.MAX_COLUMN_WIDTH]
+	def _create_row(self, member_rank: int, member, member_data: dict):
+		username = f"ID: {member}"[0:self.MAX_COLUMN_WIDTH]
+
+		if isinstance(member, discord.Member):
+			username = member.display_name[0:self.MAX_COLUMN_WIDTH]
+		else:
+			user = self._bot.get_user(int(member))
+
+			if user is not None:
+				username = user.name[0:self.MAX_COLUMN_WIDTH]
+
 		current_row = [f"#{member_rank:02d}", username]
 
 		for col in self._columns:

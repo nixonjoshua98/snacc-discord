@@ -22,6 +22,7 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 			columns=[1, 2, 3],
 			members_only=True,
 			size=30,
+			bot=self.bot,
 			sort_func=lambda kv: kv[1][2]
 		)
 
