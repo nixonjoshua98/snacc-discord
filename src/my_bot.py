@@ -4,7 +4,7 @@ import os
 from discord.ext import commands
 
 from src import cogs
-from src.common import myjson
+from src.common import jsonblob
 from src.common import FileReader
 
 
@@ -17,7 +17,7 @@ class MyBot(commands.Bot):
 
 		print("Bot successfully started")
 
-		myjson.download_all()
+		jsonblob.download_all()
 
 		for c in cogs.ALL_COGS:
 			print(f"Added Cog: {c.__name__}")

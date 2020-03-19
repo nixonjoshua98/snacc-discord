@@ -4,7 +4,7 @@ from discord.ext import commands
 
 from datetime import datetime
 
-from src.common import myjson
+from src.common import jsonblob
 from src.common import asycio_schedule
 from src.common.constants import JSON_URL_LOOKUP, RESOURCES_DIR
 
@@ -31,7 +31,7 @@ class Backup(commands.Cog, command_attrs=dict(hidden=True), name="backup"):
 
 			# Only upload the file if it has been modified since the last check
 			if (datetime.today() - modified_date).total_seconds() <= Backup.BACKUP_DELAY:
-				if myjson.upload_file(file) is True:
+				if jsonblob.upload_file(file) is True:
 					print(f"Uploaded '{file}' to '{url}'")
 
 	@commands.is_owner()

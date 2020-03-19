@@ -196,7 +196,7 @@ class Pet(commands.Cog, name="pet"):
 
 		return {"log": log, "coins": coins_gained, "xp": xp_gained}
 
-	@commands.command(name="petlb", aliases=["plb"], help="Show the pet leaderboard")
+	@commands.command(name="petlb", aliases=["plb"], help="Show the server pet leaderboard")
 	async def leaderboard(self, ctx: commands.Context):
 		leaderboard_string = await self._leaderboard.create(ctx.author)
 
