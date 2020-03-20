@@ -10,7 +10,7 @@ from src.common.constants import JSON_URL_LOOKUP, RESOURCES_DIR
 
 
 class Backup(commands.Cog, command_attrs=dict(hidden=True), name="backup"):
-	BACKUP_DELAY = 60 * 5
+	BACKUP_DELAY = 60 * 3
 
 	def __init__(self, bot):
 		self.bot = bot
