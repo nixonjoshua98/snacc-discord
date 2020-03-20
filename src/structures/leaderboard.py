@@ -4,7 +4,7 @@ from src.common import FileReader
 
 
 class Leaderboard:
-	MAX_COLUMN_WIDTH = 15
+	MAX_COLUMN_WIDTH = 10
 
 	def __init__(self, *, title: str, file: str, columns: list, bot, **options):
 		self._title = title
@@ -98,29 +98,42 @@ class Leaderboard:
 		return current_row
 
 	def _create_leaderboard_string(self, rows, author_row, column_lengths):
-		leaderboard_string = f"{self._title}\n"
+		leaderboard_string = f"{self._title}\n\n"
 
-		leaderboard_string += "-" * (sum(column_lengths) + len(column_lengths)) + "\n"
+		author_row_string = self._get_author_row(author_row, column_lengths) + "\n"
 
 		# Build the leaderboard
-		for row in rows[0:self._size + 1]:
+		for i, row in enumerate(rows[0:self._size + 1]):
+			temp = []
 			for j, col in enumerate(row):
-				leaderboard_string += f"{col}{' ' * (column_lengths[j] - len(col))}" + " "
+				temp.append(f"{col}{' ' * (column_lengths[j] - len(col))}" + " ")
 
-			leaderboard_string += "\n"
+			row_len = sum([len(r) for r in temp])
 
-		leaderboard_string = self._add_author_rank(leaderboard_string, author_row, column_lengths)
+			if (row_len + len(leaderboard_string)) > 1950:
+				return "```c++\n" + leaderboard_string + "```"
 
-		return "```c++\n" + leaderboard_string + "```"
+			leaderboard_string += "".join(temp) + "\n"
+
+		leaderboard_string = "```c++\n" + leaderboard_string
+
+		if len(leaderboard_string) + len(author_row_string) <= 1950:
+			leaderboard_string += author_row_string
+		else:
+			leaderboard_string += "See this? Tell my creator"
+
+		return leaderboard_string + "```"
 
 	@staticmethod
-	def _add_author_rank(leaderboard: str, author_row: str, column_lengths: list):
+	def _get_author_row(author_row: str, column_lengths: list):
+		row_string = ""
 		if author_row is not None:
-			leaderboard += "-" * (sum(column_lengths) + len(column_lengths)) + "\n"
 			for j, col in enumerate(author_row):
-				leaderboard += f"{col}{' ' * (column_lengths[j] - len(col))}" + " "
+				row_string += f"{col}{' ' * (column_lengths[j] - len(col))}" + " "
 
-		return leaderboard
+			row_string += "\n"
+
+		return "- " * ((sum(column_lengths) + len(column_lengths)) // 2) + "\n" + row_string
 
 	def _get_data(self):
 		with FileReader(self._file) as stats:
