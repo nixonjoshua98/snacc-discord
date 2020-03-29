@@ -13,7 +13,13 @@ class DBConnection:
 
         config.read("./snacc_bot/postgres.ini")
 
-        self._con = psycopg2.connect(**dict(config.items("postgres")))
+        if os.getenv("DEBUG", False):
+            self._con = psycopg2.connect(**dict(config.items("postgres")))
+        else:
+            self._con = psycopg2.connect(os.getenv("DATABASE_URL", None), sslmode="require")
+
+        print(os.getenv("DATABASE_URL", None))
+
         self.cur = self._con.cursor(cursor_factory=psycopg2.extras.NamedTupleCursor)
 
     @classmethod
