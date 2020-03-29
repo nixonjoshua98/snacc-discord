@@ -1,0 +1,13 @@
+The infamous **{bot.user.name}** has graced your ~~lowly~~ server!
+
+My current prefix is **{bot.default_prefix}**...obviously
+
+**__Setup__**
+``- Do this
+- and maybe this otherwise the server will blow up
+- or this
+- or this?
+- Just kidding. Do that``
+
+**__Help__**
+Contact my almighty creator :star:**{bot_info.owner}**:star:

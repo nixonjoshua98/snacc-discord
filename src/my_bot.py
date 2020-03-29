@@ -42,6 +42,3 @@ class MyBot(commands.Bot):
 			prefix = server_settings.get_inner_key(str(message.guild.id), "prefix", "!")
 
 		return prefix
-
-	def run(self):
-		super().run("NjY2NjE2NTE1NDM2NDc4NDcz.Xh2xCA.X8d9IFcSW_2e4c_maBMoXlxmI7Y")

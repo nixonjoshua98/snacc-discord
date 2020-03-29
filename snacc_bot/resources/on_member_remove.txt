@@ -1,0 +1,1 @@
+{member.display_name} **({member.mention})** has left the server :frowning:
