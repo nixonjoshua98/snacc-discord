@@ -8,6 +8,8 @@ if __name__ == '__main__':
     snacc = SnaccBot()
     dark = MyBot()
 
+    snacc.load_extension("snacc_bot.cogs.coins")
+    snacc.load_extension("snacc_bot.cogs.casino")
     snacc.load_extension("snacc_bot.cogs.listeners")
     snacc.load_extension("snacc_bot.cogs.vlisteners")
 

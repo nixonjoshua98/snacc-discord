@@ -2,13 +2,16 @@ import discord
 
 from discord.ext import commands
 
+from snacc_bot.common import utils
+
 
 class SnaccBot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix=self.get_server_prefix, case_insensitive=True)
 
-        self.debugging = False
-        self.default_prefix = "t"
+        self.default_prefix = "!!"
+
+        utils.execute_query("create-table-coins.sql")
 
     async def on_ready(self):
         await self.wait_until_ready()

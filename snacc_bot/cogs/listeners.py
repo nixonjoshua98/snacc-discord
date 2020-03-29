@@ -17,8 +17,9 @@ class Listeners(commands.Cog):
             with open(path, "r") as fh:
                 self.template_messages[f] = fh.read()
 
-    async def _send_system_channel(self, guild: discord.Guild, message: str):
-        if guild.system_channel and not self.bot.debugging:
+    @staticmethod
+    async def _send_system_channel(guild: discord.Guild, message: str):
+        if guild.system_channel:
             await guild.system_channel.send(message)
 
     @commands.Cog.listener()
@@ -29,15 +30,13 @@ class Listeners(commands.Cog):
         owner_dm = f"I joined the server **{guild.name}** owned by **{guild.owner}**"
 
         await bot_info.owner.send(owner_dm)
-        await self._send_system_channel(guild, welc_msg)\
-
+        await self._send_system_channel(guild, welc_msg)
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
         join_msg = self.template_messages["on_member_join"].format(guild=member.guild, member=member)
 
-        await self._send_system_channel(member.guild, join_msg)\
-
+        await self._send_system_channel(member.guild, join_msg)
 
     @commands.Cog.listener()
     async def on_member_remove(self, member: discord.Member):

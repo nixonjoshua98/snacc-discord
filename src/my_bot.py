@@ -25,13 +25,11 @@ class MyBot(commands.Bot):
 			self.add_cog(c(self))
 
 	async def on_command_error(self, ctx, esc):
-		return await ctx.send(esc)
+		print(esc)
 
 	async def on_message(self, message: discord.Message):
-		if message.guild is None:
-			return
-
-		await self.process_commands(message)
+		if message.guild is not None:
+			return await self.process_commands(message)
 
 	@staticmethod
 	def prefix(_: commands.Bot, message: discord.message):
