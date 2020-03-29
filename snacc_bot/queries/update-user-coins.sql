@@ -1,6 +1,6 @@
 UPDATE
 coins
 SET
-balance = total + %s
+balance = balance + %s
 WHERE
 user_id = %s

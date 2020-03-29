@@ -19,6 +19,7 @@ class Coins(commands.Cog):
             con.cur.execute(con.get_query("select-user-coins.sql"), (ctx.author.id,))
 
             bal = con.cur.fetchone()
+
             bal = 0 if bal is None else bal.balance
 
         await ctx.send(f":moneybag: **{ctx.author.display_name}** has a total of **{bal:,}** coins")
@@ -35,7 +36,7 @@ class Coins(commands.Cog):
 
             query = con.get_query("insert-user-coins.sql" if bal is None else "update-user-coins.sql")
 
-            con.cur.execute(con.get_query(query), (ctx.author.id, amount))
+            con.cur.execute(query, (ctx.author.id, amount))
 
         await ctx.send(f"**{ctx.author.display_name}** gained **{amount}** coins!")
 

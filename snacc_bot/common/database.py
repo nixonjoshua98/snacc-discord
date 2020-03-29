@@ -13,17 +13,18 @@ class DBConnection:
 
         config.read("./snacc_bot/postgres.ini")
 
+        #os.environ["DATABASE_URL"] = "postgres://axuloidgiwznzu:80b3caeeabe61dd86c60659b7defb446a21fda960435d94a5b628c92ee079dde@ec2-46-137-84-173.eu-west-1.compute.amazonaws.com:5432/df1828oi2tg2c9"
+
         if os.getenv("DEBUG", False):
             self._con = psycopg2.connect(**dict(config.items("postgres")))
         else:
             self._con = psycopg2.connect(os.getenv("DATABASE_URL", None), sslmode="require")
 
-        print(os.getenv("DATABASE_URL", None))
-
         self.cur = self._con.cursor(cursor_factory=psycopg2.extras.NamedTupleCursor)
 
     @classmethod
     def get_query(cls, file, cache: bool = True):
+        print(file)
         if cls._query_cache.get(file, None) is not None:
             return cls._query_cache[file]
 
