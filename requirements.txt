@@ -9,6 +9,7 @@ docopt==0.6.2
 idna==2.9
 multidict==4.7.5
 num2words==0.5.10
+psycopg2==2.8.4
 requests==2.23.0
 urllib3==1.25.8
 websockets==8.1
