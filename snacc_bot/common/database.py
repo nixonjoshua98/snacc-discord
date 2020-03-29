@@ -24,7 +24,6 @@ class DBConnection:
 
     @classmethod
     def get_query(cls, file, cache: bool = True):
-        print(file)
         if cls._query_cache.get(file, None) is not None:
             return cls._query_cache[file]
 
