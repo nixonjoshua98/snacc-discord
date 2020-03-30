@@ -49,10 +49,10 @@ class Casino(commands.Cog, name="casino"):
 		await message.edit(content=create_message(final_balance))
 
 		balance_change = final_balance - initial_balance
+
 		text = 'won' if balance_change > 0 else 'lost'
 
 		await ctx.send(f"**{ctx.author.display_name}** has {text} **{abs(balance_change):,}** coins!")
-
 	@checks.has_minimum_coins("coins.json", 10)
 	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
 	@commands.command(name="flip", aliases=["fl"], help="Flip a coin [1hr]")
