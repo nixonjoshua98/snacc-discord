@@ -14,8 +14,8 @@ class SnaccBot(commands.Bot):
 
         print(f"Bot '{self.user.name}' is ready")
 
-    async def on_command_error(self, ctx: commands.Context, esc: commands.CommandError):
-        print(esc)
+    async def on_command_error(self, ctx: commands.Context, esc):
+        return await ctx.send(esc)
 
     async def on_message(self, message: discord.Message):
         if message.guild is not None:

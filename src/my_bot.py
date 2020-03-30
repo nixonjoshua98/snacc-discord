@@ -24,8 +24,8 @@ class MyBot(commands.Bot):
 
 			self.add_cog(c(self))
 
-	async def on_command_error(self, ctx, esc):
-		print(esc)
+	async def on_command_error(self, ctx: commands.Context, esc):
+		return await ctx.send(esc)
 
 	async def on_message(self, message: discord.Message):
 		if message.guild is not None:
