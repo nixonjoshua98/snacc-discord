@@ -21,8 +21,6 @@ class DBConnection:
 
         self.cur = self._con.cursor(cursor_factory=psycopg2.extras.NamedTupleCursor)
 
-        psycopg2.extras.register_hstore(self._con)
-
     @classmethod
     def get_query(cls, file):
         path = utils.query(file)
