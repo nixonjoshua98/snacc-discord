@@ -45,7 +45,7 @@ class Listeners(commands.Cog):
 
             await member.add_roles(role, atomic=True)
 
-        except AttributeError:
+        except (AttributeError, KeyError):
             pass
 
         except discord.Forbidden as e:

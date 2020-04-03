@@ -1,7 +1,6 @@
 import discord
 
 from datetime import datetime
-from src.common import queries
 from src.common.database import DBConnection
 
 
@@ -31,7 +30,6 @@ class Leaderboard:
     def _create(self, author: discord.Member):
         rows = [["#", "Member"] + self._headers]
         col_widths = list(map(len, rows[0]))
-        author_entry = None
         rank = 0
 
         for user_data in self.get_data():
@@ -44,15 +42,9 @@ class Leaderboard:
             rank += 1
 
             if rank > self._size:
-                if id_ == author.id:
-                    author_entry = author_entry if author_entry else self._create_entry(rank, member, user_data)
-                    break
-                continue
+                break
 
             entry = self._create_entry(rank, member, user_data)
-
-            if id_ == author.id:
-                author_entry = entry
 
             rows.append(entry)
             col_widths = [max(col_widths[i], len(col)) for i, col in enumerate(entry)]
@@ -95,13 +87,13 @@ class ABOLeaderboard(Leaderboard):
     def __init__(self):
         super(ABOLeaderboard, self).__init__(
             "Trophy Leaderboard",
-            ["LVL", "Trophies"], ["lvl", "trophies"],
+            ["Lvl", "Trophies"], ["lvl", "trophies"],
             size=45
         )
 
     def get_data(self):
         with DBConnection() as con:
-            con.cur.execute(queries.SELECT_ALL_ABO_SQL)
+            con.cur.execute("SELECT userID, lvl, trophies FROM abo;")
 
             data = con.cur.fetchall()
 
@@ -110,9 +102,23 @@ class ABOLeaderboard(Leaderboard):
         return data if data is not None else []
 
 
+class CoinLeaderboard(Leaderboard):
+    def __init__(self):
+        super(CoinLeaderboard, self).__init__(
+            "Coins Leaderboard",
+            ["Coins"], ["balance"],
+            size=10
+        )
 
+    def get_data(self):
+        with DBConnection() as con:
+            con.cur.execute("SELECT userID, balance FROM coins;")
 
+            data = con.cur.fetchall()
 
+        data.sort(key=lambda u: u.balance, reverse=True)
+
+        return data if data is not None else []
 
 
 

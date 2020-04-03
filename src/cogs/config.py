@@ -30,9 +30,8 @@ class Config(commands.Cog):
 	@config.command(name="channel", help="Register current channel")
 	async def set_channel(self, ctx: commands.Context, tag: converters.ValidTag(ALL_CHANNEL_TAGS)):
 		with DBConnection() as con:
-			con.cur.execute(queries.SELECT_SVR_CONFIG, (ctx.guild.id,))
+			data = self.bot.svr_cache.get(ctx.guild.id, None)
 
-			data = con.cur.fetchone()
 			channels = data.channels or dict()
 			channels[tag] = list(set(channels.get(tag, []) + [ctx.channel.id]))
 			dumps = json.dumps(channels)
@@ -44,9 +43,8 @@ class Config(commands.Cog):
 	@config.command(name="role", help="Register a role")
 	async def set_role(self, ctx: commands.Context, tag: converters.ValidTag(ALL_ROLE_TAGS), role: discord.Role):
 		with DBConnection() as con:
-			con.cur.execute(queries.SELECT_SVR_CONFIG, (ctx.guild.id,))
+			data = self.bot.svr_cache.get(ctx.guild.id, None)
 
-			data = con.cur.fetchone()
 			roles = dict() if data is None else data.roles if data.roles is not None else dict()  # Lol...
 			roles[tag] = role.id
 			dumps = json.dumps(roles)

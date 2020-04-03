@@ -13,7 +13,7 @@ from src.structures import Leaderboard
 from src.common.database import DBConnection
 
 
-class AutoBattlesOnline(commands.Cog, name="abo"):
+class ABO(commands.Cog, name="abo"):
 	def __init__(self, bot):
 		self.bot = bot
 
@@ -29,7 +29,7 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 
 		self._leaderboard.update_column(1, "Lvl")
 		self._leaderboard.update_column(2, "")
-		self._leaderboard.update_column(3, "Updated", lambda data: AutoBattlesOnline.get_days_since_update(data))
+		self._leaderboard.update_column(3, "Updated", lambda data: ABO.get_days_since_update(data))
 
 	async def cog_check(self, ctx):
 		return (
@@ -80,14 +80,12 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 
 		await ctx.send(f"**{ctx.author.display_name}** :thumbsup:")
 
-	@commands.command(name="alb", help="Display ABO trophy leaderboard")
+	@commands.command(name="alb", help="Display trophy leaderboard")
 	async def leaderboard(self, ctx: commands.Context):
 		lb = ABOLeaderboard()
 
-		leaderboard_string = await self._leaderboard.create(ctx.author)
-
-		return await ctx.send(leaderboard_string)
+		return await ctx.send(lb.get(ctx.author))
 
 
 def setup(bot):
-	bot.add_cog(AutoBattlesOnline(bot))
+	bot.add_cog(ABO(bot))

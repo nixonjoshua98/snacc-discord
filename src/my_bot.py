@@ -1,11 +1,7 @@
-import discord
 import os
+import discord
 
 from discord.ext import commands
-
-from src import cogs
-from src.common import jsonblob, queries
-from src.common import FileReader
 
 from src.common.database import DBConnection
 
@@ -25,9 +21,7 @@ class MyBot(commands.Bot):
 	async def on_ready(self):
 		await self.wait_until_ready()
 
-		print("Bot successfully started")
-
-		jsonblob.download_all()
+		print(f"Bot '{self.user.display_name}' is ready")
 
 	def add_cog(self, cog):
 		print(f"Adding Cog: {cog.qualified_name}...", end="")
@@ -58,6 +52,9 @@ class MyBot(commands.Bot):
 	async def prefix(self, message: discord.message):
 		if self.svr_cache.get(message.guild.id, None) is None:
 			await self.update_cache(message)
+
+		if os.getenv("DEBUG", False):
+			return "-"
 
 		try:
 			prefix = self.svr_cache[message.guild.id].prefix

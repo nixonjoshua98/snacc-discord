@@ -17,6 +17,30 @@ ON CONFLICT (serverID) DO UPDATE
 SET channels = excluded.channels;
 """
 
+UPDATE_ENTIRE_SVR_SQL = """
+INSERT INTO server_config (serverID, prefix, channels, roles) VALUES (%s, %s, %s, %s)
+ON CONFLICT (serverID) DO UPDATE
+SET prefix = excluded.prefix, channels = excluded.channels, roles = excluded.roles;
+"""
+
+INCREMENT_COINS = """
+INSERT INTO coins (userID, balance) VALUES (%s, %s)
+ON CONFLICT (userID) DO UPDATE
+SET balance = coins.balance + excluded.balance;
+"""
+
+DECREMENT_COINS = """
+INSERT INTO coins (userID, balance) VALUES (%s, %s)
+ON CONFLICT (userID) DO UPDATE
+SET balance = coins.balance - excluded.balance;
+"""
+
+SET_COINS = """
+INSERT INTO coins (userID, balance) VALUES (%s, %s)
+ON CONFLICT (userID) DO UPDATE
+SET balance = excluded.balance;
+"""
+
 UPDATE_SVR_ROLES_SQL = """
 INSERT INTO server_config (serverID, roles) VALUES (%s, %s)
 ON CONFLICT (serverID) DO UPDATE

@@ -1,0 +1,4 @@
+CREATE table IF NOT EXISTS coins (
+userID BIGINT PRIMARY KEY,
+balance BIGINT
+);

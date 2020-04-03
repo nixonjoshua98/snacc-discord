@@ -3,7 +3,7 @@ from discord.ext import commands
 from src.common import checks
 
 
-class VListeners(commands.Cog, command_attrs=dict(hidden=False)):
+class VListeners(commands.Cog, command_attrs=dict(hidden=True)):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 

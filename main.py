@@ -12,17 +12,19 @@ if __name__ == '__main__':
     with DBConnection() as con:
         con.cur.execute(con.get_query("create-abo-table.sql"))
         con.cur.execute(con.get_query("create-server-config-table.sql"))
+        con.cur.execute(con.get_query("create-coins-table.sql"))
 
     dark.load_extension("src.cogs.listeners")
     dark.load_extension("src.cogs.vlisteners")
     dark.load_extension("src.cogs.testing")
 
-    dark.load_extension("src.cogs.auto_battles_online")
+    dark.load_extension("src.cogs.abo")
     dark.load_extension("src.cogs.config")
     dark.load_extension("src.cogs.casino")
     dark.load_extension("src.cogs.bank")
 
-    dark.run("NjY2NjE2NTE1NDM2NDc4NDcz.Xh2xCA.X8d9IFcSW_2e4c_maBMoXlxmI7Y")
+    #  NjY2NjE2NTE1NDM2NDc4NDcz.Xh2xCA.X8d9IFcSW_2e4c_maBMoXlxmI7Y
+    dark.run("NjY2NjE2NTE1NDM2NDc4NDcz.XofF-Q.YNe2fpEgieFmOSrgBQVywdl4rRo")
 
     loop.run_forever()
 
