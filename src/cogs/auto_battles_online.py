@@ -1,15 +1,13 @@
 import discord
 
 from discord.ext import commands
-from discord.ext.commands import CommandError
 
 from datetime import datetime
 
-from src.common import FileReader
 from src.common import checks
-from src.common import functions
+from src.common import queries
 
-from src.common._leaderboard import _Leaderboard
+from src.common._leaderboard import ABOLeaderboard
 
 from src.structures import Leaderboard
 from src.common.database import DBConnection
@@ -35,8 +33,8 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 
 	async def cog_check(self, ctx):
 		return (
-				await checks.requires_channel_tag("abo")(ctx) and
-				await checks.has_member_role(ctx)
+				await checks.channel_has_tag(ctx, "abo", self.bot.svr_cache) and
+				await checks.author_has_role(ctx, "member", self.bot.svr_cache)
 		)
 
 	@staticmethod
@@ -48,8 +46,7 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 	@commands.command(name="me", help="Display your own stats")
 	async def get_stats(self, ctx: commands.Context):
 		with DBConnection() as con:
-			params = (ctx.author.id,)
-			con.cur.execute(con.get_query("select-user-abo-stats.sql"), params)
+			con.cur.execute("SELECT lvl, trophies, dateSet FROM abo WHERE userID = %s;", (ctx.author.id,))
 
 			user = con.cur.fetchone()
 
@@ -57,12 +54,7 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 			return await ctx.send(f":x: **{ctx.author.display_name}**, I found no stats for you")
 
 		date = user.dateset.strftime("%d/%m/%Y")
-
-		embed = self.bot.create_embed(
-			title=ctx.author.display_name,
-			thumbnail=ctx.author.avatar_url,
-			desc=f":alarm_clock: **{date}**")
-
+		embed = self.bot.create_embed(title=ctx.author.display_name, desc=f":alarm_clock: **{date}**")
 		text = f":joystick: **{user.lvl}**\n:trophy: **{user.trophies:,}**"
 
 		embed.add_field(name="ABO Stats", value=text)
@@ -74,7 +66,7 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 		with DBConnection() as con:
 			params = (ctx.author.id, level, trophies, datetime.now())
 
-			con.cur.execute(con.get_query("update-user-abo.sql"), params)
+			con.cur.execute(queries.UPDATE_ABO_STATS_SQL, params)
 
 		await ctx.send(f"**{ctx.author.display_name}** :thumbsup:")
 
@@ -90,10 +82,12 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 
 	@commands.command(name="alb", help="Display ABO trophy leaderboard")
 	async def leaderboard(self, ctx: commands.Context):
-		lb = _Leaderboard()
-
-		print(lb.get())
+		lb = ABOLeaderboard()
 
 		leaderboard_string = await self._leaderboard.create(ctx.author)
 
 		return await ctx.send(leaderboard_string)
+
+
+def setup(bot):
+	bot.add_cog(AutoBattlesOnline(bot))

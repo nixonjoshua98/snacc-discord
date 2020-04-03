@@ -1,6 +1,6 @@
 from discord.ext import commands
 
-from snacc_bot.common import checks
+from src.common import checks
 
 
 class VListeners(commands.Cog, command_attrs=dict(hidden=False)):
@@ -8,7 +8,7 @@ class VListeners(commands.Cog, command_attrs=dict(hidden=False)):
         self.bot = bot
 
     async def cog_check(self, ctx: commands.Context):
-        return await checks.is_server_owner(ctx) or await self.bot.is_owner(ctx.author)
+        return await checks.author_is_server_owner(ctx) or await self.bot.is_owner(ctx.author)
 
     @commands.is_owner()
     @commands.command(name="gjoin", aliases=["gj"])

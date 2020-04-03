@@ -14,7 +14,7 @@ class Casino(commands.Cog, name="casino"):
 		self.bot = bot
 
 	async def cog_check(self, ctx):
-		return await checks.requires_channel_tag("game")(ctx)
+		return await checks.channel_has_tag(ctx, "game", self.bot.svr_cache)
 
 	@checks.has_minimum_coins("coins.json", 10)
 	@commands.cooldown(25, 60 * 60 * 12, commands.BucketType.user)
@@ -53,6 +53,7 @@ class Casino(commands.Cog, name="casino"):
 		text = 'won' if balance_change > 0 else 'lost'
 
 		await ctx.send(f"**{ctx.author.display_name}** has {text} **{abs(balance_change):,}** coins!")
+
 	@checks.has_minimum_coins("coins.json", 10)
 	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
 	@commands.command(name="flip", aliases=["fl"], help="Flip a coin [1hr]")
@@ -73,3 +74,5 @@ class Casino(commands.Cog, name="casino"):
 
 		await ctx.send(f"**{ctx.author.display_name}** has {text} **{abs(win_amount):,}** coins by flipping a coin!")
 
+def setup(bot):
+	bot.add_cog(Casino(bot))

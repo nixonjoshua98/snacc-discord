@@ -4,8 +4,10 @@ import os
 from discord.ext import commands
 
 from src import cogs
-from src.common import jsonblob
+from src.common import jsonblob, queries
 from src.common import FileReader
+
+from src.common.database import DBConnection
 
 
 class MyBot(commands.Bot):
@@ -16,6 +18,8 @@ class MyBot(commands.Bot):
 			help_command=commands.DefaultHelpCommand(no_category="default")
 		)
 
+		self.svr_cache = dict()
+
 		self.default_prefix = "!"
 
 	async def on_ready(self):
@@ -24,11 +28,6 @@ class MyBot(commands.Bot):
 		print("Bot successfully started")
 
 		jsonblob.download_all()
-
-		for c in cogs.ALL_COGS:
-			self.add_cog(c(self))
-
-
 
 	def add_cog(self, cog):
 		print(f"Adding Cog: {cog.qualified_name}...", end="")
@@ -50,12 +49,19 @@ class MyBot(commands.Bot):
 
 		return embed
 
-	@staticmethod
-	def prefix(_: commands.Bot, message: discord.message):
-		if os.getenv("DEBUG", False):
-			return "-"
+	async def update_cache(self, message: discord.Message):
+		with DBConnection() as con:
+			con.cur.execute("SELECT * FROM server_config WHERE serverID = %s;", (message.guild.id,))
 
-		with FileReader("server_settings.json") as server_settings:
-			prefix = server_settings.get_inner_key(str(message.guild.id), "prefix", "!")
+			self.svr_cache[message.guild.id] = con.cur.fetchone()
 
-		return prefix
+	async def prefix(self, message: discord.message):
+		if self.svr_cache.get(message.guild.id, None) is None:
+			await self.update_cache(message)
+
+		try:
+			prefix = self.svr_cache[message.guild.id].prefix
+
+			return prefix if prefix is not None else self.default_prefix
+		except AttributeError:
+			return self.default_prefix

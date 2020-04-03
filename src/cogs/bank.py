@@ -23,7 +23,7 @@ class Bank(commands.Cog, name="bank"):
 		)
 
 	async def cog_check(self, ctx):
-		return await checks.requires_channel_tag("game")(ctx)
+		return await checks.channel_has_tag(ctx, "game", self.bot.svr_cache)
 
 	@commands.command(name="balance", aliases=["bal"], help="Display your coin count")
 	async def balance(self, ctx: commands.Context):
@@ -95,3 +95,7 @@ class Bank(commands.Cog, name="bank"):
 		leaderboard_string = await self._leaderboard.create(ctx.author, server_only=False)
 
 		await ctx.send(leaderboard_string)
+
+
+def setup(bot):
+	bot.add_cog(Bank(bot))

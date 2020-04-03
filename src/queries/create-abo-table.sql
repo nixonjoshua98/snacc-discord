@@ -3,4 +3,4 @@ userID BIGINT PRIMARY KEY,
 lvl SMALLINT,
 trophies SMALLINT,
 dateSet TIMESTAMP
-)
+);

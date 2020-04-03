@@ -8,8 +8,6 @@ from src.common import utils
 
 
 class DBConnection:
-    _query_cache = {}
-
     def __init__(self):
         config = ConfigParser()
 
@@ -23,19 +21,15 @@ class DBConnection:
 
         self.cur = self._con.cursor(cursor_factory=psycopg2.extras.NamedTupleCursor)
 
-    @classmethod
-    def get_query(cls, file, cache: bool = True):
-        if cls._query_cache.get(file, None) is not None:
-            return cls._query_cache[file]
+        psycopg2.extras.register_hstore(self._con)
 
+    @classmethod
+    def get_query(cls, file):
         path = utils.query(file)
 
         try:
             with open(path, "r") as fh:
                 query = fh.read()
-
-                if cache:
-                    cls._query_cache[file] = query
 
                 return query
 

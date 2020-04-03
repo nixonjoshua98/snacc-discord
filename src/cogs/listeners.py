@@ -38,6 +38,19 @@ class Listeners(commands.Cog):
 
         await self._send_system_channel(member.guild, join_msg)
 
+        config = self.bot.svr_cache.get(member.guild.id)
+
+        try:
+            role = discord.utils.get(member.guild.roles, id=config.roles["default"])
+
+            await member.add_roles(role, atomic=True)
+
+        except AttributeError:
+            pass
+
+        except discord.Forbidden as e:
+            await self._send_system_channel(member.guild, f":x: **{e.args[0]}**")
+
     @commands.Cog.listener()
     async def on_member_remove(self, member: discord.Member):
         remove_msg = self.template_messages["on_member_remove"].format(guild=member.guild, member=member)

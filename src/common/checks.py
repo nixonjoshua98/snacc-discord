@@ -1,7 +1,6 @@
 
 
 import discord
-import random
 
 from discord.ext import commands
 from discord.ext.commands import CommandError
@@ -9,37 +8,41 @@ from discord.ext.commands import CommandError
 from src.common import FileReader
 
 
-def requires_channel_tag(tag):
-	async def predicate(ctx):
-		with FileReader("server_settings.json") as server_settings:
-			channels = server_settings.get_inner_key((str(ctx.guild.id)), "channels", {})
+async def channel_has_tag(ctx, tag, svr_cache):
+	server = svr_cache.get(ctx.guild.id, None)
 
-		if ctx.channel.id not in channels.get(tag, []):
-			raise CommandError(f"**{ctx.author.display_name}**, this command is disabled in this channel.")
+	if server is None:
+		raise CommandError(f":x: **{ctx.author.display_name}**, this command is disabled in this channel.")
 
-		return True
+	allowed_channels = server.channels.get(tag, []) if server.channels is not None else []
 
-	return predicate
-
-
-async def is_server_owner(ctx):
-	if ctx.author.id != ctx.guild.owner.id:
-		raise CommandError(f"**{ctx.author.display_name}**, you do not have access to this command")
+	if ctx.channel.id not in allowed_channels:
+		raise CommandError(f":x: **{ctx.author.display_name}**, this command is disabled in this channel.")
 
 	return True
 
 
-async def has_member_role(ctx):
-	with FileReader("server_settings.json") as server_settings:
-		role = server_settings.get_inner_key(str(ctx.guild.id), "roles", {}).get("member", None)
+async def author_has_role(ctx, tag, svr_cache):
+	server = svr_cache.get(ctx.guild.id, None)
 
-	member_role = discord.utils.get(ctx.guild.roles, id=role)
+	if server is None:
+		raise CommandError(f":x: **Tagged role {tag} is invalid or has not been set**")
 
-	if member_role is None:
-		raise CommandError("Member role is invalid or has not been set")
+	role = server.roles.get(tag, None) if server.roles is not None else None
+	role = discord.utils.get(ctx.guild.roles, id=role)
 
-	elif member_role not in ctx.author.roles:
-		raise CommandError(f"**{ctx.author.display_name}** you need the **{member_role.name}** role.")
+	if role is None:
+		raise CommandError(f":x: **Tagged role '{tag}' is invalid or has not been set**")
+
+	elif role not in ctx.author.roles:
+		raise CommandError(f":x: **{ctx.author.display_name}** you need the **{role.name}** role.")
+
+	return True
+
+
+async def author_is_server_owner(ctx):
+	if ctx.author.id != ctx.guild.owner.id:
+		raise CommandError(f":x: **{ctx.author.display_name}**, you do not have access to this command")
 
 	return True
 

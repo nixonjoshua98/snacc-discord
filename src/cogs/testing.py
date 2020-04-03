@@ -1,12 +1,6 @@
-import discord
-import random
-import asyncio
-
 from discord.ext import commands
 
-from src.common import checks
-from src.common import functions
-from src.common import converters
+from src.common import queries
 from src.common import FileReader
 
 from src.common.database import DBConnection
@@ -35,7 +29,9 @@ class Testing(commands.Cog, name="testing"):
 
                 params = (id_, level, trophies, date)
 
-                con.cur.execute(con.get_query("update-user-abo.sql"), params)
+                con.cur.execute(queries.UPDATE_ABO_STATS_SQL, params)
+
+                await ctx.send(f"JSON -> DB {params}")
 
 
 def setup(bot):

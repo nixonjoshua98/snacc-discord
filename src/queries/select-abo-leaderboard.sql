@@ -1,1 +1,0 @@
-SELECT userID, lvl, trophies FROM abo;
