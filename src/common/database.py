@@ -4,6 +4,8 @@ import psycopg2.extras
 
 from configparser import ConfigParser
 
+from src.common import utils
+
 
 class DBConnection:
     _query_cache = {}
@@ -11,10 +13,11 @@ class DBConnection:
     def __init__(self):
         config = ConfigParser()
 
-        config.read("./snacc_bot/postgres.ini")
+        config.read(utils.config("postgres.ini"))
 
         if os.getenv("DEBUG", False):
             self._con = psycopg2.connect(**dict(config.items("postgres")))
+
         else:
             self._con = psycopg2.connect(os.environ["DATABASE_URL"], sslmode="require")
 
@@ -25,7 +28,7 @@ class DBConnection:
         if cls._query_cache.get(file, None) is not None:
             return cls._query_cache[file]
 
-        path = os.path.join(os.getcwd(), "snacc_bot", "queries", file)
+        path = utils.query(file)
 
         try:
             with open(path, "r") as fh:

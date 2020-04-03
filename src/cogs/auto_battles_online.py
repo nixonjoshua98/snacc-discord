@@ -9,7 +9,10 @@ from src.common import FileReader
 from src.common import checks
 from src.common import functions
 
+from src.common._leaderboard import _Leaderboard
+
 from src.structures import Leaderboard
+from src.common.database import DBConnection
 
 
 class AutoBattlesOnline(commands.Cog, name="abo"):
@@ -31,7 +34,10 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 		self._leaderboard.update_column(3, "Updated", lambda data: AutoBattlesOnline.get_days_since_update(data))
 
 	async def cog_check(self, ctx):
-		return await checks.requires_channel_tag("abo")(ctx) and await checks.has_member_role(ctx)
+		return (
+				await checks.requires_channel_tag("abo")(ctx) and
+				await checks.has_member_role(ctx)
+		)
 
 	@staticmethod
 	def get_days_since_update(data: dict):
@@ -41,43 +47,53 @@ class AutoBattlesOnline(commands.Cog, name="abo"):
 
 	@commands.command(name="me", help="Display your own stats")
 	async def get_stats(self, ctx: commands.Context):
-		with FileReader("game_stats.json") as file:
-			stats = file.get(str(ctx.author.id), default_val=None)
+		with DBConnection() as con:
+			params = (ctx.author.id,)
+			con.cur.execute(con.get_query("select-user-abo-stats.sql"), params)
 
-			# Never set stats before
-			if stats is None:
-				msg = f"**{ctx.author.display_name}** you need to set your stats first :slight_smile:"
+			user = con.cur.fetchone()
 
-				raise CommandError(msg)
+		if user is None:
+			return await ctx.send(f":x: **{ctx.author.display_name}**, I found no stats for you")
 
-		embed = functions.create_embed(ctx.author.display_name, f"Auto Battles Online", ctx.author.avatar_url)
+		date = user.dateset.strftime("%d/%m/%Y")
 
-		for i, txt in enumerate(("Date Recorded", "Level", "Trophies")):
-			embed.add_field(name=txt, value=stats[i], inline=False)
+		embed = self.bot.create_embed(
+			title=ctx.author.display_name,
+			thumbnail=ctx.author.avatar_url,
+			desc=f":alarm_clock: **{date}**")
 
-		await ctx.send(embed=embed)
+		text = f":joystick: **{user.lvl}**\n:trophy: **{user.trophies:,}**"
+
+		embed.add_field(name="ABO Stats", value=text)
+
+		return await ctx.send(embed=embed)
 
 	@commands.command(name="set", aliases=["s"], help="Set your game stats")
 	async def set_stats(self, ctx, level: int, trophies: int):
-		with FileReader("game_stats.json") as file:
-			data = [datetime.today().strftime("%d/%m/%Y %H:%M:%S"), level, trophies]
+		with DBConnection() as con:
+			params = (ctx.author.id, level, trophies, datetime.now())
 
-			file.set(str(ctx.author.id), data)
+			con.cur.execute(con.get_query("update-user-abo.sql"), params)
 
 		await ctx.send(f"**{ctx.author.display_name}** :thumbsup:")
 
 	@commands.is_owner()
 	@commands.command(name="setuser", hidden=True)
 	async def set_user(self, ctx, user: discord.Member, level: int, trophies: int):
-		with FileReader("game_stats.json") as file:
-			data = [datetime.today().strftime("%d/%m/%Y %H:%M:%S"), level, trophies]
+		with DBConnection() as con:
+			params = (user.id, level, trophies, datetime.now())
 
-			file.set(str(user.id), data)
+			con.cur.execute(con.get_query("update-user-abo.sql"), params)
 
-		await ctx.send(f"**{user.display_name}** :thumbsup:")
+		await ctx.send(f"**{ctx.author.display_name}** :thumbsup:")
 
 	@commands.command(name="alb", help="Display ABO trophy leaderboard")
 	async def leaderboard(self, ctx: commands.Context):
+		lb = _Leaderboard()
+
+		print(lb.get())
+
 		leaderboard_string = await self._leaderboard.create(ctx.author)
 
 		return await ctx.send(leaderboard_string)

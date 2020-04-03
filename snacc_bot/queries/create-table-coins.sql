@@ -1,4 +1,0 @@
-CREATE TABLE IF NOT EXISTS coins (
-user_id BIGINT PRIMARY KEY,
-balance BIGINT
-);

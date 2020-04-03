@@ -1,13 +1,11 @@
-import os
 import json
 
-from src.common.constants import RESOURCES_DIR
-
+from src.common import utils
 
 
 class FileReader:
 	def __init__(self, file_name):
-		self._file_name = os.path.join(RESOURCES_DIR, file_name)
+		self._file_name = utils.resource(file_name)
 
 		self._loaded_file = None
 		self._file_updated = False
