@@ -4,7 +4,7 @@ from discord.ext import commands
 
 from datetime import datetime
 
-from bot.common import checks
+from bot.common import checks, utils
 
 from bot.common.converters import IntegerRange
 
@@ -66,6 +66,8 @@ class ABO(commands.Cog, name="abo"):
 	async def shame(self, ctx: commands.Context):
 		await checks.author_has_tagged_role(ctx, "leader", self.bot.svr_cache)
 
+		member_role = utils.get_tagged_role(self.bot.svr_cache, ctx.guild, "member")
+
 		with DBConnection() as con:
 			con.cur.execute(AboSQL.SELECT_ALL)
 
@@ -78,7 +80,7 @@ class ABO(commands.Cog, name="abo"):
 
 			days_since_update = (datetime.now() - user.dateset).days
 
-			if member is not None and days_since_update >= 7:
+			if member is not None and days_since_update >= 7 and member_role in member.roles:
 				msg += f"{member.mention} ({days_since_update}) | "
 
 		return await ctx.send(msg)
