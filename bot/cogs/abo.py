@@ -52,7 +52,7 @@ class ABO(commands.Cog, name="abo"):
 
 		await ctx.send(f"**{ctx.author.display_name}** :thumbsup:")
 
-	@commands.is_owner()
+	@commands.check(checks.author_is_server_owner)
 	@commands.command(name="setuser", hidden=True)
 	async def set_user(self, ctx, user: discord.Member, level: IntegerRange(0, 150), trophies: IntegerRange(0, 5000)):
 		with DBConnection() as con:
@@ -61,6 +61,26 @@ class ABO(commands.Cog, name="abo"):
 			con.cur.execute(AboSQL.UPDATE, params)
 
 		await ctx.send(f"**{user.display_name}** :thumbsup:")
+
+	@commands.check(checks.author_is_server_owner)
+	@commands.command(name="shame", hidden=True)
+	async def shame(self, ctx: commands.Context):
+		with DBConnection() as con:
+			con.cur.execute(AboSQL.SELECT_ALL)
+
+			all_data = con.cur.fetchall()
+
+		msg = "**__Lacking Activity__**\n"
+
+		for user in all_data:
+			member = ctx.guild.get_member(user.userid)
+
+			days_since_update = (datetime.now() - user.dateset).days
+
+			if member is not None and days_since_update >= 7:
+				msg += f"{member.mention} ({days_since_update}) | "
+
+		return await ctx.send(msg)
 
 	@commands.command(name="alb", help="Display trophy leaderboard")
 	async def leaderboard(self, ctx: commands.Context):

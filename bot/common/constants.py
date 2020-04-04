@@ -14,4 +14,5 @@ class BotConstants:
 
 
 CHANNEL_TAGS = ("abo", "game")
-ROLE_TAGS = ("member", "default")
+
+ROLE_TAGS = ("member", "default", "leader")
