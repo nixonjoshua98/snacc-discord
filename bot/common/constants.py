@@ -8,8 +8,8 @@ class DatabaseEnum(enum.IntEnum):
 
 
 class Bot:
-    debug = True
-    database = DatabaseEnum.LOCAL
+    debug = False
+    database = DatabaseEnum.HEROKU
 
 
 CHANNEL_TAGS = ("abo", "game")
