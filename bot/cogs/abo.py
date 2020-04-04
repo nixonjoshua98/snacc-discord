@@ -5,13 +5,12 @@ from discord.ext import commands
 from datetime import datetime
 
 from bot.common import checks
-from bot.common import AboSQL
 
 from bot.common.converters import IntegerRange
 
 from bot.structures import ABOLeaderboard
 
-from bot.common import DBConnection
+from bot.common import DBConnection, AboSQL
 
 
 class ABO(commands.Cog, name="abo"):
@@ -19,7 +18,6 @@ class ABO(commands.Cog, name="abo"):
 		self.bot = bot
 
 		self.leaderboards = dict()
-
 
 	async def cog_check(self, ctx):
 		return (
