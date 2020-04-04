@@ -10,7 +10,6 @@ class VListeners(commands.Cog, command_attrs=dict(hidden=True)):
     async def cog_check(self, ctx: commands.Context):
         return await checks.author_is_server_owner(ctx) or await self.bot.is_owner(ctx.author)
 
-    @commands.is_owner()
     @commands.command(name="gjoin", aliases=["gj"])
     async def on_guild_join_command(self, ctx: commands.Context):
         listener_cog = self.bot.get_cog("Listeners")
