@@ -1,9 +1,8 @@
-import os
 import discord
 
 from discord.ext import commands
 
-from bot.common import constants
+from bot.common.constants import BotConstants
 from bot.common import DBConnection, ServerConfigSQL
 
 
@@ -57,7 +56,7 @@ class MyBot(commands.Bot):
 		if self.svr_cache.get(message.guild.id, None) is None:
 			await self.update_cache(message)
 
-		if os.getenv("DEBUG", False):
+		if BotConstants.DEBUG:
 			return "-"
 
 		try:

@@ -5,7 +5,7 @@ from discord.ext import commands
 
 from bot.common import checks, queries, CoinsSQL
 
-from bot.common.converters import NotAuthorOrBotServer, IntegerAboveZero
+from bot.common.converters import NotAuthorOrBotServer, IntegerRange
 
 from bot.common.database import DBConnection
 
@@ -72,7 +72,7 @@ class Bank(commands.Cog, name="bank"):
 		await ctx.send(f"**{ctx.author.display_name}** stole **{amount:,}** coins from **{target.display_name}**")
 
 	@commands.command(name="gift", help="Gift some coins")
-	async def gift(self, ctx, target: NotAuthorOrBotServer(), amount: IntegerAboveZero()):
+	async def gift(self, ctx, target: NotAuthorOrBotServer(), amount: IntegerRange(1, 10000)):
 		with DBConnection() as con:
 			# Get author coins
 			con.cur.execute(CoinsSQL.SELECT_USER, (ctx.author.id,))
@@ -86,16 +86,16 @@ class Bank(commands.Cog, name="bank"):
 
 			else:
 				# Update balances
-				con.cur.execute(queries.DECREMENT_COINS, (ctx.author.id, amount))
-				con.cur.execute(queries.INCREMENT_COINS, (target.id, amount))
+				con.cur.execute(CoinsSQL.DECREMENT, (ctx.author.id, amount))
+				con.cur.execute(CoinsSQL.INCREMENT, (target.id, amount))
 
 				await ctx.send(f"**{ctx.author.display_name}** gifted **{amount:,}** coins to **{target.display_name}**")
 
 	@commands.is_owner()
 	@commands.command(name="setcoins", hidden=True)
-	async def set_coins(self, ctx, user: discord.Member, amount: IntegerAboveZero()):
+	async def set_coins(self, ctx, user: discord.Member, amount: IntegerRange(1, 1_000_000)):
 		with DBConnection() as con:
-			con.cur.execute(queries.SET_COINS, (user.id, amount))
+			con.cur.execute(CoinsSQL.UPDATE, (user.id, amount))
 
 		await ctx.send(f"**{ctx.author.display_name}** done :thumbsup:")
 

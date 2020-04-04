@@ -8,27 +8,13 @@ class NotAuthorOrBotServer(commands.MemberConverter):
 		try:
 			member = await super().convert(ctx, argument)
 		except BadArgument:
-			raise UserInputError(f":x: **Member '{argument}' was not found in this server**")
+			raise UserInputError(f"**Member '{argument}' was not found in this server**")
 
 		if member.id == ctx.author.id or member.bot:
-			raise UserInputError(f":x: **{ctx.author.display_name}, "
+			raise UserInputError(f"**{ctx.author.display_name}, "
 								 f"'{member.display_name}' is either a bot account or your own account**")
 
 		return member
-
-
-class IntegerAboveZero(commands.Converter):
-	async def convert(self, ctx: commands.Context, argument: str) -> int:
-		try:
-			val = int(argument)
-
-			if val <= 0:
-				raise commands.UserInputError(f"**{ctx.author.display_name}, '{argument}' should be > 0**")
-
-		except ValueError:
-			raise commands.UserInputError(f"**{ctx.author.display_name}, '{argument}' is not an integer**")
-
-		return val
 
 
 class IntegerRange(commands.Converter):

@@ -7,7 +7,7 @@ from datetime import datetime
 from bot.common import checks
 from bot.common import AboSQL
 
-from bot.common.converters import IntegerAboveZero, IntegerRange
+from bot.common.converters import IntegerRange
 
 from bot.common._leaderboard import ABOLeaderboard
 
@@ -43,7 +43,7 @@ class ABO(commands.Cog, name="abo"):
 		return await ctx.send(embed=embed)
 
 	@commands.command(name="set", aliases=["s"], help="Set your game stats")
-	async def set_stats(self, ctx, level: IntegerAboveZero(), trophies: IntegerAboveZero()):
+	async def set_stats(self, ctx, level: IntegerRange(0, 150), trophies: IntegerRange(0, 5000)):
 		with DBConnection() as con:
 			params = (ctx.author.id, level, trophies, datetime.now())
 

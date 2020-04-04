@@ -4,14 +4,14 @@ import psycopg2.extras
 
 from configparser import ConfigParser
 
-from bot.common import utils
+from bot.common import utils, constants
 
-from bot.common import constants
+from bot.common.constants import BotConstants
 
 
 class DBConnection:
     def __init__(self, db_type=None):
-        database_type = constants.Bot.database if db_type is None else db_type
+        database_type = BotConstants.DATABASE if db_type is None else db_type
 
         if database_type == constants.DatabaseEnum.HEROKU:
             self._con = psycopg2.connect(os.environ["DATABASE_URL"], sslmode="require")

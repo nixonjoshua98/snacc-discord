@@ -1,6 +1,0 @@
-CREATE table IF NOT EXISTS abo (
-userID BIGINT PRIMARY KEY,
-lvl SMALLINT,
-trophies SMALLINT,
-dateSet TIMESTAMP
-);

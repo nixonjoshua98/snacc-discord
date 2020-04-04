@@ -1,3 +1,4 @@
+import os
 import enum
 
 
@@ -7,8 +8,9 @@ class DatabaseEnum(enum.IntEnum):
     LOCAL2HEROKU = 2,
 
 
-class Bot:
-    database = DatabaseEnum.HEROKU
+class BotConstants:
+    DATABASE = DatabaseEnum.LOCAL
+    DEBUG = os.getenv("DEBUG", False)
 
 
 CHANNEL_TAGS = ("abo", "game")
