@@ -62,9 +62,10 @@ class ABO(commands.Cog, name="abo"):
 
 		await ctx.send(f"**{user.display_name}** :thumbsup:")
 
-	@commands.check(checks.author_is_server_owner)
 	@commands.command(name="shame", hidden=True)
 	async def shame(self, ctx: commands.Context):
+		await checks.author_has_tagged_role(ctx, "leader", self.bot.svr_cache)
+
 		with DBConnection() as con:
 			con.cur.execute(AboSQL.SELECT_ALL)
 

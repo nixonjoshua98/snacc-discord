@@ -9,7 +9,7 @@ class DatabaseEnum(enum.IntEnum):
 
 
 class BotConstants:
-    DATABASE = DatabaseEnum.HEROKU
+    DATABASE = DatabaseEnum.LOCAL
     DEBUG = os.getenv("DEBUG", False)
 
 
