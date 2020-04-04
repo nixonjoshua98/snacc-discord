@@ -9,7 +9,7 @@ from bot.common import AboSQL
 
 from bot.common.converters import IntegerRange
 
-from bot.common._leaderboard import ABOLeaderboard
+from bot.structures import ABOLeaderboard
 
 from bot.common import DBConnection
 
@@ -17,6 +17,9 @@ from bot.common import DBConnection
 class ABO(commands.Cog, name="abo"):
 	def __init__(self, bot):
 		self.bot = bot
+
+		self.leaderboards = dict()
+
 
 	async def cog_check(self, ctx):
 		return (
@@ -63,7 +66,10 @@ class ABO(commands.Cog, name="abo"):
 
 	@commands.command(name="alb", help="Display trophy leaderboard")
 	async def leaderboard(self, ctx: commands.Context):
-		lb = ABOLeaderboard()
+		if self.leaderboards.get(ctx.guild.id, None) is None:
+			self.leaderboards[ctx.guild.id] = ABOLeaderboard(ctx.guild.id, self.bot)
+
+		lb = self.leaderboards[ctx.guild.id]
 
 		return await ctx.send(lb.get(ctx.author))
 

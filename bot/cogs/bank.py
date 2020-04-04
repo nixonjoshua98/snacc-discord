@@ -3,13 +3,13 @@ import discord
 
 from discord.ext import commands
 
-from bot.common import checks, queries, CoinsSQL
+from bot.common import checks, CoinsSQL
 
 from bot.common.converters import NotAuthorOrBotServer, IntegerRange
 
 from bot.common.database import DBConnection
 
-from bot.common._leaderboard import CoinLeaderboard
+from bot.structures import CoinLeaderboard
 
 
 class Bank(commands.Cog, name="bank"):
