@@ -5,9 +5,9 @@ from discord.ext import commands
 
 from bot.common import checks, queries, CoinsSQL
 
-from bot.common.database import DBConnection
+from bot.common.converters import NotAuthorOrBotServer, IntegerAboveZero
 
-from bot.structures import Leaderboard
+from bot.common.database import DBConnection
 
 from bot.common._leaderboard import CoinLeaderboard
 
@@ -15,14 +15,6 @@ from bot.common._leaderboard import CoinLeaderboard
 class Bank(commands.Cog, name="bank"):
 	def __init__(self, bot):
 		self.bot = bot
-
-		self._leaderboard = Leaderboard(
-			title="Coin Leaderboard",
-			file="coins.json",
-			columns=["coins"],
-			bot=self.bot,
-			sort_func=lambda kv: kv[1]["coins"]
-		)
 
 	async def cog_check(self, ctx):
 		return await checks.channel_has_tag(ctx, "game", self.bot.svr_cache)
@@ -50,64 +42,58 @@ class Bank(commands.Cog, name="bank"):
 
 	@commands.cooldown(1, 60 * 60 * 3, commands.BucketType.user)
 	@commands.command(name="steal", help="Attempt to steal coins [3hrs]")
-	async def steal_coins(self, ctx: commands.Context, target: discord.Member):
-		if target.id == ctx.author.id or target.bot:
-			return await ctx.send(":x:")
-
-		elif random.randint(0, 0) != 0:
-			return await ctx.send(f"**{ctx.author.display_name}** failed")
+	async def steal_coins(self, ctx: commands.Context, target: NotAuthorOrBotServer()):
+		if random.randint(0, 3) != 0:
+			return await ctx.send(f"**{ctx.author.display_name}** failed to steal from **{target.display_name}**")
 
 		with DBConnection() as con:
+			# Get author coin balance
 			con.cur.execute(CoinsSQL.SELECT_USER, (ctx.author.id,))
 
-			try:
-				author_coins = con.cur.fetchone().balance
-			except AttributeError:
-				author_coins = 0
+			author_coins = con.cur.fetchone()
+			author_coins = author_coins.balance if author_coins is not None else 0
 
+			# Get target coin balance
 			con.cur.execute(CoinsSQL.SELECT_USER, (target.id,))
 
-			try:
-				target_coins = con.cur.fetchone().balance
-			except AttributeError:
-				target_coins = 0
+			target_coins = con.cur.fetchone()
+			target_coins = target_coins.balance if target_coins is not None else 0
 
+			# Maximum amount of coins which can be stolen
 			max_coins = int(min(author_coins * 0.05, target_coins * 0.05, 1000))
 
+			# Actual amount of coins stolen
 			amount = random.randint(0, max(0, max_coins))
 
+			# Update the users balances
 			con.cur.execute(CoinsSQL.INCREMENT, (ctx.author.id, amount))
 			con.cur.execute(CoinsSQL.DECREMENT, (target.id, amount))
 
-		msg = f"**{ctx.author.display_name}** stole **{amount:,}** coins from **{target.display_name}**"
-
-		await ctx.send(msg)
+		await ctx.send(f"**{ctx.author.display_name}** stole **{amount:,}** coins from **{target.display_name}**")
 
 	@commands.command(name="gift", help="Gift some coins")
-	async def gift(self, ctx, target: discord.Member, amount: int):
-		if amount <= 0 or target.id == ctx.author.id or target.bot:
-			return await ctx.send(":x:")
-
+	async def gift(self, ctx, target: NotAuthorOrBotServer(), amount: IntegerAboveZero()):
 		with DBConnection() as con:
-			con.cur.execute("SELECT balance FROM coins WHERE userID = %s", (ctx.author.id,))
+			# Get author coins
+			con.cur.execute(CoinsSQL.SELECT_USER, (ctx.author.id,))
 
-			try:
-				author_coins = con.cur.fetchone().balance
-			except AttributeError:
-				author_coins = 0
+			author_coins = con.cur.fetchone()
+			author_coins = author_coins.balance if author_coins is not None else 0
 
+			# Balance check
 			if author_coins < amount:
-				await ctx.send(f":x: **{ctx.author.display_name}, you do not have enough coins to gift**")
+				await ctx.send(f"**{ctx.author.display_name}, you do not have enough coins for that**")
 
 			else:
+				# Update balances
 				con.cur.execute(queries.DECREMENT_COINS, (ctx.author.id, amount))
 				con.cur.execute(queries.INCREMENT_COINS, (target.id, amount))
 
-		return await ctx.send(f"**{ctx.author.display_name}** gifted **{amount:,}** coins to **{target.display_name}**")
+				await ctx.send(f"**{ctx.author.display_name}** gifted **{amount:,}** coins to **{target.display_name}**")
 
 	@commands.is_owner()
 	@commands.command(name="setcoins", hidden=True)
-	async def set_coins(self, ctx, user: discord.Member, amount: int):
+	async def set_coins(self, ctx, user: discord.Member, amount: IntegerAboveZero()):
 		with DBConnection() as con:
 			con.cur.execute(queries.SET_COINS, (user.id, amount))
 

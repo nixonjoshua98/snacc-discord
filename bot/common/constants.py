@@ -8,8 +8,9 @@ class DatabaseEnum(enum.IntEnum):
 
 
 class Bot:
-    database = DatabaseEnum.HEROKU
+    debug = True
+    database = DatabaseEnum.LOCAL
 
 
-ALL_CHANNEL_TAGS = ("abo", "game")
-ALL_ROLE_TAGS = ("member", "default")
+CHANNEL_TAGS = ("abo", "game")
+ROLE_TAGS = ("member", "default")

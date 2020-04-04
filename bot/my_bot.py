@@ -1,9 +1,9 @@
-import os
 import discord
 
 from discord.ext import commands
 
-from bot.common.database import DBConnection
+from bot.common import constants
+from bot.common import DBConnection, ServerConfigSQL
 
 
 class MyBot(commands.Bot):
@@ -29,7 +29,10 @@ class MyBot(commands.Bot):
 		print("OK")
 
 	async def on_command_error(self, ctx: commands.Context, esc):
-		return await ctx.send(esc)
+		if isinstance(esc, commands.UserInputError):
+			ctx.command.reset_cooldown(ctx)
+
+		return await ctx.send(":x: " + esc.args[0])
 
 	async def on_message(self, message: discord.Message):
 		if message.guild is not None:
@@ -45,7 +48,7 @@ class MyBot(commands.Bot):
 
 	async def update_cache(self, message: discord.Message):
 		with DBConnection() as con:
-			con.cur.execute("SELECT * FROM server_config WHERE serverID = %s;", (message.guild.id,))
+			con.cur.execute(ServerConfigSQL.SELECT_SVR, (message.guild.id,))
 
 			self.svr_cache[message.guild.id] = con.cur.fetchone()
 
@@ -53,7 +56,7 @@ class MyBot(commands.Bot):
 		if self.svr_cache.get(message.guild.id, None) is None:
 			await self.update_cache(message)
 
-		if os.getenv("DEBUG", False):
+		if constants.Bot.debug:
 			return "-"
 
 		try:

@@ -3,6 +3,8 @@
 class ServerConfigSQL:
     SELECT_ALL = "SELECT * FROM server_config;"
 
+    SELECT_SVR = "SELECT * FROM server_config WHERE serverID = %s;"
+
     UPDATE = "INSERT INTO server_config (serverID, prefix, channels, roles) VALUES (%s, %s, %s, %s) " \
              "ON CONFLICT (serverID) DO UPDATE " \
              "SET prefix = excluded.prefix, channels = excluded.channels, roles = excluded.roles;"

@@ -1,31 +1,53 @@
 import discord
 from discord.ext import commands
-from discord.ext.commands import CommandError
-
-from bot.common import FileReader
+from discord.ext.commands import UserInputError, BadArgument
 
 
-class ValidUser(commands.MemberConverter):
+class NotAuthorOrBotServer(commands.MemberConverter):
 	async def convert(self, ctx: commands.Context, argument: str) -> discord.Member:
-		member = await super().convert(ctx, argument)
+		try:
+			member = await super().convert(ctx, argument)
+		except BadArgument:
+			raise UserInputError(f":x: **Member '{argument}' was not found in this server**")
 
 		if member.id == ctx.author.id or member.bot:
-			raise CommandError(f"**{ctx.author.display_name}** :face_with_raised_eyebrow:")
+			raise UserInputError(f":x: **{ctx.author.display_name}, "
+								 f"'{member.display_name}' is either a bot account or your own account**")
 
 		return member
 
 
-class GiftableCoins(commands.Converter):
+class IntegerAboveZero(commands.Converter):
 	async def convert(self, ctx: commands.Context, argument: str) -> int:
-		amount = int(argument) if argument.isdigit() else 0
+		try:
+			val = int(argument)
 
-		with FileReader("coins.json") as file:
-			coins = file.get_inner_key(str(ctx.author.id), "coins", 0)
+			if val <= 0:
+				raise commands.UserInputError(f"**{ctx.author.display_name}, '{argument}' should be > 0**")
 
-		if amount <= 0 or amount > coins:
-			raise CommandError(f"**{ctx.author.display_name}**, you cannot do that :slight_frown:")
+		except ValueError:
+			raise commands.UserInputError(f"**{ctx.author.display_name}, '{argument}' is not an integer**")
 
-		return amount
+		return val
+
+
+class IntegerRange(commands.Converter):
+	def __init__(self, min_: int, max_: int):
+		self._min = min_
+		self._max = max_
+
+	async def convert(self, ctx: commands.Context, argument: str) -> int:
+		try:
+			val = int(argument)
+
+			if val > self._max or val < self._min:
+				raise commands.UserInputError(f"**{ctx.author.display_name}, "
+											  f"'{argument}' should be between {self._min:,} and {self._max:,}**")
+
+		except ValueError:
+			raise commands.UserInputError(f"**{ctx.author.display_name}, '{argument}' is not an integer**")
+
+		return val
 
 
 class ValidTag(commands.Converter):
@@ -36,6 +58,6 @@ class ValidTag(commands.Converter):
 		argument = argument.lower()
 
 		if argument not in self._valid_tags:
-			raise CommandError(f"Invalid tag ({' or '.join([f'**{t}**' for t in self._valid_tags])})")
+			raise UserInputError(f"Invalid tag ({' or '.join([f'**{t}**' for t in self._valid_tags])})")
 
 		return argument
