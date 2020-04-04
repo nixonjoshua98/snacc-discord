@@ -8,7 +8,6 @@ class DatabaseEnum(enum.IntEnum):
 
 
 class Bot:
-    debug = False
     database = DatabaseEnum.HEROKU
 
 

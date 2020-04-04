@@ -1,3 +1,4 @@
+import os
 import discord
 
 from discord.ext import commands
@@ -35,7 +36,7 @@ class Listeners(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
         join_msg = f"Welcome {member.mention} to {member.guild.name}!"
-
+        
         await self._send_system_channel(member.guild, join_msg)
 
         config = self.bot.svr_cache.get(member.guild.id)

@@ -1,3 +1,4 @@
+import os
 import discord
 
 from discord.ext import commands
@@ -56,7 +57,7 @@ class MyBot(commands.Bot):
 		if self.svr_cache.get(message.guild.id, None) is None:
 			await self.update_cache(message)
 
-		if constants.Bot.debug:
+		if os.getenv("DEBUG", False):
 			return "-"
 
 		try:
