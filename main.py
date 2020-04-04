@@ -1,30 +1,50 @@
-import asyncio
+from bot.my_bot import MyBot
 
-from src.my_bot import MyBot
+from bot.common.database import DBConnection
 
-from src.common.database import DBConnection
+from bot.common import constants
+
+import json
+
+from bot.common import ServerConfigSQL, AboSQL, CoinsSQL
 
 if __name__ == '__main__':
     dark = MyBot()
 
-    loop = asyncio.get_event_loop()
+    """    
+    if constants.Bot.database == constants.DatabaseEnum.LOCAL:
+        with DBConnection(db_type=constants.DatabaseEnum.LOCAL2HEROKU) as con:
+            con.cur.execute(ServerConfigSQL.SELECT_ALL)
+            server_config = con.cur.fetchall()
 
-    with DBConnection() as con:
-        con.cur.execute(con.get_query("create-abo-table.sql"))
-        con.cur.execute(con.get_query("create-server-config-table.sql"))
-        con.cur.execute(con.get_query("create-coins-table.sql"))
+            con.cur.execute(AboSQL.SELECT_ALL)
+            abo = con.cur.fetchall()
 
-    dark.load_extension("src.cogs.listeners")
-    dark.load_extension("src.cogs.vlisteners")
-    dark.load_extension("src.cogs.testing")
+            con.cur.execute(CoinsSQL.SELECT_ALL)
+            coins = con.cur.fetchall()
 
-    dark.load_extension("src.cogs.abo")
-    dark.load_extension("src.cogs.config")
-    dark.load_extension("src.cogs.casino")
-    dark.load_extension("src.cogs.bank")
+            with DBConnection() as con2:
+                for r in server_config:
+                    params = [r.serverid, r.prefix, json.dumps(r.channels), json.dumps(r.roles)]
+                    con.cur.execute(ServerConfigSQL.UPDATE, params)
+
+                for r in abo:
+                    params = [r.userid, r.lvl, r.trophies, r.dateset]
+                    con.cur.execute(AboSQL.UPDATE, params)
+
+                for r in coins:
+                    params = [r.userid, r.balance]
+                    con.cur.execute(CoinsSQL.UPDATE, params)
+                    """
+
+    dark.load_extension("bot.cogs.listeners")
+    dark.load_extension("bot.cogs.vlisteners")
+
+    dark.load_extension("bot.cogs.abo")
+    dark.load_extension("bot.cogs.config")
+    dark.load_extension("bot.cogs.casino")
+    dark.load_extension("bot.cogs.bank")
 
     #  NjY2NjE2NTE1NDM2NDc4NDcz.Xh2xCA.X8d9IFcSW_2e4c_maBMoXlxmI7Y
     dark.run("NjY2NjE2NTE1NDM2NDc4NDcz.XofF-Q.YNe2fpEgieFmOSrgBQVywdl4rRo")
-
-    loop.run_forever()
 

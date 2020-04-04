@@ -1,6 +1,6 @@
 import discord
 
-from src.common import FileReader
+from bot.common import FileReader
 
 
 class Leaderboard:
@@ -143,13 +143,6 @@ class Leaderboard:
 			data = sorted(data.items(), key=self._sort_func, reverse=True)
 
 		return data
-
-	@staticmethod
-	def _get_member_role(guild: discord.Guild):
-		with FileReader("server_settings.json") as server_settings:
-			roles = server_settings.get_inner_key(guild.id, "roles", {})
-
-		return guild.get_role(roles.get("member", None))
 
 
 

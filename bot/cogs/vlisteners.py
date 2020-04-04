@@ -1,6 +1,6 @@
 from discord.ext import commands
 
-from src.common import checks
+from bot.common import checks
 
 
 class VListeners(commands.Cog, command_attrs=dict(hidden=True)):

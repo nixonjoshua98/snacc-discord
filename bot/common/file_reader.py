@@ -1,6 +1,6 @@
 import json
 
-from src.common import utils
+from bot.common import utils
 
 
 class FileReader:

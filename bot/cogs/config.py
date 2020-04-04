@@ -3,13 +3,13 @@ import json
 
 from discord.ext import commands
 
-from src.common import checks
-from src.common import converters
-from src.common.database import DBConnection
+from bot.common import checks
+from bot.common import converters
+from bot.common.database import DBConnection
 
-from src.common import queries
+from bot.common import queries
 
-from src.common.constants import ALL_CHANNEL_TAGS, ALL_ROLE_TAGS
+from bot.common.constants import ALL_CHANNEL_TAGS, ALL_ROLE_TAGS
 
 
 class Config(commands.Cog):
@@ -59,6 +59,7 @@ class Config(commands.Cog):
 			con.cur.execute(queries.UPDATE_PREFIX_SQL, (ctx.guild.id, prefix))
 
 		await ctx.send(f"Prefix has been updated to **{prefix}**")
+
 
 def setup(bot):
 	bot.add_cog(Config(bot))

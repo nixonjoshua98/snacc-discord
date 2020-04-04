@@ -4,13 +4,13 @@ from discord.ext import commands
 
 from datetime import datetime
 
-from src.common import checks
-from src.common import queries
+from bot.common import checks
+from bot.common import AboSQL
 
-from src.common._leaderboard import ABOLeaderboard
+from bot.common._leaderboard import ABOLeaderboard
 
-from src.structures import Leaderboard
-from src.common.database import DBConnection
+from bot.structures import Leaderboard
+from bot.common.database import DBConnection
 
 
 class ABO(commands.Cog, name="abo"):
@@ -46,7 +46,7 @@ class ABO(commands.Cog, name="abo"):
 	@commands.command(name="me", help="Display your own stats")
 	async def get_stats(self, ctx: commands.Context):
 		with DBConnection() as con:
-			con.cur.execute("SELECT lvl, trophies, dateSet FROM abo WHERE userID = %s;", (ctx.author.id,))
+			con.cur.execute(AboSQL.SELECT_USER, (ctx.author.id,))
 
 			user = con.cur.fetchone()
 
@@ -66,7 +66,7 @@ class ABO(commands.Cog, name="abo"):
 		with DBConnection() as con:
 			params = (ctx.author.id, level, trophies, datetime.now())
 
-			con.cur.execute(queries.UPDATE_ABO_STATS_SQL, params)
+			con.cur.execute(AboSQL.UPDATE, params)
 
 		await ctx.send(f"**{ctx.author.display_name}** :thumbsup:")
 
@@ -76,7 +76,7 @@ class ABO(commands.Cog, name="abo"):
 		with DBConnection() as con:
 			params = (user.id, level, trophies, datetime.now())
 
-			con.cur.execute(con.get_query("update-user-abo.sql"), params)
+			con.cur.execute(AboSQL.UPDATE, (user.id, level, trophies, datetime.now()))
 
 		await ctx.send(f"**{ctx.author.display_name}** :thumbsup:")
 

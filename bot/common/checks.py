@@ -5,7 +5,7 @@ import discord
 from discord.ext import commands
 from discord.ext.commands import CommandError
 
-from src.common import FileReader
+from bot.common import FileReader
 
 
 async def channel_has_tag(ctx, tag, svr_cache):

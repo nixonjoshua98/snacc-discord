@@ -1,7 +1,7 @@
 import discord
 
 from datetime import datetime
-from src.common.database import DBConnection
+from bot.common.database import DBConnection
 
 
 class Leaderboard:

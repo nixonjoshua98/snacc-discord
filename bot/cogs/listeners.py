@@ -2,7 +2,7 @@ import discord
 
 from discord.ext import commands
 
-from src.common import utils
+from bot.common import utils
 
 
 class Listeners(commands.Cog):
@@ -11,7 +11,7 @@ class Listeners(commands.Cog):
 
         self.template_messages = {}
 
-        for f in ("on_guild_join", "on_member_join", "on_member_remove"):
+        for f in ("on_guild_join",):
             path = utils.resource(f"{f}.txt")
 
             with open(path, "r") as fh:
@@ -34,7 +34,7 @@ class Listeners(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
-        join_msg = self.template_messages["on_member_join"].format(guild=member.guild, member=member)
+        join_msg = f"Welcome {member.mention} to {member.guild.name}!"
 
         await self._send_system_channel(member.guild, join_msg)
 
@@ -53,7 +53,7 @@ class Listeners(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_remove(self, member: discord.Member):
-        remove_msg = self.template_messages["on_member_remove"].format(guild=member.guild, member=member)
+        remove_msg = f"{member.display_name} **({member.mention})** has left the server :frowning:"
 
         await self._send_system_channel(member.guild, remove_msg)
 

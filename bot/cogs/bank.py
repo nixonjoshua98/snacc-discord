@@ -3,13 +3,13 @@ import discord
 
 from discord.ext import commands
 
-from src.common import checks, queries
+from bot.common import checks, queries
 
-from src.common.database import DBConnection
+from bot.common.database import DBConnection
 
-from src.structures import Leaderboard
+from bot.structures import Leaderboard
 
-from src.common._leaderboard import CoinLeaderboard
+from bot.common._leaderboard import CoinLeaderboard
 
 
 class Bank(commands.Cog, name="bank"):
@@ -54,7 +54,7 @@ class Bank(commands.Cog, name="bank"):
 		if target.id == ctx.author.id or target.bot:
 			return await ctx.send(":x:")
 
-		elif random.randint(0, 3) != 0:
+		elif random.randint(0, 0) != 0:
 			return await ctx.send(f"**{ctx.author.display_name}** failed")
 
 		with DBConnection() as con:

@@ -3,7 +3,7 @@ import discord
 
 from discord.ext import commands
 
-from src.common.database import DBConnection
+from bot.common.database import DBConnection
 
 
 class MyBot(commands.Bot):
