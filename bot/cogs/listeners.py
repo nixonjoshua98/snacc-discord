@@ -1,4 +1,3 @@
-import os
 import discord
 
 from discord.ext import commands
@@ -12,11 +11,10 @@ class Listeners(commands.Cog):
 
         self.template_messages = {}
 
-        for f in ("on_guild_join",):
-            path = utils.resource(f"{f}.txt")
+        path = utils.resource("on_guild_join.txt")
 
-            with open(path, "r") as fh:
-                self.template_messages[f] = fh.read()
+        with open(path, "r") as fh:
+            self.template_messages["on_guild_join"] = fh.read()
 
     @staticmethod
     async def _send_system_channel(guild: discord.Guild, message: str):
@@ -36,7 +34,7 @@ class Listeners(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
         join_msg = f"Welcome {member.mention} to {member.guild.name}!"
-        
+
         await self._send_system_channel(member.guild, join_msg)
 
         config = self.bot.svr_cache.get(member.guild.id)
