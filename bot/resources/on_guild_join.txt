@@ -1,4 +1,4 @@
-The infamous **{bot.user.name}** has graced your ~~lowly~~ server!
+The infamous **{bot.user.name}** has graced your ~~lowly~~ server! [{guild.owner.mention}]
 
 My current prefix is **{bot.default_prefix}**...obviously
 
@@ -6,9 +6,14 @@ My current prefix is **{bot.default_prefix}**...obviously
 - Set channel tags to allow commands to be used
     - e.g **{bot.default_prefix}config channel game** which whitelists that channel to use all the games
 
-- __Auto Battles Online Server__
+**__Help__**
+- **{bot.default_prefix}help**...durp
+- Contact my almighty creator **{bot_info.owner}**
+
+__Auto Battles Online Server Only__
     - Set a member role by doing **{bot.default_prefix}config role member <role>**
     - Register a channel as an ABO channel by doing **{bot.default_prefix}config channel abo**
 
-**__Help__**
-Contact my almighty creator :star:**{bot_info.owner}**:star:
+**__Invite Me__**
+Invite me to another server by using this **very short** link
+https://discordapp.com/oauth2/authorize?client_id=666616515436478473&scope=bot&permissions=8

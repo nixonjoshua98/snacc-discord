@@ -45,6 +45,5 @@ if __name__ == '__main__':
     dark.load_extension("bot.cogs.casino")
     dark.load_extension("bot.cogs.bank")
 
-    #  NjY2NjE2NTE1NDM2NDc4NDcz.Xh2xCA.X8d9IFcSW_2e4c_maBMoXlxmI7Y
     dark.run("NjY2NjE2NTE1NDM2NDc4NDcz.XofF-Q.YNe2fpEgieFmOSrgBQVywdl4rRo")
 
