@@ -38,8 +38,6 @@ if __name__ == '__main__':
                     """
 
     dark.load_extension("bot.cogs.listeners")
-    dark.load_extension("bot.cogs.vlisteners")
-
     dark.load_extension("bot.cogs.abo")
     dark.load_extension("bot.cogs.config")
     dark.load_extension("bot.cogs.casino")

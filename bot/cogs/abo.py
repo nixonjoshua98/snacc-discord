@@ -65,7 +65,7 @@ class ABO(commands.Cog, name="abo"):
 	@commands.command(name="alb", help="Display trophy leaderboard")
 	async def leaderboard(self, ctx: commands.Context):
 		if self.leaderboards.get(ctx.guild.id, None) is None:
-			self.leaderboards[ctx.guild.id] = ABOLeaderboard(ctx.guild.id, self.bot)
+			self.leaderboards[ctx.guild.id] = ABOLeaderboard(ctx.guild, self.bot)
 
 		lb = self.leaderboards[ctx.guild.id]
 

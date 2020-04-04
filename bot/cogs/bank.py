@@ -16,6 +16,8 @@ class Bank(commands.Cog, name="bank"):
 	def __init__(self, bot):
 		self.bot = bot
 
+		self.leaderboards = dict()
+
 	async def cog_check(self, ctx):
 		return await checks.channel_has_tag(ctx, "game", self.bot.svr_cache)
 
@@ -101,9 +103,12 @@ class Bank(commands.Cog, name="bank"):
 
 	@commands.command(name="coinlb", aliases=["clb"], help="Show the server coin leaderboard")
 	async def leaderboard(self, ctx: commands.Context):
-		lb = CoinLeaderboard()
+		if self.leaderboards.get(ctx.guild.id, None) is None:
+			self.leaderboards[ctx.guild.id] = CoinLeaderboard(ctx.guild, self.bot)
 
-		await ctx.send(lb.get(ctx.author))
+		lb = self.leaderboards[ctx.guild.id]
+
+		return await ctx.send(lb.get(ctx.author))
 
 
 def setup(bot):
