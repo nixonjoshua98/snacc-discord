@@ -57,7 +57,7 @@ class Casino(commands.Cog, name="casino"):
 
 			amount = int(min(2500, init_bal * 0.5))
 
-			final_bal = init_bal + amount if random.randint(0, 1) == 0 else  init_bal - amount
+			final_bal = init_bal + amount if random.randint(0, 1) == 0 else init_bal - amount
 
 			con.cur.execute(CoinsSQL.UPDATE, (ctx.author.id, final_bal))
 

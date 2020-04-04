@@ -3,7 +3,7 @@ import discord
 
 from discord.ext import commands
 
-from bot.common import checks, queries
+from bot.common import checks, queries, CoinsSQL
 
 from bot.common.database import DBConnection
 
@@ -30,7 +30,7 @@ class Bank(commands.Cog, name="bank"):
 	@commands.command(name="balance", aliases=["bal"], help="Display your coin count")
 	async def balance(self, ctx: commands.Context):
 		with DBConnection() as con:
-			con.cur.execute("SELECT balance FROM coins WHERE userID = %s", (ctx.author.id,))
+			con.cur.execute(CoinsSQL.SELECT_USER, (ctx.author.id,))
 
 			user = con.cur.fetchone()
 
@@ -44,7 +44,7 @@ class Bank(commands.Cog, name="bank"):
 		amount = random.randint(15, 50)
 
 		with DBConnection() as con:
-			con.cur.execute(queries.INCREMENT_COINS, (ctx.author.id, amount))
+			con.cur.execute(CoinsSQL.INCREMENT, (ctx.author.id, amount))
 
 		await ctx.send(f"**{ctx.author.display_name}** gained **{amount}** coins!")
 
@@ -58,14 +58,14 @@ class Bank(commands.Cog, name="bank"):
 			return await ctx.send(f"**{ctx.author.display_name}** failed")
 
 		with DBConnection() as con:
-			con.cur.execute("SELECT balance FROM coins WHERE userID = %s", (ctx.author.id,))
+			con.cur.execute(CoinsSQL.SELECT_USER, (ctx.author.id,))
 
 			try:
 				author_coins = con.cur.fetchone().balance
 			except AttributeError:
 				author_coins = 0
 
-			con.cur.execute("SELECT balance FROM coins WHERE userID = %s", (target.id,))
+			con.cur.execute(CoinsSQL.SELECT_USER, (target.id,))
 
 			try:
 				target_coins = con.cur.fetchone().balance
@@ -76,8 +76,8 @@ class Bank(commands.Cog, name="bank"):
 
 			amount = random.randint(0, max(0, max_coins))
 
-			con.cur.execute(queries.INCREMENT_COINS, (ctx.author.id, amount))
-			con.cur.execute(queries.DECREMENT_COINS, (target.id, amount))
+			con.cur.execute(CoinsSQL.INCREMENT, (ctx.author.id, amount))
+			con.cur.execute(CoinsSQL.DECREMENT, (target.id, amount))
 
 		msg = f"**{ctx.author.display_name}** stole **{amount:,}** coins from **{target.display_name}**"
 

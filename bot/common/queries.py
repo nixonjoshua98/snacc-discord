@@ -39,6 +39,14 @@ class CoinsSQL:
              "ON CONFLICT (userID) DO UPDATE " \
              "SET balance = excluded.balance;"
 
+    INCREMENT = "INSERT INTO coins (userID, balance) VALUES (%s, %s) " \
+                "ON CONFLICT (userID) DO UPDATE " \
+                "SET balance = coins.balance + excluded.balance;"
+
+    DECREMENT = "INSERT INTO coins (userID, balance) VALUES (%s, %s) " \
+                "ON CONFLICT (userID) DO UPDATE " \
+                "SET balance = coins.balance - excluded.balance;"
+
 
 INCREMENT_COINS = """
 INSERT INTO coins (userID, balance) VALUES (%s, %s)
