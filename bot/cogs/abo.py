@@ -4,28 +4,35 @@ from discord.ext import commands
 
 from datetime import datetime
 
-from bot.common import checks, utils
-
-from bot.common.converters import IntegerRange
-
 from bot.structures import ABOLeaderboard
 
-from bot.common import DBConnection, AboSQL
+from bot.common import (
+	checks,
+	utils
+)
+
+from bot.common import (
+	AboSQL,
+	RoleTags,
+	ChannelTags,
+	IntegerRange,
+	DBConnection,
+)
 
 
-class ABO(commands.Cog, name="abo"):
+class ABO(commands.Cog, name="AutoBattlesOnline"):
 	def __init__(self, bot):
 		self.bot = bot
 
 		self.leaderboards = dict()
 
-	async def cog_check(self, ctx):
-		return (
-				await checks.channel_has_tag(ctx, "abo", self.bot.svr_cache) and
-				await checks.author_has_tagged_role(ctx, "member", self.bot.svr_cache)
-		)
+		self.shame.add_check(lambda ctx: checks.author_has_tagged_role(ctx, RoleTags.LEADER))
+		self.set_user.add_check(lambda ctx: checks.author_has_tagged_role(ctx, RoleTags.LEADER))
 
-	@commands.command(name="me", help="Display your own stats")
+	async def cog_check(self, ctx):
+		return checks.channel_has_tag(ctx, ChannelTags.ABO) and checks.author_has_tagged_role(ctx, RoleTags.ABO)
+
+	@commands.command(name="me", help="Display stats")
 	async def get_stats(self, ctx: commands.Context):
 		with DBConnection() as con:
 			con.cur.execute(AboSQL.SELECT_USER, (ctx.author.id,))
@@ -33,7 +40,7 @@ class ABO(commands.Cog, name="abo"):
 			user = con.cur.fetchone()
 
 		if user is None:
-			return await ctx.send(f":x: **{ctx.author.display_name}**, I found no stats for you")
+			return await ctx.send(f"**{ctx.author.display_name}**, I found no stats for you")
 
 		date = user.dateset.strftime("%d/%m/%Y")
 		embed = self.bot.create_embed(title=ctx.author.display_name, desc=f":alarm_clock: **{date}**")
@@ -43,7 +50,7 @@ class ABO(commands.Cog, name="abo"):
 
 		return await ctx.send(embed=embed)
 
-	@commands.command(name="set", aliases=["s"], help="Set your game stats")
+	@commands.command(name="set", aliases=["s"], husage="<level> <trophies>")
 	async def set_stats(self, ctx, level: IntegerRange(0, 150), trophies: IntegerRange(0, 5000)):
 		with DBConnection() as con:
 			params = (ctx.author.id, level, trophies, datetime.now())
@@ -52,10 +59,9 @@ class ABO(commands.Cog, name="abo"):
 
 		await ctx.send(f"**{ctx.author.display_name}** :thumbsup:")
 
-	@commands.command(name="setuser", hidden=True)
+	# CHECK: Leader role required
+	@commands.command(name="setuser")
 	async def set_user(self, ctx, user: discord.Member, level: IntegerRange(0, 150), trophies: IntegerRange(0, 5000)):
-		await checks.author_has_tagged_role(ctx, "leader", self.bot.svr_cache)
-
 		with DBConnection() as con:
 			params = (user.id, level, trophies, datetime.now())
 
@@ -63,11 +69,10 @@ class ABO(commands.Cog, name="abo"):
 
 		await ctx.send(f"**{user.display_name}** :thumbsup:")
 
-	@commands.command(name="shame", hidden=True)
+	# CHECK: Leader role required
+	@commands.command(name="shame")
 	async def shame(self, ctx: commands.Context):
-		await checks.author_has_tagged_role(ctx, "leader", self.bot.svr_cache)
-
-		member_role = utils.get_tagged_role(self.bot.svr_cache, ctx.guild, "member")
+		member_role = utils.get_tagged_role(self.bot.svr_cache, ctx.guild, RoleTags.ABO)
 
 		with DBConnection() as con:
 			con.cur.execute(AboSQL.SELECT_ALL)
@@ -86,7 +91,7 @@ class ABO(commands.Cog, name="abo"):
 
 		return await ctx.send(msg)
 
-	@commands.command(name="alb", help="Display trophy leaderboard")
+	@commands.command(name="alb", help="Leaderboard")
 	async def leaderboard(self, ctx: commands.Context):
 		if self.leaderboards.get(ctx.guild.id, None) is None:
 			self.leaderboards[ctx.guild.id] = ABOLeaderboard(ctx.guild, self.bot)

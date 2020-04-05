@@ -1,9 +1,8 @@
 import random
-import discord
 
 from discord.ext import commands
 
-from bot.common import checks, CoinsSQL
+from bot.common import checks, CoinsSQL, ChannelTags
 
 from bot.common.converters import NotAuthorOrBotServer, IntegerRange
 
@@ -12,16 +11,16 @@ from bot.common.database import DBConnection
 from bot.structures import CoinLeaderboard
 
 
-class Bank(commands.Cog, name="bank"):
+class Bank(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
 		self.leaderboards = dict()
 
 	async def cog_check(self, ctx):
-		return await checks.channel_has_tag(ctx, "game", self.bot.svr_cache)
+		return checks.channel_has_tag(ctx, ChannelTags.CASINO)
 
-	@commands.command(name="balance", aliases=["bal"], help="Display your coin count")
+	@commands.command(name="balance", aliases=["bal"])
 	async def balance(self, ctx: commands.Context):
 		with DBConnection() as con:
 			con.cur.execute(CoinsSQL.SELECT_USER, (ctx.author.id,))
@@ -33,7 +32,7 @@ class Bank(commands.Cog, name="bank"):
 		await ctx.send(f":moneybag: **{ctx.author.display_name}** has a total of **{balance:,}** coins")
 
 	@commands.cooldown(1, 60 * 15, commands.BucketType.user)
-	@commands.command(name="free", aliases=["pickup"], help="Get free coins [15m]")
+	@commands.command(name="free", aliases=["pickup"], help="Free coins!")
 	async def free(self, ctx: commands.Context):
 		amount = random.randint(15, 50)
 
@@ -43,7 +42,7 @@ class Bank(commands.Cog, name="bank"):
 		await ctx.send(f"**{ctx.author.display_name}** gained **{amount}** coins!")
 
 	@commands.cooldown(1, 60 * 60 * 3, commands.BucketType.user)
-	@commands.command(name="steal", help="Attempt to steal coins [3hrs]")
+	@commands.command(name="steal", usage="<user>")
 	async def steal_coins(self, ctx: commands.Context, target: NotAuthorOrBotServer()):
 		if random.randint(0, 3) != 0:
 			return await ctx.send(f"**{ctx.author.display_name}** failed to steal from **{target.display_name}**")
@@ -73,7 +72,7 @@ class Bank(commands.Cog, name="bank"):
 
 		await ctx.send(f"**{ctx.author.display_name}** stole **{amount:,}** coins from **{target.display_name}**")
 
-	@commands.command(name="gift", help="Gift some coins")
+	@commands.command(name="gift", usage="<user> <amount>")
 	async def gift(self, ctx, target: NotAuthorOrBotServer(), amount: IntegerRange(1, 10000)):
 		with DBConnection() as con:
 			# Get author coins
@@ -94,14 +93,14 @@ class Bank(commands.Cog, name="bank"):
 				await ctx.send(f"**{ctx.author.display_name}** gifted **{amount:,}** coins to **{target.display_name}**")
 
 	@commands.is_owner()
-	@commands.command(name="setcoins", hidden=True)
-	async def set_coins(self, ctx, user: discord.Member, amount: IntegerRange(1, 1_000_000)):
+	@commands.command(name="setcoins", usage="<user> <amount>")
+	async def set_coins(self, ctx, user: NotAuthorOrBotServer(), amount: IntegerRange(1, 1_000_000)):
 		with DBConnection() as con:
 			con.cur.execute(CoinsSQL.UPDATE, (user.id, amount))
 
 		await ctx.send(f"**{ctx.author.display_name}** done :thumbsup:")
 
-	@commands.command(name="coinlb", aliases=["clb"], help="Show the server coin leaderboard")
+	@commands.command(name="clb", aliases=["coinlb"], help="Leaderboard")
 	async def leaderboard(self, ctx: commands.Context):
 		if self.leaderboards.get(ctx.guild.id, None) is None:
 			self.leaderboards[ctx.guild.id] = CoinLeaderboard(ctx.guild, self.bot)

@@ -2,20 +2,20 @@ import discord
 
 from discord.ext import commands
 
-from bot.common.constants import BotConstants
-from bot.common import DBConnection, ServerConfigSQL
+from bot.common import (
+	BotConstants,
+	DBConnection,
+	ServerConfigSQL
+)
+
+from bot.structures import HelpCommand
 
 
-class MyBot(commands.Bot):
+class SnaccBot(commands.Bot):
 	def __init__(self):
-		super().__init__(
-			command_prefix=MyBot.prefix,
-			case_insensitive=True,
-			help_command=commands.DefaultHelpCommand(no_category="default")
-		)
+		super().__init__(command_prefix=SnaccBot.prefix, case_insensitive=True, help_command=HelpCommand())
 
 		self.svr_cache = dict()
-
 		self.default_prefix = "!"
 
 	async def on_ready(self):
@@ -25,12 +25,15 @@ class MyBot(commands.Bot):
 
 	def add_cog(self, cog):
 		print(f"Adding Cog: {cog.qualified_name}...", end="")
-		super(MyBot, self).add_cog(cog)
+		super(SnaccBot, self).add_cog(cog)
 		print("OK")
 
 	async def on_command_error(self, ctx: commands.Context, esc):
 		if isinstance(esc, commands.UserInputError):
 			ctx.command.reset_cooldown(ctx)
+
+		elif isinstance(esc, commands.CommandNotFound):
+			return
 
 		return await ctx.send(":x: " + esc.args[0])
 
@@ -38,11 +41,13 @@ class MyBot(commands.Bot):
 		if message.guild is not None:
 			return await self.process_commands(message)
 
-	def create_embed(self, *, title: str, desc: str = None, thumbnail: str = None):
+	def create_embed(self, *, title: str, desc: str = None, thumbnail: str = None) -> discord.Embed:
 		embed = discord.Embed(title=title, description=desc, color=0xff8000)
 
-		embed.set_thumbnail(url=thumbnail if thumbnail is not None else self.user.avatar_url)
-		embed.set_footer(text=self.user.display_name)
+		if thumbnail is not None:
+			embed.set_thumbnail(url=thumbnail)
+
+		embed.set_footer(text=self.user.display_name, icon_url=self.user.avatar_url)
 
 		return embed
 

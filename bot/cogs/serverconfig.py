@@ -4,12 +4,16 @@ import json
 from discord.ext import commands
 
 from bot.common import checks, converters
-from bot.common import DBConnection, ServerConfigSQL
 
-from bot.common.constants import CHANNEL_TAGS, ROLE_TAGS
+from bot.common import (
+	RoleTags,
+	ChannelTags,
+	DBConnection,
+	ServerConfigSQL
+)
 
 
-class Config(commands.Cog):
+class ServerConfig(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
@@ -19,13 +23,13 @@ class Config(commands.Cog):
 	async def cog_after_invoke(self, ctx: commands.Context):
 		await self.bot.update_cache(ctx.message)
 
-	@commands.group(name="config", help="Server Configuration")
+	@commands.group(name="config")
 	async def config(self, ctx: commands.Context):
 		if ctx.invoked_subcommand is None:
 			return await ctx.send_help(ctx.command)
 
-	@config.command(name="channel", help="Register current channel")
-	async def set_channel(self, ctx: commands.Context, tag: converters.ValidTag(CHANNEL_TAGS)):
+	@config.command(name="channel")
+	async def set_channel(self, ctx: commands.Context, tag: converters.ValidTag(ChannelTags.ALL)):
 		with DBConnection() as con:
 			data = self.bot.svr_cache.get(ctx.guild.id, None)
 
@@ -38,7 +42,7 @@ class Config(commands.Cog):
 		await ctx.send(f"{ctx.channel.mention} has been registered as an **{tag}** channel")
 
 	@config.command(name="role", help="Register a role")
-	async def set_role(self, ctx: commands.Context, tag: converters.ValidTag(ROLE_TAGS), role: discord.Role):
+	async def set_role(self, ctx: commands.Context, tag: converters.ValidTag(RoleTags.ALL), role: discord.Role):
 		with DBConnection() as con:
 			data = self.bot.svr_cache.get(ctx.guild.id, None)
 
@@ -59,4 +63,4 @@ class Config(commands.Cog):
 
 
 def setup(bot):
-	bot.add_cog(Config(bot))
+	bot.add_cog(ServerConfig(bot))

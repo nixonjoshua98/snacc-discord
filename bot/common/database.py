@@ -4,16 +4,20 @@ import psycopg2.extras
 
 from configparser import ConfigParser
 
-from bot.common import utils, constants
+from bot.common import utils
 
-from bot.common.constants import BotConstants
+from bot.common import BotConstants, DatabaseEnum
 
 
 class DBConnection:
-    def __init__(self, db_type=None):
-        database_type = BotConstants.DATABASE if db_type is None else db_type
+    def __init__(self, target_database: DatabaseEnum = None):
+        """
+        :param target_database: Decide which database to connect to
+        """
+        target_database = BotConstants.DATABASE if target_database is None else target_database
 
-        if database_type == constants.DatabaseEnum.HEROKU:
+        if target_database == DatabaseEnum.HEROKU:
+            # Connect to Heroku database using the DATABASE_URL stored in the environment variables
             self._con = psycopg2.connect(os.environ["DATABASE_URL"], sslmode="require")
 
         else:
@@ -21,33 +25,22 @@ class DBConnection:
 
             config.read(utils.config("postgres.ini"))
 
-            if database_type == constants.DatabaseEnum.LOCAL:
-                self._con = psycopg2.connect(**dict(config.items("postgres-local")))
+            section = "postgres-local" if target_database == DatabaseEnum.LOCAL else "postgres-heroku"
 
-            elif database_type == constants.DatabaseEnum.LOCAL2HEROKU:
-                self._con = psycopg2.connect(**dict(config.items("postgres-heroku")))
+            self._con = psycopg2.connect(**dict(config.items(section)))
 
         self.cur = self._con.cursor(cursor_factory=psycopg2.extras.NamedTupleCursor)
 
-    @classmethod
-    def get_query(cls, file):
-        path = utils.query(file)
-
-        try:
-            with open(path, "r") as fh:
-                query = fh.read()
-
-                return query
-
-        except OSError as e:
-            print(e)
-
-        return None
-
     def __enter__(self):
+        """ Context manager entry point """
         return self
 
     def __exit__(self, *args):
+        """ Context manager exit point """
+        self.close()
+
+    def close(self):
+        """ Close the connection if it is still open"""
         if self._con:
             self._con.commit()
             self.cur.close()

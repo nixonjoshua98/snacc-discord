@@ -4,19 +4,20 @@ from num2words import num2words
 
 from discord.ext import commands
 
-from bot.common import checks
-from bot.common import CoinsSQL, DBConnection
+from bot.common import checks, ChannelTags
+from bot.common.queries import CoinsSQL
+from bot.common.database import DBConnection
 
 
-class Casino(commands.Cog, name="casino"):
+class Casino(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
 	async def cog_check(self, ctx):
-		return await checks.channel_has_tag(ctx, "game", self.bot.svr_cache)
+		return checks.channel_has_tag(ctx, ChannelTags.CASINO)
 
-	@commands.cooldown(25, 60 * 60 * 12, commands.BucketType.user)
-	@commands.command(name="spin", aliases=["sp"], help="Slot machine [25/12hrs]")
+	@commands.cooldown(25, 60 * 60 * 6, commands.BucketType.user)
+	@commands.command(name="spin", aliases=["sp"], help="Slot machine")
 	async def spin(self, ctx):
 		def get_win_bounds(amount) -> tuple:
 			low = max([amount * 0.75, amount - (25 + (7.50 * amount / 1000))])
@@ -46,7 +47,7 @@ class Casino(commands.Cog, name="casino"):
 		await ctx.send(msg)
 
 	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
-	@commands.command(name="flip", aliases=["fl"], help="Flip a coin [1hr]")
+	@commands.command(name="flip", aliases=["fl"], help="Coin flip")
 	async def flip(self, ctx):
 		with DBConnection() as con:
 			con.cur.execute(CoinsSQL.SELECT_USER, (ctx.author.id,))

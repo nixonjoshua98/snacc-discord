@@ -14,7 +14,7 @@ My default prefix is **{bot.default_prefix}**...obviously
 - Contact my almighty creator **{bot_info.owner}**
 
 __Auto Battles Online Server Only__
-    - Set a member role by doing **{bot.default_prefix}config role member <role>**
+    - Set the member role by doing **{bot.default_prefix}config role member <role>**
     - Register a channel as an ABO channel by doing **{bot.default_prefix}config channel abo**
 
 **__Invite Me__**

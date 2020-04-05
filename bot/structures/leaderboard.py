@@ -21,7 +21,7 @@ class LeaderboardBase:
 
         mins_ago = int((datetime.now() - self._last_updated).total_seconds() // 60)
 
-        if mins_ago > self._update_timer:
+        if mins_ago >= self._update_timer:
             mins_ago = 0
             self._create()
 

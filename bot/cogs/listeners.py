@@ -9,23 +9,22 @@ class Listeners(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-        self.template_messages = {}
-
-        path = utils.resource("on_guild_join.txt")
-
-        with open(path, "r") as fh:
-            self.template_messages["on_guild_join"] = fh.read()
-
     @staticmethod
     async def _send_system_channel(guild: discord.Guild, message: str):
         if guild.system_channel:
-            await guild.system_channel.send(message)
+            try:
+                await guild.system_channel.send(message)
+            except discord.Forbidden:
+                """ Bot doesn't have access to the system channel """
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):
+        with open(utils.resource("on_guild_join.txt"), "r") as fh:
+            template = fh.read()
+
         bot_info = await self.bot.application_info()
 
-        welc_msg = self.template_messages["on_guild_join"].format(guild=guild, bot=self.bot, bot_info=bot_info)
+        welc_msg = template.format(guild=guild, bot=self.bot, bot_info=bot_info)
         owner_dm = f"I joined the server **{guild.name}** owned by **{guild.owner}**"
 
         await bot_info.owner.send(owner_dm)
@@ -37,15 +36,13 @@ class Listeners(commands.Cog):
 
         await self._send_system_channel(member.guild, join_msg)
 
-        config = self.bot.svr_cache.get(member.guild.id)
-
         try:
-            role = discord.utils.get(member.guild.roles, id=config.roles["default"])
+            role = utils.get_tagged_role(self.bot.svr_cache, member.guild, "default", ignore_exception=True)
 
             await member.add_roles(role, atomic=True)
 
-        except (AttributeError, KeyError):
-            pass
+        except AttributeError:
+            """ Simply hasn't been set yet """
 
         except discord.Forbidden as e:
             await self._send_system_channel(member.guild, f":x: **{e.args[0]}**")

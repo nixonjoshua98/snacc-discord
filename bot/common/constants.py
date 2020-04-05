@@ -9,10 +9,20 @@ class DatabaseEnum(enum.IntEnum):
 
 
 class BotConstants:
-    DATABASE = DatabaseEnum.HEROKU
     DEBUG = os.getenv("DEBUG", False)
+    DATABASE = DatabaseEnum.LOCAL if DEBUG else DatabaseEnum.HEROKU
 
 
-CHANNEL_TAGS = ("abo", "game")
+class ChannelTags:
+    ABO = "abo"
+    CASINO = "game"
 
-ROLE_TAGS = ("member", "default", "leader")
+    ALL = (ABO, CASINO)
+
+
+class RoleTags:
+    ABO = "member"
+    DEFAULT = "default"
+    LEADER = "leader"
+
+    ALL = (ABO, DEFAULT, LEADER)
