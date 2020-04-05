@@ -26,26 +26,8 @@ class ServerConfig(commands.Cog, name="Config"):
 	async def cog_after_invoke(self, ctx: commands.Context):
 		await self.bot.update_cache(ctx.message)
 
-	@commands.group(name="c", help="Server config")
-	async def config(self, ctx: commands.Context):
-		if ctx.invoked_subcommand is None:
-			return await ctx.send_help(ctx.command)
-
-	@config.command(name="channel")
-	async def set_channel(self, ctx: commands.Context, tag: converters.ValidTag(ChannelTags.ALL)):
-		with DBConnection() as con:
-			data = self.bot.svr_cache.get(ctx.guild.id, None)
-
-			channels = data.channels or dict()
-			channels[tag] = list(set(channels.get(tag, []) + [ctx.channel.id]))
-			dumps = json.dumps(channels)
-
-			con.cur.execute(ServerConfigSQL.UPDATE_CHANNELS, (ctx.guild.id, dumps))
-
-		await ctx.send(f"{ctx.channel.mention} has been registered as an **{tag}** channel")
-
-	@config.command(name="role")
-	async def set_role(self, ctx: commands.Context, tag: converters.ValidTag(RoleTags.ALL), role: discord.Role):
+	@commands.command(name="srt", help="Set role tag")
+	async def set_tagged_role(self, ctx: commands.Context, tag: converters.ValidTag(RoleTags.ALL), role: discord.Role):
 		with DBConnection() as con:
 			data = self.bot.svr_cache.get(ctx.guild.id, None)
 
@@ -55,9 +37,53 @@ class ServerConfig(commands.Cog, name="Config"):
 
 			con.cur.execute(ServerConfigSQL.UPDATE_ROLES, (ctx.guild.id, json.dumps(roles)))
 
-		await ctx.send(f"**{tag.title()}** role has been updated to **{role.name}**")
+		await ctx.send(f"The **{tag.title()}** role has been set as **{role.name}**")
 
-	@config.command(name="prefix")
+	@commands.command(name="rrt", help="Remove role tag")
+	async def remove_role_tag(self, ctx: commands.Context, tag: converters.ValidTag(RoleTags.ALL)):
+		with DBConnection() as con:
+			data = self.bot.svr_cache.get(ctx.guild.id, None)
+
+			roles = dict() if data is None else data.roles if data.roles is not None else dict()  # Lol...
+
+			roles.pop(tag, None)
+
+			con.cur.execute(ServerConfigSQL.UPDATE_ROLES, (ctx.guild.id, json.dumps(roles)))
+
+		await ctx.send(f"The role for **{tag.title()}** has been removed")
+
+	@commands.command(name="act", help="Add channel tag")
+	async def add_channel_tag(self, ctx: commands.Context, tag: converters.ValidTag(ChannelTags.ALL)):
+		with DBConnection() as con:
+			data = self.bot.svr_cache.get(ctx.guild.id, None)
+
+			channels = dict() if data is None else data.channels if data.channels is not None else dict()
+
+			channels[tag] = list(set(channels.get(tag, []) + [ctx.channel.id]))
+
+			con.cur.execute(ServerConfigSQL.UPDATE_CHANNELS, (ctx.guild.id, json.dumps(channels)))
+
+		await ctx.send(f"{ctx.channel.mention} has been registered as an **{tag}** channel")
+
+	@commands.command(name="rct", help="Remove channel tag")
+	async def remove_channel_tag(self, ctx: commands.Context, tag: converters.ValidTag(ChannelTags.ALL)):
+		with DBConnection() as con:
+			data = self.bot.svr_cache.get(ctx.guild.id, None)
+
+			channels = dict() if data is None else data.channels if data.channels is not None else dict()
+
+			tagged = list(set(channels.get(tag, [])))
+
+			if ctx.channel.id in tagged:
+				tagged.remove(ctx.channel.id)
+
+			channels[tag] = tagged
+
+			con.cur.execute(ServerConfigSQL.UPDATE_CHANNELS, (ctx.guild.id, json.dumps(channels)))
+
+		await ctx.send(f"{ctx.channel.mention} has been unregistered as an **{tag}** channel")
+
+	@commands.command(name="pre", usage="<prefix>")
 	async def set_prefix(self, ctx: commands.Context, prefix: str):
 		with DBConnection() as con:
 			con.cur.execute(ServerConfigSQL.UPDATE_PREFIX, (ctx.guild.id, prefix))

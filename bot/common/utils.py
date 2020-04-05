@@ -22,7 +22,7 @@ def get_tagged_role(cache, server, tag, *, ignore_exception: bool = False):
         return server.get_role(cache[server.id].roles[tag])
     except (AttributeError, KeyError):
         if not ignore_exception:
-            raise commands.CommandError(f"**Tagged role {tag} is invalid or has not been set**")
+            raise commands.CommandError(f"Role tagged **{tag}** is invalid or has not been set")
 
 
 def get_tagged_channels(cache, server, tag):
