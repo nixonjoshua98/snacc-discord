@@ -59,7 +59,7 @@ class VListeners(commands.Cog, command_attrs=dict(hidden=True)):
         self.bot = bot
 
     async def cog_check(self, ctx: commands.Context):
-        return await self.bot.is_owner(ctx.author) or await checks.author_is_server_owner(ctx)
+        return await self.bot.is_owner(ctx.author) or checks.author_is_server_owner(ctx)
 
     @commands.command(name="gjoin", aliases=["gj"])
     async def on_guild_join_command(self, ctx: commands.Context):

@@ -33,6 +33,6 @@ def get_tagged_channels(cache, server, tag):
     :return: List of channels with the tag, or an empty list if not found
     """
     try:
-        return cache[server.id].channels.get(tag, [])
+        return cache[server.id].channels[tag]
     except (AttributeError, KeyError):
         return []

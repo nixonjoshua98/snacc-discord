@@ -3,7 +3,10 @@ import json
 
 from discord.ext import commands
 
-from bot.common import checks, converters
+from bot.common import (
+	checks,
+	converters
+)
 
 from bot.common import (
 	RoleTags,
@@ -13,12 +16,12 @@ from bot.common import (
 )
 
 
-class ServerConfig(commands.Cog):
+class ServerConfig(commands.Cog, name="Config"):
 	def __init__(self, bot):
 		self.bot = bot
 
 	async def cog_check(self, ctx: commands.Context):
-		return await self.bot.is_owner(ctx.author) or await checks.author_is_server_owner(ctx)
+		return await self.bot.is_owner(ctx.author) or checks.author_is_server_owner(ctx)
 
 	async def cog_after_invoke(self, ctx: commands.Context):
 		await self.bot.update_cache(ctx.message)
@@ -41,23 +44,23 @@ class ServerConfig(commands.Cog):
 
 		await ctx.send(f"{ctx.channel.mention} has been registered as an **{tag}** channel")
 
-	@config.command(name="role", help="Register a role")
+	@config.command(name="role")
 	async def set_role(self, ctx: commands.Context, tag: converters.ValidTag(RoleTags.ALL), role: discord.Role):
 		with DBConnection() as con:
 			data = self.bot.svr_cache.get(ctx.guild.id, None)
 
 			roles = dict() if data is None else data.roles if data.roles is not None else dict()  # Lol...
-			roles[tag] = role.id
-			dumps = json.dumps(roles)
 
-			con.cur.execute(ServerConfigSQL.UPDATE_ROLES, (ctx.guild.id, dumps))
+			roles[tag] = role.id
+
+			con.cur.execute(ServerConfigSQL.UPDATE_ROLES, (ctx.guild.id, json.dumps(roles)))
 
 		await ctx.send(f"**{tag.title()}** role has been updated to **{role.name}**")
 
-	@config.command(name="prefix", help="Set the server prefix")
+	@config.command(name="prefix")
 	async def set_prefix(self, ctx: commands.Context, prefix: str):
 		with DBConnection() as con:
-			con.cur.execute(ServerConfigSQL.UPDATE_ROLES, (ctx.guild.id, prefix))
+			con.cur.execute(ServerConfigSQL.UPDATE_PREFIX, (ctx.guild.id, prefix))
 
 		await ctx.send(f"Prefix has been updated to **{prefix}**")
 

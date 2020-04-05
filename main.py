@@ -1,12 +1,13 @@
 from bot.bot import SnaccBot
 
 if __name__ == '__main__':
-    dark = SnaccBot()
+    bot = SnaccBot()
 
-    dark.load_extension("bot.cogs.listeners")
-    dark.load_extension("bot.cogs.abo")
-    dark.load_extension("bot.cogs.serverconfig")
-    dark.load_extension("bot.cogs.casino")
-    dark.load_extension("bot.cogs.bank")
+    bot.load_extension("bot.cogs.listeners")
+    bot.load_extension("bot.cogs.abo")
+    bot.load_extension("bot.cogs.serverconfig")
+    bot.load_extension("bot.cogs.casino")
+    bot.load_extension("bot.cogs.bank")
+    bot.load_extension("bot.cogs.fishing")
 
-    dark.run("NjY2NjE2NTE1NDM2NDc4NDcz.XofF-Q.YNe2fpEgieFmOSrgBQVywdl4rRo")
+    bot.run("NjY2NjE2NTE1NDM2NDc4NDcz.XofF-Q.YNe2fpEgieFmOSrgBQVywdl4rRo")

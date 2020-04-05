@@ -8,7 +8,7 @@ from .constants import (
 
 from .converters import (
     IntegerRange,
-    NotAuthorOrBotServer,
+    NotAuthorOrBot,
     ValidTag
 )
 

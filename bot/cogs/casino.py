@@ -17,7 +17,7 @@ class Casino(commands.Cog):
 		return checks.channel_has_tag(ctx, ChannelTags.CASINO)
 
 	@commands.cooldown(25, 60 * 60 * 6, commands.BucketType.user)
-	@commands.command(name="spin", aliases=["sp"], help="Slot machine")
+	@commands.command(name="sp", help="Slot machine")
 	async def spin(self, ctx):
 		def get_win_bounds(amount) -> tuple:
 			low = max([amount * 0.75, amount - (25 + (7.50 * amount / 1000))])
@@ -27,14 +27,10 @@ class Casino(commands.Cog):
 		with DBConnection() as con:
 			con.cur.execute(CoinsSQL.SELECT_USER, (ctx.author.id,))
 			initial = con.cur.fetchone()
-			init_bal = initial.balance if initial is not None else 0
+			init_bal = max(getattr(initial, "balance", 10), 10)
 
-			if init_bal >= 10:
-				lower, upper = get_win_bounds(init_bal)
-				final_bal = max(0, random.randint(lower, upper))
-
-			else:
-				final_bal = 10
+			lower, upper = get_win_bounds(init_bal)
+			final_bal = max(0, random.randint(lower, upper))
 
 			con.cur.execute(CoinsSQL.UPDATE, (ctx.author.id, final_bal))
 
@@ -47,16 +43,16 @@ class Casino(commands.Cog):
 		await ctx.send(msg)
 
 	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
-	@commands.command(name="flip", aliases=["fl"], help="Coin flip")
+	@commands.command(name="fl", help="Coin flip")
 	async def flip(self, ctx):
 		with DBConnection() as con:
 			con.cur.execute(CoinsSQL.SELECT_USER, (ctx.author.id,))
 
 			initial = con.cur.fetchone()
 
-			init_bal = initial.balance if initial is not None else 0
+			init_bal = max(getattr(initial, "balance", 10), 10)
 
-			amount = int(min(2500, init_bal * 0.5))
+			amount = int(min(5000, init_bal // 2))
 
 			final_bal = init_bal + amount if random.randint(0, 1) == 0 else init_bal - amount
 

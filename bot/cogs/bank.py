@@ -4,7 +4,7 @@ from discord.ext import commands
 
 from bot.common import checks, CoinsSQL, ChannelTags
 
-from bot.common.converters import NotAuthorOrBotServer, IntegerRange
+from bot.common.converters import NotAuthorOrBot, IntegerRange
 
 from bot.common.database import DBConnection
 
@@ -20,7 +20,7 @@ class Bank(commands.Cog):
 	async def cog_check(self, ctx):
 		return checks.channel_has_tag(ctx, ChannelTags.CASINO)
 
-	@commands.command(name="balance", aliases=["bal"])
+	@commands.command(name="bal", help="Coin balance")
 	async def balance(self, ctx: commands.Context):
 		with DBConnection() as con:
 			con.cur.execute(CoinsSQL.SELECT_USER, (ctx.author.id,))
@@ -43,8 +43,8 @@ class Bank(commands.Cog):
 
 	@commands.cooldown(1, 60 * 60 * 3, commands.BucketType.user)
 	@commands.command(name="steal", usage="<user>")
-	async def steal_coins(self, ctx: commands.Context, target: NotAuthorOrBotServer()):
-		if random.randint(0, 3) != 0:
+	async def steal_coins(self, ctx: commands.Context, target: NotAuthorOrBot()):
+		if random.randint(0, 2) != 0:
 			return await ctx.send(f"**{ctx.author.display_name}** failed to steal from **{target.display_name}**")
 
 		with DBConnection() as con:
@@ -73,7 +73,7 @@ class Bank(commands.Cog):
 		await ctx.send(f"**{ctx.author.display_name}** stole **{amount:,}** coins from **{target.display_name}**")
 
 	@commands.command(name="gift", usage="<user> <amount>")
-	async def gift(self, ctx, target: NotAuthorOrBotServer(), amount: IntegerRange(1, 10000)):
+	async def gift(self, ctx, target: NotAuthorOrBot(), amount: IntegerRange(1, 10000)):
 		with DBConnection() as con:
 			# Get author coins
 			con.cur.execute(CoinsSQL.SELECT_USER, (ctx.author.id,))
@@ -93,14 +93,14 @@ class Bank(commands.Cog):
 				await ctx.send(f"**{ctx.author.display_name}** gifted **{amount:,}** coins to **{target.display_name}**")
 
 	@commands.is_owner()
-	@commands.command(name="setcoins", usage="<user> <amount>")
-	async def set_coins(self, ctx, user: NotAuthorOrBotServer(), amount: IntegerRange(1, 1_000_000)):
+	@commands.command(name="sc", help="Set user coins")
+	async def set_coins(self, ctx, user: NotAuthorOrBot(), amount: IntegerRange(0, 1_000_000)):
 		with DBConnection() as con:
 			con.cur.execute(CoinsSQL.UPDATE, (user.id, amount))
 
 		await ctx.send(f"**{ctx.author.display_name}** done :thumbsup:")
 
-	@commands.command(name="clb", aliases=["coinlb"], help="Leaderboard")
+	@commands.command(name="clb", help="Leaderboard")
 	async def leaderboard(self, ctx: commands.Context):
 		if self.leaderboards.get(ctx.guild.id, None) is None:
 			self.leaderboards[ctx.guild.id] = CoinLeaderboard(ctx.guild, self.bot)

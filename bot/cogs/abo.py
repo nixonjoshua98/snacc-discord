@@ -26,9 +26,6 @@ class ABO(commands.Cog, name="AutoBattlesOnline"):
 
 		self.leaderboards = dict()
 
-		self.shame.add_check(lambda ctx: checks.author_has_tagged_role(ctx, RoleTags.LEADER))
-		self.set_user.add_check(lambda ctx: checks.author_has_tagged_role(ctx, RoleTags.LEADER))
-
 	async def cog_check(self, ctx):
 		return checks.channel_has_tag(ctx, ChannelTags.ABO) and checks.author_has_tagged_role(ctx, RoleTags.ABO)
 
@@ -50,7 +47,7 @@ class ABO(commands.Cog, name="AutoBattlesOnline"):
 
 		return await ctx.send(embed=embed)
 
-	@commands.command(name="set", aliases=["s"], husage="<level> <trophies>")
+	@commands.command(name="s", usage="<level> <trophies>")
 	async def set_stats(self, ctx, level: IntegerRange(0, 150), trophies: IntegerRange(0, 5000)):
 		with DBConnection() as con:
 			params = (ctx.author.id, level, trophies, datetime.now())
@@ -59,8 +56,8 @@ class ABO(commands.Cog, name="AutoBattlesOnline"):
 
 		await ctx.send(f"**{ctx.author.display_name}** :thumbsup:")
 
-	# CHECK: Leader role required
-	@commands.command(name="setuser")
+	@checks.author_has_tagged_role(tag=RoleTags.LEADER)
+	@commands.command(name="su", help="Set user stats")
 	async def set_user(self, ctx, user: discord.Member, level: IntegerRange(0, 150), trophies: IntegerRange(0, 5000)):
 		with DBConnection() as con:
 			params = (user.id, level, trophies, datetime.now())
@@ -69,8 +66,8 @@ class ABO(commands.Cog, name="AutoBattlesOnline"):
 
 		await ctx.send(f"**{user.display_name}** :thumbsup:")
 
-	# CHECK: Leader role required
-	@commands.command(name="shame")
+	@checks.author_has_tagged_role(tag=RoleTags.LEADER)
+	@commands.command(name="shame", help="Shame others")
 	async def shame(self, ctx: commands.Context):
 		member_role = utils.get_tagged_role(self.bot.svr_cache, ctx.guild, RoleTags.ABO)
 
