@@ -26,6 +26,10 @@ class ServerConfig(commands.Cog, name="Config"):
 	async def cog_after_invoke(self, ctx: commands.Context):
 		await self.bot.update_cache(ctx.message)
 
+	@commands.command(name="tags", help="List all tags")
+	async def list_all_tags(self, ctx: commands.Context):
+		return await ctx.send("no")
+
 	@commands.command(name="srt", help="Set role tag")
 	async def set_tagged_role(self, ctx: commands.Context, tag: converters.ValidTag(RoleTags.ALL), role: discord.Role):
 		with DBConnection() as con:
@@ -37,7 +41,7 @@ class ServerConfig(commands.Cog, name="Config"):
 
 			con.cur.execute(ServerConfigSQL.UPDATE_ROLES, (ctx.guild.id, json.dumps(roles)))
 
-		await ctx.send(f"The **{tag.title()}** role has been set as **{role.name}**")
+		await ctx.send(f"The role **{role.name}** has been given the tag **{tag}**")
 
 	@commands.command(name="rrt", help="Remove role tag")
 	async def remove_role_tag(self, ctx: commands.Context, tag: converters.ValidTag(RoleTags.ALL)):
@@ -63,7 +67,7 @@ class ServerConfig(commands.Cog, name="Config"):
 
 			con.cur.execute(ServerConfigSQL.UPDATE_CHANNELS, (ctx.guild.id, json.dumps(channels)))
 
-		await ctx.send(f"{ctx.channel.mention} has been registered as an **{tag}** channel")
+		await ctx.send(f"{ctx.channel.mention} has been registered as a **{tag}** channel")
 
 	@commands.command(name="rct", help="Remove channel tag")
 	async def remove_channel_tag(self, ctx: commands.Context, tag: converters.ValidTag(ChannelTags.ALL)):
@@ -81,7 +85,7 @@ class ServerConfig(commands.Cog, name="Config"):
 
 			con.cur.execute(ServerConfigSQL.UPDATE_CHANNELS, (ctx.guild.id, json.dumps(channels)))
 
-		await ctx.send(f"{ctx.channel.mention} has been unregistered as an **{tag}** channel")
+		await ctx.send(f"{ctx.channel.mention} has been unregistered as a **{tag}** channel")
 
 	@commands.command(name="pre", usage="<prefix>")
 	async def set_prefix(self, ctx: commands.Context, prefix: str):

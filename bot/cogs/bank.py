@@ -18,7 +18,7 @@ class Bank(commands.Cog):
 		self.leaderboards = dict()
 
 	async def cog_check(self, ctx):
-		return checks.channel_has_tag(ctx, ChannelTags.CASINO)
+		return checks.channel_has_tag(ctx, ChannelTags.GAME)
 
 	@commands.command(name="bal", help="Coin balance")
 	async def balance(self, ctx: commands.Context):

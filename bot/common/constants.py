@@ -15,9 +15,9 @@ class BotConstants:
 
 class ChannelTags:
     ABO = "abo"
-    CASINO = "game"
+    GAME = "game"
 
-    ALL = (ABO, CASINO)
+    ALL = (ABO, GAME)
 
 
 class RoleTags:

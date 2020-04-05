@@ -14,10 +14,10 @@ class Casino(commands.Cog):
 		self.bot = bot
 
 	async def cog_check(self, ctx):
-		return checks.channel_has_tag(ctx, ChannelTags.CASINO)
+		return checks.channel_has_tag(ctx, ChannelTags.GAME)
 
 	@commands.cooldown(25, 60 * 60 * 6, commands.BucketType.user)
-	@commands.command(name="sp", help="Slot machine")
+	@commands.command(name="sp", help="Spin machine")
 	async def spin(self, ctx):
 		def get_win_bounds(amount) -> tuple:
 			low = max([amount * 0.75, amount - (25 + (7.50 * amount / 1000))])

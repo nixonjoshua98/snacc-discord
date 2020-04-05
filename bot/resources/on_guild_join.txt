@@ -8,12 +8,11 @@ My default prefix is **{bot.default_prefix}**...obviously
 
 **__Help__**
 - **{bot.default_prefix}help**...durp
-- **{bot.default_prefix}c** - Bot Configuration
 - Contact my almighty creator **{bot_info.owner} [{bot_info.owner.mention}]**
 
 __Auto Battles Online Server Only__
-    - Set the member role by doing **{bot.default_prefix}c role member <role>**
-    - Register a channel as an ABO channel by doing **{bot.default_prefix}c channel abo**
+    - Set the member role by doing **{bot.default_prefix}srt <role>**
+    - Register a channel as an ABO channel by doing **{bot.default_prefix}act abo**
 
 **__Invite Me__**
 https://discordapp.com/oauth2/authorize?client_id=666616515436478473&scope=bot&permissions=8

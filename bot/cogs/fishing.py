@@ -14,7 +14,7 @@ class Fishing(commands.Cog):
         self.bot = bot
 
     def cog_check(self, ctx):
-        return checks.channel_has_tag(ctx, ChannelTags.CASINO)
+        return checks.channel_has_tag(ctx, ChannelTags.GAME)
 
     @commands.cooldown(5, 60 * 60, commands.BucketType.user)
     @commands.command(name="f", help="Fishing!")
