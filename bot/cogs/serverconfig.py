@@ -26,7 +26,7 @@ class ServerConfig(commands.Cog, name="Config"):
 	async def cog_after_invoke(self, ctx: commands.Context):
 		await self.bot.update_cache(ctx.message)
 
-	@commands.group(name="config")
+	@commands.group(name="c", help="Server config")
 	async def config(self, ctx: commands.Context):
 		if ctx.invoked_subcommand is None:
 			return await ctx.send_help(ctx.command)

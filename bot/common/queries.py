@@ -67,3 +67,7 @@ class CoinsSQL:
     DECREMENT = "INSERT INTO coins (userID, balance) VALUES (%s, %s) " \
                 "ON CONFLICT (userID) DO UPDATE " \
                 "SET balance = coins.balance - excluded.balance;"
+
+
+class FishSQL:
+    pass
