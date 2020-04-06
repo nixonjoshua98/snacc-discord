@@ -21,6 +21,10 @@ class Fishing(commands.Cog):
     async def fish(self, ctx: commands.Context):
         return await ctx.send(":fish: Work in Progress! :fish:")
 
+    @commands.command(name="flb", help="Leaderboard")
+    async def leaderboard(self, ctx: commands.Context):
+        return await ctx.send(":fish: Work in Progress! :fish:")
+
 
 def setup(bot):
     bot.add_cog(Fishing(bot))

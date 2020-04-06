@@ -35,7 +35,7 @@ class SnaccBot(commands.Bot):
 		elif isinstance(esc, commands.CommandNotFound):
 			return
 
-		return await ctx.send(":x: " + esc.args[0])
+		return await ctx.send(esc.args[0])
 
 	async def on_message(self, message: discord.Message):
 		if message.guild is not None:

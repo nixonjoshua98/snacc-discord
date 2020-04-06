@@ -45,13 +45,11 @@ class ServerConfig(commands.Cog, name="Config"):
 
 	@commands.command(name="unsetrole", help="Unset role tag")
 	async def remove_role_tag(self, ctx: commands.Context, tag: converters.ValidTag(RoleTags.ALL)):
+		data = self.bot.svr_cache.get(ctx.guild.id, None)
+		roles = dict() if data is None else data.roles if data.roles is not None else dict()  # Lol...
+		roles.pop(tag, None)
+
 		with DBConnection() as con:
-			data = self.bot.svr_cache.get(ctx.guild.id, None)
-
-			roles = dict() if data is None else data.roles if data.roles is not None else dict()  # Lol...
-
-			roles.pop(tag, None)
-
 			con.cur.execute(ServerConfigSQL.UPDATE_ROLES, (ctx.guild.id, json.dumps(roles)))
 
 		await ctx.send(f"The role for **{tag.title()}** has been removed")

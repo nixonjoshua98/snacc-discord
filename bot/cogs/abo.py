@@ -20,7 +20,7 @@ from bot.common import (
 )
 
 
-class ABO(commands.Cog, name="AutoBattlesOnline"):
+class ABO(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
@@ -39,8 +39,7 @@ class ABO(commands.Cog, name="AutoBattlesOnline"):
 		if user is None:
 			return await ctx.send(f"**{ctx.author.display_name}**, I found no stats for you")
 
-		date = user.dateset.strftime("%d/%m/%Y")
-		embed = self.bot.create_embed(title=ctx.author.display_name, desc=f":alarm_clock: **{date}**")
+		embed = self.bot.create_embed(title=ctx.author.display_name, thumbnail=ctx.author.avatar_url)
 		text = f":joystick: **{user.lvl}**\n:trophy: **{user.trophies:,}**"
 
 		embed.add_field(name="ABO Stats", value=text)
@@ -57,7 +56,7 @@ class ABO(commands.Cog, name="AutoBattlesOnline"):
 		await ctx.send(f"**{ctx.author.display_name}** :thumbsup:")
 
 	@checks.author_has_tagged_role(tag=RoleTags.LEADER)
-	@commands.command(name="su", help="Set user stats")
+	@commands.command(name="ss", help="<user> <level> <trophie>")
 	async def set_user(self, ctx, user: discord.Member, level: IntegerRange(0, 150), trophies: IntegerRange(0, 5000)):
 		with DBConnection() as con:
 			params = (user.id, level, trophies, datetime.now())

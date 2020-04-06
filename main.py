@@ -1,12 +1,7 @@
 from bot.bot import SnaccBot
 
-from bot.common import DBConnection, MinigamesSQL
-
 if __name__ == '__main__':
     bot = SnaccBot()
-
-    with DBConnection() as con:
-        con.cur.execute(MinigamesSQL.TABLE)
 
     bot.load_extension("bot.cogs.listeners")
     bot.load_extension("bot.cogs.abo")
