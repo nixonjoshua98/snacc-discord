@@ -55,7 +55,7 @@ class LeaderboardBase:
 
         for row in rows:
             for i, col in enumerate(row[0:-1]):
-                row[i] = f"{col}{' ' * (widths[i] - len(col))}"
+                row[i] = f"{col}{'_' * (widths[i] - len(col))}"
 
         self._leaderboard = "\n".join(" ".join(row) for row in rows)
 

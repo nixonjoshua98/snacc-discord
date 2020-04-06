@@ -33,7 +33,7 @@ class Casino(commands.Cog):
 			final_bal = max(0, random.randint(lower, upper))
 
 			# Disallow the user gaining 0 coins
-			final_bal = final_bal if initial != final_bal else final_bal + 1
+			final_bal = final_bal if init_bal != final_bal else final_bal + 1
 
 			con.cur.execute(CoinsSQL.UPDATE, (ctx.author.id, final_bal))
 
@@ -45,7 +45,7 @@ class Casino(commands.Cog):
 
 		await ctx.send(msg)
 
-	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
+	@commands.cooldown(1, 60 * 30, commands.BucketType.user)
 	@commands.command(name="fl", help="Coin flip")
 	async def flip(self, ctx):
 		with DBConnection() as con:
