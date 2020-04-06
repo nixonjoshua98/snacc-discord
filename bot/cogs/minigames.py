@@ -31,7 +31,7 @@ class Minigames(commands.Cog):
     @commands.command(name="t", help="Time game")
     async def timer_game(self, ctx: commands.Context):
         def check(m: discord.Message):
-            return m.channel.id == ctx.channel.id and m.content == "now" and not m.author.bot
+            return m.channel.id == ctx.channel.id and m.content.lower() == "now" and not m.author.bot
 
         # Ignore the call if a game is ongoing
         if self.games.get(ctx.channel.id, {}).get("ongoing", False):
