@@ -72,7 +72,9 @@ class Minigames(commands.Cog):
                 with DBConnection() as con:
                     con.cur.execute(MinigamesSQL.UPDATE_TIMER_WINS, (winner.id,))
 
-                return await ctx.send(f"{winner.mention} has won! **{abs(guess)}s** {text} the timer.")
+                await ctx.send(f"{winner.mention} has won! **{abs(guess)}s** {text} the timer.")
+
+                return await self.timer_game(ctx)
 
             else:
                 # New guess
