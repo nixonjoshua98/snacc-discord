@@ -25,7 +25,7 @@ class LeaderboardBase:
             mins_ago = 0
             self._create()
 
-        lb = "```c++\n" + f"{self._title} [Updated: {mins_ago:,} min(s) ago]\n\n{self._leaderboard}" + "```"
+        lb = "```c++\n" + f"{self._title}\n\n[Updated: {mins_ago:,} min(s) ago]\n\n{self._leaderboard}" + "```"
 
         return lb[:2000]
 
@@ -125,11 +125,11 @@ class CoinLeaderboard(LeaderboardBase):
             yield member, data
 
 
-class TimerLeaderboard(LeaderboardBase):
+class MinigamesLeaderboard(LeaderboardBase):
     def __init__(self, guild, bot):
-        super(TimerLeaderboard, self).__init__(
-            title="Timer Leaderboard",
-            headers=["Wins"],
+        super(MinigamesLeaderboard, self).__init__(
+            title="Minigames Leaderboard",
+            headers=["Timer"],
             columns=["timerwins"],
             size=10
         )
@@ -139,10 +139,10 @@ class TimerLeaderboard(LeaderboardBase):
 
     def _get_data(self):
         with DBConnection() as con:
-            con.cur.execute(MinigamesSQL.SELECT_ALL_TIMER_WINS)
+            con.cur.execute(MinigamesSQL.SELECT_ALL)
             all_data = con.cur.fetchall()
 
-        all_data.sort(key=lambda u: u.timerwins, reverse=True)
+        all_data.sort(key=lambda u: sum((u.timerwins,)), reverse=True)
 
         for data in all_data:
             id_ = getattr(data, "userid", None)

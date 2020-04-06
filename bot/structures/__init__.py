@@ -2,7 +2,7 @@
 from .leaderboard import (
     ABOLeaderboard,
     CoinLeaderboard,
-    TimerLeaderboard
+    MinigamesLeaderboard
 )
 
 from .helpcommand import HelpCommand

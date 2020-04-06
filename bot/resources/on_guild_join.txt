@@ -10,7 +10,7 @@ My default prefix is **{bot.default_prefix}**...obviously
 - **{bot.default_prefix}help**...durp
 - Contact my almighty creator **{bot_info.owner}**
 
-__Auto Battles Online Server Only__
+**__Auto Battles Online Server__**
     - Set the member role by doing **{bot.default_prefix}setrole <role>**
     - Register a channel as an ABO channel by doing **{bot.default_prefix}settag abo**
 

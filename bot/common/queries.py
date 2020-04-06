@@ -79,7 +79,7 @@ class MinigamesSQL:
             "timerWins INTEGER" \
             ");"
 
-    SELECT_ALL_TIMER_WINS = "SELECT userID, timerWins FROM minigames;"
+    SELECT_ALL = "SELECT * FROM minigames;"
 
     UPDATE_TIMER_WINS = "INSERT INTO minigames (userID, timerWins) VALUES (%s, 1) " \
                     "ON CONFLICT (userID) DO UPDATE " \

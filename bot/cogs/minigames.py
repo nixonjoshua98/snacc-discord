@@ -5,7 +5,7 @@ import asyncio
 
 from discord.ext import commands
 
-from bot.structures import TimerLeaderboard
+from bot.structures import MinigamesLeaderboard
 
 from bot.common import (
     checks,
@@ -78,10 +78,10 @@ class Minigames(commands.Cog):
                 if message.author not in user_guesses:
                     user_guesses[message.author] = time.time() - start - game_duration
 
-    @commands.command(name="tlb", help="Timer LB")
+    @commands.command(name="mlb", help="Leaderboard")
     async def leaderboard(self, ctx: commands.Context):
         if self.leaderboards.get(ctx.guild.id, None) is None:
-            self.leaderboards[ctx.guild.id] = TimerLeaderboard(ctx.guild, self.bot)
+            self.leaderboards[ctx.guild.id] = MinigamesLeaderboard(ctx.guild, self.bot)
 
         lb = self.leaderboards[ctx.guild.id]
 

@@ -5,7 +5,7 @@ from discord.ext import commands
 import itertools
 
 
-class HelpCommand(commands.HelpCommand):
+class HelpCommand(commands.DefaultHelpCommand):
     async def send_bot_help(self, mapping):
         ctx, bot = self.context, self.context.bot
 
