@@ -30,7 +30,7 @@ class ServerConfig(commands.Cog, name="Config"):
 	async def list_all_tags(self, ctx: commands.Context):
 		return await ctx.send("no")
 
-	@commands.command(name="srt", help="Set role tag")
+	@commands.command(name="setrole", usage="<tag> <role>")
 	async def set_tagged_role(self, ctx: commands.Context, tag: converters.ValidTag(RoleTags.ALL), role: discord.Role):
 		with DBConnection() as con:
 			data = self.bot.svr_cache.get(ctx.guild.id, None)
@@ -43,7 +43,7 @@ class ServerConfig(commands.Cog, name="Config"):
 
 		await ctx.send(f"The role **{role.name}** has been given the tag **{tag}**")
 
-	@commands.command(name="rrt", help="Remove role tag")
+	@commands.command(name="unsetrole", help="Unset role tag")
 	async def remove_role_tag(self, ctx: commands.Context, tag: converters.ValidTag(RoleTags.ALL)):
 		with DBConnection() as con:
 			data = self.bot.svr_cache.get(ctx.guild.id, None)
@@ -56,7 +56,7 @@ class ServerConfig(commands.Cog, name="Config"):
 
 		await ctx.send(f"The role for **{tag.title()}** has been removed")
 
-	@commands.command(name="act", help="Add channel tag")
+	@commands.command(name="settag", help="Add channel tag")
 	async def add_channel_tag(self, ctx: commands.Context, tag: converters.ValidTag(ChannelTags.ALL)):
 		with DBConnection() as con:
 			data = self.bot.svr_cache.get(ctx.guild.id, None)
@@ -69,7 +69,7 @@ class ServerConfig(commands.Cog, name="Config"):
 
 		await ctx.send(f"{ctx.channel.mention} has been registered as a **{tag}** channel")
 
-	@commands.command(name="rct", help="Remove channel tag")
+	@commands.command(name="unsettag", usage="<tag>")
 	async def remove_channel_tag(self, ctx: commands.Context, tag: converters.ValidTag(ChannelTags.ALL)):
 		with DBConnection() as con:
 			data = self.bot.svr_cache.get(ctx.guild.id, None)

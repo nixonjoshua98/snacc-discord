@@ -32,6 +32,9 @@ class Casino(commands.Cog):
 			lower, upper = get_win_bounds(init_bal)
 			final_bal = max(0, random.randint(lower, upper))
 
+			# Disallow the user gaining 0 coins
+			final_bal = final_bal if initial != final_bal else final_bal + 1
+
 			con.cur.execute(CoinsSQL.UPDATE, (ctx.author.id, final_bal))
 
 		bal_change = final_bal - init_bal

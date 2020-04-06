@@ -16,7 +16,7 @@ class Fishing(commands.Cog):
     def cog_check(self, ctx):
         return checks.channel_has_tag(ctx, ChannelTags.GAME)
 
-    @commands.cooldown(5, 60 * 60, commands.BucketType.user)
+    @commands.cooldown(10, 60 * 60, commands.BucketType.user)
     @commands.command(name="f", help="Fishing!")
     async def fish(self, ctx: commands.Context):
         return await ctx.send(":fish: Work in Progress! :fish:")

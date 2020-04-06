@@ -25,7 +25,7 @@ class HelpCommand(commands.HelpCommand):
 
                 text = lambda c: f"`{ctx.prefix}{c.name}" \
                                  f"{f' {c.usage}' if c.usage is not None else ''}" \
-                                 f"{f' ({c.help})' if c.help is not None else ''}`\n"
+                                 f"{f' ({c.help})' if c.help is not None else ''}`"
 
                 value = "\n".join(map(text, cmds))
 

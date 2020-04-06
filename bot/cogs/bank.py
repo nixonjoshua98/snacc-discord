@@ -93,7 +93,7 @@ class Bank(commands.Cog):
 				await ctx.send(f"**{ctx.author.display_name}** gifted **{amount:,}** coins to **{target.display_name}**")
 
 	@commands.is_owner()
-	@commands.command(name="sc", help="Set user coins")
+	@commands.command(name="sc", usage="<user> <amount>")
 	async def set_coins(self, ctx, user: NotAuthorOrBot(), amount: IntegerRange(0, 1_000_000)):
 		with DBConnection() as con:
 			con.cur.execute(CoinsSQL.UPDATE, (user.id, amount))

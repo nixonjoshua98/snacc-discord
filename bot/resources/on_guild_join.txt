@@ -4,15 +4,15 @@ My default prefix is **{bot.default_prefix}**...obviously
 
 **__Setup__**
 - Set channel tags to whitelist commands
-    - e.g **{bot.default_prefix}c channel game** which whitelists that channel to use all the games
+    - e.g **{bot.default_prefix}settag game** which whitelists that channel to use all the games
 
 **__Help__**
 - **{bot.default_prefix}help**...durp
-- Contact my almighty creator **{bot_info.owner} [{bot_info.owner.mention}]**
+- Contact my almighty creator **{bot_info.owner}**
 
 __Auto Battles Online Server Only__
-    - Set the member role by doing **{bot.default_prefix}srt <role>**
-    - Register a channel as an ABO channel by doing **{bot.default_prefix}act abo**
+    - Set the member role by doing **{bot.default_prefix}setrole <role>**
+    - Register a channel as an ABO channel by doing **{bot.default_prefix}settag abo**
 
 **__Invite Me__**
 https://discordapp.com/oauth2/authorize?client_id=666616515436478473&scope=bot&permissions=8
