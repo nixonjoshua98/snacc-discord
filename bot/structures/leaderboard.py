@@ -1,5 +1,5 @@
 from datetime import datetime
-from bot.common import DBConnection, AboSQL, CoinsSQL
+from bot.common import DBConnection, AboSQL, CoinsSQL, MinigamesSQL
 
 
 class LeaderboardBase:
@@ -113,6 +113,36 @@ class CoinLeaderboard(LeaderboardBase):
             all_data = con.cur.fetchall()
 
         all_data.sort(key=lambda u: u.balance, reverse=True)
+
+        for data in all_data:
+            id_ = getattr(data, "userid", None)
+
+            member = self.guild.get_member(id_)
+
+            if member is None or member.bot:
+                continue
+
+            yield member, data
+
+
+class TimerLeaderboard(LeaderboardBase):
+    def __init__(self, guild, bot):
+        super(TimerLeaderboard, self).__init__(
+            title="Timer Leaderboard",
+            headers=["Wins"],
+            columns=["timerwins"],
+            size=10
+        )
+
+        self.guild = guild
+        self.bot = bot
+
+    def _get_data(self):
+        with DBConnection() as con:
+            con.cur.execute(MinigamesSQL.SELECT_ALL_TIMER_WINS)
+            all_data = con.cur.fetchall()
+
+        all_data.sort(key=lambda u: u.timerwins, reverse=True)
 
         for data in all_data:
             id_ = getattr(data, "userid", None)

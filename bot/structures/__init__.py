@@ -1,7 +1,8 @@
 
 from .leaderboard import (
     ABOLeaderboard,
-    CoinLeaderboard
+    CoinLeaderboard,
+    TimerLeaderboard
 )
 
 from .helpcommand import HelpCommand
