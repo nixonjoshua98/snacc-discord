@@ -7,7 +7,8 @@ import itertools
 
 class HelpCommand(commands.DefaultHelpCommand):
     async def send_bot_help(self, mapping):
-        ctx, bot = self.context, self.context.bot
+        ctx: commands.Context = self.context
+        bot = ctx.bot
 
         embed: discord.Embed = bot.create_embed(title=f"**{ctx.bot.user.display_name} Commands**")
 
@@ -31,4 +32,8 @@ class HelpCommand(commands.DefaultHelpCommand):
 
                 embed.add_field(name=category, value=value)
 
-        return await ctx.send(embed=embed)
+        try:
+            await ctx.author.send(embed=embed)
+            await ctx.send("I have DM'ed you.")
+        except discord.Forbidden:
+            await ctx.send(embed=embed)
