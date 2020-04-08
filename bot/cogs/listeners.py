@@ -49,9 +49,11 @@ class Listeners(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_remove(self, member: discord.Member):
-        remove_msg = f"{member.display_name} **({member.mention})** has left the server :frowning:"
+        msg = f"**{member.name + '#' + member.discriminator}** "
+        msg += f"({member.nick}) " if member.nick is not None else ""
+        msg += "has left the server :frowning:"
 
-        await self._send_system_channel(member.guild, remove_msg)
+        await self._send_system_channel(member.guild, msg)
 
 
 class VListeners(commands.Cog, command_attrs=dict(hidden=True)):

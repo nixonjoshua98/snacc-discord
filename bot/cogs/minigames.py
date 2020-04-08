@@ -45,7 +45,7 @@ class Minigames(commands.Cog):
         user_guesses = {}
         start = time.time()
 
-        await ctx.send(f"Game started! Type **now** **{game_duration}** seconds from now.")
+        await ctx.send(f"Game started! Type **now** close to **{game_duration}** seconds from now.")
 
         while progress <= game_duration:
             progress = time.time() - start - 1
