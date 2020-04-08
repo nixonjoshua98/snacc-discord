@@ -28,7 +28,7 @@ class Minigames(commands.Cog):
     def cog_check(self, ctx):
         return checks.channel_has_tag(ctx, ChannelTags.GAME)
 
-    @commands.command(name="t", help="Time game")
+    @commands.command(name="t", help="Timer game")
     async def timer_game(self, ctx: commands.Context):
         def check(m: discord.Message):
             return m.channel.id == ctx.channel.id and m.content.lower() == "now" and not m.author.bot
@@ -41,12 +41,11 @@ class Minigames(commands.Cog):
 
         self.ongoing_games.add(ctx.channel.id)
 
-        start = time.time()
-
-        await ctx.send(f"Game started! Type **now** in **{game_duration}** seconds.")
-
         progress = 0
         user_guesses = {}
+        start = time.time()
+
+        await ctx.send(f"Game started! Type **now** **{game_duration}** seconds from now.")
 
         while progress <= game_duration:
             progress = time.time() - start - 1
@@ -74,7 +73,6 @@ class Minigames(commands.Cog):
                 return await ctx.send(f"{winner.mention} has won! **{abs(val)}s** {text} the timer.")
 
             else:
-                # New guess
                 if message.author not in user_guesses:
                     user_guesses[message.author] = time.time() - start - game_duration
 
