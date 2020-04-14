@@ -27,7 +27,7 @@ class ABO(commands.Cog):
 		self.leaderboards = dict()
 
 	async def cog_check(self, ctx):
-		return checks.channel_has_tag(ctx, ChannelTags.ABO) and checks.author_has_tagged_role(ctx, RoleTags.ABO)
+		return checks.author_has_tagged_role(ctx, RoleTags.ABO)
 
 	@commands.command(name="me", help="Display stats")
 	async def get_stats(self, ctx: commands.Context):

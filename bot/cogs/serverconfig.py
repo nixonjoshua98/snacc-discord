@@ -26,9 +26,11 @@ class ServerConfig(commands.Cog, name="Config"):
 	async def cog_after_invoke(self, ctx: commands.Context):
 		await self.bot.update_cache(ctx.message)
 
-	@commands.command(name="tags", help="List all tags")
-	async def list_all_tags(self, ctx: commands.Context):
-		return await ctx.send("no")
+	@commands.command(name="config")
+	async def config(self, ctx: commands.Context):
+		data = self.bot.svr_cache.get(ctx.guild.id, None)
+
+		return await ctx.send(data)
 
 	@commands.command(name="setrole", usage="<tag> <role>")
 	async def set_tagged_role(self, ctx: commands.Context, tag: converters.ValidTag(RoleTags.ALL), role: discord.Role):
