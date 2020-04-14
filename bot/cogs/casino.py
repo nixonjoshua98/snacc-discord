@@ -4,7 +4,7 @@ from num2words import num2words
 
 from discord.ext import commands
 
-from bot.common import checks, ChannelTags
+from bot.common import checks, ChannelTags, IntegerRange
 from bot.common.queries import CoinsSQL
 from bot.common.database import DBConnection
 
@@ -45,9 +45,9 @@ class Casino(commands.Cog):
 
 		await ctx.send(msg)
 
-	@commands.cooldown(1, 60 * 30, commands.BucketType.user)
+	@commands.cooldown(1, 5, commands.BucketType.user)
 	@commands.command(name="fl", help="Coin flip")
-	async def flip(self, ctx):
+	async def flip(self, ctx, amount: IntegerRange(0, 5000) = 100):
 		with DBConnection() as con:
 			con.cur.execute(CoinsSQL.SELECT_USER, (ctx.author.id,))
 
@@ -55,11 +55,13 @@ class Casino(commands.Cog):
 
 			init_bal = max(getattr(initial, "balance", 10), 10)
 
-			amount = int(min(5000, init_bal // 2))
+			if init_bal < amount:
+				await ctx.send("You do not have enough coins")
 
-			final_bal = init_bal + amount if random.randint(0, 1) == 0 else init_bal - amount
+			else:
+				final_bal = init_bal + amount if random.randint(0, 1) == 0 else init_bal - amount
 
-			con.cur.execute(CoinsSQL.UPDATE, (ctx.author.id, final_bal))
+				con.cur.execute(CoinsSQL.UPDATE, (ctx.author.id, final_bal))
 
 		text = 'won' if final_bal > init_bal else 'lost'
 

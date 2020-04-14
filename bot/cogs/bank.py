@@ -2,7 +2,7 @@ import random
 
 from discord.ext import commands
 
-from bot.common import checks, CoinsSQL, ChannelTags
+from bot.common import CoinsSQL
 
 from bot.common.converters import NotAuthorOrBot, IntegerRange
 
@@ -16,9 +16,6 @@ class Bank(commands.Cog):
 		self.bot = bot
 
 		self.leaderboards = dict()
-
-	async def cog_check(self, ctx):
-		return checks.channel_has_tag(ctx, ChannelTags.GAME)
 
 	@commands.command(name="bal", help="Coin balance")
 	async def balance(self, ctx: commands.Context):
@@ -72,11 +69,9 @@ class Bank(commands.Cog):
 
 		await ctx.send(f"**{ctx.author.display_name}** stole **{amount:,}** coins from **{target.display_name}**")
 
+	@commands.cooldown(1, 60*15, commands.BucketType.user)
 	@commands.command(name="gift", usage="<user> <amount>")
 	async def gift(self, ctx, target: NotAuthorOrBot(), amount: IntegerRange(1, 10_000)):
-		if ctx.author.id == 569342123296686080:
-			return await ctx.send("You are banned from this command!")
-
 		with DBConnection() as con:
 			# Get author coins
 			con.cur.execute(CoinsSQL.SELECT_USER, (ctx.author.id,))
