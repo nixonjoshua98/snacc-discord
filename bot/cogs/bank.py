@@ -73,7 +73,7 @@ class Bank(commands.Cog):
 		await ctx.send(f"**{ctx.author.display_name}** stole **{amount:,}** coins from **{target.display_name}**")
 
 	@commands.command(name="gift", usage="<user> <amount>")
-	async def gift(self, ctx, target: NotAuthorOrBot(), amount: IntegerRange(1, 10000)):
+	async def gift(self, ctx, target: NotAuthorOrBot(), amount: IntegerRange(1, 10)):
 		with DBConnection() as con:
 			# Get author coins
 			con.cur.execute(CoinsSQL.SELECT_USER, (ctx.author.id,))
