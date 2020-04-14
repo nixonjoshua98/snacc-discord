@@ -33,10 +33,12 @@ class Casino(commands.Cog):
 
 	@commands.cooldown(1, 5, commands.BucketType.user)
 	@commands.command(name="fl", aliases=["flip"], help="Coin flip")
-	async def flip(self, ctx, amount: IntegerRange(0, 25_000) = 100):
+	async def flip(self, ctx):
 		with DBConnection() as con:
 			con.cur.execute(CoinsSQL.SELECT_USER, (ctx.author.id,))
 			init_bal = max(getattr(con.cur.fetchone(), "balance", 10), 10)
+
+			amount = min(5000, init_bal // 2)
 
 			if init_bal < amount:
 				return await ctx.send("You do not have enough coins")
