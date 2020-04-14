@@ -47,7 +47,7 @@ class Casino(commands.Cog):
 
 	@commands.cooldown(1, 5, commands.BucketType.user)
 	@commands.command(name="fl", help="Coin flip")
-	async def flip(self, ctx, amount: IntegerRange(0, 5000) = 100):
+	async def flip(self, ctx, amount: IntegerRange(0, 25_000) = 100):
 		with DBConnection() as con:
 			con.cur.execute(CoinsSQL.SELECT_USER, (ctx.author.id,))
 
