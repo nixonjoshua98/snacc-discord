@@ -32,7 +32,7 @@ class Coins(commands.Cog):
             con.cur.execute(CoinsSQL.SELECT_USER, (ctx.author.id,))
 
             balance = max(getattr(con.cur.fetchone(), "balance", 0), 0)
-            amount = random.randint(10, min(int(balance * 0.1), 1000))
+            amount = random.randint(10, min(int(max(balance * 0.1, 10)), 1000))
 
             con.cur.execute(CoinsSQL.INCREMENT, (ctx.author.id, amount))
 
