@@ -6,7 +6,7 @@ if __name__ == '__main__':
     bot = SnaccBot()
 
     with DBConnection() as con:
-        con.cur.execute("DROP TABLE IF EXISTS minigames;")
+        con.cur.execute("DROP TABLE IF EXISTS fishing;")
 
     bot.load_extension("bot.cogs.listeners")
     bot.load_extension("bot.cogs.abo")

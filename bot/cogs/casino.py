@@ -38,7 +38,7 @@ class Casino(commands.Cog):
 			con.cur.execute(CoinsSQL.SELECT_USER, (ctx.author.id,))
 			init_bal = max(getattr(con.cur.fetchone(), "balance", 10), 10)
 
-			if init_bal > amount:
+			if init_bal < amount:
 				return await ctx.send("You do not have enough coins")
 
 			final_bal = init_bal + amount if random.randint(0, 1) == 0 else init_bal - amount
