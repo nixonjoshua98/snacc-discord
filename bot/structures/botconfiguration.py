@@ -17,4 +17,4 @@ class BotConfiguration:
             return dict(config.items("postgres-local"))
 
         else:
-            return {"DATABASE_URL": os.getenv("DATABASE_URL", None), "ssl": True}
+            return os.getenv("DATABASE_URL", None), dict(ssl=True)

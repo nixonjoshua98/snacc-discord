@@ -36,9 +36,7 @@ class SnaccBot(commands.Bot):
 	async def connect_database(self):
 		self.pool = await asyncpg.create_pool(**self.config.database, command_timeout=60)
 
-		results = await self.pool.execute("SELECT * FROM coins;")
-
-		print(results)
+		print("Created PostgreSQL connection pool")
 
 	def add_cog(self, cog):
 		print(f"Adding Cog: {cog.qualified_name}...", end="")
