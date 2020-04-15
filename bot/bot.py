@@ -32,19 +32,20 @@ class SnaccBot(commands.Bot):
 		print(f"Bot '{self.user.display_name}' is ready")
 
 	async def connect_database(self):
-		config = ConfigParser()
-
-		config.read("postgres.ini")
-
+		# Local database
 		if os.getenv("DEBUG", False):
+			config = ConfigParser()
+			config.read("postgres.ini")
+
 			self.pool = await asyncpg.create_pool(**dict(config.items("postgres")), command_timeout=60)
 
+		# Heroku database
 		else:
 			ctx = ssl.create_default_context(cafile="./rds-combined-ca-bundle.pem")
 			ctx.check_hostname = False
 			ctx.verify_mode = ssl.CERT_NONE
 
-			self.pool = await asyncpg.create_pool(*os.environ["DATABASE_URL"], ssl=ctx, command_timeout=60)
+			self.pool = await asyncpg.create_pool(os.environ["DATABASE_URL"], ssl=ctx, command_timeout=60)
 
 		print("Created PostgreSQL connection pool")
 
