@@ -9,22 +9,30 @@ from bot.common.emoji import Emoji
 
 
 class HelpCommand(commands.HelpCommand):
-    async def create_help_first_page(self, num_pages: int):
+    async def create_help_first_page(self, num_pages: int = None):
         bot = self.context.bot
 
-        embed = discord.Embed(title=f"**{bot.user.display_name} Help**", description=f"{bot.name} Commands")
+        embed = discord.Embed(title=f"**{bot.user.display_name} Help**")
 
-        embed.set_footer(text=f"{bot.name} | Page 1/{num_pages}", icon_url=bot.user.avatar_url)
+        footer = bot.name
+
+        if num_pages is not None:
+            footer = f"{bot.name} | Page 1/{num_pages}"
+
+        embed.set_footer(text=footer, icon_url=bot.user.avatar_url)
+        embed.set_thumbnail(url=bot.user.avatar_url)
 
         return embed
 
-    async def create_help_page(self, category, cmds) -> discord.Embed:
+    async def create_help_page(self, category, cmds, page: int, num_pages: int) -> discord.Embed:
         bot = self.context.bot
 
         embed = discord.Embed(title=f"**{bot.user.display_name} Help**", description=f"{category} Commands")
 
         for cmd in cmds:
             embed.add_field(name=f"[{cmd}] {cmd.usage}", value=f"{cmd.help}", inline=False)
+
+        embed.set_footer(text=f"{bot.name} | Page {page}/{num_pages}", icon_url=bot.user.avatar_url)
 
         return embed
 
@@ -62,10 +70,7 @@ class HelpCommand(commands.HelpCommand):
 
         # Create the pages
         for i, (category, cmds) in enumerate(grouped, start=1):
-            embed = await self.create_help_page(category, cmds)
-
-            # +1 due to the first help page
-            embed.set_footer(text=f"{bot.name} | Page {i + 1}/{num_pages}", icon_url=bot.user.avatar_url)
+            embed = await self.create_help_page(category, cmds, i + 1, num_pages)
 
             pages.append(embed)
 
