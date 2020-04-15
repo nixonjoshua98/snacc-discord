@@ -3,38 +3,52 @@ import asyncio
 
 from discord.ext import commands
 
-import itertools
-
 from bot.common.emoji import Emoji
 
 
 class HelpCommand(commands.HelpCommand):
-    async def create_help_first_page(self, num_pages: int = None):
+    def __init__(self):
+        super(HelpCommand, self).__init__()
+
+    async def get_pages(self):
         bot = self.context.bot
 
-        embed = discord.Embed(title=f"**{bot.user.display_name} Help**")
+        all_commands = {}
 
-        footer = bot.name
+        for cog, instance in bot.cogs.items():
+            cmds = instance.get_commands()
+            hidden = getattr(instance, "hidden", False)
 
-        if num_pages is not None:
-            footer = f"{bot.name} | Page 1/{num_pages}"
+            if not cmds or hidden:
+                continue
 
-        embed.set_footer(text=footer, icon_url=bot.user.avatar_url)
+            all_commands[instance] = cmds
+
+        pages, max_pages = [],  len(all_commands)
+
+        embed = discord.Embed(title=f"{bot.user.display_name}", color=0xff8000)
+        embed.set_footer(text=bot.name, icon_url=bot.user.avatar_url)
         embed.set_thumbnail(url=bot.user.avatar_url)
 
-        return embed
+        pages.append(embed)
 
-    async def create_help_page(self, category, cmds, page: int, num_pages: int) -> discord.Embed:
-        bot = self.context.bot
+        for i, (cog, cmds) in enumerate(all_commands.items()):
+            desc = f"{cog.qualified_name} Commands"
 
-        embed = discord.Embed(title=f"**{bot.user.display_name} Help**", description=f"{category} Commands")
+            embed = discord.Embed(title=f"{bot.user.display_name}", description=desc, color=0xff8000)
 
-        for cmd in cmds:
-            embed.add_field(name=f"[{cmd}] {cmd.usage}", value=f"{cmd.help}", inline=False)
+            embed.set_thumbnail(url=bot.user.avatar_url)
 
-        embed.set_footer(text=f"{bot.name} | Page {page}/{num_pages}", icon_url=bot.user.avatar_url)
+            for cmd in cmds:
+                desc = getattr(cmd.callback, "__doc__", cmd.help)
 
-        return embed
+                embed.add_field(name=f"[{'|'.join([cmd.name] + cmd.aliases)}] {cmd.usage or ''}", value=desc, inline=False)
+
+            embed.set_footer(text=f"{bot.name} | Page {i + 1}/{max_pages}", icon_url=bot.user.avatar_url)
+
+            pages.append(embed)
+
+        return pages
 
     async def send_bot_help(self, mapping):
         ctx: commands.Context = self.context
@@ -47,32 +61,15 @@ class HelpCommand(commands.HelpCommand):
                     str(react.emoji) in (Emoji.ARROW_RIGHT, Emoji.ARROW_LEFT)  # Arrows
             )
 
-        def get_category(command):
-            return command.cog.qualified_name if command.cog is not None else "no_category"
+        pages = await self.get_pages()
 
-        # Group commands by their Cog and remove commands without a Cog
-        filtered = await self.filter_commands(bot.commands, sort=True, key=get_category)
-        grouped = [(cat, (list(cmds))) for cat, cmds in itertools.groupby(filtered, key=get_category)]
-        grouped = list(filter(lambda ls: ls[0] != "no_category", grouped))
+        current_page, max_pages = 0, len(pages)
 
-        shown_help_page = 0  # Current page which is being shown
-        num_pages = len(grouped) + 1  # +1 for the first help page
-
-        first_page = await self.create_help_first_page(num_pages)
-
-        pages = [first_page]
-
-        message = await ctx.send(embed=first_page)
+        message = await ctx.send(embed=pages[current_page])
 
         # Add navigation buttons
         for emoji in (Emoji.ARROW_LEFT, Emoji.ARROW_RIGHT):
             await message.add_reaction(emoji)
-
-        # Create the pages
-        for i, (category, cmds) in enumerate(grouped, start=1):
-            embed = await self.create_help_page(category, cmds, i + 1, num_pages)
-
-            pages.append(embed)
 
         while True:
             try:
@@ -84,12 +81,14 @@ class HelpCommand(commands.HelpCommand):
                 break
 
             else:
-                shown_help_page = {
-                    Emoji.ARROW_LEFT: max(0, shown_help_page - 1),
-                    Emoji.ARROW_RIGHT: min(shown_help_page + 1, len(pages) - 1)
-                }.get(str(react.emoji), shown_help_page)
+                new_page = {
+                    Emoji.ARROW_LEFT: max(0, current_page - 1),
+                    Emoji.ARROW_RIGHT: min(current_page + 1, max_pages - 1)
+                }.get(str(react.emoji), current_page)
 
                 await react.remove(ctx.author)
 
-            await message.edit(embed=pages[shown_help_page])
+                if new_page != current_page:
+                    current_page = new_page
+                    await message.edit(embed=pages[current_page])
 

@@ -58,6 +58,8 @@ class VListeners(commands.Cog, command_attrs=dict(hidden=True)):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
+        self.hidden = True
+
     async def cog_check(self, ctx: commands.Context):
         return await self.bot.is_owner(ctx.author) or checks.author_is_server_owner(ctx)
 

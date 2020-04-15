@@ -14,7 +14,6 @@ from bot.common import (
 from bot.common import (
 	AboSQL,
 	RoleTags,
-	ChannelTags,
 	IntegerRange,
 	DBConnection,
 )
@@ -31,6 +30,7 @@ class ABO(commands.Cog):
 
 	@commands.command(name="me", help="Display stats")
 	async def get_stats(self, ctx: commands.Context):
+		""" Show your last recorded ABO stats """
 		with DBConnection() as con:
 			con.cur.execute(AboSQL.SELECT_USER, (ctx.author.id,))
 
@@ -46,8 +46,9 @@ class ABO(commands.Cog):
 
 		return await ctx.send(embed=embed)
 
-	@commands.command(name="s", usage="<level> <trophies>")
+	@commands.command(name="set", aliases=["s"], usage="<level> <trophies>")
 	async def set_stats(self, ctx, level: IntegerRange(0, 150), trophies: IntegerRange(0, 5000)):
+		""" Set your ABO stats, which are visible on the leaderboard """
 		with DBConnection() as con:
 			params = (ctx.author.id, level, trophies, datetime.now())
 
@@ -56,8 +57,9 @@ class ABO(commands.Cog):
 		await ctx.send(f"**{ctx.author.display_name}** :thumbsup:")
 
 	@checks.author_has_tagged_role(tag=RoleTags.LEADER)
-	@commands.command(name="ss", help="<user> <level> <trophie>")
+	@commands.command(name="setuser", aliases=["su"], usage="<user> <level> <trophies>")
 	async def set_user(self, ctx, user: discord.Member, level: IntegerRange(0, 150), trophies: IntegerRange(0, 5000)):
+		""" Set another members ABO stats """
 		with DBConnection() as con:
 			params = (user.id, level, trophies, datetime.now())
 
@@ -68,6 +70,7 @@ class ABO(commands.Cog):
 	@checks.author_has_tagged_role(tag=RoleTags.LEADER)
 	@commands.command(name="shame", help="Shame others")
 	async def shame(self, ctx: commands.Context):
+		""" Mention everyone who has not updated their stats in the last 7 days """
 		member_role = utils.get_tagged_role(self.bot.svr_cache, ctx.guild, RoleTags.ABO)
 
 		with DBConnection() as con:
@@ -89,6 +92,7 @@ class ABO(commands.Cog):
 
 	@commands.command(name="alb", help="Leaderboard")
 	async def leaderboard(self, ctx: commands.Context):
+		""" Show the trophy leaderboard for the ABO game """
 		if self.leaderboards.get(ctx.guild.id, None) is None:
 			self.leaderboards[ctx.guild.id] = ABOLeaderboard(ctx.guild, self.bot)
 

@@ -13,7 +13,7 @@ from bot.structures import HelpCommand
 
 class SnaccBot(commands.Bot):
 	def __init__(self):
-		super().__init__(command_prefix=SnaccBot.get_prefix, case_insensitive=True, help_command=HelpCommand())
+		super().__init__(command_prefix=self.get_prefix, case_insensitive=True, help_command=HelpCommand())
 
 		self.svr_cache = dict()
 		self.default_prefix = "!"
@@ -62,15 +62,21 @@ class SnaccBot(commands.Bot):
 			self.svr_cache[message.guild.id] = con.cur.fetchone()
 
 	async def get_prefix(self, message: discord.message):
-		if self.svr_cache.get(message.guild.id, None) is None:
-			await self.update_cache(message)
+		if not message.guild:
+			return self.default_prefix
 
-		if BotConstants.DEBUG:
+		elif BotConstants.DEBUG:
 			return "-"
+
+		elif self.svr_cache.get(message.guild.id, None) is None:
+			await self.update_cache(message)
 
 		try:
 			prefix = self.svr_cache[message.guild.id].prefix
 
-			return prefix if prefix is not None else self.default_prefix
-		except AttributeError:
-			return self.default_prefix
+			prefix = prefix if prefix is not None else self.default_prefix
+		except (AttributeError, KeyError):
+			prefix = self.default_prefix
+
+		return commands.when_mentioned_or(prefix)(self, message)
+

@@ -16,7 +16,7 @@ from bot.common import (
 )
 
 
-class ServerConfig(commands.Cog, name="Config"):
+class Settings(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
@@ -25,12 +25,6 @@ class ServerConfig(commands.Cog, name="Config"):
 
 	async def cog_after_invoke(self, ctx: commands.Context):
 		await self.bot.update_cache(ctx.message)
-
-	@commands.command(name="config")
-	async def config(self, ctx: commands.Context):
-		data = self.bot.svr_cache.get(ctx.guild.id, None)
-
-		return await ctx.send(data)
 
 	@commands.command(name="setrole", usage="<tag> <role>")
 	async def set_tagged_role(self, ctx: commands.Context, tag: converters.ValidTag(RoleTags.ALL), role: discord.Role):
@@ -87,8 +81,9 @@ class ServerConfig(commands.Cog, name="Config"):
 
 		await ctx.send(f"{ctx.channel.mention} has been unregistered as a **{tag}** channel")
 
-	@commands.command(name="pre", usage="<prefix>")
+	@commands.command(name="prefix", usage="<prefix>")
 	async def set_prefix(self, ctx: commands.Context, prefix: str):
+		""" Set the prefix for this server. Bot can always be mentioned. """
 		with DBConnection() as con:
 			con.cur.execute(ServerConfigSQL.UPDATE_PREFIX, (ctx.guild.id, prefix))
 
@@ -96,4 +91,4 @@ class ServerConfig(commands.Cog, name="Config"):
 
 
 def setup(bot):
-	bot.add_cog(ServerConfig(bot))
+	bot.add_cog(Settings(bot))

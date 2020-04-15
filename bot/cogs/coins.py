@@ -17,8 +17,9 @@ class Coins(commands.Cog):
 
         self.leaderboards = dict()
 
-    @commands.command(name="bal", aliases=["balance", "coins"], help="Coin balance")
+    @commands.command(name="balance", aliases=["coins", "bal"], help="Coin balance")
     async def balance(self, ctx: commands.Context):
+        """ Show the users coins balance """
         with DBConnection() as con:
             con.cur.execute(CoinsSQL.SELECT_USER, (ctx.author.id,))
             balance = getattr(con.cur.fetchone(), "balance", 0)
@@ -28,6 +29,7 @@ class Coins(commands.Cog):
     @commands.cooldown(1, 60 * 60, commands.BucketType.user)
     @commands.command(name="free", aliases=["pickup"], help="Free coins!")
     async def free(self, ctx: commands.Context):
+        """ Grab some free coins! Limited to once every 60mins."""
         with DBConnection() as con:
             con.cur.execute(CoinsSQL.SELECT_USER, (ctx.author.id,))
 
@@ -41,6 +43,7 @@ class Coins(commands.Cog):
     @commands.cooldown(1, 60 * 60, commands.BucketType.user)
     @commands.command(name="steal", usage="<user>")
     async def steal_coins(self, ctx: commands.Context, target: NotAuthorOrBot()):
+        """ 33% chance to steal some coins of a target server member """
         if random.randint(0, 2) != 0:
             return await ctx.send(f"**{ctx.author.display_name}** stole nothing from **{target.display_name}**")
 
@@ -61,8 +64,9 @@ class Coins(commands.Cog):
         await ctx.send(f"**{ctx.author.display_name}** stole **{amount:,}** coins from **{target.display_name}**")
 
     @commands.cooldown(1, 30, commands.BucketType.user)
-    @commands.command(name="gift", usage="<user> <amount>")
+    @commands.command(name="gift", aliases=["give"], usage="<user> <amount>")
     async def gift(self, ctx, target: NotAuthorOrBot(), amount: IntegerRange(1, 100_000)):
+        """ Gift some coins to another user """
         with DBConnection() as con:
             con.cur.execute(CoinsSQL.SELECT_USER, (ctx.author.id,))
             author_coins = getattr(con.cur.fetchone(), "balance", 0)
@@ -77,8 +81,9 @@ class Coins(commands.Cog):
 
                 await ctx.send(f"You gifted **{amount:,}** coins to **{target.display_name}**")
 
-    @commands.command(name="clb", aliases=["coinlb"], help="Leaderboard")
+    @commands.command(name="coinlb", aliases=["clb"], help="Leaderboard")
     async def leaderboard(self, ctx: commands.Context):
+        """ Show the richest players """
         if self.leaderboards.get(ctx.guild.id, None) is None:
             self.leaderboards[ctx.guild.id] = CoinLeaderboard(ctx.guild, self.bot)
 
