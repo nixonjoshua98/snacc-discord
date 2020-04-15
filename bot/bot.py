@@ -1,6 +1,9 @@
 import discord
+import asyncpg
 
 from discord.ext import commands
+
+from configparser import ConfigParser
 
 from bot.common import (
 	BotConstants,
@@ -10,18 +13,32 @@ from bot.common import (
 
 from bot.structures import HelpCommand
 
+from bot.structures.botconfiguration import BotConfiguration
+
 
 class SnaccBot(commands.Bot):
 	def __init__(self):
 		super().__init__(command_prefix=self.get_prefix, case_insensitive=True, help_command=HelpCommand())
+
+		self.config = BotConfiguration()
+
+		self.pool = None
 
 		self.svr_cache = dict()
 		self.default_prefix = "!"
 
 	async def on_ready(self):
 		await self.wait_until_ready()
+		await self.connect_database()
 
 		print(f"Bot '{self.user.display_name}' is ready")
+
+	async def connect_database(self):
+		self.pool = await asyncpg.create_pool(**self.config.database, command_timeout=60)
+
+		results = await self.pool.execute("SELECT * FROM coins;")
+
+		print(results)
 
 	def add_cog(self, cog):
 		print(f"Adding Cog: {cog.qualified_name}...", end="")
@@ -52,8 +69,7 @@ class SnaccBot(commands.Bot):
 		return embed
 
 	@property
-	def name(self):
-		return self.user.name
+	def name(self): return self.user.name
 
 	async def update_cache(self, message: discord.Message):
 		with DBConnection() as con:
