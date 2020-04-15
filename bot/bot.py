@@ -1,3 +1,4 @@
+import os
 import discord
 import asyncpg
 
@@ -13,14 +14,9 @@ from bot.common import (
 
 from bot.structures import HelpCommand
 
-from bot.structures.botconfiguration import BotConfiguration
-
-
 class SnaccBot(commands.Bot):
 	def __init__(self):
 		super().__init__(command_prefix=self.get_prefix, case_insensitive=True, help_command=HelpCommand())
-
-		self.config = BotConfiguration()
 
 		self.pool = None
 
@@ -34,7 +30,15 @@ class SnaccBot(commands.Bot):
 		print(f"Bot '{self.user.display_name}' is ready")
 
 	async def connect_database(self):
-		self.pool = await asyncpg.create_pool(*self.config.database, command_timeout=60)
+		config = ConfigParser()
+
+		config.read("postgres.ini")
+
+		if os.getenv("DEBUG", False):
+			self.pool = await asyncpg.create_pool(**dict(config.items("postgres-local")), command_timeout=60)
+
+		else:
+			self.pool = await asyncpg.create_pool(os.environ["DATABASE_URL"], ssl=True, command_timeout=60)
 
 		print("Created PostgreSQL connection pool")
 
