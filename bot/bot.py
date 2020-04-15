@@ -34,7 +34,7 @@ class SnaccBot(commands.Bot):
 		print(f"Bot '{self.user.display_name}' is ready")
 
 	async def connect_database(self):
-		self.pool = await asyncpg.create_pool(**self.config.database, command_timeout=60)
+		self.pool = await asyncpg.create_pool(*self.config.database, command_timeout=60)
 
 		print("Created PostgreSQL connection pool")
 
