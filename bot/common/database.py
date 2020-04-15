@@ -25,7 +25,7 @@ class DBConnection:
 
             config.read(utils.config("postgres.ini"))
 
-            section = "postgres-local" if target_database == DatabaseEnum.LOCAL else "postgres-heroku"
+            section = "postgres-local"
 
             self._con = psycopg2.connect(**dict(config.items(section)))
 

@@ -14,6 +14,7 @@ from bot.common import (
 
 from bot.structures import HelpCommand
 
+
 class SnaccBot(commands.Bot):
 	def __init__(self):
 		super().__init__(command_prefix=self.get_prefix, case_insensitive=True, help_command=HelpCommand())
@@ -35,7 +36,7 @@ class SnaccBot(commands.Bot):
 		config.read("postgres.ini")
 
 		if os.getenv("DEBUG", False):
-			self.pool = await asyncpg.create_pool(**dict(config.items("postgres-local")), command_timeout=60)
+			self.pool = await asyncpg.create_pool(**dict(config.items("postgres")), command_timeout=60)
 
 		else:
 			self.pool = await asyncpg.create_pool(os.environ["DATABASE_URL"], ssl=True, command_timeout=60)
