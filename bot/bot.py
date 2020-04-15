@@ -1,6 +1,7 @@
 import os
 import discord
 import asyncpg
+import ssl
 
 from discord.ext import commands
 
@@ -39,7 +40,11 @@ class SnaccBot(commands.Bot):
 			self.pool = await asyncpg.create_pool(**dict(config.items("postgres")), command_timeout=60)
 
 		else:
-			self.pool = await asyncpg.create_pool(os.environ["DATABASE_URL"], ssl=True, command_timeout=60)
+			ctx = ssl.create_default_context(cafile="./rds-combined-ca-bundle.pem")
+			ctx.check_hostname = False
+			ctx.verify_mode = ssl.CERT_NONE
+
+			self.pool = await asyncpg.create_pool(*os.environ["DATABASE_URL"], ssl=ctx, command_timeout=60)
 
 		print("Created PostgreSQL connection pool")
 
