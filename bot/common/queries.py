@@ -67,20 +67,3 @@ class CoinsSQL:
     DECREMENT = "INSERT INTO coins (userID, balance) VALUES (%s, %s) " \
                 "ON CONFLICT (userID) DO UPDATE " \
                 "SET balance = coins.balance - excluded.balance;"
-
-
-class FishSQL:
-    pass
-
-
-class MinigamesSQL:
-    TABLE = "CREATE table IF NOT EXISTS minigames (" \
-            "userID BIGINT PRIMARY KEY, " \
-            "timerWins INTEGER" \
-            ");"
-
-    SELECT_ALL = "SELECT * FROM minigames;"
-
-    UPDATE_TIMER_WINS = "INSERT INTO minigames (userID, timerWins) VALUES (%s, 1) " \
-                    "ON CONFLICT (userID) DO UPDATE " \
-                    "SET timerWins = minigames.timerWins + 1"

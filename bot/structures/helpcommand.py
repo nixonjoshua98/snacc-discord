@@ -1,39 +1,90 @@
 import discord
+import asyncio
 
 from discord.ext import commands
 
 import itertools
 
+from bot.common.emoji import Emoji
 
-class HelpCommand(commands.DefaultHelpCommand):
+
+class HelpCommand(commands.HelpCommand):
+    async def create_help_first_page(self, num_pages: int):
+        bot = self.context.bot
+
+        embed = discord.Embed(title=f"**{bot.user.display_name} Help**", description=f"{bot.name} Commands")
+
+        embed.set_footer(text=f"{bot.name} | Page 1/{num_pages}", icon_url=bot.user.avatar_url)
+
+        return embed
+
+    async def create_help_page(self, category, cmds) -> discord.Embed:
+        bot = self.context.bot
+
+        embed = discord.Embed(title=f"**{bot.user.display_name} Help**", description=f"{category} Commands")
+
+        for cmd in cmds:
+            embed.add_field(name=f"[{cmd}] {cmd.usage}", value=f"{cmd.help}", inline=False)
+
+        return embed
+
     async def send_bot_help(self, mapping):
         ctx: commands.Context = self.context
         bot = ctx.bot
 
-        embed: discord.Embed = bot.create_embed(title=f"**{ctx.bot.user.display_name} Commands**")
-
-        if bot.description:
-            embed.description = bot.description
+        def wait_for(react, user):
+            return (
+                    user.id == ctx.author.id and  # Listen to the author only
+                    react.message.id == message.id and  # Help message only
+                    str(react.emoji) in (Emoji.ARROW_RIGHT, Emoji.ARROW_LEFT)  # Arrows
+            )
 
         def get_category(command):
             return command.cog.qualified_name if command.cog is not None else "no_category"
 
+        # Group commands by their Cog and remove commands without a Cog
         filtered = await self.filter_commands(bot.commands, sort=True, key=get_category)
+        grouped = [(cat, (list(cmds))) for cat, cmds in itertools.groupby(filtered, key=get_category)]
+        grouped = list(filter(lambda ls: ls[0] != "no_category", grouped))
 
-        for category, cmds in itertools.groupby(filtered, key=get_category):
-            if category is not "no_category":
-                cmds = sorted(cmds, key=lambda c: c.name)
+        shown_help_page = 0  # Current page which is being shown
+        num_pages = len(grouped) + 1  # +1 for the first help page
 
-                text = lambda c: f"`{ctx.prefix}{c.name}" \
-                                 f"{f' {c.usage}' if c.usage is not None else ''}" \
-                                 f"{f' ({c.help})' if c.help is not None else ''}`"
+        first_page = await self.create_help_first_page(num_pages)
 
-                value = "\n".join(map(text, cmds))
+        pages = [first_page]
 
-                embed.add_field(name=category, value=value)
+        message = await ctx.send(embed=first_page)
 
-        try:
-            await ctx.author.send(embed=embed)
-            await ctx.send("I have DM'ed you.")
-        except discord.Forbidden:
-            await ctx.send(embed=embed)
+        # Add navigation buttons
+        for emoji in (Emoji.ARROW_LEFT, Emoji.ARROW_RIGHT):
+            await message.add_reaction(emoji)
+
+        # Create the pages
+        for i, (category, cmds) in enumerate(grouped, start=1):
+            embed = await self.create_help_page(category, cmds)
+
+            # +1 due to the first help page
+            embed.set_footer(text=f"{bot.name} | Page {i + 1}/{num_pages}", icon_url=bot.user.avatar_url)
+
+            pages.append(embed)
+
+        while True:
+            try:
+                # Wait for a reaction
+                react, _ = await bot.wait_for("reaction_add", timeout=30, check=wait_for)
+
+            except asyncio.TimeoutError:
+                await message.delete()
+                break
+
+            else:
+                shown_help_page = {
+                    Emoji.ARROW_LEFT: max(0, shown_help_page - 1),
+                    Emoji.ARROW_RIGHT: min(shown_help_page + 1, len(pages) - 1)
+                }.get(str(react.emoji), shown_help_page)
+
+                await react.remove(ctx.author)
+
+            await message.edit(embed=pages[shown_help_page])
+

@@ -1,5 +1,5 @@
 from datetime import datetime
-from bot.common import DBConnection, AboSQL, CoinsSQL, MinigamesSQL
+from bot.common import DBConnection, AboSQL, CoinsSQL
 
 
 class LeaderboardBase:

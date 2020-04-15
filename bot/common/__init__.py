@@ -16,8 +16,6 @@ from .queries import (
     ServerConfigSQL,
     AboSQL,
     CoinsSQL,
-    FishSQL,
-    MinigamesSQL
 )
 
 from .database import DBConnection

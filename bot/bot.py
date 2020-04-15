@@ -51,6 +51,10 @@ class SnaccBot(commands.Bot):
 
 		return embed
 
+	@property
+	def name(self):
+		return self.user.name
+
 	async def update_cache(self, message: discord.Message):
 		with DBConnection() as con:
 			con.cur.execute(ServerConfigSQL.SELECT_SVR, (message.guild.id,))
