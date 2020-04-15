@@ -6,6 +6,11 @@ from discord.ext import commands
 from bot.common.emoji import Emoji
 
 
+def chunks(ls, n):
+    for i in range(0, len(ls), n):
+        yield ls[i : i + n]
+
+
 class HelpCommand(commands.HelpCommand):
     def __init__(self):
         super(HelpCommand, self).__init__()
@@ -16,13 +21,18 @@ class HelpCommand(commands.HelpCommand):
         all_commands = {}
 
         for cog, instance in bot.cogs.items():
-            cmds = instance.get_commands()
             hidden = getattr(instance, "hidden", False)
 
-            if not cmds or hidden:
+            if hidden:
                 continue
 
-            all_commands[instance] = cmds
+            cmds = tuple(chunks(list(instance.get_commands()), 10))
+
+            if len(cmds) == 1:
+                all_commands[cog] = cmds[0]
+            else:
+                for i, j in enumerate(cmds):
+                    all_commands[f"{cog} | Page ({i + 1}/{len(cmds)})"] = j
 
         pages, max_pages = [],  len(all_commands)
 
@@ -33,9 +43,7 @@ class HelpCommand(commands.HelpCommand):
         pages.append(embed)
 
         for i, (cog, cmds) in enumerate(all_commands.items()):
-            desc = f"{cog.qualified_name} Commands"
-
-            embed = discord.Embed(title=f"{bot.user.display_name}", description=desc, color=0xff8000)
+            embed = discord.Embed(title=f"{bot.user.display_name}", description=cog, color=0xff8000)
 
             embed.set_thumbnail(url=bot.user.avatar_url)
 
