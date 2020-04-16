@@ -59,6 +59,8 @@ class HangmanGame:
                 destination = message.channel
 
                 if self.is_game_over():
+                    HangmanGame._instances.pop(self.ctx.guild.id, None)
+
                     return await destination.send(
                         f"{message.author.mention} got the final letter! The word was `{self.hidden_word}`")
 
@@ -97,10 +99,13 @@ class Hangman(commands.Cog):
 
     @commands.command(name="hangman", aliases=["hang", "h"])
     async def hangman(self, ctx):
+        """ Start a new guild hangman game """
         game = await HangmanGame.get_instance(ctx.guild.id)
 
         if game is None:
             self.games[ctx.guild.id] = HangmanGame(ctx)
+        else:
+            return await ctx.send("Hangman is already in progress")
 
 
 def setup(bot):
