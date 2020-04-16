@@ -11,8 +11,6 @@ from bot.common.queries import ServersSQL, BankSQL
 
 from bot.structures import HelpCommand
 
-from bot.common import migrate
-
 
 class SnaccBot(commands.Bot):
 	def __init__(self):
@@ -31,12 +29,10 @@ class SnaccBot(commands.Bot):
 		await self.pool.execute(ServersSQL.TABLE)
 		await self.pool.execute(BankSQL.TABLE)
 
-		await migrate.run(self)
-
 		print(f"Bot '{self.user.display_name}' is ready")
 
 	async def get_context(self, message, *, cls=commands.Context):
-		return super().get_context(message, cls=cls)
+		return await super().get_context(message, cls=cls)
 
 	async def connect_database(self):
 		""" Creates database connection pool for the Discord bot. """

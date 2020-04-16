@@ -15,12 +15,12 @@ class Bank(commands.Cog):
         self.bot = bot
 
     async def cog_before_invoke(self, ctx):
-        ctx.user_balance = await self.get_user_balances(ctx.author)
+        ctx.user_balance = await self.get_user_balance(ctx.author)
 
-    @commands.cooldown(1, 60 * 60, commands.BucketType.user)
-    @commands.command(name="daily", alises=["free"])
+    @commands.cooldown(1, 60 * 60 * 24, commands.BucketType.user)
+    @commands.command(name="daily")
     async def daily(self, ctx: commands.Context):
-        """ Get some free goodies! """
+        """ Get some free stuff daily! """
 
         bal_diff = random.randint(250, 1000)
 
@@ -28,15 +28,18 @@ class Bank(commands.Cog):
 
         await ctx.send(f"**{ctx.author.display_name}** gained **{bal_diff}** coins!")
 
-    @commands.command(name="balance", aliases=["coins", "bal"])
-    async def balance(self, ctx):
-        """ Show the bank balances of the user. """
+    @commands.command(name="balance", usage="<user=None>", aliases=["money", "coins", "bal"])
+    async def balance(self, ctx, user: discord.Member = None):
+        """ Show the bank balances of the user, or supply an optional user paramater. """
+        user = user if user is not None else ctx.author
 
-        bal = ctx.user_balance['coins']
+        bal = await self.get_user_balance(user)
 
-        await ctx.send(f":moneybag: **{ctx.author.display_name}** has a total of **{bal:,}** coins")
+        coins = bal["coins"]
 
-    async def get_user_balances(self, author: discord.Member):
+        await ctx.send(f":moneybag: **{user.display_name}** has a total of **{coins:,}** coins")
+
+    async def get_user_balance(self, author: discord.Member):
         async with self.bot.pool.acquire() as con:
             async with con.transaction():
                 user = await con.fetchrow(BankSQL.SELECT_USER, author.id)

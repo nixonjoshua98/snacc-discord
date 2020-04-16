@@ -12,7 +12,7 @@ class Coins(commands.Cog):
         self.bank = self.bot.get_cog("Bank")
 
     async def cog_before_invoke(self, ctx):
-        ctx.user_balance = await self.bank.get_user_balances(ctx.author)
+        ctx.user_balance = await self.bank.get_user_balance(ctx.author)
 
     @commands.cooldown(1, 60 * 60, commands.BucketType.user)
     @commands.command(name="steal", usage="<user>")
@@ -22,7 +22,7 @@ class Coins(commands.Cog):
         if random.randint(0, 2) != 0:
             return await ctx.send(f"**{ctx.author.display_name}** stole nothing from **{user.display_name}**")
 
-        target_balances = await self.bank.get_user_balances(user)
+        target_balances = await self.bank.get_user_balance(user)
 
         amount = random.randint(0, int(min(target_balances["coins"], ctx.user_balance["coins"]) * 0.05))
 
