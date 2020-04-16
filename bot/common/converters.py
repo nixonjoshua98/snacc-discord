@@ -62,24 +62,16 @@ class IntegerRange(commands.Converter):
 		return val
 
 
-class ValidTag(commands.Converter):
-	def __init__(self, allowed_tags: typing.Union[list, tuple]):
-		"""
-		:param allowed_tags:
-		"""
-		self._allowed_tags = allowed_tags
+class Clamp(commands.Converter):
+	def __init__(self, min_: int, max_: int):
+		self._min = min_
+		self._max = max_
 
-	async def convert(self, ctx: commands.Context, argument: str) -> str:
-		"""
-		:param ctx: Command context
-		:param argument: Value to convert
-		:return: Return the tag if i is valid
-		"""
+	async def convert(self, ctx: commands.Context, argument: str) -> int:
+		try:
+			val = max(self._min, min(int(argument), self._max))
 
-		# Invalid tag
-		if argument not in self._allowed_tags:
-			tag_text = ", ".join(self._allowed_tags)
+		except ValueError:
+			raise commands.UserInputError(f"You tried to use an invalid paramater.")
 
-			raise commands.UserInputError(f"**{argument}** is an invalid tag. Valid Tags: **{tag_text}**")
-
-		return argument
+		return val

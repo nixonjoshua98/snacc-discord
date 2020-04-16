@@ -4,8 +4,6 @@ import psycopg2.extras
 
 from configparser import ConfigParser
 
-from bot.common import utils
-
 from bot.common import BotConstants, DatabaseEnum
 
 
@@ -23,9 +21,9 @@ class DBConnection:
         else:
             config = ConfigParser()
 
-            config.read(utils.config("postgres.ini"))
+            config.read("postgres.ini")
 
-            section = "postgres"
+            section = "postgres" if target_database == DatabaseEnum.LOCAL else "postgres-heroku"
 
             self._con = psycopg2.connect(**dict(config.items(section)))
 

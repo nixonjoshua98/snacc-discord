@@ -7,11 +7,12 @@ if __name__ == '__main__':
 
     bot = SnaccBot()
 
-    bot.load_extension("bot.cogs.listeners")
     bot.load_extension("bot.cogs.abo")
+    bot.load_extension("bot.cogs.bank")
     bot.load_extension("bot.cogs.casino")
     bot.load_extension("bot.cogs.coins")
     bot.load_extension("bot.cogs.settings")
+    bot.load_extension("bot.cogs.listeners")
 
     loop.create_task(bot.start("NjY2NjE2NTE1NDM2NDc4NDcz.XofF-Q.YNe2fpEgieFmOSrgBQVywdl4rRo"))
 

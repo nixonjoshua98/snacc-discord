@@ -2,53 +2,52 @@ import random
 
 from discord.ext import commands
 
-from bot.common.queries import CoinsSQL
-from bot.common.database import DBConnection
+from bot.common.converters import Clamp
 
 
 class Casino(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
+		self.bank = self.bot.get_cog("Bank")
+
+	async def cog_before_invoke(self, ctx):
+		self.bank = self.bot.get_cog("Bank") if self.bank is None else self.bank
+
+		ctx.user_balance = await self.bank.get_user_balances(ctx.author)
+
 	@commands.cooldown(25, 60 * 60 * 3, commands.BucketType.user)
 	@commands.command(name="spin", aliases=["sp"], help="Spin machine")
 	async def spin(self, ctx):
 		""" Use a spin machine. Limited to 25 spins every 3 hours """
-		def get_win_bounds(amount) -> tuple:
-			low = max([amount * 0.75, amount - (25 + (7.50 * amount / 1000))])
-			upp = min([amount * 2.00, amount + (50 + (10.0 * amount / 1000))])
-			return max(int(low), amount - 750), min(int(upp), amount + 950)
+		def get_winning(amount) -> int:
+			low, high = max(amount * -0.75, -750), min(amount * 2.0, 1000)
 
-		with DBConnection() as con:
-			con.cur.execute(CoinsSQL.SELECT_USER, (ctx.author.id,))
-			init_bal = getattr(con.cur.fetchone(), "balance", 10)
-			final_bal = max(0, random.randint(*get_win_bounds(init_bal)))
-			con.cur.execute(CoinsSQL.UPDATE, (ctx.author.id, final_bal))
+			return random.randint(int(low), int(high))
 
-		text = 'won' if (final_bal - init_bal) > 0 else 'lost'
+		bal_diff = get_winning(ctx.user_balance["coins"])
 
-		msg = f"**{ctx.author.display_name}** has {text} **{abs(final_bal - init_bal)}** coins on the spin machine."
+		await self.bank.update_coins(ctx.author, bal_diff)
+
+		text = 'won' if bal_diff > 0 else 'lost'
+
+		msg = f"**{ctx.author.display_name}** has {text} **{abs(bal_diff)}** coins on the spin machine."
 
 		await ctx.send(msg)
 
 	@commands.cooldown(1, 5, commands.BucketType.user)
-	@commands.command(name="fl", aliases=["flip"], help="Coin flip")
-	async def flip(self, ctx):
+	@commands.command(name="fl", aliases=["flip"], usage="<bet=100>")
+	async def flip(self, ctx, amount: Clamp(1, 5_000) = 100):
 		""" Flip a coin """
-		with DBConnection() as con:
-			con.cur.execute(CoinsSQL.SELECT_USER, (ctx.author.id,))
-			init_bal = max(getattr(con.cur.fetchone(), "balance", 10), 10)
 
-			amount = min(5000, init_bal // 2)
+		if ctx.user_balance["coins"] < amount:
+			return await ctx.send("You do not have enough coins. Lower your bet.")
 
-			if init_bal < amount:
-				return await ctx.send("You do not have enough coins")
+		bal_diff = amount if random.randint(0, 1) == 0 else amount * -1
 
-			final_bal = init_bal + amount if random.randint(0, 1) == 0 else init_bal - amount
+		await self.bank.update_coins(ctx.author, bal_diff)
 
-			con.cur.execute(CoinsSQL.UPDATE, (ctx.author.id, final_bal))
-
-		text = 'won' if final_bal > init_bal else 'lost'
+		text = 'won' if bal_diff > 0 else 'lost'
 
 		await ctx.send(f"**{ctx.author.display_name}** has {text} **{abs(amount):,}** coins by flipping a coin.")
 

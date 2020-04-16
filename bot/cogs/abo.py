@@ -7,13 +7,7 @@ from datetime import datetime
 from bot.structures import ABOLeaderboard
 
 from bot.common import (
-	checks,
-	utils
-)
-
-from bot.common import (
 	AboSQL,
-	RoleTags,
 	IntegerRange,
 	DBConnection,
 )
@@ -26,7 +20,10 @@ class ABO(commands.Cog):
 		self.leaderboards = dict()
 
 	async def cog_check(self, ctx):
-		return checks.author_has_tagged_role(ctx, RoleTags.ABO)
+		return ctx.guild.id == 666613802657382435
+
+	async def get_member_role(self, guild):
+		return guild.get_role(666615010579054614)
 
 	@commands.command(name="me", help="Display stats")
 	async def get_stats(self, ctx: commands.Context):
@@ -39,7 +36,11 @@ class ABO(commands.Cog):
 		if user is None:
 			return await ctx.send(f"**{ctx.author.display_name}**, I found no stats for you")
 
-		embed = self.bot.create_embed(title=ctx.author.display_name, thumbnail=ctx.author.avatar_url)
+		embed = discord.Embed(title=self.bot.user.display_name, color=0xff8000)
+
+		embed.set_thumbnail(url=ctx.author.avatar_url)
+		embed.set_footer(text=self.bot.user.display_name, icon_url=self.bot.user.avatar_url)
+
 		text = f":joystick: **{user.lvl}**\n:trophy: **{user.trophies:,}**"
 
 		embed.add_field(name="ABO Stats", value=text)
@@ -56,7 +57,7 @@ class ABO(commands.Cog):
 
 		await ctx.send(f"**{ctx.author.display_name}** :thumbsup:")
 
-	@checks.author_has_tagged_role(tag=RoleTags.LEADER)
+	@commands.has_permissions(administrator=True)
 	@commands.command(name="setuser", aliases=["su"], usage="<user> <level> <trophies>")
 	async def set_user(self, ctx, user: discord.Member, level: IntegerRange(0, 150), trophies: IntegerRange(0, 5000)):
 		""" Set another members ABO stats """
@@ -67,11 +68,11 @@ class ABO(commands.Cog):
 
 		await ctx.send(f"**{user.display_name}** :thumbsup:")
 
-	@checks.author_has_tagged_role(tag=RoleTags.LEADER)
+	@commands.has_permissions(administrator=True)
 	@commands.command(name="shame", help="Shame others")
 	async def shame(self, ctx: commands.Context):
 		""" Mention everyone who has not updated their stats in the last 7 days """
-		member_role = utils.get_tagged_role(self.bot.svr_cache, ctx.guild, RoleTags.ABO)
+		member_role = await self.get_member_role(ctx.guild)
 
 		with DBConnection() as con:
 			con.cur.execute(AboSQL.SELECT_ALL)
@@ -98,7 +99,7 @@ class ABO(commands.Cog):
 
 		lb = self.leaderboards[ctx.guild.id]
 
-		return await ctx.send(lb.get(ctx.author))
+		return await ctx.send(await lb.get(ctx.author))
 
 
 def setup(bot):

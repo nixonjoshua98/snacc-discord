@@ -2,7 +2,20 @@ import discord
 
 from discord.ext import commands
 
-from bot.common import utils, checks
+from bot.common import checks
+
+GUILD_JOIN_TEXT = """
+The infamous **{bot.user.name}** has graced your ~~lowly~~ server! [{guild.owner.mention}]
+
+My default prefix is **{bot.default_prefix}**...obviously
+
+**__Help__**
+- **{bot.default_prefix}help**...durp
+- Contact my almighty creator **{bot_info.owner}**
+
+**__Invite Me__**
+https://discordapp.com/oauth2/authorize?client_id=666616515436478473&scope=bot&permissions=8
+"""
 
 
 class Listeners(commands.Cog):
@@ -19,12 +32,9 @@ class Listeners(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):
-        with open(utils.resource("on_guild_join.txt"), "r") as fh:
-            template = fh.read()
-
         bot_info = await self.bot.application_info()
 
-        welc_msg = template.format(guild=guild, bot=self.bot, bot_info=bot_info)
+        welc_msg = GUILD_JOIN_TEXT.format(guild=guild, bot=self.bot, bot_info=bot_info)
         owner_dm = f"I joined the server **{guild.name}** owned by **{guild.owner}**"
 
         await bot_info.owner.send(owner_dm)
@@ -37,15 +47,15 @@ class Listeners(commands.Cog):
         await self._send_system_channel(member.guild, join_msg)
 
         try:
-            role = utils.get_tagged_role(self.bot.svr_cache, member.guild, "default", ignore_exception=True)
+            svr = await self.bot.get_cog("Settings").get_server(member.guild)
 
-            await member.add_roles(role, atomic=True)
+            role = member.guild.get_role(svr["entryrole"])
 
-        except AttributeError:
-            """ Simply hasn't been set yet """
+            if role is not None:
+                await member.add_roles(role)
 
-        except discord.Forbidden as e:
-            await self._send_system_channel(member.guild, f":x: **{e.args[0]}**")
+        except discord.Forbidden:
+            """ We cannot add the role """
 
     @commands.Cog.listener()
     async def on_member_remove(self, member: discord.Member):

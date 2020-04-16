@@ -16,7 +16,7 @@ class HelpCommand(commands.HelpCommand):
         super(HelpCommand, self).__init__()
 
     async def get_pages(self):
-        bot = self.context.bot
+        bot, ctx = self.context.bot, self.context
 
         all_commands = {}
 
@@ -26,7 +26,9 @@ class HelpCommand(commands.HelpCommand):
             if hidden:
                 continue
 
-            cmds = tuple(chunks(list(instance.get_commands()), 10))
+            cmds = await self.filter_commands(instance.get_commands())
+
+            cmds = tuple(chunks(cmds, 10))
 
             if len(cmds) == 1:
                 all_commands[cog] = cmds[0]
@@ -52,7 +54,7 @@ class HelpCommand(commands.HelpCommand):
 
                 embed.add_field(name=f"[{'|'.join([cmd.name] + cmd.aliases)}] {cmd.usage or ''}", value=desc, inline=False)
 
-            embed.set_footer(text=f"{bot.name} | Page {i + 1}/{max_pages}", icon_url=bot.user.avatar_url)
+            embed.set_footer(text=f"{bot.user.name} | Page {i + 1}/{max_pages}", icon_url=bot.user.avatar_url)
 
             pages.append(embed)
 

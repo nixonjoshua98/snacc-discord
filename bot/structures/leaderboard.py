@@ -1,5 +1,8 @@
 from datetime import datetime
-from bot.common import DBConnection, AboSQL, CoinsSQL
+from discord.ext import commands
+from bot.common import DBConnection, AboSQL
+
+from bot.common.queries import BankSQL
 
 
 class LeaderboardBase:
@@ -15,15 +18,15 @@ class LeaderboardBase:
         self._update_timer = 15     # Update every 50 mins
         self._last_updated = None
 
-    def get(self, author):
+    async def get(self, author):
         if self._last_updated is None:
-            self._create()
+            await self._create()
 
         mins_ago = int((datetime.now() - self._last_updated).total_seconds() // 60)
 
         if mins_ago >= self._update_timer:
             mins_ago = 0
-            self._create()
+            await self._create()
 
         lb = "```c++\n" + f"{self._title}\n\n[Updated: {mins_ago:,} min(s) ago]\n\n{self._leaderboard}" + "```"
 
@@ -32,22 +35,25 @@ class LeaderboardBase:
     def _get_data(self):
         raise NotImplementedError()
 
-    def _create(self):
+    async def _create(self):
         self._last_updated = datetime.now()
 
         widths = list(map(len, self._headers))
 
         rows = [self._headers.copy()]
 
-        for rank, (member, member_data) in enumerate(self._get_data(), start=1):
+        for rank, (member, member_data) in enumerate(await self._get_data(), start=1):
             if rank > self._size:
                 break
 
-            username = member.display_name[:self._max_col_width]
+            username = "Mysterious User"
+
+            if member is not None:
+                username = member.display_name[:self._max_col_width]
 
             row = [f"#{rank:02d}", username]
 
-            row.extend([str(getattr(member_data, col, None))[0:self._max_col_width] for col in self._columns])
+            row.extend([str(member_data.get(col, None))[0:self._max_col_width] for col in self._columns])
 
             widths = [max(widths[i], len(col)) for i, col in enumerate(row)]
 
@@ -72,17 +78,16 @@ class ABOLeaderboard(LeaderboardBase):
         self.guild = guild
         self.bot = bot
 
-    def _get_data(self):
+    async def _get_data(self):
         with DBConnection() as con:
             con.cur.execute(AboSQL.SELECT_ALL)
             all_data = con.cur.fetchall()
 
         all_data.sort(key=lambda u: u.trophies, reverse=True)
 
-        svr = self.bot.svr_cache.get(self.guild.id, None)
-        abo_role = (svr.roles if svr is not None else {}).get("member", None)
+        role = await self.bot.get_cog("ABO").get_member_role(self.guild)
 
-        role = self.guild.get_role(abo_role)
+        ls = []
 
         for data in all_data:
             id_ = getattr(data, "userid", None)
@@ -92,64 +97,56 @@ class ABOLeaderboard(LeaderboardBase):
             if member is None or member.bot or role not in member.roles:
                 continue
 
-            yield member, data
+            data = {"trophies": data.trophies, "lvl": data.lvl}
+
+            ls.append(( member, data))
+
+        return ls
 
 
-class CoinLeaderboard(LeaderboardBase):
-    def __init__(self, guild, bot):
-        super(CoinLeaderboard, self).__init__(
-            title="Coin Leaderboard",
+class Leaderboard:
+    def __init__(self, *, title: str, query: str, ctx: commands.Context, headers: list, columns: list):
+        self.title = title
+        self.ctx = ctx
+        self.headers = ["#", "Player"] + headers
+        self.columns = columns
+        self.query = query
+
+    async def create(self):
+        ctx, bot = self.ctx, self.ctx.bot
+
+        widths = list(map(len, self.headers))
+        entries = [self.headers.copy()]
+
+        for rank, row in enumerate(await bot.pool.fetch(self.query), start=1):
+            user = ctx.guild.get_member(row["userid"])
+
+            if user is None:
+                user = bot.get_user(row["userid"])
+
+            username = "Mysterious User" if user is None else user.display_name[0:20]
+
+            entry = [f"#{rank:02d}", username]
+
+            entry.extend([str(row.get(col, None))[0:20] for col in self.columns])
+
+            widths = [max(widths[i], len(col)) for i, col in enumerate(entry)]
+
+            entries.append(entry)
+
+        for row in entries:
+            for i, col in enumerate(row[0:-1]):
+                row[i] = f"{col}{' ' * (widths[i] - len(col))}"
+
+        return "```c++\n" + f"{self.title}\n\n" + "\n".join(" ".join(row) for row in entries) + "```"
+
+
+class RichestPlayers(Leaderboard):
+    def __init__(self, ctx: commands.Context):
+        super(RichestPlayers, self).__init__(
+            title="Richest Players",
+            query=BankSQL.SELECT_RICHEST,
+            ctx=ctx,
             headers=["Coins"],
-            columns=["balance"],
-            size=10
+            columns=["coins"]
         )
-
-        self.guild = guild
-        self.bot = bot
-
-    def _get_data(self):
-        with DBConnection() as con:
-            con.cur.execute(CoinsSQL.SELECT_ALL)
-            all_data = con.cur.fetchall()
-
-        all_data.sort(key=lambda u: u.balance, reverse=True)
-
-        for data in all_data:
-            id_ = getattr(data, "userid", None)
-
-            member = self.guild.get_member(id_)
-
-            if member is None or member.bot:
-                continue
-
-            yield member, data
-
-
-class MinigamesLeaderboard(LeaderboardBase):
-    def __init__(self, guild, bot):
-        super(MinigamesLeaderboard, self).__init__(
-            title="Minigames Leaderboard",
-            headers=["Timer"],
-            columns=["timerwins"],
-            size=10
-        )
-
-        self.guild = guild
-        self.bot = bot
-
-    def _get_data(self):
-        with DBConnection() as con:
-            con.cur.execute(MinigamesSQL.SELECT_ALL)
-            all_data = con.cur.fetchall()
-
-        all_data.sort(key=lambda u: sum((u.timerwins,)), reverse=True)
-
-        for data in all_data:
-            id_ = getattr(data, "userid", None)
-
-            member = self.guild.get_member(id_)
-
-            if member is None or member.bot:
-                continue
-
-            yield member, data

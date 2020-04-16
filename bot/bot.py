@@ -7,15 +7,11 @@ from discord.ext import commands
 
 from configparser import ConfigParser
 
-from bot.common.queries import ServersSQL
-
-from bot.common import (
-	BotConstants,
-	DBConnection,
-	ServerConfigSQL
-)
+from bot.common.queries import ServersSQL, BankSQL
 
 from bot.structures import HelpCommand
+
+from bot.common import migrate
 
 
 class SnaccBot(commands.Bot):
@@ -26,13 +22,16 @@ class SnaccBot(commands.Bot):
 
 		self.prefixes = dict()
 
-		self.svr_cache = dict()
 		self.default_prefix = "!"
 
 	async def on_ready(self):
 		await self.wait_until_ready()
 		await self.connect_database()
+
 		await self.pool.execute(ServersSQL.TABLE)
+		await self.pool.execute(BankSQL.TABLE)
+
+		await migrate.run(self)
 
 		print(f"Bot '{self.user.display_name}' is ready")
 
@@ -77,52 +76,16 @@ class SnaccBot(commands.Bot):
 		if message.guild is not None:
 			return await self.process_commands(message)
 
-	def create_embed(self, *, title: str, desc: str = None, thumbnail: str = None) -> discord.Embed:
-		embed = discord.Embed(title=title, description=desc, color=0xff8000)
-
-		if thumbnail is not None:
-			embed.set_thumbnail(url=thumbnail)
-
-		embed.set_footer(text=self.user.display_name, icon_url=self.user.avatar_url)
-
-		return embed
-
-	@property
-	def name(self): return self.user.name
-
 	async def update_prefixes(self, message: discord.Message):
-		async with self.pool.acquire() as con:
-			async with con.transaction():
-				svr = await con.fetchrow(ServersSQL.SELECT_SERVER, message.guild.id)
+		settings = self.get_cog("Settings")
 
-				if svr is None:
-					self.prefixes[message.guild.id] = self.default_prefix
+		svr = await settings.get_server(message.guild)
 
-					await self.pool.execute(ServersSQL.INSERT_SERVER, message.guild.id, self.default_prefix)
-
-				else:
-					self.prefixes[message.guild.id] = svr["prefix"]
-
-		with DBConnection() as con:
-			con.cur.execute(ServerConfigSQL.SELECT_SVR, (message.guild.id,))
-
-			self.svr_cache[message.guild.id] = con.cur.fetchone()
+		self.prefixes[message.guild.id] = svr["prefix"]
 
 	async def get_prefix(self, message: discord.message):
-		if self.svr_cache.get(message.guild.id, None) is None:
-			await self.update_prefixes(message)
-
 		if self.prefixes.get(message.guild.id, None) is None:
 			await self.update_prefixes(message)
 
-		#  return self.prefixes.get(message.guild.id, self.default_prefix)
-
-		try:
-			prefix = self.svr_cache[message.guild.id].prefix
-
-			prefix = prefix if prefix is not None else self.default_prefix
-		except (AttributeError, KeyError):
-			prefix = self.default_prefix
-
-		return commands.when_mentioned_or(prefix)(self, message)
+		return self.prefixes.get(message.guild.id, self.default_prefix)
 
