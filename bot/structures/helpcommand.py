@@ -84,7 +84,7 @@ class HelpCommand(commands.HelpCommand):
         while True:
             try:
                 # Wait for a reaction
-                react, _ = await bot.wait_for("reaction_add", timeout=30, check=wait_for)
+                react, _ = await bot.wait_for("reaction_add", timeout=60, check=wait_for)
 
             except asyncio.TimeoutError:
                 await message.delete()

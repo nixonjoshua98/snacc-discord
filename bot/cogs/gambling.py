@@ -19,7 +19,7 @@ class Gambling(commands.Cog):
 	@commands.cooldown(25, 60 * 60 * 3, commands.BucketType.user)
 	@commands.command(name="spin", aliases=["sp"], help="Spin machine")
 	async def spin(self, ctx):
-		""" Use a spin machine. Winnings are within -750 - 1000. """
+		""" Use a spin machine. """
 
 		def get_winning(amount) -> int:
 			low, high = max(amount * -0.75, -750), min(amount * 2.0, 1000)
@@ -56,8 +56,7 @@ class Gambling(commands.Cog):
 	@commands.command(name="dice", aliases=["roll"], usage="<sides=6> <bet=100>")
 	async def dice(self, ctx, sides: Clamp(6, 20) = 6, bet: Clamp(1, 5000) = 100):
 		"""
-		Roll a dice and bet on if the dice lands on a 6.
-		Winnings are calculated by [bet] * [sides - 1]
+		Roll a dice and bet on if the dice lands on a 6. Winnings are calculated by [bet] * [sides - 1].
 		"""
 
 		if ctx.user_balance["coins"] < bet:

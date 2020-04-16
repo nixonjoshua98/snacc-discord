@@ -7,7 +7,7 @@ from discord.ext import commands
 
 from configparser import ConfigParser
 
-from bot.common.queries import ServersSQL, BankSQL
+from bot.common.queries import ServersSQL, BankSQL, HangmanSQL
 
 from bot.structures import HelpCommand
 
@@ -28,6 +28,7 @@ class SnaccBot(commands.Bot):
 
 		await self.pool.execute(ServersSQL.TABLE)
 		await self.pool.execute(BankSQL.TABLE)
+		await self.pool.execute(HangmanSQL.TABLE)
 
 		print(f"Bot '{self.user.display_name}' is ready")
 

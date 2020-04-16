@@ -2,7 +2,7 @@ from datetime import datetime
 from discord.ext import commands
 from bot.common import DBConnection, AboSQL
 
-from bot.common.queries import BankSQL
+from bot.common.queries import BankSQL, HangmanSQL
 
 
 class LeaderboardBase:
@@ -150,3 +150,15 @@ class RichestPlayers(Leaderboard):
             headers=["Coins"],
             columns=["coins"]
         )
+
+
+class HangmanWins(Leaderboard):
+    def __init__(self, ctx: commands.Context):
+        super(HangmanWins, self).__init__(
+            title="Top Hangman Players",
+            query=HangmanSQL.SELECT_BEST,
+            ctx=ctx,
+            headers=["Wins"],
+            columns=["wins"]
+        )
+

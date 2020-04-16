@@ -4,6 +4,10 @@ import asyncio
 
 from discord.ext import commands
 
+from bot.common.queries import HangmanSQL
+
+from bot.structures.leaderboard import HangmanWins
+
 
 class HangmanGame:
     _instances = {}
@@ -61,6 +65,8 @@ class HangmanGame:
                 if self.is_game_over():
                     HangmanGame._instances.pop(self.ctx.guild.id, None)
 
+                    await self.ctx.bot.pool.execute(HangmanSQL.UPDATE_WINS, message.author)
+
                     return await destination.send(
                         f"{message.author.mention} got the final letter! The word was `{self.hidden_word}`")
 
@@ -117,6 +123,12 @@ class Hangman(commands.Cog):
             return await ctx.send("Start a hangman game first!")
         else:
             return await ctx.send(f"``{game.encode_word()}``")
+
+    @commands.command(name="hlb")
+    async def leaderboard(self, ctx):
+        """ Show the top hangman players """
+
+        return await ctx.send(await HangmanWins(ctx).create())
 
 
 def setup(bot):
