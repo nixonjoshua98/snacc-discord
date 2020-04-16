@@ -39,7 +39,7 @@ class HelpCommand(commands.HelpCommand):
         pages, max_pages = [],  len(all_commands)
 
         embed = discord.Embed(title=f"{bot.user.display_name}", color=0xff8000)
-        embed.set_footer(text=bot.name, icon_url=bot.user.avatar_url)
+        embed.set_footer(text=bot.user.display_name, icon_url=bot.user.avatar_url)
         embed.set_thumbnail(url=bot.user.avatar_url)
 
         pages.append(embed)

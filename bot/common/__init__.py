@@ -10,7 +10,6 @@ from .converters import (
 )
 
 from .queries import (
-    ServerConfigSQL,
     AboSQL,
     CoinsSQL,
 )

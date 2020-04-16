@@ -29,35 +29,6 @@ class BankSQL:
     SUB_COINS = "UPDATE bank SET coins = bank.coins - $2 WHERE userID = $1;"
 
 
-class ServerConfigSQL:
-    TABLE = "CREATE table IF NOT EXISTS server_config (" \
-            "serverID BIGINT PRIMARY KEY, " \
-            "prefix VARCHAR(255), " \
-            "channels JSON, " \
-            "roles JSON" \
-            ");"
-
-    SELECT_ALL = "SELECT * FROM server_config;"
-
-    SELECT_SVR = "SELECT * FROM server_config WHERE serverID = %s;"
-
-    UPDATE = "INSERT INTO server_config (serverID, prefix, channels, roles) VALUES (%s, %s, %s, %s) " \
-             "ON CONFLICT (serverID) DO UPDATE " \
-             "SET prefix = excluded.prefix, channels = excluded.channels, roles = excluded.roles;"
-
-    UPDATE_PREFIX = "INSERT INTO server_config (serverID, prefix) VALUES (%s, %s) " \
-                    "ON CONFLICT (serverID) DO UPDATE " \
-                    "SET prefix = excluded.prefix;"
-
-    UPDATE_ROLES = "INSERT INTO server_config (serverID, roles) VALUES (%s, %s) " \
-                   "ON CONFLICT (serverID) DO UPDATE " \
-                   "SET roles = excluded.roles;"
-
-    UPDATE_CHANNELS = "INSERT INTO server_config (serverID, channels) VALUES (%s, %s) " \
-                      "ON CONFLICT (serverID) DO UPDATE " \
-                      "SET channels = excluded.channels;"
-
-
 class AboSQL:
     TABLE = "CREATE table IF NOT EXISTS abo (" \
             "userID BIGINT PRIMARY KEY, " \

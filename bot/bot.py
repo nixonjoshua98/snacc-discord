@@ -25,8 +25,8 @@ class SnaccBot(commands.Bot):
 		self.default_prefix = "!"
 
 	async def on_ready(self):
-		await self.wait_until_ready()
 		await self.connect_database()
+		await self.wait_until_ready()
 
 		await self.pool.execute(ServersSQL.TABLE)
 		await self.pool.execute(BankSQL.TABLE)
