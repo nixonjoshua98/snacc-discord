@@ -35,9 +35,9 @@ class HangmanSQL:
             "wins INTEGER" \
             ");"
 
-    UPDATE_WINS = "INSERT INTO hangman (userID, wins) VALUES ($1, $2) " \
+    UPDATE_WINS = "INSERT INTO hangman (userID, wins) VALUES ($1, 1) " \
                   "ON CONFLICT (userID) DO UPDATE " \
-                  "SET wins = 1;"
+                  "SET wins = hangman.wins + 1;"
 
     SELECT_BEST = "SELECT * FROM hangman ORDER BY wins DESC LIMIT 10"
 

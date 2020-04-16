@@ -26,10 +26,6 @@ class SnaccBot(commands.Bot):
 		await self.connect_database()
 		await self.wait_until_ready()
 
-		await self.pool.execute(ServersSQL.TABLE)
-		await self.pool.execute(BankSQL.TABLE)
-		await self.pool.execute(HangmanSQL.TABLE)
-
 		print(f"Bot '{self.user.display_name}' is ready")
 
 	async def get_context(self, message, *, cls=commands.Context):

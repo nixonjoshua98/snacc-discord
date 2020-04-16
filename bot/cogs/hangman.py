@@ -65,7 +65,7 @@ class HangmanGame:
                 if self.is_game_over():
                     HangmanGame._instances.pop(self.ctx.guild.id, None)
 
-                    await self.ctx.bot.pool.execute(HangmanSQL.UPDATE_WINS, message.author)
+                    await self.ctx.bot.pool.execute(HangmanSQL.UPDATE_WINS, message.author.id)
 
                     return await destination.send(
                         f"{message.author.mention} got the final letter! The word was `{self.hidden_word}`")
