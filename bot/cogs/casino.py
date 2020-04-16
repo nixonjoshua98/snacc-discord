@@ -19,7 +19,7 @@ class Casino(commands.Cog):
 	@commands.cooldown(25, 60 * 60 * 3, commands.BucketType.user)
 	@commands.command(name="spin", aliases=["sp"], help="Spin machine")
 	async def spin(self, ctx):
-		""" Use a spin machine. Limited to 25 spins every 3 hours """
+		""" Use a spin machine.	"""
 		def get_winning(amount) -> int:
 			low, high = max(amount * -0.75, -750), min(amount * 2.0, 1000)
 

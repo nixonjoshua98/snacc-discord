@@ -11,7 +11,6 @@ from .converters import (
 
 from .queries import (
     AboSQL,
-    CoinsSQL,
 )
 
 from .database import DBConnection

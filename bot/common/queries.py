@@ -44,26 +44,3 @@ class AboSQL:
     UPDATE = "INSERT INTO abo (userID, lvl, trophies, dateSet) VALUES (%s, %s, %s, %s) " \
              "ON CONFLICT (userID) DO UPDATE " \
              "SET lvl = excluded.lvl, trophies = excluded.trophies, dateSet = excluded.dateSet;"
-
-
-class CoinsSQL:
-    TABLE = "CREATE table IF NOT EXISTS coins (" \
-            "userID BIGINT PRIMARY KEY, " \
-            "balance BIGINT" \
-            ");"
-
-    SELECT_ALL = "SELECT * FROM coins;"
-
-    SELECT_USER = "SELECT * FROM coins WHERE userID = %s;"
-
-    UPDATE = "INSERT INTO coins (userID, balance) VALUES (%s, %s) " \
-             "ON CONFLICT (userID) DO UPDATE " \
-             "SET balance = excluded.balance;"
-
-    INCREMENT = "INSERT INTO coins (userID, balance) VALUES (%s, %s) " \
-                "ON CONFLICT (userID) DO UPDATE " \
-                "SET balance = coins.balance + excluded.balance;"
-
-    DECREMENT = "INSERT INTO coins (userID, balance) VALUES (%s, %s) " \
-                "ON CONFLICT (userID) DO UPDATE " \
-                "SET balance = coins.balance - excluded.balance;"

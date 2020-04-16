@@ -18,7 +18,7 @@ class Bank(commands.Cog):
         ctx.user_balance = await self.get_user_balances(ctx.author)
 
     @commands.cooldown(1, 60 * 60, commands.BucketType.user)
-    @commands.command(name="daily")
+    @commands.command(name="daily", alises=["free"])
     async def daily(self, ctx: commands.Context):
         """ Get some free goodies! """
 
