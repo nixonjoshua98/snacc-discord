@@ -105,7 +105,18 @@ class Hangman(commands.Cog):
         if game is None:
             self.games[ctx.guild.id] = HangmanGame(ctx)
         else:
-            return await ctx.send("Hangman is already in progress")
+            return await ctx.send("A hangman game is already in progress")
+
+    @commands.command(name="show")
+    async def show(self, ctx):
+        """ Show the current hangman game """
+
+        game = await HangmanGame.get_instance(ctx.guild.id)
+
+        if game is None:
+            return await ctx.send("Start a hangman game first!")
+        else:
+            return await ctx.send(f"``{game.encode_word()}``")
 
 
 def setup(bot):
