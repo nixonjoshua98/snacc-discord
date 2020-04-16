@@ -2,7 +2,7 @@ import random
 
 from discord.ext import commands
 
-from bot.common.converters import NotAuthorOrBot, IntegerRange
+from bot.common.converters import DiscordUser, IntegerRange
 
 
 class Coins(commands.Cog):
@@ -16,7 +16,7 @@ class Coins(commands.Cog):
 
     @commands.cooldown(1, 60 * 60, commands.BucketType.user)
     @commands.command(name="steal", usage="<user>")
-    async def steal_coins(self, ctx, user: NotAuthorOrBot()):
+    async def steal_coins(self, ctx, user: DiscordUser()):
         """ Steal some coins from another user! """
 
         if random.randint(0, 2) != 0:
@@ -32,7 +32,7 @@ class Coins(commands.Cog):
 
     @commands.cooldown(1, 30, commands.BucketType.user)
     @commands.command(name="gift", aliases=["give"], usage="<user> <amount>")
-    async def gift(self, ctx, user: NotAuthorOrBot(), amount: IntegerRange(1, 100_000)):
+    async def gift(self, ctx, user: DiscordUser(), amount: IntegerRange(1, 100_000)):
         """ Gift some coins to another user """
 
         if ctx.user_balance["coins"] < amount:

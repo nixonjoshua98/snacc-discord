@@ -6,7 +6,7 @@ from .constants import (
 
 from .converters import (
     IntegerRange,
-    NotAuthorOrBot,
+    DiscordUser,
 )
 
 from .queries import (

@@ -7,6 +7,8 @@ from bot.common.queries import BankSQL
 
 from bot.structures.leaderboard import RichestPlayers
 
+from bot.common.converters import DiscordUser
+
 
 class Bank(commands.Cog):
     DEFAULT_ROW = [500]
@@ -29,7 +31,7 @@ class Bank(commands.Cog):
         await ctx.send(f"**{ctx.author.display_name}** gained **{bal_diff}** coins!")
 
     @commands.command(name="balance", usage="<user=None>", aliases=["money", "coins", "bal"])
-    async def balance(self, ctx, user: discord.Member = None):
+    async def balance(self, ctx, user: DiscordUser(author_ok=True) = None):
         """ Show the bank balances of the user, or supply an optional user paramater. """
         user = user if user is not None else ctx.author
 

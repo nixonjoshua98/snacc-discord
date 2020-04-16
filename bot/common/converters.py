@@ -1,10 +1,9 @@
-import typing
 import discord
 
 from discord.ext import commands
 
 
-class NotAuthorOrBot(commands.MemberConverter):
+class DiscordUser(commands.MemberConverter):
 	"""
 	Converter to ensure that the user is present in the server, not the author or a bot
 
@@ -12,6 +11,11 @@ class NotAuthorOrBot(commands.MemberConverter):
 	async def my_command(self, ctx, user: NotAuthorOrBotServer()):
 		...
 	"""
+	def __init__(self, *, author_ok: bool = False):
+		super(DiscordUser, self).__init__()
+
+		self.author_ok = author_ok
+
 	async def convert(self, ctx: commands.Context, argument: str) -> discord.Member:
 		"""
 		:param ctx: Context in which the command was invoked with
@@ -21,14 +25,14 @@ class NotAuthorOrBot(commands.MemberConverter):
 		"""
 		try:
 			member = await super().convert(ctx, argument)
-		except commands.BadArgument as e:
-			raise commands.UserInputError(f"**{e.args[0]}**")
+		except commands.BadArgument:
+			raise commands.UserInputError(f"Member `{argument}` could not be found.")
 
-		if member.id == ctx.author.id:
-			raise commands.UserInputError(f"**{member.display_name}**, you cannot target youself")
+		if not self.author_ok and member.id == ctx.author.id:
+			raise commands.UserInputError("You cannot target youself.")
 
 		elif member.bot:
-			raise commands.UserInputError(f"**{ctx.author.display_name}**, bots cannot be targeted")
+			raise commands.UserInputError("Bot accounts cannot be used here.")
 
 		return member
 

@@ -70,12 +70,13 @@ class SnaccBot(commands.Bot):
 		return await ctx.send(esc.args[0])
 
 	async def on_message(self, message: discord.Message):
-		await self.wait_until_ready()
-
 		if message.guild is not None:
 			return await self.process_commands(message)
 
 	async def update_prefixes(self, message: discord.Message):
+		if self.pool is None:
+			return
+
 		settings = self.get_cog("Settings")
 
 		svr = await settings.get_server(message.guild)
