@@ -25,7 +25,7 @@ class DBConnection:
 
             config.read(utils.config("postgres.ini"))
 
-            section = "postgres-local"
+            section = "postgres"
 
             self._con = psycopg2.connect(**dict(config.items(section)))
 

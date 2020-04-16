@@ -1,4 +1,14 @@
 
+class ServersSQL:
+    TABLE = "CREATE table IF NOT EXISTS servers (" \
+            "serverID BIGINT PRIMARY KEY," \
+            "prefix VARCHAR(255)" \
+            ");"
+
+    INSERT_SERVER = "INSERT INTO servers (serverID, prefix) VALUES ($1, $2) ON CONFLICT DO NOTHING;"
+    UPDATE_PREFIX = "UPDATE servers SET prefix = $2 WHERE serverID=$1 RETURNING prefix;"
+    SELECT_SERVER = "SELECT serverID, prefix FROM servers WHERE serverID=$1;"
+
 
 class ServerConfigSQL:
     TABLE = "CREATE table IF NOT EXISTS server_config (" \

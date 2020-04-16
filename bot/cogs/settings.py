@@ -5,12 +5,11 @@ from discord.ext import commands
 
 from bot.common import (
 	checks,
-	converters
 )
 
+from bot.common.queries import ServersSQL
+
 from bot.common import (
-	RoleTags,
-	ChannelTags,
 	DBConnection,
 	ServerConfigSQL
 )
@@ -20,70 +19,23 @@ class Settings(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
+		# Prefix |
+		self.default_row = [self.bot.default_prefix]
+
 	async def cog_check(self, ctx: commands.Context):
 		return await self.bot.is_owner(ctx.author) or checks.author_is_server_owner(ctx)
 
 	async def cog_after_invoke(self, ctx: commands.Context):
-		await self.bot.update_cache(ctx.message)
+		await self.bot.update_prefixes(ctx.message)
 
-	@commands.command(name="setrole", usage="<tag> <role>")
-	async def set_tagged_role(self, ctx: commands.Context, tag: converters.ValidTag(RoleTags.ALL), role: discord.Role):
-		with DBConnection() as con:
-			data = self.bot.svr_cache.get(ctx.guild.id, None)
-
-			roles = dict() if data is None else data.roles if data.roles is not None else dict()  # Lol...
-
-			roles[tag] = role.id
-
-			con.cur.execute(ServerConfigSQL.UPDATE_ROLES, (ctx.guild.id, json.dumps(roles)))
-
-		await ctx.send(f"The role **{role.name}** has been given the tag **{tag}**")
-
-	@commands.command(name="unsetrole", help="Unset role tag")
-	async def remove_role_tag(self, ctx: commands.Context, tag: converters.ValidTag(RoleTags.ALL)):
-		data = self.bot.svr_cache.get(ctx.guild.id, None)
-		roles = dict() if data is None else data.roles if data.roles is not None else dict()  # Lol...
-		roles.pop(tag, None)
-
-		with DBConnection() as con:
-			con.cur.execute(ServerConfigSQL.UPDATE_ROLES, (ctx.guild.id, json.dumps(roles)))
-
-		await ctx.send(f"The role for **{tag.title()}** has been removed")
-
-	@commands.command(name="settag", help="Add channel tag")
-	async def add_channel_tag(self, ctx: commands.Context, tag: converters.ValidTag(ChannelTags.ALL)):
-		with DBConnection() as con:
-			data = self.bot.svr_cache.get(ctx.guild.id, None)
-
-			channels = dict() if data is None else data.channels if data.channels is not None else dict()
-
-			channels[tag] = list(set(channels.get(tag, []) + [ctx.channel.id]))
-
-			con.cur.execute(ServerConfigSQL.UPDATE_CHANNELS, (ctx.guild.id, json.dumps(channels)))
-
-		await ctx.send(f"{ctx.channel.mention} has been registered as a **{tag}** channel")
-
-	@commands.command(name="unsettag", usage="<tag>")
-	async def remove_channel_tag(self, ctx: commands.Context, tag: converters.ValidTag(ChannelTags.ALL)):
-		with DBConnection() as con:
-			data = self.bot.svr_cache.get(ctx.guild.id, None)
-
-			channels = dict() if data is None else data.channels if data.channels is not None else dict()
-
-			tagged = list(set(channels.get(tag, [])))
-
-			if ctx.channel.id in tagged:
-				tagged.remove(ctx.channel.id)
-
-			channels[tag] = tagged
-
-			con.cur.execute(ServerConfigSQL.UPDATE_CHANNELS, (ctx.guild.id, json.dumps(channels)))
-
-		await ctx.send(f"{ctx.channel.mention} has been unregistered as a **{tag}** channel")
+	async def cog_before_invoke(self, ctx: commands.Context):
+		await self.bot.pool.execute(ServersSQL.INSERT_SERVER, *(ctx.guild.id, *self.default_row))
 
 	@commands.command(name="prefix", usage="<prefix>")
 	async def set_prefix(self, ctx: commands.Context, prefix: str):
 		""" Set the prefix for this server. Bot can always be mentioned. """
+		await ctx.bot.pool.execute(ServersSQL.UPDATE_PREFIX, ctx.guild.id, prefix)
+
 		with DBConnection() as con:
 			con.cur.execute(ServerConfigSQL.UPDATE_PREFIX, (ctx.guild.id, prefix))
 

@@ -7,6 +7,8 @@ from discord.ext import commands
 
 from configparser import ConfigParser
 
+from bot.common.queries import ServersSQL
+
 from bot.common import (
 	BotConstants,
 	DBConnection,
@@ -22,16 +24,21 @@ class SnaccBot(commands.Bot):
 
 		self.pool = None
 
+		self.prefixes = dict()
+
 		self.svr_cache = dict()
 		self.default_prefix = "!"
 
 	async def on_ready(self):
 		await self.wait_until_ready()
 		await self.connect_database()
+		await self.pool.execute(ServersSQL.TABLE)
 
 		print(f"Bot '{self.user.display_name}' is ready")
 
 	async def connect_database(self):
+		""" Creates database connection pool for the Discord bot. """
+
 		# Local database
 		if os.getenv("DEBUG", False):
 			config = ConfigParser()
@@ -41,6 +48,7 @@ class SnaccBot(commands.Bot):
 
 		# Heroku database
 		else:
+			# SSL stuff
 			ctx = ssl.create_default_context(cafile="./rds-combined-ca-bundle.pem")
 			ctx.check_hostname = False
 			ctx.verify_mode = ssl.CERT_NONE
@@ -64,6 +72,8 @@ class SnaccBot(commands.Bot):
 		return await ctx.send(esc.args[0])
 
 	async def on_message(self, message: discord.Message):
+		await self.wait_until_ready()
+
 		if message.guild is not None:
 			return await self.process_commands(message)
 
@@ -80,21 +90,32 @@ class SnaccBot(commands.Bot):
 	@property
 	def name(self): return self.user.name
 
-	async def update_cache(self, message: discord.Message):
+	async def update_prefixes(self, message: discord.Message):
+		async with self.pool.acquire() as con:
+			async with con.transaction():
+				svr = await con.fetchrow(ServersSQL.SELECT_SERVER, message.guild.id)
+
+				if svr is None:
+					self.prefixes[message.guild.id] = self.default_prefix
+
+					await self.pool.execute(ServersSQL.INSERT_SERVER, message.guild.id, self.default_prefix)
+
+				else:
+					self.prefixes[message.guild.id] = svr["prefix"]
+
 		with DBConnection() as con:
 			con.cur.execute(ServerConfigSQL.SELECT_SVR, (message.guild.id,))
 
 			self.svr_cache[message.guild.id] = con.cur.fetchone()
 
 	async def get_prefix(self, message: discord.message):
-		if not message.guild:
-			return self.default_prefix
+		if self.svr_cache.get(message.guild.id, None) is None:
+			await self.update_prefixes(message)
 
-		elif BotConstants.DEBUG:
-			return "-"
+		if self.prefixes.get(message.guild.id, None) is None:
+			await self.update_prefixes(message)
 
-		elif self.svr_cache.get(message.guild.id, None) is None:
-			await self.update_cache(message)
+		#  return self.prefixes.get(message.guild.id, self.default_prefix)
 
 		try:
 			prefix = self.svr_cache[message.guild.id].prefix
