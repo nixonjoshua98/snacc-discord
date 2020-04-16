@@ -70,8 +70,6 @@ class HangmanGame:
                     return await destination.send(
                         f"{message.author.mention} got the final letter! The word was `{self.hidden_word}`")
 
-                await destination.send(f"`{message.content.upper()}` was a correct guess!")
-
     def wait_for_guess(self, message: discord.Message):
         return message.guild.id == self.ctx.guild.id and not message.author.bot and self.correct_guess(message.content)
 
@@ -126,7 +124,7 @@ class Hangman(commands.Cog):
 
     @commands.command(name="hlb")
     async def leaderboard(self, ctx):
-        """ Show the top hangman players """
+        """ Shows the top hangman players """
 
         return await ctx.send(await HangmanWins(ctx).create())
 
