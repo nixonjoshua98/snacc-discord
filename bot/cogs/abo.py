@@ -20,7 +20,7 @@ class ABO(commands.Cog):
 		self.leaderboards = dict()
 
 	async def cog_check(self, ctx):
-		return ctx.guild.id == 666613802657382435
+		return ctx.guild.id == 666613802657382435 and await self.get_member_role(ctx.guild) in ctx.author.roles
 
 	async def get_member_role(self, guild):
 		return guild.get_role(666615010579054614)

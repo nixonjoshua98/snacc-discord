@@ -114,7 +114,12 @@ class Hangman(commands.Cog):
 
     @commands.command(name="hangman", aliases=["h"])
     async def hangman(self, ctx):
-        """ Start a new guild hangman game or show the current game """
+        """
+        Start a new guild hangman game or show the current game
+
+        __How to Play__
+        Guess a letter or word by giving a guess without any prefix (e.g. E, not !E)
+        """
 
         game = HangmanGame.get_instance(ctx.guild.id)
 

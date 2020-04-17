@@ -25,6 +25,7 @@ class Coins(commands.Cog):
         target_balances = await self.bank.get_user_balance(user)
 
         amount = random.randint(0, int(min(target_balances["coins"], ctx.user_balance["coins"]) * 0.05))
+        amount = max(5000, amount)
 
         await self.bank.update_coins(ctx.author, amount)
         await self.bank.update_coins(user, -amount)
