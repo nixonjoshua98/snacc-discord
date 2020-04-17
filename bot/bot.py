@@ -81,6 +81,8 @@ class SnaccBot(commands.Bot):
 		self.prefixes[message.guild.id] = svr["prefix"]
 
 	async def get_prefix(self, message: discord.message):
+		return "-"
+
 		if self.prefixes.get(message.guild.id, None) is None:
 			await self.update_prefixes(message)
 
