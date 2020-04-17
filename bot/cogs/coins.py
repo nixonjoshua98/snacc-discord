@@ -15,7 +15,7 @@ class Coins(commands.Cog):
         ctx.user_balance = await self.bank.get_user_balance(ctx.author)
 
     @commands.cooldown(1, 60 * 60, commands.BucketType.user)
-    @commands.command(name="steal", usage="<user>")
+    @commands.command(name="steal", usage="<user>", cooldown_after_parsing=True)
     async def steal_coins(self, ctx, user: DiscordUser()):
         """ Steal some coins from another user! """
 
@@ -32,7 +32,7 @@ class Coins(commands.Cog):
         await ctx.send(f"**{ctx.author.mention}** stole **{amount:,}** coins from **{user.mention}**")
 
     @commands.cooldown(1, 30, commands.BucketType.user)
-    @commands.command(name="gift", aliases=["give"], usage="<user> <amount>")
+    @commands.command(name="gift", aliases=["give"], usage="<user> <amount>", cooldown_after_parsing=True)
     async def gift(self, ctx, user: DiscordUser(), amount: IntegerRange(1, 100_000)):
         """ Gift some coins to another user """
 

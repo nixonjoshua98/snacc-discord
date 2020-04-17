@@ -3,7 +3,7 @@ import discord
 from discord.ext import commands
 
 
-class DiscordUser(commands.MemberConverter):
+class DiscordUser(commands.UserConverter):
 	"""
 	Converter to ensure that the user is present in the server, not the author or a bot
 
@@ -26,13 +26,13 @@ class DiscordUser(commands.MemberConverter):
 		try:
 			member = await super().convert(ctx, argument)
 		except commands.BadArgument:
-			raise commands.UserInputError(f"Member `{argument}` could not be found.")
+			raise commands.CommandNotFound(f"User `{argument}` could not be found.")
 
 		if not self.author_ok and member.id == ctx.author.id:
-			raise commands.UserInputError("You cannot target youself.")
+			raise commands.CommandNotFound("You cannot target youself.")
 
 		elif member.bot:
-			raise commands.UserInputError("Bot accounts cannot be used here.")
+			raise commands.CommandNotFound("Bot accounts cannot be used here.")
 
 		return member
 

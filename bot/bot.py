@@ -56,10 +56,7 @@ class SnaccBot(commands.Bot):
 		print("OK")
 
 	async def on_command_error(self, ctx: commands.Context, esc):
-		if isinstance(esc, commands.UserInputError):
-			ctx.command.reset_cooldown(ctx)
-
-		elif isinstance(esc, commands.CommandNotFound):
+		if isinstance(esc, commands.CommandNotFound):
 			return
 
 		return await ctx.send(esc.args[0])
