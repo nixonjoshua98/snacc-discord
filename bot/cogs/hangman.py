@@ -14,7 +14,10 @@ class HangmanGame:
 
     def __init__(self, ctx):
         self.bot = ctx.bot
-        self.guesses = set()
+
+        self.word_guesses = set()
+        self.letter_guesses = set()
+
         self.hidden_word = self.get_word()
 
         HangmanGame._instances[ctx.guild.id] = self
@@ -26,33 +29,44 @@ class HangmanGame:
     def on_message(self, message: discord.Message):
         content = message.content.upper()
 
-        # Single letter guess
-        if len(content) == 1:
-            if self.check_letter(content):
-                if self.check_win():
-                    HangmanGame._instances.pop(message.guild.id, None)
+        if self.check_letter(content) or self.check_word(content):
+            if self.check_win():
+                HangmanGame._instances.pop(message.guild.id, None)
 
-                    win_text = f"{message.author.mention} won! The word was `{self.hidden_word}`"
+                win_text = f"{message.author.mention} won! The word was `{self.hidden_word}`"
 
-                    asyncio.create_task(self.bot.pool.execute(HangmanSQL.UPDATE_WINS, message.author.id))
-                    asyncio.create_task(message.channel.send(win_text))
+                asyncio.create_task(self.bot.pool.execute(HangmanSQL.UPDATE_WINS, message.author.id))
+                asyncio.create_task(message.channel.send(win_text))
 
-                else:
-                    asyncio.create_task(self.show_game(message.channel))
+            else:
+                asyncio.create_task(self.show_game(message.channel))
 
     async def show_game(self, dest):
         return await dest.send(f"``{self.encode_word()}``")
 
-    def check_letter(self, letter: str) -> bool:
-        correct = letter in self.hidden_word.upper() and letter not in self.guesses
+    def check_letter(self, guess: str) -> bool:
+        if len(guess) != 1:
+            return False
 
-        if letter in self.hidden_word.upper() and letter not in self.guesses:
-            self.guesses.add(letter.upper())
+        correct = guess in self.hidden_word.upper() and guess not in self.letter_guesses
+
+        self.letter_guesses.add(guess)
 
         return correct
 
+    def check_word(self, guess: str) -> bool:
+        if len(guess) <= 1:
+            return False
+
+        self.word_guesses.add(guess)
+
+        return guess == self.hidden_word.upper()
+
     def check_win(self):
-        return all(char.upper() in self.guesses for char in self.hidden_word if not char.isspace())
+        correct_words = self.hidden_word.upper() in self.word_guesses
+        correct_letters = all(char.upper() in self.letter_guesses for char in self.hidden_word if not char.isspace())
+
+        return correct_words or correct_letters
 
     @staticmethod
     def get_word():
@@ -75,7 +89,7 @@ class HangmanGame:
             if w.isspace():
                 s.append("/")
 
-            elif w.upper() in self.guesses:
+            elif w.upper() in self.letter_guesses:
                 s.append(w)
 
             else:
