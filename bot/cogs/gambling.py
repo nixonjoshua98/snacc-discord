@@ -37,8 +37,8 @@ class Gambling(commands.Cog):
 		await ctx.send(msg)
 
 	@commands.cooldown(1, 3, commands.BucketType.user)
-	@commands.command(name="fl", aliases=["flip"], usage="<bet=100>")
-	async def flip(self, ctx, bet: Clamp(1, 5_000) = 100):
+	@commands.command(name="fl", aliases=["flip"], usage="<bet=10>")
+	async def flip(self, ctx, bet: Clamp(1, 10_000) = 10):
 		""" Flip a coin and bet on what said it lands on """
 
 		if ctx.user_balance["coins"] < bet:
@@ -53,24 +53,27 @@ class Gambling(commands.Cog):
 		await ctx.send(f"**{ctx.author.display_name}** has {text} **{abs(bet):,}** coins by flipping a coin.")
 
 	@commands.cooldown(1, 3, commands.BucketType.user)
-	@commands.command(name="dice", aliases=["roll"], usage="<sides=6> <bet=100>")
-	async def dice(self, ctx, sides: Clamp(6, 20) = 6, bet: Clamp(1, 5000) = 100):
+	@commands.command(name="bet", aliases=["roll"], usage="<sides=6> <side=6> <bet=10>")
+	async def bet(self, ctx, sides: Clamp(6, 100) = 6, side: int = 6, bet: Clamp(1, 10_000) = 10):
 		"""
-		Roll a dice and bet on if the dice lands on a 6. Winnings are calculated by [bet] * [sides - 1].
+		Roll a die and bet on which [side] the die lands on. Winnings are calculated by [bet] * [sides - 1].
 		"""
 
 		if ctx.user_balance["coins"] < bet:
 			return await ctx.send("You do not have enough coins.")
 
-		side = random.randint(1, sides)
+		elif side > sides:
+			return await ctx.send(f"You made an impossible to win bet. `{sides}` sides but you bet on side `{side}`")
 
-		winnings = bet * (sides - 1) if side == 6 else bet * -1
+		landed_side = random.randint(1, sides)
+
+		winnings = bet * (sides - 1) if side == landed_side else bet * -1
 
 		text = "won" if winnings > 0 else "lost"
 
-		await ctx.send(f"You {text} **{abs(winnings):,}** coins! The dice landed on `{side}`")
+		await ctx.send(f":1234: You {text} **{abs(winnings):,}** coins! The dice landed on `{landed_side}`")
 
-		await self.bank.update_coins(ctx.author, bet * -1)
+		await self.bank.update_coins(ctx.author, winnings)
 
 
 
