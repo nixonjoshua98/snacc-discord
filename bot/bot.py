@@ -39,7 +39,7 @@ class SnaccBot(commands.Bot):
 			config = ConfigParser()
 			config.read("postgres.ini")
 
-			self.pool = await asyncpg.create_pool(**dict(config.items("postgres")), command_timeout=60)
+			self.pool = await asyncpg.create_pool(**dict(config.items("postgres")), command_timeout=60, max_size=20)
 
 		# Heroku database
 		else:
@@ -48,7 +48,7 @@ class SnaccBot(commands.Bot):
 			ctx.check_hostname = False
 			ctx.verify_mode = ssl.CERT_NONE
 
-			self.pool = await asyncpg.create_pool(os.environ["DATABASE_URL"], ssl=ctx, command_timeout=60)
+			self.pool = await asyncpg.create_pool(os.environ["DATABASE_URL"], ssl=ctx, command_timeout=60, max_size=20)
 
 		print("Created PostgreSQL connection pool")
 
@@ -81,8 +81,6 @@ class SnaccBot(commands.Bot):
 		self.prefixes[message.guild.id] = svr["prefix"]
 
 	async def get_prefix(self, message: discord.message):
-		return "-"
-
 		if self.prefixes.get(message.guild.id, None) is None:
 			await self.update_prefixes(message)
 

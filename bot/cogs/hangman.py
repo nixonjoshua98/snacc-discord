@@ -9,7 +9,7 @@ from bot.structures.leaderboard import HangmanWins
 
 
 class HangmanGame:
-    _instances = {}
+    _instances = dict()
     _all_words = set()
 
     def __init__(self, ctx):
