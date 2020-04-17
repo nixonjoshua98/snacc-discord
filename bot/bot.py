@@ -7,8 +7,6 @@ from discord.ext import commands
 
 from configparser import ConfigParser
 
-from bot.common.queries import ServersSQL, BankSQL, HangmanSQL
-
 from bot.structures import HelpCommand
 
 
@@ -81,6 +79,9 @@ class SnaccBot(commands.Bot):
 		self.prefixes[message.guild.id] = svr["prefix"]
 
 	async def get_prefix(self, message: discord.message):
+		if os.getenv("DEBUG", False):
+			return "-"
+
 		if self.prefixes.get(message.guild.id, None) is None:
 			await self.update_prefixes(message)
 

@@ -30,7 +30,7 @@ class Bank(commands.Cog):
 
         await ctx.send(f"**{ctx.author.display_name}** gained **{bal_diff}** coins!")
 
-    @commands.command(name="balance", usage="<user=None>", aliases=["money", "coins", "bal"])
+    @commands.command(name="balance", usage="<user=None>", aliases=["coins", "bal"])
     async def balance(self, ctx, user: DiscordUser(author_ok=True) = None):
         """ Show the bank balances of the user, or supply an optional user paramater. """
         user = user if user is not None else ctx.author

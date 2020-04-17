@@ -1,5 +1,5 @@
 import discord
-import random
+import asyncio
 
 from discord.ext import commands
 
@@ -20,28 +20,30 @@ class HangmanGame:
         HangmanGame._instances[ctx.guild.id] = self
 
     @staticmethod
-    async def get_instance(id_):
+    def get_instance(id_):
         return HangmanGame._instances.get(id_, None)
 
-    async def on_message(self, message: discord.Message):
+    def on_message(self, message: discord.Message):
         content = message.content.upper()
 
         # Single letter guess
         if len(content) == 1:
-            if await self.check_letter(content):
-                await self.show_game(message.channel)
+            if self.check_letter(content):
+                if self.check_win():
+                    HangmanGame._instances.pop(message.guild.id, None)
 
-        # Check win condition
-        if await self.check_win():
-            HangmanGame._instances.pop(message.guild.id, None)
+                    win_text = f"{message.author.mention} won! The word was `{self.hidden_word}`"
 
-            await self.bot.pool.execute(HangmanSQL.UPDATE_WINS, message.author.id)
-            await message.channel.send(f"{message.author.mention} won! The word was `{self.hidden_word}`")
+                    asyncio.create_task(self.bot.pool.execute(HangmanSQL.UPDATE_WINS, message.author.id))
+                    asyncio.create_task(message.channel.send(win_text))
+
+                else:
+                    asyncio.create_task(self.show_game(message.channel))
 
     async def show_game(self, dest):
         return await dest.send(f"``{self.encode_word()}``")
 
-    async def check_letter(self, letter: str) -> bool:
+    def check_letter(self, letter: str) -> bool:
         correct = letter in self.hidden_word.upper() and letter not in self.guesses
 
         if letter in self.hidden_word.upper() and letter not in self.guesses:
@@ -49,7 +51,7 @@ class HangmanGame:
 
         return correct
 
-    async def check_win(self):
+    def check_win(self):
         return all(char.upper() in self.guesses for char in self.hidden_word if not char.isspace())
 
     @staticmethod
@@ -91,16 +93,16 @@ class Hangman(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         if not message.author.bot:
-            inst: HangmanGame = await HangmanGame.get_instance(message.guild.id)
+            inst: HangmanGame = HangmanGame.get_instance(message.guild.id)
 
             if inst is not None:
-                await inst.on_message(message)
+                inst.on_message(message)
 
     @commands.command(name="hangman", aliases=["h"])
     async def hangman(self, ctx):
         """ Start a new guild hangman game or show the current game """
 
-        game = await HangmanGame.get_instance(ctx.guild.id)
+        game = HangmanGame.get_instance(ctx.guild.id)
 
         if game is None:
             game = HangmanGame(ctx)
@@ -113,7 +115,7 @@ class Hangman(commands.Cog):
     async def show(self, ctx):
         """ Show the current hangman game """
 
-        game = await HangmanGame.get_instance(ctx.guild.id)
+        game = HangmanGame.get_instance(ctx.guild.id)
 
         if game is None:
             await ctx.send("Start a hangman game first!")
