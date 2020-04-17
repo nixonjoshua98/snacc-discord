@@ -2,6 +2,8 @@ import discord
 
 from discord.ext import commands
 
+import time
+
 
 class VoiceChannelsState:
     def __init__(self, guild: discord.Guild):
@@ -47,7 +49,7 @@ class Devils(commands.Cog):
         self.state = None
 
     @commands.Cog.listener(name="on_ready")
-    async def update_voice_channels(self):
+    async def on_ready(self):
         self.guild = self.bot.get_guild(693550889352560693)
         self.state = VoiceChannelsState(self.guild)
 
@@ -55,17 +57,17 @@ class Devils(commands.Cog):
     async def on_message(self, message: discord.Message):
         pass
 
-    async def on_user_join_voice(self, member: discord.Member, old: discord.VoiceState, new: discord.VoiceState):
+    def on_user_join_voice(self, member: discord.Member, old: discord.VoiceState, new: discord.VoiceState):
         print(f"{member} joined {new.channel.name}")
 
         self.state.on_user_join_voice(new.channel, member)
 
-    async def on_user_left_voice(self, member: discord.Member, old: discord.VoiceState, new: discord.VoiceState):
+    def on_user_left_voice(self, member: discord.Member, old: discord.VoiceState, new: discord.VoiceState):
         print(f"{member} left {old.channel.name}")
 
         self.state.on_user_left_voice(old.channel, member)
 
-    async def on_user_change_voice(self, member: discord.Member, old: discord.VoiceState, new: discord.VoiceState):
+    def on_user_change_voice(self, member: discord.Member, old: discord.VoiceState, new: discord.VoiceState):
         print(f"{member} switched from {old.channel.name} to {new.channel.name}")
 
         self.state.on_user_left_voice(old.channel, member)
@@ -76,16 +78,20 @@ class Devils(commands.Cog):
         if not self.state:
             return
 
+        now = time.time()
+
         self.state.update_voice_channels(add_members=False)
 
         if old.channel is None and new.channel:
-            await self.on_user_join_voice(member, old, new)
+            self.on_user_join_voice(member, old, new)
 
         elif old.channel and not new.channel:
-            await self.on_user_left_voice(member, old, new)
+            self.on_user_left_voice(member, old, new)
 
         elif old.channel and new.channel and old.channel.id != new.channel.id:
-            await self.on_user_change_voice(member, old, new)
+            self.on_user_change_voice(member, old, new)
+
+        print(f"Updated VCs: {time.time() - now}")
 
 def setup(bot):
     bot.add_cog(Devils(bot))
