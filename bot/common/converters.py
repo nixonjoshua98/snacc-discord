@@ -3,7 +3,7 @@ import discord
 from discord.ext import commands
 
 
-class DiscordUser(commands.UserConverter):
+class DiscordUser(commands.MemberConverter):
 	"""
 	Converter to ensure that the user is present in the server, not the author or a bot
 

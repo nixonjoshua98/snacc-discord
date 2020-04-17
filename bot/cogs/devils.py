@@ -2,8 +2,6 @@ import discord
 
 from discord.ext import commands
 
-import time
-
 
 class VoiceChannelsState:
     def __init__(self, guild: discord.Guild):
@@ -78,8 +76,6 @@ class Devils(commands.Cog):
         if not self.state:
             return
 
-        now = time.time()
-
         self.state.update_voice_channels(add_members=False)
 
         if old.channel is None and new.channel:
@@ -91,7 +87,6 @@ class Devils(commands.Cog):
         elif old.channel and new.channel and old.channel.id != new.channel.id:
             self.on_user_change_voice(member, old, new)
 
-        print(f"Updated VCs: {time.time() - now}")
 
 def setup(bot):
     bot.add_cog(Devils(bot))
