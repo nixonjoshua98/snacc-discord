@@ -71,7 +71,7 @@ class HangmanGame:
 
         if self.lives_remaining <= 0:
             HangmanGame.remove_instance(message)
-            asyncio.create_task(message.channel.send("Hangman game has ended! You have run out of lives."))
+            asyncio.create_task(message.channel.send(f"You have run out of lives. The word was {self.hidden_word}"))
 
     def user_on_cooldown(self, message):
         last_guess_time = self.cooldowns.get(message.author.id, None)
@@ -96,6 +96,8 @@ class HangmanGame:
         return False
 
     def check_letter_guess(self, guess: str) -> int:
+        """ Check the guess """
+
         if len(guess) != 1:
             return INVALID_GUESS
 
@@ -107,9 +109,12 @@ class HangmanGame:
 
             return CORRECT_GUESS
 
+        self.letter_guesses.add(guess)
+
         return WRONG_GUESS
 
     def check_win(self, message):
+        """ Check if the game has won, and do some stuff like send win messages """
         won = all(char.upper() in self.letter_guesses for char in self.hidden_word if not char.isspace())
 
         if won:
@@ -123,6 +128,7 @@ class HangmanGame:
 
     @staticmethod
     def get_word():
+        """ Return a random word from the word list """
         if not HangmanGame._all_words:
             HangmanGame.get_all_words()
 
@@ -132,10 +138,12 @@ class HangmanGame:
 
     @staticmethod
     def get_all_words():
+        """ Load the word list into memory """
         with open("./bot/data/words.txt") as fh:
             HangmanGame._all_words = set(fh.read().splitlines())
 
     def encode_word(self):
+        """ Encode the hidden word using other characters """
         s = []
 
         for w in self.hidden_word:
@@ -192,15 +200,17 @@ class Hangman(commands.Cog):
     @commands.has_permissions(administrator=True)
     @commands.command(name="giveup")
     async def giveup(self, ctx):
+        """ Give up the current hangman game """
+
         game = HangmanGame.get_instance(ctx.message)
 
         if game is None:
             await ctx.send("Start a hangman game first!")
 
         else:
-            game = HangmanGame(ctx)
+            HangmanGame.remove_instance(ctx.message)
 
-            await game.show_game(ctx)
+            await ctx.send("You gave on on the hangman game!")
 
     @commands.command(name="hlb")
     async def leaderboard(self, ctx):
