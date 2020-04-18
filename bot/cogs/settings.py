@@ -36,7 +36,7 @@ class Settings(commands.Cog):
 
 	@commands.command(name="prefix", usage="<prefix>")
 	async def set_prefix(self, ctx: commands.Context, prefix: str):
-		""" Set the prefix for this server. Bot can also be mentioned. """
+		""" Set the prefix for this server. """
 
 		await ctx.bot.pool.execute(ServersSQL.UPDATE_PREFIX, ctx.guild.id, prefix)
 		await self.bot.update_prefixes(ctx.message)

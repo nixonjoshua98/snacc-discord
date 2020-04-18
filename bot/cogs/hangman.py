@@ -1,14 +1,19 @@
 import discord
 import asyncio
 
+from datetime import datetime
+
 from discord.ext import commands
 
 from bot.common.queries import HangmanSQL
+from bot.common.emoji import Emoji
 
 from bot.structures.leaderboard import HangmanWins
 
 
 class HangmanGame:
+    GUESS_COOLDOWN = 1
+
     _instances = dict()
     _all_words = set()
 
@@ -17,10 +22,13 @@ class HangmanGame:
 
         self.word_guesses = set()
         self.letter_guesses = set()
+        self.cooldowns = dict()
 
         self.hidden_word = self.get_word()
 
-        HangmanGame._instances[ctx.guild.id] = self
+        print(self.hidden_word)
+
+        HangmanGame._instances[ctx.channel.id] = self
 
     @staticmethod
     def get_instance(id_):
@@ -29,20 +37,43 @@ class HangmanGame:
     def on_message(self, message: discord.Message):
         content = message.content.upper()
 
-        if self.check_letter(content) or self.check_word(content):
-            if self.check_win():
-                HangmanGame._instances.pop(message.guild.id, None)
+        if self.check_user_cooldown(message):
+            if self.check_letter(content) or self.check_word(content):
+                if self.check_win():
+                    HangmanGame._instances.pop(message.guild.id, None)
 
-                win_text = f"{message.author.mention} won! The word was `{self.hidden_word}`"
+                    win_text = f"{message.author.mention} won! The word was `{self.hidden_word}`"
 
-                asyncio.create_task(self.bot.pool.execute(HangmanSQL.UPDATE_WINS, message.author.id))
-                asyncio.create_task(message.channel.send(win_text))
+                    asyncio.create_task(self.bot.pool.execute(HangmanSQL.UPDATE_WINS, message.author.id))
+                    asyncio.create_task(message.channel.send(win_text))
 
-            else:
-                asyncio.create_task(self.show_game(message.channel))
+                else:
+                    asyncio.create_task(self.show_game(message.channel))
 
     async def show_game(self, dest):
         return await dest.send(f"``{self.encode_word()}``")
+
+    def check_user_cooldown(self, message):
+        last_guess_time = self.cooldowns.get(message.author.id, None)
+
+        if last_guess_time:
+            seconds_since_guess = (datetime.now() - last_guess_time).total_seconds()
+
+            # Cooldown has passed
+            if seconds_since_guess >= self.GUESS_COOLDOWN:
+                self.cooldowns[message.author.id] = datetime.now()
+
+            # User still on cooldown
+            else:
+                asyncio.create_task(message.add_reaction(Emoji.ALARM_CLOCK))
+
+                return False
+
+        # user has no cooldown yet
+        else:
+            self.cooldowns[message.author.id] = datetime.now()
+
+        return True
 
     def check_letter(self, guess: str) -> bool:
         if len(guess) != 1:
@@ -107,7 +138,7 @@ class Hangman(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         if not message.author.bot:
-            inst: HangmanGame = HangmanGame.get_instance(message.guild.id)
+            inst: HangmanGame = HangmanGame.get_instance(message.channel.id)
 
             if inst is not None:
                 inst.on_message(message)
@@ -120,7 +151,7 @@ Start a new guild hangman game or show the current game
 __How to Play__
 Guess a letter or word by giving a guess without any prefix.
 """
-        game = HangmanGame.get_instance(ctx.guild.id)
+        game = HangmanGame.get_instance(ctx.channel.id)
 
         if game is None:
             game = HangmanGame(ctx)
@@ -133,7 +164,7 @@ Guess a letter or word by giving a guess without any prefix.
     async def show(self, ctx):
         """ Show the current hangman game """
 
-        game = HangmanGame.get_instance(ctx.guild.id)
+        game = HangmanGame.get_instance(ctx.channel.id)
 
         if game is None:
             await ctx.send("Start a hangman game first!")
