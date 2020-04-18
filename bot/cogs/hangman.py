@@ -12,7 +12,7 @@ from bot.structures.leaderboard import HangmanWins
 
 
 class HangmanGame:
-    GUESS_COOLDOWN = 1
+    GUESS_COOLDOWN = 2.5
 
     _instances = dict()
     _all_words = set()
@@ -20,13 +20,10 @@ class HangmanGame:
     def __init__(self, ctx):
         self.bot = ctx.bot
 
-        self.word_guesses = set()
         self.letter_guesses = set()
         self.cooldowns = dict()
 
         self.hidden_word = self.get_word()
-
-        print(self.hidden_word)
 
         HangmanGame._instances[ctx.channel.id] = self
 
@@ -37,23 +34,24 @@ class HangmanGame:
     def on_message(self, message: discord.Message):
         content = message.content.upper()
 
-        if self.check_user_cooldown(message):
-            if self.check_letter(content) or self.check_word(content):
-                if self.check_win():
-                    HangmanGame._instances.pop(message.guild.id, None)
+        if self.user_on_cooldown(message) or not self.check_letter(content):
+            return
 
-                    win_text = f"{message.author.mention} won! The word was `{self.hidden_word}`"
+        if self.check_win():
+            HangmanGame._instances.pop(message.channel.id, None)
 
-                    asyncio.create_task(self.bot.pool.execute(HangmanSQL.UPDATE_WINS, message.author.id))
-                    asyncio.create_task(message.channel.send(win_text))
+            win_text = f"{message.author.mention} won! The word was `{self.hidden_word}`"
 
-                else:
-                    asyncio.create_task(self.show_game(message.channel))
+            asyncio.create_task(self.bot.pool.execute(HangmanSQL.UPDATE_WINS, message.author.id))
+            asyncio.create_task(message.channel.send(win_text))
+
+        else:
+            asyncio.create_task(self.show_game(message.channel))
 
     async def show_game(self, dest):
         return await dest.send(f"``{self.encode_word()}``")
 
-    def check_user_cooldown(self, message):
+    def user_on_cooldown(self, message):
         last_guess_time = self.cooldowns.get(message.author.id, None)
 
         if last_guess_time:
@@ -67,13 +65,13 @@ class HangmanGame:
             else:
                 asyncio.create_task(message.add_reaction(Emoji.ALARM_CLOCK))
 
-                return False
+                return True
 
         # user has no cooldown yet
         else:
             self.cooldowns[message.author.id] = datetime.now()
 
-        return True
+        return False
 
     def check_letter(self, guess: str) -> bool:
         if len(guess) != 1:
@@ -85,19 +83,10 @@ class HangmanGame:
 
         return correct
 
-    def check_word(self, guess: str) -> bool:
-        if len(guess) <= 1:
-            return False
-
-        self.word_guesses.add(guess)
-
-        return guess == self.hidden_word.upper()
-
     def check_win(self):
-        correct_words = self.hidden_word.upper() in self.word_guesses
-        correct_letters = all(char.upper() in self.letter_guesses for char in self.hidden_word if not char.isspace())
+        game_won = all(char.upper() in self.letter_guesses for char in self.hidden_word if not char.isspace())
 
-        return correct_words or correct_letters
+        return game_won
 
     @staticmethod
     def get_word():
