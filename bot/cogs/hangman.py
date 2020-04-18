@@ -31,8 +31,6 @@ class HangmanGame:
 
         self.hidden_word = self.get_word()
 
-        print(self.hidden_word)
-
         HangmanGame.set_instance(ctx.message, self)
 
     @staticmethod
@@ -48,7 +46,7 @@ class HangmanGame:
         HangmanGame._instances.pop(message.channel.id, None)
 
     def on_message(self, message: discord.Message):
-        if self.user_on_cooldown(message):
+        if len(message.content) > 1 or self.user_on_cooldown(message):
             return
 
         check = self.check_letter_guess(message.content.upper())
@@ -189,6 +187,19 @@ class Hangman(commands.Cog):
             await ctx.send("Start a hangman game first!")
 
         else:
+            await game.show_game(ctx)
+
+    @commands.has_permissions(administrator=True)
+    @commands.command(name="giveup")
+    async def giveup(self, ctx):
+        game = HangmanGame.get_instance(ctx.message)
+
+        if game is None:
+            await ctx.send("Start a hangman game first!")
+
+        else:
+            game = HangmanGame(ctx)
+
             await game.show_game(ctx)
 
     @commands.command(name="hlb")
