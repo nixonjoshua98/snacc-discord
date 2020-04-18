@@ -50,7 +50,7 @@ class HangmanGame:
             return
 
         check = self.check_letter_guess(message.content.upper())
-
+        
         if check == ALREADY_GUESSED:
             return
 
@@ -64,14 +64,14 @@ class HangmanGame:
             self.reduce_lives(message)
 
     async def show_game(self, dest):
-        return await dest.send(f"``{self.encode_word()}`` [{self.lives_remaining}]")
+        return await dest.send(f"`{self.encode_word()}` [{self.lives_remaining}]")
 
     def reduce_lives(self, message):
         self.lives_remaining -= 1
 
         if self.lives_remaining <= 0:
             HangmanGame.remove_instance(message)
-            asyncio.create_task(message.channel.send(f"You have run out of lives. The word was {self.hidden_word}"))
+            asyncio.create_task(message.channel.send(f"You have run out of lives. The word was `{self.hidden_word}`"))
 
     def user_on_cooldown(self, message):
         last_guess_time = self.cooldowns.get(message.author.id, None)
@@ -98,11 +98,9 @@ class HangmanGame:
     def check_letter_guess(self, guess: str) -> int:
         """ Check the guess """
 
-        if len(guess) != 1:
-            return INVALID_GUESS
+        if len(guess) != 1: return INVALID_GUESS
 
-        if guess in self.letter_guesses:
-            return ALREADY_GUESSED
+        if guess in self.letter_guesses: return ALREADY_GUESSED
 
         elif guess in self.hidden_word.upper():
             self.letter_guesses.add(guess)
@@ -210,7 +208,7 @@ class Hangman(commands.Cog):
         else:
             HangmanGame.remove_instance(ctx.message)
 
-            await ctx.send("You gave on on the hangman game!")
+            await ctx.send(f"{ctx.message.author.mention} gave on on the hangman game.")
 
     @commands.command(name="hlb")
     async def leaderboard(self, ctx):
