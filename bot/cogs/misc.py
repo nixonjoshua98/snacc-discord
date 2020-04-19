@@ -22,10 +22,10 @@ class Misc(commands.Cog):
         def get_colour():
             return discord.Colour.from_rgb(random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
 
-        while True:
-            guild = self.bot.get_guild(DARKNESS_GUILD)
+        guild = self.bot.get_guild(DARKNESS_GUILD)
 
-            role = discord.utils.get(guild.roles, name="RGB")
+        while True:
+            role = discord.utils.get(guild.roles, name="RGB") if guild is not None else None
 
             if role is None:
                 continue
@@ -36,7 +36,7 @@ class Misc(commands.Cog):
             except (discord.Forbidden, discord.HTTPException) as e:
                 print(e)
 
-            await asyncio.sleep(5)
+            await asyncio.sleep(3)
 
 
 def setup(bot):
