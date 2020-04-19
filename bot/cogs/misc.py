@@ -15,6 +15,9 @@ class Misc(commands.Cog):
     async def on_ready(self):
         await self.rgb_loop()
 
+    async def cog_check(self, ctx):
+        return ctx.guild.id == DARKNESS_GUILD
+
     async def rgb_loop(self):
         def get_colour():
             return discord.Colour.from_rgb(random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
@@ -24,11 +27,14 @@ class Misc(commands.Cog):
 
             role = discord.utils.get(guild.roles, name="RGB")
 
+            if role is None:
+                continue
+
             try:
                 await role.edit(colour=get_colour())
 
-            except (discord.Forbidden, discord.HTTPException, AttributeError):
-                pass
+            except (discord.Forbidden, discord.HTTPException) as e:
+                print(e)
 
             await asyncio.sleep(5)
 
