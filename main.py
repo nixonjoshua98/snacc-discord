@@ -14,8 +14,7 @@ if __name__ == '__main__':
     bot.load_extension("bot.cogs.hangman")
     bot.load_extension("bot.cogs.settings")
     bot.load_extension("bot.cogs.listeners")
-
-    # bot.load_extension("bot.cogs.devils")
+    bot.load_extension("bot.cogs.misc")
 
     loop.create_task(bot.start("NjY2NjE2NTE1NDM2NDc4NDcz.XofF-Q.YNe2fpEgieFmOSrgBQVywdl4rRo"))
 

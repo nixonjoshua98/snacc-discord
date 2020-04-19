@@ -12,6 +12,8 @@ class Coins(commands.Cog):
         self.bank = self.bot.get_cog("Bank")
 
     async def cog_before_invoke(self, ctx):
+        self.bank = self.bot.get_cog("Bank") if self.bank is None else self.bank
+        
         ctx.user_balance = await self.bank.get_user_balance(ctx.author)
 
     @commands.cooldown(1, 60 * 60, commands.BucketType.user)

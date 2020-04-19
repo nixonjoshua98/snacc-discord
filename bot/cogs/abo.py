@@ -12,6 +12,8 @@ from bot.common import (
 	DBConnection,
 )
 
+from bot.common.constants import DARKNESS_GUILD, MEMBER_ROLE
+
 
 class ABO(commands.Cog):
 	def __init__(self, bot):
@@ -20,10 +22,10 @@ class ABO(commands.Cog):
 		self.leaderboards = dict()
 
 	async def cog_check(self, ctx):
-		return ctx.guild.id == 666613802657382435 and await self.get_member_role(ctx.guild) in ctx.author.roles
+		return ctx.guild.id == DARKNESS_GUILD and await self.get_member_role(ctx.guild) in ctx.author.roles
 
 	async def get_member_role(self, guild):
-		return guild.get_role(666615010579054614)
+		return guild.get_role(MEMBER_ROLE)
 
 	@commands.command(name="me", help="Display stats")
 	async def get_stats(self, ctx: commands.Context):
