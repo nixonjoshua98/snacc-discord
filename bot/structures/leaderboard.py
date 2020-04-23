@@ -15,7 +15,7 @@ class LeaderboardBase:
 
         self._leaderboard = ""
         self._max_col_width = 15    # Max column width
-        self._update_timer = 15     # Update every 50 mins
+        self._update_timer = 10
         self._last_updated = None
 
     async def get(self, author):

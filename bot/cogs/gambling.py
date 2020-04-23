@@ -38,7 +38,7 @@ class Gambling(commands.Cog):
 
 	@commands.cooldown(1, 3, commands.BucketType.user)
 	@commands.command(name="fl", aliases=["flip"], usage="<bet=10>")
-	async def flip(self, ctx, bet: Clamp(1, 10_000) = 10):
+	async def flip(self, ctx, bet: Clamp(1, 100_000) = 10):
 		""" Flip a coin and bet on what said it lands on """
 
 		if ctx.user_balance["coins"] < bet:
@@ -54,7 +54,7 @@ class Gambling(commands.Cog):
 
 	@commands.cooldown(1, 3, commands.BucketType.user)
 	@commands.command(name="bet", aliases=["roll"], usage="<sides=6> <side=6> <bet=10>")
-	async def bet(self, ctx, sides: Clamp(6, 100) = 6, side: int = 6, bet: Clamp(1, 10_000) = 10):
+	async def bet(self, ctx, sides: Clamp(6, 100) = 6, side: int = 6, bet: Clamp(1, 100_000) = 10):
 		"""
 		Roll a die and bet on which [side] the die lands on. Winnings are calculated by [bet] * [sides - 1].
 		"""
