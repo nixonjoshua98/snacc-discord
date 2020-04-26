@@ -50,7 +50,7 @@ class ABO(commands.Cog):
 		return await ctx.send(embed=embed)
 
 	@commands.command(name="set", aliases=["s"], usage="<level> <trophies>")
-	async def set_stats(self, ctx, level: IntegerRange(0, 150), trophies: IntegerRange(0, 5000)):
+	async def set_stats(self, ctx, level: IntegerRange(0, 150), trophies: IntegerRange(0, 6_000)):
 		""" Set your ABO stats, which are visible on the leaderboard """
 		with DBConnection() as con:
 			params = (ctx.author.id, level, trophies, datetime.now())
@@ -61,7 +61,7 @@ class ABO(commands.Cog):
 
 	@commands.has_permissions(administrator=True)
 	@commands.command(name="setuser", aliases=["su"], usage="<user> <level> <trophies>")
-	async def set_user(self, ctx, user: discord.Member, level: IntegerRange(0, 150), trophies: IntegerRange(0, 5000)):
+	async def set_user(self, ctx, user: discord.Member, level: IntegerRange(0, 150), trophies: IntegerRange(0, 6_000)):
 		""" Set another members ABO stats """
 		with DBConnection() as con:
 			params = (user.id, level, trophies, datetime.now())
