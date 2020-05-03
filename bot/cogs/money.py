@@ -20,7 +20,7 @@ class Money(commands.Cog):
 
         daily_money = random.randint(250, 1000)
 
-        bank = await self.bot.get_cog("Bank")
+        bank = self.bot.get_cog("Bank")
 
         await bank.update_coins(ctx.author, daily_money)
 
@@ -32,7 +32,7 @@ class Money(commands.Cog):
 
         user = user if user is not None else ctx.author
 
-        bank = await self.bot.get_cog("Bank")
+        bank = self.bot.get_cog("Bank")
 
         target_balance = await bank.get_user_balance(ctx.author)
 
@@ -48,7 +48,7 @@ class Money(commands.Cog):
         if random.randint(0, 2) != 0:
             return await ctx.send(f"**{ctx.author.display_name}** stole nothing from **{user.display_name}**")
 
-        bank = await self.bot.get_cog("Bank")
+        bank = self.bot.get_cog("Bank")
 
         target_balance = await bank.get_user_balance(ctx.author)
 
@@ -67,7 +67,7 @@ class Money(commands.Cog):
     async def gift(self, ctx, user: DiscordUser(), amount: int):
         """ Gift some money to another user. """
 
-        bank = await self.bot.get_cog("Bank")
+        bank = self.bot.get_cog("Bank")
 
         user_balance = await bank.get_user_balance(ctx.author)
 

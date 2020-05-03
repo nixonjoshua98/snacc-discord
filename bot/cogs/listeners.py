@@ -4,19 +4,6 @@ from discord.ext import commands
 
 from bot.common import checks
 
-GUILD_JOIN_TEXT = """
-The infamous **{bot.user.name}** has graced your ~~lowly~~ server! [{guild.owner.mention}]
-
-My default prefix is **{bot.default_prefix}**...obviously
-
-**__Help__**
-- **{bot.default_prefix}help**...durp
-- Contact my almighty creator **{bot_info.owner}**
-
-**__Invite Me__**
-https://discordapp.com/oauth2/authorize?client_id=666616515436478473&scope=bot&permissions=8
-"""
-
 
 class Listeners(commands.Cog):
     def __init__(self, bot):
@@ -34,7 +21,10 @@ class Listeners(commands.Cog):
     async def on_guild_join(self, guild: discord.Guild):
         bot_info = await self.bot.application_info()
 
-        welc_msg = GUILD_JOIN_TEXT.format(guild=guild, bot=self.bot, bot_info=bot_info)
+        with open("./bot/data/on_guild_join.txt") as fh:
+            template = fh.read()
+
+        welc_msg = template.format(guild=guild, bot=self.bot, bot_info=bot_info)
         owner_dm = f"I joined the server **{guild.name}** owned by **{guild.owner}**"
 
         await bot_info.owner.send(owner_dm)
