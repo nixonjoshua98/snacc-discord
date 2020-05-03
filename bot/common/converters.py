@@ -29,13 +29,13 @@ class DiscordUser(commands.MemberConverter):
 			member = await super().convert(ctx, argument)
 
 		except commands.BadArgument:
-			raise commands.CommandNotFound(f"User `{argument}` could not be found.")
+			raise commands.CommandError(f"User `{argument}` could not be found.")
 
 		if not self.author_ok and member.id == ctx.author.id:
-			raise commands.CommandNotFound("You cannot target youself.")
+			raise commands.CommandError("You cannot target youself.")
 
 		elif member.bot:
-			raise commands.CommandNotFound("Bot accounts cannot be used here.")
+			raise commands.CommandError("Bot accounts cannot be used here.")
 
 		return member
 

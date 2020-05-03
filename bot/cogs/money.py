@@ -78,7 +78,7 @@ class Money(commands.Cog):
 
         await bank.update_coins(user, amount)
 
-        await ctx.send(f"{ctx.author.display_name} gifted **${amount:,}** to **{user.display_name}**")
+        await ctx.send(f"{ctx.author.display_name} gave **${amount:,}** to **{user.display_name}**")
 
     @commands.command(name="moneylb", aliases=["richest", "mlb"])
     async def leaderboard(self, ctx: commands.Context):
