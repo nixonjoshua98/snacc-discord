@@ -30,7 +30,7 @@ class Listeners(commands.Cog):
             except discord.Forbidden:
                 """ Bot doesn't have access to the system channel """
 
-    @commands.Cog.listener()
+    @commands.Cog.listener("on_guild_join")
     async def on_guild_join(self, guild: discord.Guild):
         bot_info = await self.bot.application_info()
 
@@ -40,14 +40,14 @@ class Listeners(commands.Cog):
         await bot_info.owner.send(owner_dm)
         await self._send_system_channel(guild, welc_msg)
 
-    @commands.Cog.listener()
+    @commands.Cog.listener("on_member_join")
     async def on_member_join(self, member: discord.Member):
         join_msg = f"Welcome {member.mention} to {member.guild.name}!"
 
         await self._send_system_channel(member.guild, join_msg)
 
         try:
-            svr = await self.bot.get_cog("Settings").get_server(member.guild)
+            svr = await self.bot.get_cog("Settings").get_server_settings(member.guild)
 
             role = member.guild.get_role(svr["entryrole"])
 
@@ -57,18 +57,18 @@ class Listeners(commands.Cog):
         except discord.Forbidden:
             """ We cannot add the role """
 
-    @commands.Cog.listener()
+    @commands.Cog.listener("on_member_remove")
     async def on_member_remove(self, member: discord.Member):
         msg = f"**{str(member)}** " + (f"({member.nick}) " if member.nick is not None else "") + "has left the server"
 
         await self._send_system_channel(member.guild, msg)
 
 
-class VListeners(commands.Cog, command_attrs=dict(hidden=True)):
+class VListeners(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-        self.hidden = True
+        self.hidden = True  # Hides Cog from the Help section
 
     async def cog_check(self, ctx: commands.Context):
         return await self.bot.is_owner(ctx.author) or checks.author_is_server_owner(ctx)

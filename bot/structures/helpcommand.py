@@ -21,24 +21,19 @@ class HelpCommand(commands.HelpCommand):
         all_commands = {}
 
         for cog, instance in bot.cogs.items():
-            hidden = getattr(instance, "hidden", False)
-
-            if hidden:
+            if getattr(instance, "hidden", False):
                 continue
 
             cmds = await self.filter_commands(instance.get_commands())
-
             cmds = tuple(chunks(cmds, 10))
 
-            if len(cmds) == 1:
-                all_commands[cog] = cmds[0]
-            else:
-                for i, j in enumerate(cmds):
-                    all_commands[f"{cog} | Page ({i + 1}/{len(cmds)})"] = j
+            for i, j in enumerate(cmds):
+                all_commands[f"{cog} | Page ({i + 1}/{len(cmds)})"] = j
 
         pages, max_pages = [],  len(all_commands)
 
         embed = discord.Embed(title=f"{bot.user.display_name}", color=0xff8000)
+
         embed.set_footer(text=bot.user.display_name, icon_url=bot.user.avatar_url)
         embed.set_thumbnail(url=bot.user.avatar_url)
 
@@ -50,9 +45,10 @@ class HelpCommand(commands.HelpCommand):
             embed.set_thumbnail(url=bot.user.avatar_url)
 
             for cmd in cmds:
-                desc = getattr(cmd.callback, "__doc__", cmd.help)
+                name = f"[{'|'.join([cmd.name] + cmd.aliases)}] {cmd.usage or ''}"
+                value = getattr(cmd.callback, "__doc__", cmd.help)
 
-                embed.add_field(name=f"[{'|'.join([cmd.name] + cmd.aliases)}] {cmd.usage or ''}", value=desc, inline=False)
+                embed.add_field(name=name, value=value, inline=False)
 
             embed.set_footer(text=f"{bot.user.name} | Page {i + 1}/{max_pages}", icon_url=bot.user.avatar_url)
 
@@ -84,7 +80,7 @@ class HelpCommand(commands.HelpCommand):
         while True:
             try:
                 # Wait for a reaction
-                react, _ = await bot.wait_for("reaction_add", timeout=6, check=wait_for)
+                react, _ = await bot.wait_for("reaction_add", timeout=60, check=wait_for)
 
             except asyncio.TimeoutError:
                 try:

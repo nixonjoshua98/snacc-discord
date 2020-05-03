@@ -8,7 +8,7 @@ from discord.ext import commands
 from bot.common.queries import HangmanSQL
 from bot.common.emoji import Emoji
 
-from bot.structures.leaderboard import HangmanWins
+from bot.structures.leaderboard import HangmanLeaderboard
 
 WRONG_GUESS = 0
 ALREADY_GUESSED = 1
@@ -118,7 +118,7 @@ class HangmanGame:
         if won:
             HangmanGame.remove_instance(message)
             win_text = f"{message.author.mention} won! The word was `{self.hidden_word}`"
-            asyncio.create_task(self.bot.pool.execute(HangmanSQL.UPDATE_WINS, message.author.id))
+            asyncio.create_task(self.bot.pool.execute(HangmanSQL.INCREMENT_WINS, message.author.id))
             asyncio.create_task(message.channel.send(win_text))
 
         else:
@@ -137,11 +137,13 @@ class HangmanGame:
     @staticmethod
     def get_all_words():
         """ Load the word list into memory """
+
         with open("./bot/data/words.txt") as fh:
             HangmanGame._all_words = set(fh.read().splitlines())
 
     def encode_word(self):
         """ Encode the hidden word using other characters """
+
         s = []
 
         for w in self.hidden_word:
@@ -173,7 +175,8 @@ class Hangman(commands.Cog):
 
     @commands.command(name="hangman", aliases=["h"])
     async def hangman(self, ctx):
-        """ Start a new guild hangman game or show the current game """
+        """ Start a new guild hangman game or show the current game. """
+
         game = HangmanGame.get_instance(ctx.message)
 
         if game is None:
@@ -185,7 +188,7 @@ class Hangman(commands.Cog):
 
     @commands.command(name="show")
     async def show(self, ctx):
-        """ Show the current hangman game """
+        """ Show the current hangman game. """
 
         game = HangmanGame.get_instance(ctx.message)
 
@@ -198,7 +201,7 @@ class Hangman(commands.Cog):
     @commands.has_permissions(administrator=True)
     @commands.command(name="giveup")
     async def giveup(self, ctx):
-        """ Give up the current hangman game """
+        """ Give up the current hangman game. """
 
         game = HangmanGame.get_instance(ctx.message)
 
@@ -212,9 +215,9 @@ class Hangman(commands.Cog):
 
     @commands.command(name="hlb")
     async def leaderboard(self, ctx):
-        """ Shows the top hangman players """
+        """ Shows the top hangman players. """
 
-        return await ctx.send(await HangmanWins(ctx).create())
+        return await ctx.send(await HangmanLeaderboard(ctx).create())
 
 
 def setup(bot):

@@ -2,9 +2,7 @@ import discord
 
 from discord.ext import commands
 
-from bot.common import (
-	checks,
-)
+from bot.common import checks
 
 from bot.common.queries import ServersSQL
 
@@ -19,10 +17,14 @@ class Settings(commands.Cog):
 		return await self.bot.is_owner(ctx.author) or checks.author_is_server_owner(ctx)
 
 	async def cog_before_invoke(self, ctx: commands.Context):
-		ctx.server_config = await self.get_server(ctx.guild)
+		""" Invoked before the command """
 
-	async def get_server(self, guild):
-		""" Return the server configuration or add a new entry and return the default configuration. """
+		# Ensure that a row exists before we try to edit it
+		_ = await self.get_server_settings(ctx.guild)
+
+	async def get_server_settings(self, guild):
+		""" Return the server configuration or add a new entry and return the default configuration """
+
 		async with self.bot.pool.acquire() as con:
 			async with con.transaction():
 				svr = await con.fetchrow(ServersSQL.SELECT_SERVER, guild.id)
@@ -39,25 +41,32 @@ class Settings(commands.Cog):
 		""" Set the prefix for this server. """
 
 		await ctx.bot.pool.execute(ServersSQL.UPDATE_PREFIX, ctx.guild.id, prefix)
+
 		await self.bot.update_prefixes(ctx.message)
-		await ctx.send(f"Prefix has been updated to **{prefix}**")
+
+		await ctx.send(f"Server prefix has been updated to **{prefix}**")
 
 	@commands.command(name="setentryrole", usage="<role=0>")
 	async def set_entry_role(self, ctx: commands.Context, role: discord.Role = 0):
 		"""
 Set the role which is given to every user who joins this server.
-__Remove__ the role by not using any parameters
+__Remove__ the role by not using any parameters.
 		"""
 
+		# Remove the role
 		if role == 0:
-			await ctx.bot.pool.execute(ServersSQL.UPDATE_ENTRY_ROLE, ctx.guild.id, role)#
+			await ctx.bot.pool.execute(ServersSQL.UPDATE_ENTRY_ROLE, ctx.guild.id, role)
+
 			await ctx.send("Entry role has been removed")
 
+		# Role is too high for the bot
 		elif role > ctx.guild.me.top_role:
 			await ctx.send(f"I cannot use the role **{role.name}**. The role is higher than me")
 
+		# Role is OK
 		else:
 			await ctx.bot.pool.execute(ServersSQL.UPDATE_ENTRY_ROLE, ctx.guild.id, role.id)
+
 			await ctx.send(f"Entry role has been set to **{role.name}**")
 
 

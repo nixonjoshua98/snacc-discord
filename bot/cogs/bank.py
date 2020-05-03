@@ -1,44 +1,24 @@
 import discord
-import random
 
 from discord.ext import commands
 
 from bot.common.queries import BankSQL
 
-from bot.structures.leaderboard import RichestPlayers
-
-from bot.common.converters import DiscordUser
-
 
 class Bank(commands.Cog):
-    DEFAULT_ROW = [500]
+    DEFAULT_ROW = [500, 0]
 
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.cooldown(1, 60 * 60 * 24, commands.BucketType.user)
-    @commands.command(name="daily")
-    async def daily(self, ctx: commands.Context):
-        """ Get some free stuff daily! """
-
-        bal_diff = random.randint(250, 1000)
-
-        await self.update_coins(ctx.author, bal_diff)
-
-        await ctx.send(f"**{ctx.author.display_name}** gained **{bal_diff}** coins!")
-
-    @commands.command(name="balance", usage="<user=None>", aliases=["coins", "bal"])
-    async def balance(self, ctx, user: DiscordUser(author_ok=True) = None):
-        """ Show the bank balances of the user, or supply an optional user paramater. """
-        user = user if user is not None else ctx.author
-
-        bal = await self.get_user_balance(user)
-
-        coins = bal["coins"]
-
-        await ctx.send(f":moneybag: **{user.display_name}** has a total of **{coins:,}** coins")
-
     async def get_user_balance(self, author: discord.Member):
+        """
+        Return the users bank row, or create a new user entry in the database if they do not exist and return that.
+
+        :param discord.Member author: The user whose data we want to pull
+        :return: The record which is linked ot the author
+        """
+
         async with self.bot.pool.acquire() as con:
             async with con.transaction():
                 user = await con.fetchrow(BankSQL.SELECT_USER, author.id)
@@ -51,16 +31,9 @@ class Bank(commands.Cog):
         return user
 
     async def update_coins(self, author, amount):
-        q = BankSQL.ADD_COINS if amount > 0 else BankSQL.SUB_COINS
+        q = BankSQL.ADD_MONEY if amount > 0 else BankSQL.SUB_MONEY
 
         await self.bot.pool.execute(q, author.id, abs(amount))
-
-    @commands.command(name="coinlb", aliases=["richest", "clb"])
-    async def leaderboard(self, ctx: commands.Context):
-        """ Show the richest players """
-
-        return await ctx.send(await RichestPlayers(ctx).create())
-
 
 def setup(bot):
     bot.add_cog(Bank(bot))

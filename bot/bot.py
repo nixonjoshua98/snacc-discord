@@ -1,13 +1,11 @@
 import os
 import discord
 import asyncpg
-import ssl
 
 from discord.ext import commands
 
-from configparser import ConfigParser
-
-from bot.structures import HelpCommand
+from bot.common import utils
+from bot.structures.helpcommand import HelpCommand
 
 
 class SnaccBot(commands.Bot):
@@ -27,21 +25,15 @@ class SnaccBot(commands.Bot):
 		print(f"Bot '{self.user.display_name}' is ready")
 
 	async def connect_database(self):
-		""" Creates database connection pool for the Discord bot. """
+		""" Creates a database connection pool for the Discord bot. """
 
-		# Local database
 		if os.getenv("DEBUG", False):
-			config = ConfigParser()
-			config.read("postgres.ini")
+			config = utils.read_config_section("./bot/config/postgres.ini", "postgres")
 
-			self.pool = await asyncpg.create_pool(**dict(config.items("postgres")), command_timeout=60, max_size=20)
+			self.pool = await asyncpg.create_pool(**dict(config), command_timeout=60, max_size=20)
 
-		# Heroku database
 		else:
-			# SSL stuff
-			ctx = ssl.create_default_context(cafile="./rds-combined-ca-bundle.pem")
-			ctx.check_hostname = False
-			ctx.verify_mode = ssl.CERT_NONE
+			ctx = utils.create_heroku_database_ssl()
 
 			self.pool = await asyncpg.create_pool(os.environ["DATABASE_URL"], ssl=ctx, command_timeout=60, max_size=20)
 
@@ -59,16 +51,13 @@ class SnaccBot(commands.Bot):
 		return await ctx.send(esc.args[0])
 
 	async def on_message(self, message: discord.Message):
-		if message.guild is not None:
+		if message.guild is not None and self.is_ready():
 			return await self.process_commands(message)
 
 	async def update_prefixes(self, message: discord.Message):
-		if self.pool is None:
-			return
-
 		settings = self.get_cog("Settings")
 
-		svr = await settings.get_server(message.guild)
+		svr = await settings.get_server_settings(message.guild)
 
 		self.prefixes[message.guild.id] = svr["prefix"]
 
