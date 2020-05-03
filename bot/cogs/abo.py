@@ -27,6 +27,15 @@ class ABO(commands.Cog):
 	async def get_member_role(self, guild):
 		return guild.get_role(MEMBER_ROLE)
 
+	@commands.command(name="ad")
+	async def ad(self, ctx):
+		""" Show the guild Ad currently stored """
+
+		with open("./bot/data/ad.txt") as fh:
+			ad = fh.read()
+
+		await ctx.send(ad)
+
 	@commands.command(name="me", help="Display stats")
 	async def get_stats(self, ctx: commands.Context):
 		""" Show your last recorded ABO stats """
