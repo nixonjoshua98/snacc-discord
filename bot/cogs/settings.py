@@ -46,18 +46,19 @@ class Settings(commands.Cog):
 	async def set_entry_role(self, ctx: commands.Context, role: discord.Role = 0):
 		"""
 Set the role which is given to every user who joins this server.
-**Remove** the role by not using any parameters
+__Remove__ the role by not using any parameters
 		"""
 
 		if role == 0:
 			await ctx.bot.pool.execute(ServersSQL.UPDATE_ENTRY_ROLE, ctx.guild.id, role)#
-			return await ctx.send("Entry role has been removed")
+			await ctx.send("Entry role has been removed")
 
-		if role > ctx.guild.me.top_role:
-			return await ctx.send(f"I cannot use the role **{role.name}**. The role is higher than me")
+		elif role > ctx.guild.me.top_role:
+			await ctx.send(f"I cannot use the role **{role.name}**. The role is higher than me")
 
-		await ctx.bot.pool.execute(ServersSQL.UPDATE_ENTRY_ROLE, ctx.guild.id, role.id)
-		await ctx.send(f"Entry role has been set to **{role.name}**")
+		else:
+			await ctx.bot.pool.execute(ServersSQL.UPDATE_ENTRY_ROLE, ctx.guild.id, role.id)
+			await ctx.send(f"Entry role has been set to **{role.name}**")
 
 
 def setup(bot):

@@ -19,16 +19,9 @@ class LeaderboardBase:
         self._last_updated = None
 
     async def get(self, author):
-        if self._last_updated is None:
-            await self._create()
+        await self._create()
 
-        mins_ago = int((datetime.now() - self._last_updated).total_seconds() // 60)
-
-        if mins_ago >= self._update_timer:
-            mins_ago = 0
-            await self._create()
-
-        lb = "```c++\n" + f"{self._title}\n\n[Updated: {mins_ago:,} min(s) ago]\n\n{self._leaderboard}" + "```"
+        lb = "```c++\n" + f"{self._leaderboard}" + "```"
 
         return lb[:2000]
 

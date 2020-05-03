@@ -84,13 +84,18 @@ class HelpCommand(commands.HelpCommand):
         while True:
             try:
                 # Wait for a reaction
-                react, _ = await bot.wait_for("reaction_add", timeout=60, check=wait_for)
+                react, _ = await bot.wait_for("reaction_add", timeout=6, check=wait_for)
 
             except asyncio.TimeoutError:
-                await message.delete()
+                try:
+                    await message.delete()
+                except discord.NotFound as e:
+                    pass
+
                 break
 
             else:
+                # Update which page the user is currently viewing
                 new_page = {
                     Emoji.ARROW_LEFT: max(0, current_page - 1),
                     Emoji.ARROW_RIGHT: min(current_page + 1, max_pages - 1)

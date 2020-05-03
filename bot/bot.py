@@ -26,9 +26,6 @@ class SnaccBot(commands.Bot):
 
 		print(f"Bot '{self.user.display_name}' is ready")
 
-	async def get_context(self, message, *, cls=commands.Context):
-		return await super().get_context(message, cls=cls)
-
 	async def connect_database(self):
 		""" Creates database connection pool for the Discord bot. """
 

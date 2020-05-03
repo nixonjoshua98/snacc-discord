@@ -16,9 +16,6 @@ class Bank(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def cog_before_invoke(self, ctx):
-        ctx.user_balance = await self.get_user_balance(ctx.author)
-
     @commands.cooldown(1, 60 * 60 * 24, commands.BucketType.user)
     @commands.command(name="daily")
     async def daily(self, ctx: commands.Context):
@@ -47,7 +44,7 @@ class Bank(commands.Cog):
                 user = await con.fetchrow(BankSQL.SELECT_USER, author.id)
 
                 if user is None:
-                    await con.execute(BankSQL.INSERT_USER, author.id, self.DEFAULT_ROW)
+                    await con.execute(BankSQL.INSERT_USER, author.id, *self.DEFAULT_ROW)
 
                     user = await con.fetchrow(BankSQL.SELECT_USER, author.id)
 
