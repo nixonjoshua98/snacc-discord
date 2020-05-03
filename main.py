@@ -2,7 +2,7 @@ import asyncio
 
 from bot.bot import SnaccBot
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     loop = asyncio.get_event_loop()
 
     bot = SnaccBot()

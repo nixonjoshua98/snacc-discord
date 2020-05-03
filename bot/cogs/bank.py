@@ -35,5 +35,6 @@ class Bank(commands.Cog):
 
         await self.bot.pool.execute(q, author.id, abs(amount))
 
+
 def setup(bot):
     bot.add_cog(Bank(bot))

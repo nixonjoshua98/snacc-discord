@@ -53,7 +53,7 @@ class AboSQL:
 
     SELECT_ALL = "SELECT * FROM abo;"
 
-    SELECT_HIGHEST = "SELECT * FROM abo ORDER BY trophies DESC LIMIT 45;"
+    SELECT_HIGHEST = "SELECT * FROM abo ORDER BY trophies;"
 
     UPDATE = "INSERT INTO abo (userID, lvl, trophies, dateSet) VALUES ($1, $2, $3, $4) " \
              "ON CONFLICT (userID) DO UPDATE " \
