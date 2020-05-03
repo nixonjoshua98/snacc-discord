@@ -71,7 +71,7 @@ class TrophyLeaderboard(Leaderboard):
     def __init__(self, ctx: commands.Context):
         super(TrophyLeaderboard, self).__init__(
             title="Trophy Leaderboard",
-            query=AboSQL.SELECT_HIGHEST,
+            query=AboSQL.SELECT_BEST,
             ctx=ctx,
             headers=["Lvl", "Trophies"],
             columns=["lvl", "trophies"]
