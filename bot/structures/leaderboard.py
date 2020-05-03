@@ -21,7 +21,7 @@ class LeaderboardBase:
     async def get(self, author):
         await self._create()
 
-        lb = "```c++\n" + f"{self._leaderboard}" + "```"
+        lb = "```c++\n" + f"Trophy leaderboard\n\n{self._leaderboard}" + "```"
 
         return lb[:2000]
 
