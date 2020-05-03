@@ -50,7 +50,7 @@ class Settings(commands.Cog):
 	async def set_entry_role(self, ctx: commands.Context, role: discord.Role = 0):
 		"""
 Set the role which is given to every user who joins this server.
-__Remove__ the role by not using any parameters.
+Remove the role by not using any parameters.
 		"""
 
 		# Remove the role
