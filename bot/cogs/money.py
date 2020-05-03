@@ -88,4 +88,4 @@ class Money(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(Bank(bot))
+    bot.add_cog(Money(bot))
