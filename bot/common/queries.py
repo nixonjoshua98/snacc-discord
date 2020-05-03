@@ -56,6 +56,6 @@ class AboSQL:
 
     SELECT_ALL = "SELECT * FROM abo;"
 
-    UPDATE = "INSERT INTO abo (userID, lvl, trophies, dateSet) VALUES ($1, $2, $3, $4) " \
-             "ON CONFLICT (userID) DO UPDATE " \
-             "SET lvl = excluded.lvl, trophies = excluded.trophies, dateSet = excluded.dateSet;"
+    UPDATE_USER = "INSERT INTO abo (userID, lvl, trophies, dateSet) VALUES ($1, $2, $3, $4) " \
+                  "ON CONFLICT (userID) DO UPDATE " \
+                  "SET lvl = excluded.lvl, trophies = excluded.trophies, dateSet = excluded.dateSet;"

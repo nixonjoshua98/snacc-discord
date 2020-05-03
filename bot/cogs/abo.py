@@ -38,7 +38,7 @@ class ABO(commands.Cog):
 	async def set_stats(self, ctx, level: IntegerRange(0, 150), trophies: IntegerRange(0, 6_000)):
 		""" Set your ABO stats, which are visible on the leaderboard. """
 
-		await self.bot.pool.execute(AboSQL.UPDATE, ctx.author.id, level, trophies, datetime.now())
+		await self.bot.pool.execute(AboSQL.UPDATE_USER, ctx.author.id, level, trophies, datetime.now())
 
 		await ctx.send(f"**{ctx.author.display_name}** :thumbsup:")
 
@@ -47,7 +47,7 @@ class ABO(commands.Cog):
 	async def set_user(self, ctx, user: discord.Member, level: IntegerRange(0, 150), trophies: IntegerRange(0, 7_500)):
 		""" Set another members ABO stats. """
 
-		await self.bot.pool.execute(AboSQL.UPDATE, user.id, level, trophies, datetime.now())
+		await self.bot.pool.execute(AboSQL.UPDATE_USER, user.id, level, trophies, datetime.now())
 
 		await ctx.send(f"**{user.display_name}** :thumbsup:")
 

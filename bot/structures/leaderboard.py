@@ -51,7 +51,7 @@ class MoneyLeaderboard(Leaderboard):
             title="Richest Players",
             query=BankSQL.SELECT_RICHEST,
             ctx=ctx,
-            headers=["Dolla"],
+            headers=["Money"],
             columns=["money"]
         )
 
