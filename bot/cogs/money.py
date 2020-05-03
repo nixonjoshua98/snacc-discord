@@ -80,7 +80,7 @@ class Money(commands.Cog):
 
         await ctx.send(f"{ctx.author.display_name} gifted **${amount:,}** to **{user.display_name}**")
 
-    @commands.command(name="coinlb", aliases=["richest", "clb"])
+    @commands.command(name="moneylb", aliases=["richest"])
     async def leaderboard(self, ctx: commands.Context):
         """ Show the richest players. """
 
