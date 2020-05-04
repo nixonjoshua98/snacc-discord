@@ -6,7 +6,7 @@ from bot.common.queries import BankSQL
 
 
 class Bank(commands.Cog):
-    DEFAULT_ROW = [500, 0]
+    DEFAULT_ROW = [500]
 
     def __init__(self, bot):
         self.bot = bot

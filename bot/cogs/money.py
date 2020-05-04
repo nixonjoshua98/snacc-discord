@@ -8,8 +8,6 @@ from bot.common.converters import DiscordUser
 
 
 class Money(commands.Cog):
-    DEFAULT_ROW = [500]
-
     def __init__(self, bot):
         self.bot = bot
 
