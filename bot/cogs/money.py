@@ -8,7 +8,7 @@ from bot.common.converters import DiscordUser
 
 
 class Money(commands.Cog):
-    DEFAULT_ROW = [500, 0]
+    DEFAULT_ROW = [500]
 
     def __init__(self, bot):
         self.bot = bot
@@ -46,7 +46,7 @@ class Money(commands.Cog):
         """ Attempt to steal from another user. """
 
         if random.randint(0, 2) != 0:
-            return await ctx.send(f"you stole nothing from **{user.display_name}**")
+            return await ctx.send(f"You stole nothing from **{user.display_name}**")
 
         bank = self.bot.get_cog("Bank")
 
