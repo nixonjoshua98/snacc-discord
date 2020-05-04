@@ -82,12 +82,12 @@ class TrophyLeaderboard(Leaderboard):
 
         ls = []
 
-        for row in results:
-            member = self.ctx.guild.get_member(row["userid"])
+        data_table = {row["userid"]: row for row in results}
 
-            if member is None or member.bot or role not in member.roles:
-                continue
+        for member in role.members:
+            data = data_table.get(member.id, None)
 
-            ls.append(row)
+            if data is not None:
+                ls.append(data)
 
         return ls

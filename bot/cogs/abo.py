@@ -54,7 +54,7 @@ class ABO(commands.Cog):
 	@commands.has_permissions(administrator=True)
 	@commands.command(name="shame", help="Shame others")
 	async def shame(self, ctx: commands.Context):
-		""" Mention everyone who has not updated their stats in the last 7 days. """
+		""" Mention the members who are missing or lacking stat updates.  """
 
 		role = await self.get_member_role(ctx.guild)
 
