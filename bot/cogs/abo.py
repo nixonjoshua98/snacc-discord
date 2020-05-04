@@ -87,7 +87,8 @@ class ABO(commands.Cog):
 			msg += "\n" + "**__Missing__** - Set your stats using `!set <level> <trophies>`\n"
 			msg += " | ".join(map(lambda ele: ele.mention, missing))
 
-		return await ctx.send(msg)
+		await ctx.send(msg)
+		await ctx.message.delete()
 
 	@commands.command(name="alb", help="Leaderboard")
 	async def leaderboard(self, ctx: commands.Context):
