@@ -10,7 +10,7 @@ class Gambling(commands.Cog):
 		self.bot = bot
 
 	async def cog_before_invoke(self, ctx):
-		_ = self.bot.get_cog("Bank").get_user_balance(ctx.author)
+		_ = await self.bot.get_cog("Bank").get_user_balance(ctx.author)
 
 	@commands.cooldown(25, 60 * 60 * 3, commands.BucketType.user)
 	@commands.command(name="spin", aliases=["sp"], help="Spin machine")
