@@ -35,11 +35,9 @@ class Money(commands.Cog):
 
         bank = self.bot.get_cog("Bank")
 
-        target_balance = await bank.get_user_balance(ctx.author)
+        user_balance = await bank.get_user_balance(user)
 
-        coins = target_balance["money"]
-
-        await ctx.send(f":moneybag: **{user.display_name}** has **${coins:,}**.")
+        await ctx.send(f":moneybag: **{user.display_name}** has **${user_balance['money']:,}**.")
 
     @commands.cooldown(1, 60 * 60, commands.BucketType.user)
     @commands.command(name="steal", usage="<user>", cooldown_after_parsing=True)
