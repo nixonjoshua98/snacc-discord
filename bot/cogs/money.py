@@ -51,7 +51,7 @@ class Money(commands.Cog):
 
         max_amount = random.randint(0, int(min(author_bal, target_bal) * 0.05))
 
-        stolen_amount = min(5000, max_amount)
+        stolen_amount = min(10_000, max_amount)
 
         await bank.update_money(ctx.author, stolen_amount)
 
