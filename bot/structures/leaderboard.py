@@ -82,12 +82,12 @@ class TrophyLeaderboard(Leaderboard):
 
         ls = []
 
-        data_table = {row["userid"]: row for row in results}
+        member_table = {member.id: member for member in role.members}
 
-        for member in role.members:
-            data = data_table.get(member.id, None)
+        for row in results:
+            member = member_table.get(row["userid"])
 
-            if data is not None:
-                ls.append(data)
+            if member is not None:
+                ls.append(row)
 
         return ls
