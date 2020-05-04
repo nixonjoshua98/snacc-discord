@@ -56,19 +56,36 @@ class ABO(commands.Cog):
 	async def shame(self, ctx: commands.Context):
 		""" Mention everyone who has not updated their stats in the last 7 days. """
 
-		member_role = await self.get_member_role(ctx.guild)
+		role = await self.get_member_role(ctx.guild)
 
 		all_data = await self.bot.pool.fetch(AboSQL.SELECT_ALL)
 
-		msg = "**__Lacking Activity__**\n"
+		data_table = {row["userid"]: row for row in all_data}
 
-		for user in all_data:
-			member = ctx.guild.get_member(user["userid"])
+		lacking = []
+		missing = []
 
-			days_since_update = (datetime.now() - user["dateset"]).days
+		for member in role.members:
+			user_data = data_table.get(member.id, None)
 
-			if member is not None and days_since_update >= 7 and member_role in member.roles:
-				msg += f"{member.mention} ({days_since_update}) | "
+			if user_data is None:
+				missing.append(member)
+				continue
+
+			delta_update = (datetime.now() - user_data["dateset"]).days
+
+			if delta_update >= 7:
+				lacking.append(member)
+
+		msg = f"**Members: {len(role.members)}**\n"
+
+		if len(lacking) > 0:
+			msg += "\n" + "**__Lacking__** - Members who have not updated their stats in the past 7 days\n"
+			msg += " | ".join(map(lambda ele: ele.mention, lacking)) + "\n"
+
+		if len(missing) > 0:
+			msg += "\n" + "**__Missing__** - Set your stats using `!set <level> <trophies>`\n"
+			msg += " | ".join(map(lambda ele: ele.mention, missing))
 
 		return await ctx.send(msg)
 
