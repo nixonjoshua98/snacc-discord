@@ -95,10 +95,5 @@ class Gambling(commands.Cog):
 		else:
 			await ctx.send(f":1234: You lost **${abs(winnings):,}**. The dice landed on `{landed_side}`")
 
-
-
-
-
-
 def setup(bot):
 	bot.add_cog(Gambling(bot))

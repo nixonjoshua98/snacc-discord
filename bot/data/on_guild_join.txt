@@ -8,3 +8,5 @@ My default prefix is **{bot.default_prefix}**...obviously
 
 **__Invite Me__**
 https://discordapp.com/oauth2/authorize?client_id=666616515436478473&scope=bot&permissions=8
+
+Shortened: **https://tinyurl.com/snaccbot**

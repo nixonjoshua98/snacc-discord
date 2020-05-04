@@ -167,7 +167,7 @@ class Hangman(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
-        if not message.author.bot:
+        if not message.author.bot and self.bot.is_ready():
             inst: HangmanGame = HangmanGame.get_instance(message)
 
             if inst is not None:

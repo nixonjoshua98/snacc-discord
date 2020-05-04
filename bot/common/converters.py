@@ -47,8 +47,8 @@ class IntegerRange(commands.Converter):
 		:param max_: Maximum value allowed (inclusive)
 		"""
 
-		self._min = min_
-		self._max = max_
+		self.min = min_
+		self.max = max_
 
 	async def convert(self, ctx: commands.Context, argument: str) -> int:
 		"""
@@ -61,10 +61,10 @@ class IntegerRange(commands.Converter):
 			val = int(argument)
 
 			# Value out of range
-			if val > self._max or val < self._min:
-				raise commands.UserInputError(f"Argument **{val}** should be within **{self._min:,} - {self._max:,}**")
+			if val > self.max or val < self.min:
+				raise commands.UserInputError(f"Argument should be within **{self.min:,} - {self.max:,}**")
 
 		except ValueError:
-			raise commands.UserInputError(f"Argument **{argument}** is not an integer")
+			raise commands.UserInputError(f"You attempted to use an invalid argument.")
 
 		return val
