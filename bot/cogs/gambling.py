@@ -15,7 +15,7 @@ class Gambling(commands.Cog):
 		ctx.balances_ = await bank.get_users_balances_in_args(ctx)
 
 	@commands.cooldown(25, 60 * 60 * 3, commands.BucketType.user)
-	@commands.command(name="spin", aliases=["sp"], help="Spin machine")
+	@commands.command(name="spin", aliases=["sp"])
 	async def spin(self, ctx):
 		""" Use a spin machine. """
 
@@ -39,7 +39,7 @@ class Gambling(commands.Cog):
 			await ctx.send(f"You lost **${abs(winnings):,}** on the spin machine.")
 
 	@commands.cooldown(1, 3, commands.BucketType.user)
-	@commands.command(name="flip", aliases=["fl"], usage="<bet=10> <side=heads>")
+	@commands.command(name="flip", aliases=["fl"], usage="<side=heads> <bet=10>")
 	async def flip(self, ctx, bet: IntegerRange(1, 50_000) = 10, side: str = "heads"):
 		""" Flip a coin and bet on which side it lands on. """
 

@@ -45,7 +45,8 @@ class HelpCommand(commands.HelpCommand):
             embed.set_thumbnail(url=bot.user.avatar_url)
 
             for cmd in cmds:
-                name = f"[{'|'.join([cmd.name] + cmd.aliases)}] {cmd.usage or ''}"
+                sig = cmd.signature.replace("[", "<").replace("]", ">")
+                name = f"[{'|'.join([cmd.name] + cmd.aliases)}] {sig}"
                 value = getattr(cmd.callback, "__doc__", cmd.help)
 
                 embed.add_field(name=name, value=value, inline=False)

@@ -23,7 +23,7 @@ class Bank(commands.Cog):
 
         balances = {"author": ctx.author}
 
-        for i, (name, param) in enumerate(ctx.command.clean_params.items(), start=2):
+        for i, (name, param) in enumerate(ctx.command.clean_params.items()):
             value = ctx.args[i]
 
             if value is None:

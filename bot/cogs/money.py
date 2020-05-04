@@ -27,7 +27,7 @@ class Money(commands.Cog):
 
         await ctx.send(f"You gained **${daily_money}**!")
 
-    @commands.command(name="balance", usage="<target=None>", aliases=["bal", "money"])
+    @commands.command(name="balance", aliases=["bal", "money"])
     async def balance(self, ctx, target: DiscordUser(author_ok=True) = None):
         """ Show the bank balances of the user, or supply an optional target user. """
 

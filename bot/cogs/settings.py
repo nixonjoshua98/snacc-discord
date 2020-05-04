@@ -36,7 +36,7 @@ class Settings(commands.Cog):
 
 		return svr
 
-	@commands.command(name="prefix", usage="<prefix>")
+	@commands.command(name="prefix")
 	async def set_prefix(self, ctx: commands.Context, prefix: str):
 		""" Set the prefix for this server. """
 
@@ -46,7 +46,7 @@ class Settings(commands.Cog):
 
 		await ctx.send(f"Server prefix has been updated to **{prefix}**")
 
-	@commands.command(name="setentryrole", usage="<role=0>")
+	@commands.command(name="setentryrole")
 	async def set_entry_role(self, ctx: commands.Context, role: discord.Role = 0):
 		"""
 Set the role which is given to every user who joins this server.
