@@ -11,8 +11,10 @@ class Money(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def cog_before_invoke(self, ctx):
-        _ = await self.bot.get_cog("Bank").get_user_balance(ctx.author)
+    async def cog_before_invoke(self, ctx: commands.Context):
+        bank = self.bot.get_cog("Bank")
+
+        ctx.balances_ = await bank.get_users_balances_in_args(ctx)
 
     @commands.cooldown(1, 60 * 60 * 24, commands.BucketType.user)
     @commands.command(name="daily")
@@ -21,64 +23,58 @@ class Money(commands.Cog):
 
         daily_money = random.randint(250, 1000)
 
-        bank = self.bot.get_cog("Bank")
-
-        await bank.update_money(ctx.author, daily_money)
+        await self.bot.get_cog("Bank").update_money(ctx.author, daily_money)
 
         await ctx.send(f"You gained **${daily_money}**!")
 
-    @commands.command(name="balance", usage="<user=None>", aliases=["bal", "money"])
-    async def balance(self, ctx, user: DiscordUser(author_ok=True) = None):
-        """ Show the bank balances of the user, or supply an optional user. """
+    @commands.command(name="balance", usage="<target=None>", aliases=["bal", "money"])
+    async def balance(self, ctx, target: DiscordUser(author_ok=True) = None):
+        """ Show the bank balances of the user, or supply an optional target user. """
 
-        user = user if user is not None else ctx.author
+        bal = ctx.balances_["target" if target is not None else "author"]["money"]
 
-        bank = self.bot.get_cog("Bank")
+        target = target if target is not None else ctx.author
 
-        user_balance = await bank.get_user_balance(user)
-
-        await ctx.send(f":moneybag: **{user.display_name}** has **${user_balance['money']:,}**.")
+        await ctx.send(f":moneybag: **{target.display_name}** has **${bal:,}**.")
 
     @commands.cooldown(1, 60 * 60, commands.BucketType.user)
     @commands.command(name="steal", usage="<user>", cooldown_after_parsing=True)
-    async def steal_coins(self, ctx, user: DiscordUser()):
+    async def steal_coins(self, ctx, target: DiscordUser()):
         """ Attempt to steal from another user. """
 
         if random.randint(0, 2) != 0:
-            return await ctx.send(f"You stole nothing from **{user.display_name}**")
+            return await ctx.send(f"You stole nothing from **{target.display_name}**")
 
         bank = self.bot.get_cog("Bank")
 
-        user_balance = await bank.get_user_balance(ctx.author)
-        target_balance = await bank.get_user_balance(ctx.author)
+        author_bal, target_bal = ctx.balances_["author"]["money"], ctx.balances_["target"]["money"]
 
-        max_amount = random.randint(0, int(min(target_balance["money"], user_balance["money"]) * 0.05))
+        max_amount = random.randint(0, int(min(author_bal, target_bal) * 0.05))
 
         stolen_amount = min(5000, max_amount)
 
         await bank.update_money(ctx.author, stolen_amount)
 
-        await bank.update_money(user, -stolen_amount)
+        await bank.update_money(target, -stolen_amount)
 
-        await ctx.send(f"You stole **${stolen_amount:,}** from **{user.display_name}**")
+        await ctx.send(f"You stole **${stolen_amount:,}** from **{target.display_name}**")
 
     @commands.cooldown(1, 30, commands.BucketType.user)
-    @commands.command(name="gift", aliases=["give"], usage="<user> <amount>", cooldown_after_parsing=True)
-    async def gift(self, ctx, user: DiscordUser(), amount: IntegerRange(1, 1_000_000)):
+    @commands.command(name="gift", aliases=["give"], usage="<target> <amount>", cooldown_after_parsing=True)
+    async def gift(self, ctx, target: DiscordUser(), amount: IntegerRange(1, 1_000_000)):
         """ Gift some money to another user. """
+
+        author_bal = ctx.balances_["author"]["money"]
+
+        if author_bal < amount:
+            return await ctx.send(f"{ctx.author.mention}, you are too poor to do that.")
 
         bank = self.bot.get_cog("Bank")
 
-        user_balance = await bank.get_user_balance(ctx.author)
-
-        if user_balance["money"] < amount:
-            return await ctx.send(f"{ctx.author.mention}, you are too poor to do that.")
-
         await bank.update_money(ctx.author, -amount)
+        await bank.update_money(target, amount)
 
-        await bank.update_money(user, amount)
-
-        await ctx.send(f"You gave **${amount:,}** to **{user.display_name}**")
+        await ctx.send(f"You gave **${amount:,}** to **{target.display_name}**")
 
     @commands.command(name="moneylb", aliases=["richest", "mlb"])
     async def leaderboard(self, ctx: commands.Context):

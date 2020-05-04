@@ -11,7 +11,7 @@ class Settings(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-		self.DEFAULT_ROW = [self.bot.default_prefix, 0]
+		self.DEFAULT_ROW = {"prefix": self.bot.default_prefix, "entryRole": 0}
 
 	async def cog_check(self, ctx: commands.Context):
 		return await self.bot.is_owner(ctx.author) or checks.author_is_server_owner(ctx)
@@ -30,7 +30,7 @@ class Settings(commands.Cog):
 				svr = await con.fetchrow(ServersSQL.SELECT_SERVER, guild.id)
 
 				if svr is None:
-					await con.execute(ServersSQL.INSERT_SERVER, guild.id, *self.DEFAULT_ROW)
+					await con.execute(ServersSQL.INSERT_SERVER, guild.id, *self.DEFAULT_ROW.values())
 
 					svr = await con.fetchrow(ServersSQL.SELECT_SERVER, guild.id)
 

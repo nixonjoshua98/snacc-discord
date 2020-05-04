@@ -10,7 +10,9 @@ class Gambling(commands.Cog):
 		self.bot = bot
 
 	async def cog_before_invoke(self, ctx):
-		_ = await self.bot.get_cog("Bank").get_user_balance(ctx.author)
+		bank = self.bot.get_cog("Bank")
+
+		ctx.balances_ = await bank.get_users_balances_in_args(ctx)
 
 	@commands.cooldown(25, 60 * 60 * 3, commands.BucketType.user)
 	@commands.command(name="spin", aliases=["sp"], help="Spin machine")
@@ -24,9 +26,7 @@ class Gambling(commands.Cog):
 
 		bank = self.bot.get_cog("Bank")
 
-		user_balance = await bank.get_user_balance(ctx.author)
-
-		bet = user_balance["money"]
+		bet = ctx.balances_["author"]["money"]
 
 		winnings = get_winning(bet)
 
@@ -46,10 +46,10 @@ class Gambling(commands.Cog):
 		side = side.lower()
 		bank = self.bot.get_cog("Bank")
 
-		user_balance = await bank.get_user_balance(ctx.author)
+		author_bal = ctx.balances_["author"]["money"]
 
 		# User has less than what they want to bet
-		if user_balance["money"] < bet:
+		if author_bal < bet:
 			return await ctx.send("You do not have enough money.")
 
 		elif side not in ["tails", "heads"]:
@@ -76,10 +76,10 @@ class Gambling(commands.Cog):
 
 		bank = self.bot.get_cog("Bank")
 
-		user_balance = await bank.get_user_balance(ctx.author)
+		author_bal = ctx.balances_["author"]["money"]
 
 		# User has less than what they want to bet
-		if user_balance["money"] < bet:
+		if author_bal < bet:
 			return await ctx.send("You do not have enough money.")
 
 		# The user made a bet which they can not win
