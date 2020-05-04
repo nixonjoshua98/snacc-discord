@@ -46,13 +46,14 @@ class Money(commands.Cog):
         """ Attempt to steal from another user. """
 
         if random.randint(0, 2) != 0:
-            return await ctx.send(f"**{ctx.author.display_name}** stole nothing from **{user.display_name}**")
+            return await ctx.send(f"you stole nothing from **{user.display_name}**")
 
         bank = self.bot.get_cog("Bank")
 
+        user_balance = await bank.get_user_balance(ctx.author)
         target_balance = await bank.get_user_balance(ctx.author)
 
-        max_amount = random.randint(0, int(min(target_balance["money"], ctx.user_balance["money"]) * 0.05))
+        max_amount = random.randint(0, int(min(target_balance["money"], user_balance["money"]) * 0.05))
 
         stolen_amount = min(5000, max_amount)
 
@@ -78,7 +79,7 @@ class Money(commands.Cog):
 
         await bank.update_money(user, amount)
 
-        await ctx.send(f"{ctx.author.display_name} gave **${amount:,}** to **{user.display_name}**")
+        await ctx.send(f"You gave **${amount:,}** to **{user.display_name}**")
 
     @commands.command(name="moneylb", aliases=["richest", "mlb"])
     async def leaderboard(self, ctx: commands.Context):
