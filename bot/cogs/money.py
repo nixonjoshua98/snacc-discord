@@ -22,7 +22,7 @@ class Money(commands.Cog):
 
         bank = self.bot.get_cog("Bank")
 
-        await bank.update_coins(ctx.author, daily_money)
+        await bank.update_money(ctx.author, daily_money)
 
         await ctx.send(f"You gained **${daily_money}**!")
 
@@ -56,9 +56,9 @@ class Money(commands.Cog):
 
         stolen_amount = min(5000, max_amount)
 
-        await bank.update_coins(ctx.author, stolen_amount)
+        await bank.update_money(ctx.author, stolen_amount)
 
-        await bank.update_coins(user, -stolen_amount)
+        await bank.update_money(user, -stolen_amount)
 
         await ctx.send(f"You stole **${stolen_amount:,}** from **{user.display_name}**")
 
@@ -74,9 +74,9 @@ class Money(commands.Cog):
         if user_balance["money"] < amount:
             return await ctx.send(f"{ctx.author.mention}, you are too poor to do that.")
 
-        await bank.update_coins(ctx.author, -amount)
+        await bank.update_money(ctx.author, -amount)
 
-        await bank.update_coins(user, amount)
+        await bank.update_money(user, amount)
 
         await ctx.send(f"{ctx.author.display_name} gave **${amount:,}** to **{user.display_name}**")
 

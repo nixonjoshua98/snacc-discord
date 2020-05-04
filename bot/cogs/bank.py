@@ -30,7 +30,7 @@ class Bank(commands.Cog):
 
         return user
 
-    async def update_coins(self, author, amount):
+    async def update_money(self, author, amount):
         q = BankSQL.ADD_MONEY if amount > 0 else BankSQL.SUB_MONEY
 
         await self.bot.pool.execute(q, author.id, abs(amount))

@@ -27,7 +27,7 @@ class Gambling(commands.Cog):
 
 		winnings = get_winning(bet)
 
-		await bank.update_coins(ctx.author, winnings)
+		await bank.update_money(ctx.author, winnings)
 
 		if winnings > 0:
 			await ctx.send(f"You won **${abs(winnings):,}** on the spin machine!")
@@ -36,10 +36,11 @@ class Gambling(commands.Cog):
 			await ctx.send(f"You lost **${abs(winnings):,}** on the spin machine.")
 
 	@commands.cooldown(1, 3, commands.BucketType.user)
-	@commands.command(name="fl", aliases=["flip"], usage="<bet=10>")
-	async def flip(self, ctx, bet: IntegerRange(1, 50_000) = 10):
-		""" Flip a coin and bet on what said it lands on. """
+	@commands.command(name="flip", aliases=["fl"], usage="<bet=10> <side=heads>")
+	async def flip(self, ctx, bet: IntegerRange(1, 50_000) = 10, side: str = "heads"):
+		""" Flip a coin and bet on which side it lands on. """
 
+		side = side.lower()
 		bank = self.bot.get_cog("Bank")
 
 		user_balance = await bank.get_user_balance(ctx.author)
@@ -48,21 +49,26 @@ class Gambling(commands.Cog):
 		if user_balance["money"] < bet:
 			return await ctx.send("You do not have enough money.")
 
-		winnings = bet if random.choice([0, 1]) == 0 else bet * -1
+		elif side not in ["tails", "heads"]:
+			return await ctx.send("Invalid side.")
 
-		await bank.update_coins(ctx.author, winnings)
+		side_landed = random.choice(["heads", "tails"])
+
+		winnings = bet if side_landed == side else bet * -1
+
+		await bank.update_money(ctx.author, winnings)
 
 		if winnings > 0:
-			await ctx.send(f"You won **${abs(winnings):,}** by flipping a coin!")
+			await ctx.send(f"It's **{side_landed.title()}**. You won **${abs(winnings):,}**!")
 
 		else:
-			await ctx.send(f"You lost **${abs(winnings):,}** by flipping a coin.")
+			await ctx.send(f"It's **{side_landed.title()}**. You lost **${abs(winnings):,}**.")
 
 	@commands.cooldown(1, 3, commands.BucketType.user)
-	@commands.command(name="bet", aliases=["roll"], usage="<sides=6> <side=6> <bet=10>")
-	async def bet(self, ctx, sides: IntegerRange(6, 100) = 6, side: int = 6, bet: IntegerRange(1, 50_000) = 10):
+	@commands.command(name="bet", aliases=["roll"], usage="<bet=10> <sides=6> <side=6>")
+	async def bet(self, ctx, bet: IntegerRange(1, 50_000) = 10, sides: IntegerRange(6, 100) = 6, side: int = 6):
 		"""
-		Roll a die and bet on which [side] the die lands on.
+		Roll a die and bet on which side the die lands on.
 		"""
 
 		bank = self.bot.get_cog("Bank")
@@ -81,7 +87,7 @@ class Gambling(commands.Cog):
 
 		winnings = bet * (sides - 1) if side == landed_side else bet * -1
 
-		await bank.update_coins(ctx.author, winnings)
+		await bank.update_money(ctx.author, winnings)
 
 		if winnings > 0:
 			await ctx.send(f":1234: You won **${abs(winnings):,}**! The dice landed on `{landed_side}`")
