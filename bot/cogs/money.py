@@ -4,7 +4,7 @@ from discord.ext import commands
 
 from bot.structures.leaderboard import MoneyLeaderboard
 
-from bot.common.converters import DiscordUser
+from bot.common.converters import DiscordUser, IntegerRange
 
 
 class Money(commands.Cog):
@@ -66,7 +66,7 @@ class Money(commands.Cog):
 
     @commands.cooldown(1, 30, commands.BucketType.user)
     @commands.command(name="gift", aliases=["give"], usage="<user> <amount>", cooldown_after_parsing=True)
-    async def gift(self, ctx, user: DiscordUser(), amount: int):
+    async def gift(self, ctx, user: DiscordUser(), amount: IntegerRange(1, 1_000_000)):
         """ Gift some money to another user. """
 
         bank = self.bot.get_cog("Bank")
