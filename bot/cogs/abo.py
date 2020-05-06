@@ -56,8 +56,6 @@ class ABO(commands.Cog):
 	async def shame(self, ctx: commands.Context):
 		""" Mention the members who are missing or lacking stat updates.  """
 
-		await ctx.message.delete()
-
 		role = await self.get_member_role(ctx.guild)
 
 		all_data = await self.bot.pool.fetch(AboSQL.SELECT_ALL)
@@ -88,6 +86,8 @@ class ABO(commands.Cog):
 		if len(missing) > 0:
 			msg += "\n" + "**__Missing__** - Set your stats using `!set <level> <trophies>`\n"
 			msg += " | ".join(map(lambda ele: ele.mention, missing))
+
+		await ctx.message.delete()
 
 		await ctx.send(msg)
 

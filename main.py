@@ -13,6 +13,7 @@ if __name__ == "__main__":
     bot.load_extension("bot.cogs.gambling")
     bot.load_extension("bot.cogs.money")
     bot.load_extension("bot.cogs.hangman")
+    bot.load_extension("bot.cogs.misc")
     bot.load_extension("bot.cogs.stats")
     bot.load_extension("bot.cogs.settings")
 

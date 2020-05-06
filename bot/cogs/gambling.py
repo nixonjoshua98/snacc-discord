@@ -62,10 +62,10 @@ class Gambling(commands.Cog):
 		await bank.update_money(ctx.author, winnings)
 
 		if winnings > 0:
-			await ctx.send(f"It's **{side_landed.title()}**. You won **${abs(winnings):,}**!")
+			await ctx.send(f"It's **{side_landed}**. You won **${abs(winnings):,}**!")
 
 		else:
-			await ctx.send(f"It's **{side_landed.title()}**. You lost **${abs(winnings):,}**.")
+			await ctx.send(f"It's **{side_landed}**. You lost **${abs(winnings):,}**.")
 
 	@commands.cooldown(1, 3, commands.BucketType.user)
 	@commands.command(name="bet", aliases=["roll"], usage="<bet=10> <sides=6> <side=6>")

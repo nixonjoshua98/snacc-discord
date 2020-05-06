@@ -21,7 +21,7 @@ class Money(commands.Cog):
     async def daily(self, ctx: commands.Context):
         """ Get some free stuff daily! """
 
-        daily_money = random.randint(250, 1000)
+        daily_money = random.randint(250, 2_500)
 
         await self.bot.get_cog("Bank").update_money(ctx.author, daily_money)
 
