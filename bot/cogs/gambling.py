@@ -1,4 +1,5 @@
 import random
+import secrets
 
 from discord.ext import commands
 
@@ -55,7 +56,7 @@ class Gambling(commands.Cog):
 		elif side not in ["tails", "heads"]:
 			return await ctx.send("Invalid side.")
 
-		side_landed = random.choice(["heads", "tails"])
+		side_landed = secrets.choice(["heads", "tails"])
 
 		winnings = bet if side_landed == side else bet * -1
 
