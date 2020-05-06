@@ -14,7 +14,9 @@ class Misc(commands.Cog):
         """ Ban a user from the server (give it a go). """
 
         try:
-            await user.edit(nick=f"[BANNED] {user.display_name.replace('[BANNED] ', '')}")
+            username = user.display_name.replace('[BANNED] ', '')
+
+            await user.edit(nick=f"[BANNED] {username[0:20]}")
 
             await ctx.send("I have banned them successfully.")
 
