@@ -30,6 +30,9 @@ class Misc(commands.Cog):
     @commands.command(name="execute", alises=["sql"])
     async def execute(self, ctx, query: str):
         """ [Owner Only] Execute an SQL query"""
+
+        await ctx.message.delete()
+
         try:
             await self.bot.pool.execute(query)
 
@@ -37,7 +40,7 @@ class Misc(commands.Cog):
             await ctx.send(f"**Error:** {e.args[0]}")
 
         else:
-            await ctx.send("Query executed")
+            await ctx.send("Query executed.")
 
 
 def setup(bot):
