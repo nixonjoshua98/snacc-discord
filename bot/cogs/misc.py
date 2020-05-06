@@ -8,7 +8,7 @@ class Misc(commands.Cog):
         self.bot = bot
 
     @commands.command(name="ban")
-    async def ban(self, ctx: commands.Context, user):
+    async def ban(self, ctx: commands.Context, user: discord.Member):
         """ Ban a user from the server. """
 
         try:
