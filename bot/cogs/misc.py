@@ -12,10 +12,12 @@ class Misc(commands.Cog):
         """ Ban a user from the server. """
 
         try:
-            await user.edit(nick=f"[BANNED] {user.display_name.replace('[BANNED ', '')}")
+            await user.edit(nick=f"[BANNED] {user.display_name.replace('[BANNED] ', '')}")
+
+            await ctx.send("I have banned him successfully.")
 
         except discord.Forbidden:
-            await ctx.send("I failed. He is too powerful for me to ban!")
+            await ctx.send("I failed. The user is too powerful for me to ban!")
 
         except discord.HTTPException:
             await ctx.send("I have failed to ban this user")
