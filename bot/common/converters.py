@@ -32,10 +32,10 @@ class DiscordUser(commands.MemberConverter):
 			raise commands.CommandError(f"User `{argument}` could not be found.")
 
 		if not self.author_ok and member.id == ctx.author.id:
-			raise commands.CommandError("You cannot target youself.")
+			raise commands.CommandError("You cannot target yourself.")
 
 		elif member.bot:
-			raise commands.CommandError("Bot accounts cannot be used here.")
+			raise commands.CommandError("Bot accounts cannot be targeted.")
 
 		return member
 
