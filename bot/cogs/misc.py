@@ -26,6 +26,19 @@ class Misc(commands.Cog):
         except discord.HTTPException:
             await ctx.send("I have failed to ban this user")
 
+    @commands.is_owner()
+    @commands.command(name="execute", alises=["sql"])
+    async def execute(self, ctx, query: str):
+        """ [Owner Only] Execute an SQL query"""
+        try:
+            await self.bot.pool.execute(query)
+
+        except Exception as e:
+            await ctx.send(f"**Error:** {e.args[0]}")
+
+        else:
+            await ctx.send("Query executed")
+
 
 def setup(bot):
     bot.add_cog(Misc(bot))
