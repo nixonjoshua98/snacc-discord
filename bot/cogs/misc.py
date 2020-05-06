@@ -2,14 +2,16 @@ import discord
 
 from discord.ext import commands
 
+from bot.common.converters import DiscordUser
+
 
 class Misc(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
     @commands.command(name="ban")
-    async def ban(self, ctx: commands.Context, user: discord.Member):
-        """ Ban a user from the server. """
+    async def ban(self, ctx: commands.Context, user: DiscordUser()):
+        """ Ban a user from the server (give it a go). """
 
         try:
             await user.edit(nick=f"[BANNED] {user.display_name.replace('[BANNED] ', '')}")
