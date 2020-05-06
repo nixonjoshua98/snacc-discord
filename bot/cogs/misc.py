@@ -29,7 +29,7 @@ class Misc(commands.Cog):
         """ Unban a user from this server. """
 
         try:
-            await user.edit(nick=user.display_name.replace("[BANNED]", "")
+            await user.edit(nick=user.display_name.replace("[BANNED]", ""))
 
             await ctx.send("I have unbanned them successfully.")
 
