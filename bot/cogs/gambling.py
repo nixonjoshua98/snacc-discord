@@ -1,8 +1,11 @@
 import random
 import secrets
 
+from bot import utils
+
 from discord.ext import commands
 
+from bot.common.queries import BankSQL
 from bot.common.converters import IntegerRange
 
 
@@ -11,9 +14,7 @@ class Gambling(commands.Cog):
 		self.bot = bot
 
 	async def cog_before_invoke(self, ctx):
-		bank = self.bot.get_cog("Bank")
-
-		ctx.balances_ = await bank.get_users_balances_in_args(ctx)
+		ctx.balances_ = await utils.bank.get_ctx_users_bals(ctx)
 
 	@commands.cooldown(25, 60 * 60 * 3, commands.BucketType.user)
 	@commands.command(name="spin", aliases=["sp"])
@@ -25,19 +26,15 @@ class Gambling(commands.Cog):
 
 			return random.randint(int(low), int(high))
 
-		bank = self.bot.get_cog("Bank")
+		initial_author_bal = ctx.balances_["author"]["money"]
 
-		bet = ctx.balances_["author"]["money"]
+		bet = initial_author_bal
 
 		winnings = get_winning(bet)
 
-		await bank.update_money(ctx.author, winnings)
+		await self.bot.pool.execute(BankSQL.SET_MONEY, ctx.author.id, initial_author_bal + winnings)
 
-		if winnings > 0:
-			await ctx.send(f"You won **${abs(winnings):,}** on the spin machine!")
-
-		else:
-			await ctx.send(f"You lost **${abs(winnings):,}** on the spin machine.")
+		await ctx.send(f"You {'won' if winnings > 0 else 'lost'} **${abs(winnings):,}** on the spin machine!")
 
 	@commands.cooldown(1, 3, commands.BucketType.user)
 	@commands.command(name="flip", aliases=["fl"], usage="<side=heads> <bet=10>")
@@ -45,12 +42,11 @@ class Gambling(commands.Cog):
 		""" Flip a coin and bet on which side it lands on. """
 
 		side = side.lower()
-		bank = self.bot.get_cog("Bank")
 
-		author_bal = ctx.balances_["author"]["money"]
+		initial_author_bal = ctx.balances_["author"]["money"]
 
 		# User has less than what they want to bet
-		if author_bal < bet:
+		if initial_author_bal < bet:
 			return await ctx.send("You do not have enough money.")
 
 		elif side not in ["tails", "heads"]:
@@ -60,13 +56,10 @@ class Gambling(commands.Cog):
 
 		winnings = bet if side_landed == side else bet * -1
 
-		await bank.update_money(ctx.author, winnings)
+		await self.bot.pool.execute(BankSQL.SET_MONEY, ctx.author.id, initial_author_bal + winnings)
 
-		if winnings > 0:
-			await ctx.send(f"It's **{side_landed}**. You won **${abs(winnings):,}**!")
-
-		else:
-			await ctx.send(f"It's **{side_landed}**. You lost **${abs(winnings):,}**.")
+		await ctx.send(f"It's **{side_landed}**! "
+					   f"You {'won' if winnings > 0 else 'lost'} **${abs(winnings):,}**!")
 
 	@commands.cooldown(1, 3, commands.BucketType.user)
 	@commands.command(name="bet", aliases=["roll"], usage="<bet=10> <sides=6> <side=6>")
@@ -75,12 +68,10 @@ class Gambling(commands.Cog):
 		Roll a die and bet on which side the die lands on.
 		"""
 
-		bank = self.bot.get_cog("Bank")
-
-		author_bal = ctx.balances_["author"]["money"]
+		initial_author_bal = ctx.balances_["author"]["money"]
 
 		# User has less than what they want to bet
-		if author_bal < bet:
+		if initial_author_bal < bet:
 			return await ctx.send("You do not have enough money.")
 
 		# The user made a bet which they can not win
@@ -91,13 +82,11 @@ class Gambling(commands.Cog):
 
 		winnings = bet * (sides - 1) if side == landed_side else bet * -1
 
-		await bank.update_money(ctx.author, winnings)
+		await self.bot.pool.execute(BankSQL.SET_MONEY, ctx.author.id, initial_author_bal + winnings)
 
-		if winnings > 0:
-			await ctx.send(f":1234: You won **${abs(winnings):,}**! The dice landed on `{landed_side}`")
+		await ctx.send(f":1234: You {'won' if winnings > 0 else 'lost'} **${abs(winnings):,}**! "
+					   f"The dice landed on `{landed_side}`")
 
-		else:
-			await ctx.send(f":1234: You lost **${abs(winnings):,}**. The dice landed on `{landed_side}`")
 
 def setup(bot):
 	bot.add_cog(Gambling(bot))

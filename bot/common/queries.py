@@ -14,21 +14,19 @@ class ServersSQL:
 
 
 class BankSQL:
+    DEFAULT_ROW = {"money": 500}
+
     TABLE = "CREATE table IF NOT EXISTS bank (" \
             "userID BIGINT PRIMARY KEY, " \
             "money BIGINT" \
             ");"
 
-    # - - - MONEY - - -
     SELECT_RICHEST = "SELECT * FROM bank ORDER BY money DESC LIMIT 10"
 
     INSERT_USER = "INSERT INTO bank (userID, money) VALUES ($1, $2) ON CONFLICT DO NOTHING;"
     SELECT_USER = "SELECT * FROM bank WHERE userID=$1;"
 
     SET_MONEY = "UPDATE bank SET money = $2 WHERE userID = $1;"
-    ADD_MONEY = "UPDATE bank SET money = bank.money + $2 WHERE userID = $1;"
-    SUB_MONEY = "UPDATE bank SET money = bank.money - $2 WHERE userID = $1;"
-    # - - - - - -
 
 
 class HangmanSQL:
@@ -39,9 +37,9 @@ class HangmanSQL:
 
     SELECT_BEST = "SELECT * FROM hangman ORDER BY wins DESC LIMIT 10"
 
-    INCREMENT_WINS = "INSERT INTO hangman (userID, wins) VALUES ($1, 1) " \
-                     "ON CONFLICT (userID) DO UPDATE " \
-                     "SET wins = hangman.wins + 1;"
+    ADD_WIN = "INSERT INTO hangman (userID, wins) VALUES ($1, 1) " \
+              "ON CONFLICT (userID) DO " \
+              "UPDATE SET wins = hangman.wins + 1;"
 
 
 class AboSQL:

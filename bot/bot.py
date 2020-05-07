@@ -1,10 +1,9 @@
 import os
 import discord
-import asyncpg
 
 from discord.ext import commands
 
-from bot.common import utils
+from bot import utils
 from bot.structures.helpcommand import HelpCommand
 
 
@@ -27,17 +26,11 @@ class SnaccBot(commands.Bot):
 	async def connect_database(self):
 		""" Creates a database connection pool for the Discord bot. """
 
-		if os.getenv("DEBUG", False):
-			config = utils.read_config_section("./bot/config/postgres.ini", "postgres")
+		print("Creating PostgreSQL connection pool...", end="")
 
-			self.pool = await asyncpg.create_pool(**dict(config), command_timeout=60, max_size=20)
+		self.pool = await utils.database.create_pool()
 
-		else:
-			ctx = utils.create_heroku_database_ssl()
-
-			self.pool = await asyncpg.create_pool(os.environ["DATABASE_URL"], ssl=ctx, command_timeout=60, max_size=20)
-
-		print("Created PostgreSQL connection pool")
+		print("OK")
 
 	def add_cog(self, cog):
 		print(f"Adding Cog: {cog.qualified_name}...", end="")
