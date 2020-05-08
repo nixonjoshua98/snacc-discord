@@ -11,8 +11,6 @@ class Settings(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-		self.DEFAULT_ROW = {"prefix": self.bot.default_prefix, "entryRole": 0, "memberRole": 0}
-
 	async def cog_check(self, ctx: commands.Context):
 		return checks.author_is_server_owner(ctx)
 
@@ -32,7 +30,7 @@ class Settings(commands.Cog):
 
 	@commands.command(name="setrole")
 	async def set_role(self, ctx, tag: RoleTag(), role: discord.Role = 0):
-		""" Tag a selected role with a tag, which can open up new commands. """
+		""" Tag a selected role, which can open up new commands. """
 
 		table = {"entry": ServersSQL.UPDATE_ENTRY_ROLE, "member": ServersSQL.UPDATE_MEMBER_ROLE}
 
