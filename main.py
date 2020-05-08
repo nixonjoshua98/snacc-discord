@@ -14,4 +14,4 @@ if __name__ == "__main__":
     bot.load_extension("bot.cogs.errorhandler")
     bot.load_extension("bot.cogs.listeners")
 
-    bot.run("NjY2NjE2NTE1NDM2NDc4NDcz.XofF-Q.YNe2fpEgieFmOSrgBQVywdl4rRo")
+    bot.run()

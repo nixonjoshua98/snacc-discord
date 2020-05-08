@@ -18,7 +18,7 @@ class ABO(commands.Cog):
 		self.leaderboards = dict()
 
 	async def cog_check(self, ctx):
-		return await checks.server_has_member_role(ctx)
+		return await checks.user_is_member(ctx)
 
 	@commands.command(name="set", aliases=["s"], usage="<level> <trophies>")
 	async def set_stats(self, ctx, level: Range(0, 150), trophies: Range(0, 6_000)):

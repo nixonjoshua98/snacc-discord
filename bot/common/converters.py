@@ -2,15 +2,13 @@ import discord
 
 from discord.ext import commands
 
-from bot.common import errors
-
 
 class CoinSide(commands.Converter):
 	async def convert(self, ctx, argument):
 		argument = argument.lower()
 
 		if argument not in ["tails", "heads"]:
-			raise errors.InvalidCoinSide()
+			raise commands.CommandError("That is an invalid coin side.")
 
 		return argument
 
@@ -19,20 +17,16 @@ class RoleTag(commands.Converter):
 	async def convert(self, ctx, argument):
 		argument = argument.lower()
 
-		if argument not in ("entry", "member"):
-			raise errors.InvalidRoleTag(tags=("entry", "member"))
+		tags = ("entry", "member")
+
+		if argument not in tags:
+			raise commands.CommandError(f"Invalid Tag. Tags include: **{', '.join(tags)}**")
 
 		return argument
 
 
 class DiscordUser(commands.MemberConverter):
-	"""
-	Converter to ensure that the user is present in the server, not the author or a bot
-
-	@commands.command(...)
-	async def my_command(self, ctx, user: NotAuthorOrBotServer()):
-		...
-	"""
+	"""  Converter to ensure that the user is present in the server, not the author or a bot. """
 
 	def __init__(self, *, author_ok: bool = False):
 		super().__init__()
@@ -51,7 +45,7 @@ class DiscordUser(commands.MemberConverter):
 			member = await super().convert(ctx, argument)
 
 		except commands.BadArgument:
-			raise commands.CommandError(f"User `{argument}` could not be found.")
+			raise commands.CommandError(f"User '{argument}' could not be found")
 
 		if not self.author_ok and member.id == ctx.author.id:
 			raise commands.CommandError("You cannot target yourself.")

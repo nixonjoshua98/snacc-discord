@@ -1,6 +1,8 @@
 import os
 import discord
 
+from configparser import ConfigParser
+
 from discord.ext import commands
 
 from bot import utils
@@ -61,4 +63,11 @@ class SnaccBot(commands.Bot):
 		svr = self.server_cache.get(message.guild.id, dict())
 
 		return svr.get("prefix", self.default_prefix)
+
+	def run(self):
+		config = ConfigParser()
+
+		config.read("./bot/config/bot.ini")
+
+		super(SnaccBot, self).run(config.get("bot", "token"))
 

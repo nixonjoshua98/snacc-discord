@@ -4,7 +4,6 @@ from discord.ext import commands
 
 from bot import utils
 
-from bot.common import errors
 from bot.common.queries import BankSQL
 from bot.common.converters import DiscordUser, Range
 
@@ -67,7 +66,7 @@ class Money(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
         initial_author_bal = ctx.bals["author"]["money"]
 
         if initial_author_bal < amount:
-            raise errors.NotEnoughMoney()
+            raise commands.CommandError("You do not have enough money.")
 
         await self.bot.pool.execute(BankSQL.SUB_MONEY, ctx.author.id, amount)
         await self.bot.pool.execute(BankSQL.ADD_MONEY, target.id,     amount)

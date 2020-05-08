@@ -5,7 +5,6 @@ from bot import utils
 
 from discord.ext import commands
 
-from bot.common import errors
 from bot.common.queries import BankSQL
 from bot.common.converters import Range, CoinSide
 
@@ -45,7 +44,7 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 		initial_author_bal = ctx.bals["author"]["money"]
 
 		if initial_author_bal < bet:
-			raise errors.NotEnoughMoney()
+			raise commands.CommandError("You do not have enough money.")
 
 		side_landed = secrets.choice(["heads", "tails"])
 		correct_side = side_landed == side
@@ -65,7 +64,7 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 		initial_author_bal = ctx.bals["author"]["money"]
 
 		if initial_author_bal < bet:
-			raise errors.NotEnoughMoney()
+			raise commands.CommandError("You do not have enough money.")
 
 		side_landed = random.randint(1, sides)
 		correct_side = side_landed == side
