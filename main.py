@@ -1,4 +1,4 @@
-from bot.bot import SnaccBot
+from bot.structures.bot import SnaccBot
 
 if __name__ == "__main__":
     bot = SnaccBot()

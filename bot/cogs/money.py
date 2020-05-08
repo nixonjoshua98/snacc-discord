@@ -21,7 +21,7 @@ class Money(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
     async def daily(self, ctx):
         """ Get some free coins! """
 
-        initial_author_bal = ctx.balances_["author"]["money"]
+        initial_author_bal = ctx.bals["author"]["money"]
 
         daily_money = random.randint(250, 2_500)
 
