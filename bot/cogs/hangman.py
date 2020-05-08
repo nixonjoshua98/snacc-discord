@@ -79,10 +79,10 @@ class Hangman(commands.Cog):
 
             await ctx.send(f"{ctx.message.author.mention} gave up on the hangman game.")
 
-    @commands.has_permissions(administrator=True)
+    @commands.is_owner()
     @commands.command(name="cheat")
     async def cheat(self, ctx):
-        """ [Admin] Recieve a DM with the hidden word. """
+        """ [Owner] Recieve a DM with the hidden word. """
 
         inst = self.games.get(ctx.channel.id, None)
 

@@ -12,7 +12,7 @@ class Settings(commands.Cog):
 		self.bot = bot
 
 	async def cog_check(self, ctx: commands.Context):
-		return checks.author_is_server_owner(ctx)
+		return checks.author_is_server_owner(ctx) or await self.bot.is_owner(ctx.author)
 
 	async def cog_before_invoke(self, ctx: commands.Context):
 		_ = await self.bot.get_server(ctx.guild)

@@ -45,7 +45,7 @@ class HangmanGame:
     def is_user_on_cooldown(self, author: discord.Member) -> bool:
         cooldown = self.cooldowns.get(author.id, None)
 
-        if cooldown is None or (datetime.now() - cooldown).total_seconds() >= 1:
+        if cooldown is None or (datetime.now() - cooldown).total_seconds() >= 2:
             self.cooldowns[author.id] = datetime.now()
 
             return False

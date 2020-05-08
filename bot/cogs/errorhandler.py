@@ -40,7 +40,7 @@ class ErrorHandler(commands.Cog):
             await ctx.send(f"You are on cooldown. Try again in {cd}")
 
         else:
-            await ctx.send(f":x: Unhandled exception: {esc}")
+            await ctx.send(esc)
 
 
 def setup(bot):
