@@ -22,7 +22,7 @@ class Settings(commands.Cog):
 
 	@commands.command(name="prefix")
 	async def set_prefix(self, ctx: commands.Context, prefix: str):
-		""" Set the prefix for this server. """
+		""" [Owner] Set the prefix for this server. """
 
 		await ctx.bot.pool.execute(ServersSQL.UPDATE_PREFIX, ctx.guild.id, prefix)
 
@@ -30,7 +30,7 @@ class Settings(commands.Cog):
 
 	@commands.command(name="setrole")
 	async def set_role(self, ctx, tag: RoleTag(), role: discord.Role = 0):
-		""" Tag a selected role, which can open up new commands. """
+		""" [Owner] Tag a selected role, which can open up new commands. """
 
 		table = {"entry": ServersSQL.UPDATE_ENTRY_ROLE, "member": ServersSQL.UPDATE_MEMBER_ROLE}
 

@@ -15,6 +15,9 @@ class Listeners(commands.Cog):
             except discord.Forbidden:
                 """ Bot doesn't have access to the system channel """
 
+            except discord.HTTPException:
+                """ Failed for some other reason """
+
     @commands.Cog.listener("on_guild_join")
     async def on_guild_join(self, guild: discord.Guild):
         bot_info = await self.bot.application_info()
@@ -25,8 +28,8 @@ class Listeners(commands.Cog):
         welc_msg = template.format(guild=guild, bot=self.bot, bot_info=bot_info)
         owner_dm = f"I joined the server **{guild.name}** owned by **{guild.owner}**"
 
-        await bot_info.owner.send(owner_dm)
         await self._send_system_channel(guild, welc_msg)
+        await bot_info.owner.send(owner_dm)
 
     @commands.Cog.listener("on_member_join")
     async def on_member_join(self, member: discord.Member):

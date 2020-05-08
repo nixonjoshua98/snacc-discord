@@ -82,7 +82,7 @@ class Hangman(commands.Cog):
     @commands.is_owner()
     @commands.command(name="cheat")
     async def cheat(self, ctx):
-        """ [Owner] Recieve a DM with the hidden word. """
+        """ [Creator] Recieve a DM with the hidden word. """
 
         inst = self.games.get(ctx.channel.id, None)
 
