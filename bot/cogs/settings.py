@@ -2,7 +2,6 @@ import discord
 
 from discord.ext import commands
 
-from bot import utils
 from bot.common import checks
 from bot.common.converters import RoleTag
 from bot.common.queries import ServersSQL
@@ -18,7 +17,7 @@ class Settings(commands.Cog):
 		return checks.author_is_server_owner(ctx)
 
 	async def cog_before_invoke(self, ctx: commands.Context):
-		_ = await utils.settings.get_server_settings(ctx.bot.pool, ctx.guild)
+		_ = await self.bot.get_server(ctx.guild)
 
 	async def cog_after_invoke(self, ctx):
 		await self.bot.update_server_cache(ctx.message.guild)

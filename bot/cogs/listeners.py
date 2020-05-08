@@ -2,8 +2,6 @@ import discord
 
 from discord.ext import commands
 
-from bot import utils
-
 
 class Listeners(commands.Cog):
     def __init__(self, bot):
@@ -37,7 +35,7 @@ class Listeners(commands.Cog):
         await self._send_system_channel(member.guild, join_msg)
 
         try:
-            svr = await utils.settings.get_server_settings(self.bot.pool, member.guild)
+            svr = await self.bot.get_server(member.guild)
 
             role = member.guild.get_role(svr["entryrole"])
 

@@ -25,6 +25,11 @@ class ErrorHandler(commands.Cog):
         elif isinstance(esc, errors.InvalidRoleTag):
             await ctx.send(f"Invalid Tag. Tags include: **{', '.join(esc.tags)}**")
 
+        elif isinstance(esc, commands.MissingRequiredArgument):
+            arg = esc.args[0].split(" ")[0]
+
+            await ctx.send(f"`{arg}` is a required argument that is missing.")
+
         else:
             await ctx.send(f":x: Unhandled exception: {esc}")
 
