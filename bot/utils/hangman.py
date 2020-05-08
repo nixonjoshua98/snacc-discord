@@ -19,16 +19,17 @@ class HangmanGame:
     def __init__(self):
         self.letter_guesses = set()
         self.cooldowns = dict()
+
         self.lives_remaining = 10
 
         self.hidden_word = self.get_new_word()
 
     def on_message(self, message: discord.Message):
-        if self.is_user_on_cooldown(message.author):
-            return HangmanGuess.USER_ON_COOLDOWN
-
         if not self.is_valid_guess(message.content):
             return None
+
+        elif self.is_user_on_cooldown(message.author):
+            return HangmanGuess.USER_ON_COOLDOWN
 
         return self.check_guess(message.content.upper())
 

@@ -35,7 +35,7 @@ class DiscordUser(commands.MemberConverter):
 	"""
 
 	def __init__(self, *, author_ok: bool = False):
-		super(DiscordUser, self).__init__()
+		super().__init__()
 
 		self.author_ok = author_ok
 
