@@ -90,9 +90,14 @@ class Hangman(commands.Cog):
             await ctx.send("No hangman game running.")
 
         else:
-            await ctx.author.send(f"'{ctx.guild.name}' (#{ctx.channel.name}): **{inst.hidden_word}**")
+            try:
+                await ctx.author.send(f"The hidden word is **{inst.hidden_word}**")
 
-            await ctx.send("I have DM'ed you the hidden word.")
+            except (discord.HTTPException, discord.Forbidden):
+                await ctx.send("I failed to DM you.")
+
+            else:
+                await ctx.send("I have DM'ed you the hidden word.")
 
     @commands.command(name="hlb")
     async def leaderboard(self, ctx):
