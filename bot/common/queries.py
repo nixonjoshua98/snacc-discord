@@ -1,5 +1,7 @@
 
 class ServersSQL:
+    DEFAULT_ROW = {"prefix": "!", "entryRole": 0, "memberRole": 0}
+
     TABLE = "CREATE table IF NOT EXISTS servers (" \
             "serverID BIGINT PRIMARY KEY," \
             "entryRole BIGINT," \
@@ -30,10 +32,13 @@ class BankSQL:
     INSERT_USER = "INSERT INTO bank (userID, money) VALUES ($1, $2) ON CONFLICT DO NOTHING;"
     SELECT_USER = "SELECT * FROM bank WHERE userID=$1;"
 
-    SET_MONEY = "UPDATE bank SET money = $2 WHERE userID = $1;"
+    ADD_MONEY = "UPDATE bank SET money = bank.money + $2 WHERE userID = $1;"
+    SUB_MONEY = "UPDATE bank SET money = bank.money - $2 WHERE userID = $1;"
 
 
 class HangmanSQL:
+    DEFAULT_ROW = {"win": 0}
+
     TABLE = "CREATE table IF NOT EXISTS hangman (" \
             "userID BIGINT PRIMARY KEY, " \
             "wins INTEGER" \

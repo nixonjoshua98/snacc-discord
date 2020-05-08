@@ -33,7 +33,7 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 
 		winnings = get_winning(bet)
 
-		await self.bot.pool.execute(BankSQL.SET_MONEY, ctx.author.id, initial_author_bal + winnings)
+		await self.bot.pool.execute(BankSQL.ADD_MONEY if winnings > 0 else BankSQL.SUB_MONEY, ctx.author.id, winnings)
 
 		await ctx.send(f"You {'won' if winnings > 0 else 'lost'} **${abs(winnings):,}** on the spin machine!")
 
@@ -52,7 +52,7 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 
 		winnings = bet if correct_side else bet * -1
 
-		await self.bot.pool.execute(BankSQL.SET_MONEY, ctx.author.id, initial_author_bal + winnings)
+		await self.bot.pool.execute(BankSQL.ADD_MONEY if winnings > 0 else BankSQL.SUB_MONEY, ctx.author.id, winnings)
 
 		await ctx.send(f"It's **{side_landed}**! "
 					   f"You {'won' if correct_side else 'lost'} **${abs(winnings):,}**!")
@@ -72,7 +72,7 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 
 		winnings = bet * (sides - 1) if correct_side else bet * -1
 
-		await self.bot.pool.execute(BankSQL.SET_MONEY, ctx.author.id, initial_author_bal + winnings)
+		await self.bot.pool.execute(BankSQL.ADD_MONEY if winnings > 0 else BankSQL.SUB_MONEY, ctx.author.id, winnings)
 
 		await ctx.send(f":1234: You {'won' if correct_side else 'lost'} **${abs(winnings):,}**! "
 					   f"The dice landed on `{side_landed}`")

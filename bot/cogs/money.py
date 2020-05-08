@@ -4,9 +4,11 @@ from discord.ext import commands
 
 from bot import utils
 
+from bot.common import errors
 from bot.common.queries import BankSQL
-from bot.structures.leaderboard import MoneyLeaderboard
 from bot.common.converters import DiscordUser, Range
+
+from bot.structures.leaderboard import MoneyLeaderboard
 
 
 class Money(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
@@ -21,11 +23,9 @@ class Money(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
     async def daily(self, ctx):
         """ Get some free coins! """
 
-        initial_author_bal = ctx.bals["author"]["money"]
-
         daily_money = random.randint(250, 2_500)
 
-        await self.bot.pool.execute(BankSQL.SET_MONEY, ctx.author.id, initial_author_bal + daily_money)
+        await self.bot.pool.execute(BankSQL.ADD_MONEY, ctx.author.id, daily_money)
 
         await ctx.send(f"You gained **${daily_money}**!")
 
@@ -54,8 +54,8 @@ class Money(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 
         stolen_amount = min(10_000, max_amount)
 
-        await self.bot.pool.execute(BankSQL.SET_MONEY, ctx.author.id, initial_author_bal + stolen_amount)
-        await self.bot.pool.execute(BankSQL.SET_MONEY, target.id,     initial_author_bal - stolen_amount)
+        await self.bot.pool.execute(BankSQL.ADD_MONEY, ctx.author.id, stolen_amount)
+        await self.bot.pool.execute(BankSQL.SUB_MONEY, target.id,     stolen_amount)
 
         await ctx.send(f"You stole **${stolen_amount:,}** from **{target.display_name}**")
 
@@ -67,10 +67,10 @@ class Money(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
         initial_author_bal = ctx.bals["author"]["money"]
 
         if initial_author_bal < amount:
-            return await ctx.send(f"{ctx.author.mention}, you are too poor to do that.")
+            raise errors.NotEnoughMoney()
 
-        await self.bot.pool.execute(BankSQL.SET_MONEY, ctx.author.id, initial_author_bal - amount)
-        await self.bot.pool.execute(BankSQL.SET_MONEY, target.id,     initial_author_bal + amount)
+        await self.bot.pool.execute(BankSQL.SUB_MONEY, ctx.author.id, amount)
+        await self.bot.pool.execute(BankSQL.ADD_MONEY, target.id,     amount)
 
         await ctx.send(f"You gave **${amount:,}** to **{target.display_name}**")
 
