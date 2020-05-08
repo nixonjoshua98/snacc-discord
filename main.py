@@ -1,10 +1,6 @@
-import asyncio
-
 from bot.bot import SnaccBot
 
 if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
-
     bot = SnaccBot()
 
     bot.load_extension("bot.cogs.abo")
@@ -15,8 +11,7 @@ if __name__ == "__main__":
     bot.load_extension("bot.cogs.stats")
     bot.load_extension("bot.cogs.settings")
 
+    bot.load_extension("bot.cogs.errorhandler")
     bot.load_extension("bot.cogs.listeners")
 
-    loop.create_task(bot.start("NjY2NjE2NTE1NDM2NDc4NDcz.XofF-Q.YNe2fpEgieFmOSrgBQVywdl4rRo"))
-
-    loop.run_forever()
+    bot.run("NjY2NjE2NTE1NDM2NDc4NDcz.XofF-Q.YNe2fpEgieFmOSrgBQVywdl4rRo")

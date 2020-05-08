@@ -78,7 +78,11 @@ class TrophyLeaderboard(Leaderboard):
         )
 
     async def filter_results(self, results: list):
-        role = await self.ctx.bot.get_cog("ABO").get_member_role(self.ctx.guild)
+        ctx, bot = self.ctx, self.ctx.bot
+
+        svr_config = await bot.get_server(ctx.guild)
+
+        role = ctx.guild.get_role(svr_config["memberrole"])
 
         ls = []
 

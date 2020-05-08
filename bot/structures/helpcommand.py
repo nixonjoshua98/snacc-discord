@@ -21,9 +21,6 @@ class HelpCommand(commands.HelpCommand):
         all_commands = {}
 
         for cog, instance in bot.cogs.items():
-            if getattr(instance, "hidden", False):
-                continue
-
             cmds = await self.filter_commands(instance.get_commands())
             cmds = tuple(chunks(cmds, 10))
 

@@ -6,7 +6,7 @@ from bot import utils
 
 from bot.common.queries import BankSQL
 from bot.structures.leaderboard import MoneyLeaderboard
-from bot.common.converters import DiscordUser, IntegerRange
+from bot.common.converters import DiscordUser, Range
 
 
 class Money(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
@@ -14,7 +14,7 @@ class Money(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
         self.bot = bot
 
     async def cog_before_invoke(self, ctx: commands.Context):
-        ctx.balances_ = await utils.bank.get_ctx_users_bals(ctx)
+        ctx.bals = await utils.bank.get_ctx_users_bals(ctx)
 
     @commands.cooldown(1, 60 * 60 * 24, commands.BucketType.user)
     @commands.command(name="daily")
@@ -33,7 +33,7 @@ class Money(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
     async def balance(self, ctx, target: DiscordUser(author_ok=True) = None):
         """ Show the bank balances of the user, or supply an optional target user. """
 
-        bal = ctx.balances_["target" if target is not None else "author"]["money"]
+        bal = ctx.bals["target" if target is not None else "author"]["money"]
 
         target = target if target is not None else ctx.author
 
@@ -47,8 +47,8 @@ class Money(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
         if random.randint(0, 2) != 0:
             return await ctx.send(f"You stole nothing from **{target.display_name}**")
 
-        initial_author_bal = ctx.balances_["author"]["money"]
-        initial_target_bal = ctx.balances_["target"]["money"]
+        initial_author_bal = ctx.bals["author"]["money"]
+        initial_target_bal = ctx.bals["target"]["money"]
 
         max_amount = random.randint(1, int(min(initial_author_bal, initial_target_bal) * 0.05))
 
@@ -61,10 +61,10 @@ class Money(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 
     @commands.cooldown(1, 30, commands.BucketType.user)
     @commands.command(name="gift", aliases=["give"])
-    async def gift(self, ctx, target: DiscordUser(), amount: IntegerRange(1, 1_000_000)):
+    async def gift(self, ctx, target: DiscordUser(), amount: Range(1, 1_000_000)):
         """ Gift some money to another user. """
 
-        initial_author_bal = ctx.balances_["author"]["money"]
+        initial_author_bal = ctx.bals["author"]["money"]
 
         if initial_author_bal < amount:
             return await ctx.send(f"{ctx.author.mention}, you are too poor to do that.")

@@ -2,6 +2,28 @@ import discord
 
 from discord.ext import commands
 
+from bot.common import errors
+
+
+class CoinSide(commands.Converter):
+	async def convert(self, ctx, argument):
+		argument = argument.lower()
+
+		if argument not in ["tails", "heads"]:
+			raise errors.InvalidCoinSide()
+
+		return argument
+
+
+class RoleTag(commands.Converter):
+	async def convert(self, ctx, argument):
+		argument = argument.lower()
+
+		if argument not in ("entry", "member"):
+			raise errors.InvalidRoleTag(tags=("entry", "member"))
+
+		return argument
+
 
 class DiscordUser(commands.MemberConverter):
 	"""
@@ -40,7 +62,7 @@ class DiscordUser(commands.MemberConverter):
 		return member
 
 
-class IntegerRange(commands.Converter):
+class Range(commands.Converter):
 	def __init__(self, min_: int, max_: int):
 		"""
 		:param min_: Minimum value allowed (inclusive)

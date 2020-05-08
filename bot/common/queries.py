@@ -3,14 +3,18 @@ class ServersSQL:
     TABLE = "CREATE table IF NOT EXISTS servers (" \
             "serverID BIGINT PRIMARY KEY," \
             "entryRole BIGINT," \
+            "memberRole BIGINT," \
             "prefix VARCHAR(255)" \
             ");"
 
-    INSERT_SERVER = "INSERT INTO servers (serverID, prefix, entryRole) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING;"
+    INSERT_SERVER = "INSERT INTO servers (serverID, prefix, entryRole, memberRole) " \
+                    "VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING;"
+
     UPDATE_PREFIX = "UPDATE servers SET prefix = $2 WHERE serverID=$1;"
     SELECT_SERVER = "SELECT * FROM servers WHERE serverID=$1;"
 
     UPDATE_ENTRY_ROLE = "UPDATE servers SET entryRole = $2 WHERE serverID=$1;"
+    UPDATE_MEMBER_ROLE = "UPDATE servers SET memberRole = $2 WHERE serverID=$1;"
 
 
 class BankSQL:

@@ -4,6 +4,7 @@ import discord
 from discord.ext import commands
 
 from bot import utils
+
 from bot.structures.helpcommand import HelpCommand
 
 
@@ -13,7 +14,7 @@ class SnaccBot(commands.Bot):
 
 		self.pool = None
 
-		self.prefixes = dict()
+		self.server_cache = dict()
 
 		self.default_prefix = "!"
 
@@ -37,29 +38,27 @@ class SnaccBot(commands.Bot):
 		super(SnaccBot, self).add_cog(cog)
 		print("OK")
 
-	async def on_command_error(self, ctx: commands.Context, esc):
-		if isinstance(esc, commands.CommandNotFound):
-			return
-
-		return await ctx.send(esc.args[0])
-
 	async def on_message(self, message: discord.Message):
 		if message.guild is not None and self.is_ready():
 			return await self.process_commands(message)
 
-	async def update_prefixes(self, message: discord.Message):
-		settings = self.get_cog("Settings")
+	async def update_server_cache(self, guild: discord.Guild):
+		self.server_cache[guild.id] = await utils.settings.get_server_settings(self.pool, guild)
 
-		svr = await settings.get_server_settings(message.guild)
+	async def get_server(self, guild):
+		if self.server_cache.get(guild.id, None) is None:
+			await self.update_server_cache(guild)
 
-		self.prefixes[message.guild.id] = svr["prefix"]
+		return self.server_cache.get(guild.id, None)
 
 	async def get_prefix(self, message: discord.message):
 		if os.getenv("DEBUG", False):
 			return "-"
 
-		if self.prefixes.get(message.guild.id, None) is None:
-			await self.update_prefixes(message)
+		if self.server_cache.get(message.guild.id, None) is None:
+			await self.update_server_cache(message.guild)
 
-		return self.prefixes.get(message.guild.id, self.default_prefix)
+		svr = self.server_cache.get(message.guild.id, dict())
+
+		return svr.get("prefix", self.default_prefix)
 

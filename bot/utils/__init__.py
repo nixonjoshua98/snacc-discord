@@ -1,2 +1,2 @@
 
-from . import database, bank, hangman
+from . import database, bank, hangman, settings

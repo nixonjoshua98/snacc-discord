@@ -9,7 +9,7 @@ class Stats(commands.Cog):
 
     @commands.command(name="lines")
     async def lines(self, ctx):
-        """ Count and show the number of lines for this bot. """
+        """ Count the number of lines within the bot. """
         lines = 0
 
         for root, dirs, files in os.walk("./bot/"):

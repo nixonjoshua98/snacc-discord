@@ -77,7 +77,7 @@ class Hangman(commands.Cog):
         else:
             self.games[ctx.channel.id] = None
 
-            await ctx.send(f"{ctx.message.author.mention} gave on on the hangman game.")
+            await ctx.send(f"{ctx.message.author.mention} gave up on the hangman game.")
 
     @commands.has_permissions(administrator=True)
     @commands.command(name="cheat")
