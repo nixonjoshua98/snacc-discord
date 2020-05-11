@@ -38,7 +38,7 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 
 	@commands.cooldown(1, 3, commands.BucketType.user)
 	@commands.command(name="flip", aliases=["fl"])
-	async def flip(self, ctx, side: CoinSide = "heads", bet: Range(1, 50_000) = 10):
+	async def flip(self, ctx, bet: Range(1, 50_000) = 10, side: CoinSide = "heads"):
 		""" Flip a coin and bet on which side it lands on. """
 
 		initial_author_bal = ctx.bals["author"]["money"]
