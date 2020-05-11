@@ -9,6 +9,8 @@ class ServersSQL:
             "prefix VARCHAR(255)" \
             ");"
 
+    SELECT_ALL = "SELECT * FROM servers;"
+
     INSERT_SERVER = "INSERT INTO servers (serverID, prefix, entryRole, memberRole) " \
                     "VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING;"
 
@@ -27,6 +29,8 @@ class BankSQL:
             "money BIGINT" \
             ");"
 
+    SELECT_ALL = "SELECT * FROM bank;"
+
     SELECT_RICHEST = "SELECT * FROM bank ORDER BY money DESC LIMIT 10"
 
     INSERT_USER = "INSERT INTO bank (userID, money) VALUES ($1, $2) ON CONFLICT DO NOTHING;"
@@ -44,6 +48,8 @@ class HangmanSQL:
             "wins INTEGER" \
             ");"
 
+    SELECT_ALL = "SELECT * FROM hangman;"
+
     SELECT_BEST = "SELECT * FROM hangman ORDER BY wins DESC LIMIT 10"
 
     ADD_WIN = "INSERT INTO hangman (userID, wins) VALUES ($1, 1) " \
@@ -59,9 +65,9 @@ class AboSQL:
             "dateSet TIMESTAMP" \
             ");"
 
-    SELECT_BEST = "SELECT * FROM abo ORDER BY trophies DESC;"
-
     SELECT_ALL = "SELECT * FROM abo;"
+
+    SELECT_BEST = "SELECT * FROM abo ORDER BY trophies DESC;"
 
     UPDATE_USER = "INSERT INTO abo (userID, lvl, trophies, dateSet) VALUES ($1, $2, $3, $4) " \
                   "ON CONFLICT (userID) DO UPDATE " \

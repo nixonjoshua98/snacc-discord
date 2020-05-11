@@ -1,11 +1,11 @@
-import os
 import discord
 
+from discord.ext import commands
 from configparser import ConfigParser
 
-from discord.ext import commands
-
 from bot import utils
+
+from bot.common.constants import DEBUGGING
 
 from bot.structures.helpcommand import HelpCommand
 
@@ -18,20 +18,20 @@ class SnaccBot(commands.Bot):
 
 		self.server_cache = dict()
 
-		self.default_prefix = "!"
-
 	async def on_ready(self):
-		await self.connect_database()
+		await self.setup_database()
 		await self.wait_until_ready()
 
 		print(f"Bot '{self.user.display_name}' is ready")
 
-	async def connect_database(self):
-		""" Creates a database connection pool for the Discord bot. """
+	async def setup_database(self):
+		""" Create the database connection pool and create the tables if they do not already exist. """
 
 		print("Creating PostgreSQL connection pool...", end="")
 
 		self.pool = await utils.database.create_pool()
+
+		await utils.database.create_tables(self.pool)
 
 		print("OK")
 
@@ -54,15 +54,12 @@ class SnaccBot(commands.Bot):
 		return self.server_cache.get(guild.id, None)
 
 	async def get_prefix(self, message: discord.message):
-		if os.getenv("DEBUG", False):
-			return "-"
-
 		if self.server_cache.get(message.guild.id, None) is None:
 			await self.update_server_cache(message.guild)
 
 		svr = self.server_cache.get(message.guild.id, dict())
 
-		return svr.get("prefix", self.default_prefix)
+		return "-" if DEBUGGING else svr.get("prefix", "!")
 
 	def run(self):
 		config = ConfigParser()

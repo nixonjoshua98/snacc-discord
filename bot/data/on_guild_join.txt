@@ -3,7 +3,7 @@ The infamous **{bot.user.name}** has graced your ~~lowly~~ server! [{guild.owner
 My default prefix is **{bot.default_prefix}**...obviously
 
 **__Help__**
-- **{bot.default_prefix}help**...durp
+- **!help**...durp
 - Contact my almighty creator **{bot_info.owner}**
 
 **__Invite Me__**

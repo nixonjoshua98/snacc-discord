@@ -38,7 +38,7 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 
 	@commands.cooldown(1, 3, commands.BucketType.user)
 	@commands.command(name="flip", aliases=["fl"])
-	async def flip(self, ctx, bet: Range(1, 50_000) = 10, side: CoinSide = "heads"):
+	async def flip(self, ctx, side: CoinSide = "heads", bet: Range(1, 50_000) = 10):
 		""" Flip a coin and bet on which side it lands on. """
 
 		initial_author_bal = ctx.bals["author"]["money"]
@@ -53,8 +53,10 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 
 		await self.bot.pool.execute(BankSQL.ADD_MONEY, ctx.author.id, winnings)
 
-		await ctx.send(f"It's **{side_landed}**! "
-					   f"You {'won' if correct_side else 'lost'} **${abs(winnings):,}**!")
+		await ctx.send(
+			f"It's **{side_landed}**! "
+			f"You {'won' if correct_side else 'lost'} **${abs(winnings):,}**!"
+		)
 
 	@commands.cooldown(1, 3, commands.BucketType.user)
 	@commands.command(name="bet", aliases=["roll"])
@@ -73,8 +75,10 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 
 		await self.bot.pool.execute(BankSQL.ADD_MONEY, ctx.author.id, winnings)
 
-		await ctx.send(f":1234: You {'won' if correct_side else 'lost'} **${abs(winnings):,}**! "
-					   f"The dice landed on `{side_landed}`")
+		await ctx.send(
+			f":1234: You {'won' if correct_side else 'lost'} **${abs(winnings):,}**! "
+			f"The dice landed on `{side_landed}`"
+		)
 
 
 def setup(bot):
