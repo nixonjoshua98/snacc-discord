@@ -16,15 +16,15 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 		self.bot = bot
 
 	@commands.max_concurrency(1, commands.BucketType.user)
-	@commands.cooldown(25, 60 * 60 * 3, commands.BucketType.user)
+	@commands.cooldown(100, 60 * 60 * 3, commands.BucketType.user)
 	@commands.command(name="slot", aliases=["sl", "sp"])
-	async def slot_machine(self, ctx, bet: Range(10, 50_000, clamp=True) = 0):
+	async def slot_machine(self, ctx, bet: Range(0, 50_000, clamp=True) = 0):
 		"""
 		Use a slot machine.
 
 		__Winnings Example__
-		:cherries::cherries::cherries: bet * 7.5
-		:pear::pear::strawberry: bet * 2.0
+		:cherries::cherries::cherries: bet * 5.0
+		:pear::pear::strawberry: bet * 2.5
 		:pear::strawberry::apple: 0
 		"""
 
@@ -55,10 +55,10 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 
 		# Calculate winnings
 		if row[0] == row[1] == row[2]:
-			winnings = int(bet * 7.5)
+			winnings = int(bet * 5.0)
 
 		elif row[0] == row[1]:
-			winnings = int(bet * 2.0)
+			winnings = int(bet * 2.5)
 
 		else:
 			won, winnings = False, 0
@@ -77,7 +77,7 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 
 	@commands.cooldown(1, 3, commands.BucketType.user)
 	@commands.command(name="flip", aliases=["fl"])
-	async def flip(self, ctx, side: typing.Optional[CoinSide] = "heads", *, bet: Range(1, 50_000) = 0):
+	async def flip(self, ctx, side: typing.Optional[CoinSide] = "heads", bet: Range(0, 50_000) = 0):
 		""" Flip a coin and bet on which side it lands on. """
 
 		bal = await utils.bank.get_author_bal(ctx)
@@ -100,7 +100,7 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 
 	@commands.cooldown(1, 3, commands.BucketType.user)
 	@commands.command(name="bet", aliases=["roll"])
-	async def bet(self, ctx, bet: Range(1, 50_000) = 0, sides: Range(6, 100) = 6, side: Range(6, 100) = 6):
+	async def bet(self, ctx, bet: Range(0, 50_000) = 0, sides: Range(6, 100) = 6, side: Range(6, 100) = 6):
 		""" Roll a die and bet on which side the die lands on. """
 
 		bal = await utils.bank.get_author_bal(ctx)
