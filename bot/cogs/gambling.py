@@ -24,7 +24,7 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 
 		__Winnings Example__
 		:cherries::cherries::cherries: bet * 5.0
-		:pear::pear::strawberry: bet * 2.5
+		:pear::pear::strawberry: bet * 2.0
 		:pear::strawberry::apple: Lose
 		"""
 
@@ -58,7 +58,7 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 			winnings = int(bet * 5.0)
 
 		elif row[0] == row[1]:
-			winnings = int(bet * 2.5)
+			winnings = int(bet * 2.0)
 
 		else:
 			won, winnings = False, 0
@@ -76,7 +76,7 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 			await ctx.send(content=f"You won nothing. Better luck next time!")
 
 	@commands.cooldown(1, 3, commands.BucketType.user)
-	@commands.command(name="flip", aliases=["fl"])
+	@commands.command(name="flip")
 	async def flip(self, ctx, side: typing.Optional[CoinSide] = "heads", bet: Range(0, 50_000) = 0):
 		""" Flip a coin and bet on which side it lands on. """
 
@@ -99,7 +99,7 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 		)
 
 	@commands.cooldown(1, 3, commands.BucketType.user)
-	@commands.command(name="bet", aliases=["roll"])
+	@commands.command(name="bet")
 	async def bet(self, ctx, bet: Range(0, 50_000) = 0, sides: Range(6, 100) = 6, side: Range(6, 100) = 6):
 		""" Roll a die and bet on which side the die lands on. """
 
