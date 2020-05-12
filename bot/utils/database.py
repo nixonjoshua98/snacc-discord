@@ -29,11 +29,11 @@ async def _create_pool_from_config(file: str, section: str):
     config = ConfigParser()
     config.read(file)
 
-    return await asyncpg.create_pool(**dict(config.items(section)), max_size=20)
+    return await asyncpg.create_pool(**dict(config.items(section)), max_size=15)
 
 
 async def _create_pool_from_url(url: str):
-    return await asyncpg.create_pool(url, ssl=_create_ctx(), max_size=20)
+    return await asyncpg.create_pool(url, ssl=_create_ctx(), max_size=15)
 
 
 def _create_ctx():

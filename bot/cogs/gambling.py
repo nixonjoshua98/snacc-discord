@@ -15,7 +15,7 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 	def __init__(self, bot):
 		self.bot = bot
 
-	@commands.max_concurrency(1, commands.BucketType.user)
+	#@commands.max_concurrency(1, commands.BucketType.user)
 	@commands.cooldown(25, 60 * 60 * 3, commands.BucketType.user)
 	@commands.command(name="slot")
 	async def slot_machine(self, ctx, bet: Range(0, 50_000) = 0):
@@ -33,7 +33,11 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 		if bal["money"] < bet:
 			raise commands.CommandError("You do not have enough money.")
 
-		items = [SEmoji.APPLE, SEmoji.PINEAPPLE, SEmoji.STRAWBERRY, SEmoji.CHERRIES, SEmoji.WATERMELON, SEmoji.KIWI]
+		items = [
+			SEmoji.APPLE, SEmoji.PINEAPPLE, SEmoji.STRAWBERRY,
+			SEmoji.CHERRIES, SEmoji.WATERMELON, SEmoji.KIWI,
+			SEmoji.LEMON, SEmoji.PEAR, SEmoji.GREEN_APPLE
+		]
 
 		row, message = None, None
 
