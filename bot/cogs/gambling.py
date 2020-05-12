@@ -15,7 +15,7 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 	def __init__(self, bot):
 		self.bot = bot
 
-	#@commands.max_concurrency(1, commands.BucketType.user)
+	@commands.max_concurrency(1, commands.BucketType.user)
 	@commands.cooldown(25, 60 * 60 * 3, commands.BucketType.user)
 	@commands.command(name="slot")
 	async def slot_machine(self, ctx, bet: Range(0, 50_000) = 0):
