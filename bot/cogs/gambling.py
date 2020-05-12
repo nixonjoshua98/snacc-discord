@@ -15,7 +15,7 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 	def __init__(self, bot):
 		self.bot = bot
 
-	#@commands.max_concurrency(1, commands.BucketType.user)
+	@commands.max_concurrency(1, commands.BucketType.user)
 	@commands.cooldown(180, 60 * 60 * 3, commands.BucketType.user)
 	@commands.command(name="slot")
 	async def slot_machine(self, ctx, bet: Range(0, 50_000) = 0):
@@ -24,8 +24,8 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 
 		__Winnings Example__
 		:cherries::cherries::cherries: x5.0
-		:pear::pear::strawberry: x2.0
-		:pear::strawberry::apple: Lose
+		:WATERMELON::WATERMELON::strawberry: x2.5
+		:apple::strawberry::WATERMELON: Lose
 		"""
 
 		bal = await utils.bank.get_author_bal(ctx)
@@ -58,7 +58,7 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 			winnings = int(bet * 5.0)
 
 		elif row[0] == row[1]:
-			winnings = int(bet * 2.0)
+			winnings = int(bet * 2.5)
 
 		else:
 			won, winnings = False, 0
