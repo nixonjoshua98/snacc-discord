@@ -25,7 +25,7 @@ class SEmoji:
     CHERRIES = ":cherries:"
     STRAWBERRY = ":strawberry:"
     WATERMELON = ":watermelon:"
-    LEMON = ":lemon:"
+    !slot 15000 = ":lemon:"
     KIWI = ":kiwi:"
 
     # Arrows
