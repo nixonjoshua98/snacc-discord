@@ -23,9 +23,9 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 		Use a slot machine.
 
 		__Winnings Example__
-		:cherries::cherries::cherries: x4.0
-		:WATERMELON::WATERMELON::strawberry: x2.0
-		:apple::strawberry::WATERMELON: Lose
+		:cherries::cherries::cherries: x4.5
+		:watermelon::watermelon::strawberry: x2.0
+		:apple::strawberry::watermelon: Lose
 		"""
 
 		bal = await utils.bank.get_author_bal(ctx)
@@ -39,27 +39,22 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 			SEmoji.LEMON, SEmoji.PEAR, SEmoji.GREEN_APPLE
 		]
 
-		row, message = None, None
+		row = None
 
 		# Animation
 		for i in range(3):
 			row = [secrets.choice(items) for _ in range(3)]
 
-			if message is None:
-				message = await ctx.send("".join(row))
-
-			else:
-				await message.edit(content="".join(row))
-
 			if row[0] == row[1]:
-				""" We spin the machine up to three times and stop on the first win the user gets. """
 				break
+
+		await ctx.send("".join(row))
 
 		won = True
 
 		# Calculate winnings
 		if row[0] == row[1] == row[2]:
-			winnings = int(bet * 4.0)
+			winnings = int(bet * 4.5)
 
 		elif row[0] == row[1]:
 			winnings = int(bet * 2.0)
