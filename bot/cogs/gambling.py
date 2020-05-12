@@ -23,7 +23,7 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 		Use a slot machine.
 
 		__Winnings Example__
-		:cherries::cherries::cherries: x4.5
+		:cherries::cherries::cherries: x5.0
 		:watermelon::watermelon::strawberry: x2.0
 		:apple::strawberry::watermelon: Lose
 		"""
@@ -36,7 +36,7 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 		items = [
 			SEmoji.APPLE, SEmoji.PINEAPPLE, SEmoji.STRAWBERRY,
 			SEmoji.CHERRIES, SEmoji.WATERMELON, SEmoji.KIWI,
-			SEmoji.LEMON, SEmoji.PEAR, SEmoji.GREEN_APPLE
+			SEmoji.LEMON, SEmoji.PEAR, SEmoji.GRAPES
 		]
 
 		row = None
@@ -48,13 +48,11 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 			if row[0] == row[1]:
 				break
 
-		await ctx.send("".join(row))
-
 		won = True
 
 		# Calculate winnings
 		if row[0] == row[1] == row[2]:
-			winnings = int(bet * 4.5)
+			winnings = int(bet * 5.0)
 
 		elif row[0] == row[1]:
 			winnings = int(bet * 2.0)
@@ -66,13 +64,13 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 			if winnings > 0:
 				await self.bot.pool.execute(BankSQL.ADD_MONEY, ctx.author.id, winnings)
 
-			await ctx.send(content=f"You won **${winnings:,}**!")
+			await ctx.send(content=f"**[{''.join(row)}]** You won **${winnings:,}**!")
 
 		else:
 			if bet > 0:
 				await self.bot.pool.execute(BankSQL.SUB_MONEY, ctx.author.id, bet)
 
-			await ctx.send(content=f"You won nothing. Better luck next time!")
+			await ctx.send(content=f"**[{''.join(row)}]** You won nothing. Better luck next time!")
 
 	@commands.cooldown(1, 3, commands.BucketType.user)
 	@commands.command(name="flip")

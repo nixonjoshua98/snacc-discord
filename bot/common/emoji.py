@@ -22,6 +22,7 @@ class SEmoji:
     GREEN_APPLE = ":green_apple:"
     PINEAPPLE = ":pineapple:"
     PEAR = ":pear:"
+    GRAPES = ":grapes:"
     CHERRIES = ":cherries:"
     STRAWBERRY = ":strawberry:"
     WATERMELON = ":watermelon:"
