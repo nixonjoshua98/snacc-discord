@@ -10,7 +10,7 @@ class Misc(commands.Cog):
     @commands.cooldown(1, 60 * 60, commands.BucketType.user)
     @commands.command(name="feedback")
     async def feedback(self, ctx, *, msg: str):
-        """ Submibt bot feedback. """
+        """ Submit bot feedback. """
 
         msg = msg.strip()
 

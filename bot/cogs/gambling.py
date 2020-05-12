@@ -15,18 +15,10 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 	def __init__(self, bot):
 		self.bot = bot
 
-	@commands.max_concurrency(1, commands.BucketType.user)
 	@commands.cooldown(25, 60 * 60 * 3, commands.BucketType.user)
 	@commands.command(name="slot")
 	async def slot_machine(self, ctx, bet: Range(0, 50_000) = 0):
-		"""
-		Use a slot machine.
-
-		__Winnings Example__
-		:cherries::cherries::cherries: x5.0
-		:watermelon::watermelon::strawberry: x2.5
-		:apple::strawberry::watermelon: Lose
-		"""
+		""" Use a slot machine. """
 
 		bal = await utils.bank.get_author_bal(ctx)
 
@@ -93,6 +85,27 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 		await ctx.send(
 			f"It's **{side_landed}**! "
 			f"You {'won' if correct_side else 'lost'} **${abs(winnings):,}**!"
+		)
+
+	@commands.cooldown(25, 60 * 60 * 3, commands.BucketType.user)
+	@commands.command(name="lucky")
+	async def lucky(self, ctx):
+		""" Are you lucky enough to win? """
+
+		def get_winning(amount) -> int:
+			low, high = max(amount * -0.75, -750), min(amount * 2.0, 1000)
+
+			return random.randint(int(low), int(high))
+
+		bal = await utils.bank.get_author_bal(ctx)
+
+		winnings = get_winning(bal["money"])
+
+		await self.bot.pool.execute(BankSQL.ADD_MONEY, ctx.author.id, winnings)
+
+		await ctx.send(
+			f"**{'Unlucky' if winnings < 0 else 'Lucky'}**! "
+			f"You {'won' if winnings > 0 else 'lost'} **${abs(winnings):,}**!"
 		)
 
 	@commands.cooldown(1, 3, commands.BucketType.user)
