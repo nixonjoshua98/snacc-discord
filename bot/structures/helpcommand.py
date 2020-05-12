@@ -3,7 +3,7 @@ import asyncio
 
 from discord.ext import commands
 
-from bot.common.emoji import Emoji
+from bot.common.emoji import UEmoji
 
 
 def chunks(ls, n):
@@ -62,7 +62,7 @@ class HelpCommand(commands.HelpCommand):
             return (
                     user.id == ctx.author.id and  # Listen to the author only
                     react.message.id == message.id and  # Help message only
-                    str(react.emoji) in (Emoji.ARROW_RIGHT, Emoji.ARROW_LEFT)  # Arrows
+                    str(react.emoji) in (UEmoji.ARROW_RIGHT, UEmoji.ARROW_LEFT)  # Arrows
             )
 
         pages = await self.get_pages()
@@ -72,7 +72,7 @@ class HelpCommand(commands.HelpCommand):
         message = await ctx.send(embed=pages[current_page])
 
         # Add navigation buttons
-        for emoji in (Emoji.ARROW_LEFT, Emoji.ARROW_RIGHT):
+        for emoji in (UEmoji.ARROW_LEFT, UEmoji.ARROW_RIGHT):
             await message.add_reaction(emoji)
 
         while True:
@@ -91,8 +91,8 @@ class HelpCommand(commands.HelpCommand):
             else:
                 # Update which page the user is currently viewing
                 new_page = {
-                    Emoji.ARROW_LEFT: max(0, current_page - 1),
-                    Emoji.ARROW_RIGHT: min(current_page + 1, max_pages - 1)
+                    UEmoji.ARROW_LEFT: max(0, current_page - 1),
+                    UEmoji.ARROW_RIGHT: min(current_page + 1, max_pages - 1)
                 }.get(str(react.emoji), current_page)
 
                 await react.remove(ctx.author)

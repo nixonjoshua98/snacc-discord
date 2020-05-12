@@ -54,7 +54,7 @@ class SnaccBot(commands.Bot):
 		return self.server_cache.get(guild.id, None)
 
 	async def get_prefix(self, message: discord.message):
-		if self.server_cache.get(message.guild.id, None) is None:
+		if self.is_ready() and not self.is_closed() and self.server_cache.get(message.guild.id, None) is None:
 			await self.update_server_cache(message.guild)
 
 		svr = self.server_cache.get(message.guild.id, dict())

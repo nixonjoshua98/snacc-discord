@@ -2,7 +2,7 @@ import discord
 
 from discord.ext import commands
 
-from bot.common.emoji import Emoji
+from bot.common.emoji import UEmoji
 from bot.common.queries import HangmanSQL
 from bot.utils.hangman import HangmanGame, HangmanGuess
 from bot.structures.leaderboard import HangmanLeaderboard
@@ -26,7 +26,7 @@ class Hangman(commands.Cog):
                     await inst.show_game(message.channel)
 
                 elif result == HangmanGuess.USER_ON_COOLDOWN:
-                    await message.add_reaction(Emoji.ALARM_CLOCK)
+                    await message.add_reaction(UEmoji.ALARM_CLOCK)
 
                 elif result == HangmanGuess.GAME_WON:
                     self.games[message.channel.id] = None

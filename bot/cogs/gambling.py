@@ -1,10 +1,12 @@
 import random
+import typing
 import secrets
 
 from bot import utils
 
 from discord.ext import commands
 
+from bot.common.emoji import SEmoji
 from bot.common.queries import BankSQL
 from bot.common.converters import Range, CoinSide
 
@@ -16,34 +18,74 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 	async def cog_before_invoke(self, ctx):
 		ctx.bals = await utils.bank.get_ctx_users_bals(ctx)
 
+	@commands.max_concurrency(1, commands.BucketType.user)
 	@commands.cooldown(25, 60 * 60 * 3, commands.BucketType.user)
-	@commands.command(name="spin", aliases=["sp"])
-	async def spin(self, ctx):
-		""" Use a spin machine. """
+	@commands.command(name="slot", aliases=["sl", "sp"])
+	async def slot_machine(self, ctx, bet: Range(10, 50_000, clamp=True) = 0):
+		"""
+		Use a slot machine.
 
-		def get_winning(amount) -> int:
-			low, high = max(amount * -0.75, -750), min(amount * 2.0, 1000)
+		__Winnings Example__
+		:cherries::cherries::cherries: bet * 7.5
+		:pear::pear::strawberry: bet * 2.0
+		:pear::strawberry::apple: 0
+		"""
 
-			return random.randint(int(low), int(high))
+		bal = await utils.bank.get_author_bal(ctx)
 
-		initial_author_bal = ctx.bals["author"]["money"]
+		if bal["money"] < bet:
+			raise commands.CommandError("You do not have enough money.")
 
-		bet = initial_author_bal
+		items = [SEmoji.APPLE, SEmoji.PINEAPPLE, SEmoji.STRAWBERRY, SEmoji.CHERRIES, SEmoji.PEAR]
 
-		winnings = get_winning(bet)
+		row, message = None, None
 
-		await self.bot.pool.execute(BankSQL.ADD_MONEY, ctx.author.id, winnings)
+		# Animation
+		for i in range(3):
+			row = [random.choice(items) for _ in range(3)]
 
-		await ctx.send(f"You {'won' if winnings > 0 else 'lost'} **${abs(winnings):,}** on the spin machine!")
+			if message is None:
+				message = await ctx.send("".join(row))
+
+			else:
+				await message.edit(content="".join(row))
+
+			if row[0] == row[1]:
+				""" We spin the machine up to three times and stop on the first win the user gets. """
+				break
+
+		won = True
+
+		# Calculate winnings
+		if row[0] == row[1] == row[2]:
+			winnings = int(bet * 7.5)
+
+		elif row[0] == row[1]:
+			winnings = int(bet * 2.0)
+
+		else:
+			won, winnings = False, 0
+
+		if won:
+			if winnings > 0:
+				await self.bot.pool.execute(BankSQL.ADD_MONEY, ctx.author.id, winnings)
+
+			await ctx.send(content=f"You won **${winnings:,}**!")
+
+		else:
+			if bet > 0:
+				await self.bot.pool.execute(BankSQL.SUB_MONEY, ctx.author.id, bet)
+
+			await ctx.send(content=f"You won nothing. Better luck next time!")
 
 	@commands.cooldown(1, 3, commands.BucketType.user)
 	@commands.command(name="flip", aliases=["fl"])
-	async def flip(self, ctx, bet: Range(1, 50_000) = 10, side: CoinSide = "heads"):
+	async def flip(self, ctx, side: typing.Optional[CoinSide] = "heads", *, bet: Range(1, 50_000) = 0):
 		""" Flip a coin and bet on which side it lands on. """
 
-		initial_author_bal = ctx.bals["author"]["money"]
+		bal = await utils.bank.get_author_bal(ctx)
 
-		if initial_author_bal < bet:
+		if bal["money"] < bet:
 			raise commands.CommandError("You do not have enough money.")
 
 		side_landed = secrets.choice(["heads", "tails"])
@@ -51,7 +93,8 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 
 		winnings = bet if correct_side else bet * -1
 
-		await self.bot.pool.execute(BankSQL.ADD_MONEY, ctx.author.id, winnings)
+		if winnings != 0:
+			await self.bot.pool.execute(BankSQL.ADD_MONEY, ctx.author.id, winnings)
 
 		await ctx.send(
 			f"It's **{side_landed}**! "
@@ -60,7 +103,7 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 
 	@commands.cooldown(1, 3, commands.BucketType.user)
 	@commands.command(name="bet", aliases=["roll"])
-	async def bet(self, ctx, bet: Range(1, 50_000) = 10, sides: Range(6, 100) = 6, side: Range(6, 100) = 6):
+	async def bet(self, ctx, bet: Range(1, 50_000) = 0, sides: Range(6, 100) = 6, side: Range(6, 100) = 6):
 		""" Roll a die and bet on which side the die lands on. """
 
 		initial_author_bal = ctx.bals["author"]["money"]
@@ -68,12 +111,16 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 		if initial_author_bal < bet:
 			raise commands.CommandError("You do not have enough money.")
 
+		elif side > sides:
+			raise commands.CommandError("You made an impossible to win bet.")
+
 		side_landed = random.randint(1, sides)
 		correct_side = side_landed == side
 
 		winnings = bet * (sides - 1) if correct_side else bet * -1
 
-		await self.bot.pool.execute(BankSQL.ADD_MONEY, ctx.author.id, winnings)
+		if winnings != 0:
+			await self.bot.pool.execute(BankSQL.ADD_MONEY, ctx.author.id, winnings)
 
 		await ctx.send(
 			f":1234: You {'won' if correct_side else 'lost'} **${abs(winnings):,}**! "

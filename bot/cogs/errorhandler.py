@@ -28,6 +28,9 @@ class ErrorHandler(commands.Cog):
         elif isinstance(esc, commands.CheckFailure):
             await ctx.send("You do not have access to this command.")
 
+        elif isinstance(esc, commands.MaxConcurrencyReached):
+            await ctx.send("You are doing that too fast.")
+
         else:
             await ctx.send(esc)
 

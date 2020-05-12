@@ -4,6 +4,14 @@ from bot.common.queries import BankSQL
 from bot.common.converters import DiscordUser
 
 
+async def get_users_bals(pool, **users):
+    return await _get_users_bals(pool, users)
+
+
+async def get_author_bal(ctx):
+    return (await _get_users_bals(ctx.bot.pool, {"author": ctx.author})).get("author", None)
+
+
 async def get_ctx_users_bals(ctx):
     """
     Get all balances for each user in the command arguments and return them as a dict

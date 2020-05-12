@@ -1,6 +1,6 @@
 
 
-class Emoji:
+class UEmoji:
     ARROW_LEFT = "\U00002b05"
     ARROW_RIGHT = "\U000027a1"
 
@@ -14,3 +14,29 @@ class Emoji:
     }
 
     ALARM_CLOCK = "\U000023f0"
+
+
+class SEmoji:
+    # Fruit
+    APPLE = ":apple:"
+    GREEN_APPLE = ":green_apple:"
+    PINEAPPLE = ":pineapple:"
+    PEAR = ":pear:"
+    CHERRIES = ":cherries:"
+    STRAWBERRY = ":strawberry:"
+
+    # Arrows
+    ARROW_UP = ":arrow_up_small:"
+    ARROW_DOWN = ":arrow_down_small:"
+
+    # Squares
+    BLUE_SQUARE = ":blue_square:"
+
+    # Music
+    NEXT_TRACK = ":next_track:"
+    PREV_TRACK = ":previous_track:"
+
+    # Shapes
+    BLUE_DIAMOND = ":large_blue_diamond:"
+    ORANGE_DIAMOND = ":large_orange_diamond:"
+
