@@ -23,8 +23,8 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 		Use a slot machine.
 
 		__Winnings Example__
-		:cherries::cherries::cherries: bet * 5.0
-		:pear::pear::strawberry: bet * 2.0
+		:cherries::cherries::cherries: $5,000 -> $50,000
+		:pear::pear::strawberry: $5,000 -> $10,000
 		:pear::strawberry::apple: Lose
 		"""
 
@@ -58,10 +58,10 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 
 		# Calculate winnings
 		if row[0] == row[1] == row[2]:
-			winnings = int(bet * 5.0)
+			winnings = int(bet * 4.0)
 
 		elif row[0] == row[1]:
-			winnings = int(bet * 2.0)
+			winnings = int(bet * 1.0)
 
 		else:
 			won, winnings = False, 0
