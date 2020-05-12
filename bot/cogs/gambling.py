@@ -15,9 +15,6 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 	def __init__(self, bot):
 		self.bot = bot
 
-	async def cog_before_invoke(self, ctx):
-		ctx.bals = await utils.bank.get_ctx_users_bals(ctx)
-
 	@commands.max_concurrency(1, commands.BucketType.user)
 	@commands.cooldown(25, 60 * 60 * 3, commands.BucketType.user)
 	@commands.command(name="slot", aliases=["sl", "sp"])
@@ -106,9 +103,9 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 	async def bet(self, ctx, bet: Range(1, 50_000) = 0, sides: Range(6, 100) = 6, side: Range(6, 100) = 6):
 		""" Roll a die and bet on which side the die lands on. """
 
-		initial_author_bal = ctx.bals["author"]["money"]
+		bal = await utils.bank.get_author_bal(ctx)
 
-		if initial_author_bal < bet:
+		if bal["money"] < bet:
 			raise commands.CommandError("You do not have enough money.")
 
 		elif side > sides:

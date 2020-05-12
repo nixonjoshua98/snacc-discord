@@ -14,9 +14,6 @@ class Money(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
     def __init__(self, bot):
         self.bot = bot
 
-    async def cog_before_invoke(self, ctx: commands.Context):
-        ctx.bals = await utils.bank.get_ctx_users_bals(ctx)
-
     @commands.cooldown(1, 60 * 60 * 24, commands.BucketType.user)
     @commands.command(name="daily")
     async def daily(self, ctx):
@@ -32,11 +29,11 @@ class Money(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
     async def balance(self, ctx, target: DiscordUser(author_ok=True) = None):
         """ Show the bank balances of the user, or supply an optional target user. """
 
-        bal = ctx.bals["target" if target is not None else "author"]["money"]
-
         target = target if target is not None else ctx.author
 
-        await ctx.send(f":moneybag: **{target.display_name}** has **${bal:,}**.")
+        bal = await utils.bank.get_user_bal(ctx.bot.pool, target)
+
+        await ctx.send(f":moneybag: **{target.display_name}** has **${bal['money']:,}**.")
 
     @commands.cooldown(1, 60 * 60, commands.BucketType.user)
     @commands.command(name="steal")
@@ -46,10 +43,12 @@ class Money(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
         if random.randint(0, 2) != 0:
             return await ctx.send(f"You stole nothing from **{target.display_name}**")
 
-        initial_author_bal = ctx.bals["author"]["money"]
-        initial_target_bal = ctx.bals["target"]["money"]
+        bals = await utils.bank.get_users_bals(ctx.bot.pool, author=ctx.author, target=target)
 
-        max_amount = random.randint(1, int(min(initial_author_bal, initial_target_bal) * 0.05))
+        author_bal = bals["author"]
+        target_bal = bals["target"]
+
+        max_amount = random.randint(1, int(min(author_bal["money"], target_bal["target"]) * 0.05))
 
         stolen_amount = min(10_000, max_amount)
 
@@ -63,9 +62,9 @@ class Money(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
     async def gift(self, ctx, target: DiscordUser(), amount: Range(1, 1_000_000)):
         """ Gift some money to another user. """
 
-        initial_author_bal = ctx.bals["author"]["money"]
+        bal = await utils.bank.get_author_bal(ctx)
 
-        if initial_author_bal < amount:
+        if bal["money"] < amount:
             raise commands.CommandError("You do not have enough money.")
 
         await self.bot.pool.execute(BankSQL.SUB_MONEY, ctx.author.id, amount)

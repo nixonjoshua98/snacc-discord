@@ -1,7 +1,4 @@
-import discord
-
 from bot.common.queries import BankSQL
-from bot.common.converters import DiscordUser
 
 
 async def get_users_bals(pool, **users):
@@ -12,26 +9,8 @@ async def get_author_bal(ctx):
     return (await _get_users_bals(ctx.bot.pool, {"author": ctx.author})).get("author", None)
 
 
-async def get_ctx_users_bals(ctx):
-    """
-    Get all balances for each user in the command arguments and return them as a dict
-
-    :param ctx: The context which we will look through the arguments for users
-    :return: Return a dict of the user parameters with their balances
-    """
-
-    balances = {"author": ctx.author}
-
-    for i, (name, param) in enumerate(ctx.command.clean_params.items(), start=2):
-        value = ctx.args[i]
-
-        if value is None:
-            continue
-
-        if isinstance(param.annotation, (DiscordUser, discord.Member, discord.User)):
-            balances[name] = value
-
-    return await _get_users_bals(ctx.bot.pool, balances)
+async def get_user_bal(pool, user):
+    return (await _get_users_bals(pool, {"user": user})).get("user", None)
 
 
 async def _get_users_bals(pool, users: dict):
