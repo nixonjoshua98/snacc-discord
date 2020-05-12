@@ -34,8 +34,8 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 			raise commands.CommandError("You do not have enough money.")
 
 		items = [
-			SEmoji.APPLE, SEmoji.PINEAPPLE, SEmoji.STRAWBERRY, SEmoji.GRAPES,
-			SEmoji.CHERRIES, SEmoji.WATERMELON, SEmoji.KIWI, SEmoji.PEAR
+			SEmoji.APPLE, SEmoji.PINEAPPLE, SEmoji.STRAWBERRY,
+			SEmoji.GRAPES, SEmoji.CHERRIES, SEmoji.WATERMELON
 		]
 
 		row = None
@@ -54,7 +54,7 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 			winnings = int(bet * 5.0)
 
 		elif row[0] == row[1]:
-			winnings = int(bet * 2.0)
+			winnings = int(bet * 2.5)
 
 		else:
 			won, winnings = False, 0
