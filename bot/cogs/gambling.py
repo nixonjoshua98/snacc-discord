@@ -24,7 +24,7 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 
 		__Winnings Example__
 		:cherries::cherries::cherries: x5.0
-		:watermelon::watermelon::strawberry: x2.0
+		:watermelon::watermelon::strawberry: x2.5
 		:apple::strawberry::watermelon: Lose
 		"""
 
@@ -35,7 +35,8 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 
 		items = [
 			SEmoji.APPLE, SEmoji.PINEAPPLE, SEmoji.STRAWBERRY,
-			SEmoji.GRAPES, SEmoji.CHERRIES, SEmoji.WATERMELON
+			SEmoji.GRAPES, SEmoji.CHERRIES, SEmoji.WATERMELON,
+			SEmoji.KIWI, SEmoji.LEMON
 		]
 
 		row = None
