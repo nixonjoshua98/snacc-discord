@@ -15,7 +15,7 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 	def __init__(self, bot):
 		self.bot = bot
 
-	@commands.max_concurrency(1, commands.BucketType.user)
+	#@commands.max_concurrency(1, commands.BucketType.user)
 	@commands.cooldown(180, 60 * 60 * 3, commands.BucketType.user)
 	@commands.command(name="slot")
 	async def slot_machine(self, ctx, bet: Range(0, 50_000) = 0):
@@ -33,11 +33,7 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 		if bal["money"] < bet:
 			raise commands.CommandError("You do not have enough money.")
 
-		items = [
-			SEmoji.APPLE, SEmoji.PINEAPPLE, SEmoji.STRAWBERRY,
-			SEmoji.CHERRIES, SEmoji.PEAR, SEmoji.WATERMELON,
-			SEmoji.LEMON, SEmoji.KIWI, SEmoji.GREEN_APPLE
-		]
+		items = [SEmoji.APPLE, SEmoji.PINEAPPLE, SEmoji.STRAWBERRY, SEmoji.CHERRIES, SEmoji.WATERMELON]
 
 		row, message = None, None
 
@@ -127,6 +123,8 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 			f":1234: You {'won' if correct_side else 'lost'} **${abs(winnings):,}**! "
 			f"The dice landed on `{side_landed}`"
 		)
+
+
 
 
 def setup(bot):
