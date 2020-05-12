@@ -24,6 +24,8 @@ class SEmoji:
     PEAR = ":pear:"
     CHERRIES = ":cherries:"
     STRAWBERRY = ":strawberry:"
+    WATERMELON = ":watermelon:"
+    LEMON = ":lemon:"
 
     # Arrows
     ARROW_UP = ":arrow_up_small:"
