@@ -19,7 +19,6 @@ class UEmoji:
 class SEmoji:
     # Fruit
     APPLE = ":apple:"
-    GREEN_APPLE = ":green_apple:"
     PINEAPPLE = ":pineapple:"
     PEAR = ":pear:"
     CHERRIES = ":cherries:"

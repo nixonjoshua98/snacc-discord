@@ -23,8 +23,8 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 		Use a slot machine.
 
 		__Winnings Example__
-		:cherries::cherries::cherries: bet * 4.0
-		:pear::pear::strawberry: bet * 1.5
+		:cherries::cherries::cherries: bet * 5.0
+		:pear::pear::strawberry: bet * 2.0
 		:pear::strawberry::apple: Lose
 		"""
 
