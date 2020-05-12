@@ -31,13 +31,11 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 			SEmoji.KIWI, SEmoji.LEMON
 		]
 
-		row = []
+		row = None
 
 		# Animation
 		for i in range(3):
-			random.shuffle(items)
-
-			row = [items[0], random.choice(list(set(random.sample(items, 5) + [items[0]]))), random.choice(items)]
+			row = [secrets.choice(items) for _ in range(3)]
 
 			if row[0] == row[1]:
 				break
@@ -97,7 +95,7 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 		def get_winning(amount) -> int:
 			low, high = max(amount * -0.75, -750), min(amount * 2.0, 1000)
 
-			return random.randint(int(low), int(high)) or 1
+			return random.randint(int(low), int(high))
 
 		bal = await utils.bank.get_author_bal(ctx)
 
@@ -135,6 +133,8 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 			f":1234: You {'won' if correct_side else 'lost'} **${abs(winnings):,}**! "
 			f"The dice landed on `{side_landed}`"
 		)
+
+
 
 
 def setup(bot):
