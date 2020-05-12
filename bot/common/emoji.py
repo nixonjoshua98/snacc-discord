@@ -19,12 +19,14 @@ class UEmoji:
 class SEmoji:
     # Fruit
     APPLE = ":apple:"
+    GREEN_APPLE = ":green_apple:"
     PINEAPPLE = ":pineapple:"
     PEAR = ":pear:"
     CHERRIES = ":cherries:"
     STRAWBERRY = ":strawberry:"
     WATERMELON = ":watermelon:"
     LEMON = ":lemon:"
+    KIWI = ":kiwi:"
 
     # Arrows
     ARROW_UP = ":arrow_up_small:"
