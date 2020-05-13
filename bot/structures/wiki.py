@@ -1,15 +1,8 @@
 import requests
-import dataclasses
 
 from bs4 import BeautifulSoup
 
-
-@dataclasses.dataclass(frozen=True)
-class WikiPage:
-    title: str
-    desc: str
-
-    pages: list
+from bot.structures.wikipage import WikiPage
 
 
 class Wiki:
@@ -19,11 +12,7 @@ class Wiki:
         self.path = path
         self.url = f"https://autobattlesonline.fandom.com/wiki/{path}"
 
-    def get(self) -> WikiPage:
-        def generator(d):
-            for ele in d:
-                yield ele
-
+    def get(self):
         def remove_junk(d):
             ls = []
 
@@ -44,39 +33,19 @@ class Wiki:
 
         title, desc, start_index = self._get_title_desc(data)
 
-        pages = [[]]
-
-        prev_tag = None
+        wiki_page = WikiPage(title, desc, self.url)
 
         for ele in data[start_index:]:
             text = ele.text.strip()
             text = text.replace("[edit | edit source]", "")
-            text = text.replace("Base Description:", "")
 
-            page = pages[-1]
-
-            if ele.name == "h2":
-                page.append(f"\n\n**{text}**\n")
-
-            elif ele.name == "h3":
-                page.append(f"\n\n**{text}**")
-
-            elif ele.name == "h4":
-                if prev_tag == "p":
-                    page.append(f"\n\n__{text}__\n")
-                else:
-                    page.append(f"\n__{text}__\n")
+            if ele.name in {"h1", "h2", "h3", "h4", "h5"}:
+                wiki_page.add_header(ele.name, text)
 
             elif ele.name == "p":
-                # Join the new text with the old text
-                if prev_tag == ele.name:
-                    page[-1] = "\n".join([page[-1], text])
-                else:
-                    page.append(text)
+                wiki_page.add_text(text)
 
-            prev_tag = ele.name
-
-        return WikiPage(title=title, desc=desc, pages=pages)
+        return wiki_page.get_embeds()
 
     @staticmethod
     def _get_title_desc(data):
@@ -89,7 +58,7 @@ class Wiki:
                 title, desc = title.text, desc.text
                 break
 
-        return title, desc, i
+        return title, desc, i + 2
 
     def _get_page_content(self):
         if Wiki.__cache.get(self.path, None) is None:

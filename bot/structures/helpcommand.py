@@ -1,14 +1,14 @@
 import discord
-import asyncio
+
 
 from discord.ext import commands
 
-from bot.common.emoji import UEmoji
+from bot import utils
 
 
 def chunks(ls, n):
     for i in range(0, len(ls), n):
-        yield ls[i : i + n]
+        yield ls[i: i + n]
 
 
 class HelpCommand(commands.HelpCommand):
@@ -55,49 +55,6 @@ class HelpCommand(commands.HelpCommand):
         return pages
 
     async def send_bot_help(self, mapping):
-        ctx: commands.Context = self.context
-        bot = ctx.bot
-
-        def wait_for(react, user):
-            return (
-                    user.id == ctx.author.id and  # Listen to the author only
-                    react.message.id == message.id and  # Help message only
-                    str(react.emoji) in (UEmoji.ARROW_RIGHT, UEmoji.ARROW_LEFT)  # Arrows
-            )
-
         pages = await self.get_pages()
 
-        current_page, max_pages = 0, len(pages)
-
-        message = await ctx.send(embed=pages[current_page])
-
-        # Add navigation buttons
-        for emoji in (UEmoji.ARROW_LEFT, UEmoji.ARROW_RIGHT):
-            await message.add_reaction(emoji)
-
-        while True:
-            try:
-                # Wait for a reaction
-                react, _ = await bot.wait_for("reaction_add", timeout=60, check=wait_for)
-
-            except asyncio.TimeoutError:
-                try:
-                    await message.delete()
-                except discord.NotFound as e:
-                    pass
-
-                break
-
-            else:
-                # Update which page the user is currently viewing
-                new_page = {
-                    UEmoji.ARROW_LEFT: max(0, current_page - 1),
-                    UEmoji.ARROW_RIGHT: min(current_page + 1, max_pages - 1)
-                }.get(str(react.emoji), current_page)
-
-                await react.remove(ctx.author)
-
-                if new_page != current_page:
-                    current_page = new_page
-                    await message.edit(embed=pages[current_page])
-
+        await utils.pages.create(self.context, pages)

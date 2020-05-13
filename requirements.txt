@@ -16,3 +16,5 @@ soupsieve==2.0
 urllib3==1.25.8
 websockets==8.1
 yarl==1.4.2
+
+httpx~=0.12.0
