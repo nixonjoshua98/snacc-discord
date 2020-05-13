@@ -21,7 +21,7 @@ class ABO(commands.Cog):
 		return await checks.user_is_member(ctx)
 
 	@commands.command(name="set", aliases=["s"], usage="<level> <trophies>")
-	async def set_stats(self, ctx, level: Range(0, 150), trophies: Range(0, 6_000)):
+	async def set_stats(self, ctx, level: Range(0, 150), trophies: Range(0, 10_000)):
 		""" Set your ABO stats, which are visible on the leaderboard. """
 
 		await self.bot.pool.execute(AboSQL.UPDATE_USER, ctx.author.id, level, trophies, datetime.now())
@@ -30,7 +30,7 @@ class ABO(commands.Cog):
 
 	@commands.has_permissions(administrator=True)
 	@commands.command(name="setuser", aliases=["su"], usage="<user> <level> <trophies>")
-	async def set_user(self, ctx, user: discord.Member, level: Range(0, 150), trophies: Range(0, 7_500)):
+	async def set_user(self, ctx, user: discord.Member, level: Range(0, 150), trophies: Range(0, 10_000)):
 		""" [Admin] Set another users ABO stats. """
 
 		await self.bot.pool.execute(AboSQL.UPDATE_USER, user.id, level, trophies, datetime.now())
