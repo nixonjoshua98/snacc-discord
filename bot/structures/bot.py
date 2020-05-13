@@ -1,11 +1,10 @@
+import os
 import discord
 
 from discord.ext import commands
 from configparser import ConfigParser
 
 from bot import utils
-
-from bot.common.constants import DEBUGGING
 
 from bot.structures.helpcommand import HelpCommand
 
@@ -59,7 +58,7 @@ class SnaccBot(commands.Bot):
 
 		svr = self.server_cache.get(message.guild.id, dict())
 
-		return "-" if DEBUGGING else svr.get("prefix", "!")
+		return "-" if os.getenv("DEBUG", False) else svr.get("prefix", "!")
 
 	def run(self):
 		config = ConfigParser()

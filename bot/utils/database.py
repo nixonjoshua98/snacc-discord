@@ -6,11 +6,9 @@ from configparser import ConfigParser
 
 from bot.common import queries
 
-from bot.common.constants import DEBUGGING
-
 
 async def create_pool():
-    if DEBUGGING:
+    if os.getenv("DEBUG", False):
         pool = await _create_pool_from_config("./bot/config/postgres.ini", "postgres")
 
     else:
