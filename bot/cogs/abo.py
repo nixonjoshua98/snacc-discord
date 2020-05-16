@@ -59,14 +59,16 @@ class ABO(commands.Cog):
 				missing.append(member)
 				continue
 
-			if (datetime.now() - user_data["dateset"]).days >= 7:
-				lacking.append(member)
+			days = (datetime.now() - user_data["dateset"]).days
+
+			if days >= 7:
+				lacking.append((member, days))
 
 		msg = f"**Members: {len(role.members)}**\n"
 
 		if len(lacking) > 0:
 			msg += "\n" + "**__Lacking__** - Members who have not updated their stats in the past 7 days\n"
-			msg += " | ".join(map(lambda ele: ele.mention, lacking)) + "\n"
+			msg += " | ".join(map(lambda ele: f"{ele[0].mention ({ele[1]})}", lacking)) + "\n"
 
 		if len(missing) > 0:
 			msg += "\n" + "**__Missing__** - Set your stats using `!set <level> <trophies>`\n"
