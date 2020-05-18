@@ -68,7 +68,7 @@ class ABO(commands.Cog):
 
 		if len(lacking) > 0:
 			msg += "\n" + "**__Lacking__** - Members who have not updated their stats in the past 7 days\n"
-			msg += " | ".join(map(lambda ele: f"{ele[0].mention} ({ele[1]})", lacking)) + "\n"
+			msg += " | ".join(map(lambda ele: f"{ele[0].mention} **({ele[1]})**", lacking)) + "\n"
 
 		if len(missing) > 0:
 			msg += "\n" + "**__Missing__** - Set your stats using `!set <level> <trophies>`\n"

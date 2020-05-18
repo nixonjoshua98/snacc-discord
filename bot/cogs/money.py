@@ -48,7 +48,7 @@ class Money(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
         author_bal = bals["author"]
         target_bal = bals["target"]
 
-        max_amount = random.randint(1, int(min(author_bal["money"], target_bal["target"]) * 0.05))
+        max_amount = random.randint(1, int(min(author_bal["money"], target_bal["money"]) * 0.05))
 
         stolen_amount = min(10_000, max_amount)
 

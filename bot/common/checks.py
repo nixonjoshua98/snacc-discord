@@ -17,6 +17,6 @@ async def user_is_member(ctx):
 		raise commands.CommandError("A server member role needs to be set first.")
 
 	elif role not in ctx.author.roles:
-		raise commands.CommandError("User '{esc.user}' could not be found.")
+		raise commands.CommandError(f"You need the `{role.name}` role.")
 
 	return True
