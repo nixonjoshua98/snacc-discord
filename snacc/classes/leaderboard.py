@@ -48,15 +48,11 @@ class Leaderboard:
             for j, col in enumerate(row[0:-1]):
                 row[j] = f"{col}{' ' * (widths[j] - len(col))}"
 
-        text = ("```c+++\n"
-                f"{self.title}\n\n"
-                "\n".join(" ".join(row) for row in entries) + ""
-                f"- " * sum(widths) if author.id in ranks else ""
-                f"> #{ranks[author.id]}" if author.id in ranks else ""
-                "```"
-                )
+        text = self.title + "\n\n" + "\n".join(" ".join(row) for row in entries) + "\n"
+        text += "- " * (sum(widths) // 2) if ranks.get(author.id, None) else ""
+        text += "\n" + f"> #{ranks[author.id]:02d} {author.display_name[0:20]}" if ranks.get(author.id, None) else ""
 
-        return text
+        return "```c++\n" + text + "```"
 
 
 class TrophyLeaderboard(Leaderboard):

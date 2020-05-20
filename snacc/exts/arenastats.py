@@ -101,10 +101,10 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 
 		await ctx.send(msg)
 
-	@commands.command(name="me", aliases=["stats"])
+	@commands.command(name="stats")
 	async def get_stats(self, ctx, target: UserMember() = None):
 		"""
-		View your stat history which is stored (older stats may have been deleted).
+		View yours, or an optional users stats.
 		"""
 
 		target = ctx.author if target is None else target
@@ -134,7 +134,7 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 	async def leaderboard(self, ctx: commands.Context):
 		""" Show the server trophy leaderboard. """
 
-		return await ctx.send(await TrophyLeaderboard(ctx).create())
+		return await ctx.send(await TrophyLeaderboard(ctx).create(ctx.author))
 
 
 def setup(bot):

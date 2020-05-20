@@ -91,7 +91,7 @@ class Hangman(commands.Cog):
     async def leaderboard(self, ctx):
         """ Shows the top hangman players. """
 
-        return await ctx.send(await HangmanLeaderboard(ctx).create())
+        return await ctx.send(await HangmanLeaderboard(ctx).create(ctx.author))
 
 
 def setup(bot):
