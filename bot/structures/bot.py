@@ -30,8 +30,6 @@ class SnaccBot(commands.Bot):
 
 		self.pool = await utils.database.create_pool()
 
-		await utils.database.create_tables(self.pool)
-
 		print("OK")
 
 	def add_cog(self, cog):

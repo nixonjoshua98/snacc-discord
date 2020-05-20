@@ -1,19 +1,12 @@
-from bot.structures.bot import SnaccBot
 
-# heroku pg:pull DATABASE_URL snaccbotdb -a snacc-bot
+# heroku pg:pull DATABASE_URL snaccbot -a snacc-bot
 
 if __name__ == "__main__":
-    bot = SnaccBot()
+    import bot
+    import snacc
+    import asyncio
 
-    bot.load_extension("bot.cogs.wiki")
+    snacc.run()
+    #bot.run()
 
-    bot.load_extension("bot.cogs.errorhandler")
-    bot.load_extension("bot.cogs.listeners")
-    bot.load_extension("bot.cogs.abo")
-    bot.load_extension("bot.cogs.gambling")
-    bot.load_extension("bot.cogs.money")
-    bot.load_extension("bot.cogs.hangman")
-    bot.load_extension("bot.cogs.stats")
-    bot.load_extension("bot.cogs.settings")
-
-    bot.run()
+    asyncio.get_event_loop().run_forever()

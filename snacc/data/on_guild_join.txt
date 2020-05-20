@@ -1,0 +1,7 @@
+The infamous **{bot.user.name}** has graced your ~~lowly~~ server! [{guild.owner.mention}]
+
+My default prefix is **!**...obviously
+
+**__Help__**
+- **!help**...durp
+- Contact my almighty creator **{bot_info.owner}**

@@ -1,34 +1,33 @@
-import ssl
 import os
+import ssl
 import asyncpg
 
-from configparser import ConfigParser
+from snacc import utils
 
 
 async def create_pool():
+    print("Creating connection pool...", end="")
+
     if os.getenv("DEBUG", False):
-        pool = await _create_pool_from_config("./bot/config/postgres.ini", "postgres")
+        pool = await _create_pool_from_config("./snacc/config/postgres.ini", "postgres")
 
     else:
         pool = await _create_pool_from_url(os.environ["DATABASE_URL"])
+
+    print("OK")
 
     return pool
 
 
 async def _create_pool_from_config(file: str, section: str):
-    config = ConfigParser()
-    config.read(file)
+    config = utils.load_config(file, section)
 
-    return await asyncpg.create_pool(**dict(config.items(section)), max_size=15)
+    return await asyncpg.create_pool(**config, max_size=15)
 
 
 async def _create_pool_from_url(url: str):
-    return await asyncpg.create_pool(url, ssl=_create_ctx(), max_size=15)
-
-
-def _create_ctx():
     ctx = ssl.create_default_context(cafile="./rds-combined-ca-bundle.pem")
     ctx.check_hostname = False
     ctx.verify_mode = ssl.CERT_NONE
 
-    return ctx
+    return await asyncpg.create_pool(url, ssl=_ctx, max_size=15)

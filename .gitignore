@@ -1,3 +1,6 @@
+snacc/config/
+bot/config/
+
 # PyCharm
 .idea/
 venv/
