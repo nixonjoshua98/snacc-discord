@@ -130,7 +130,7 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 		await EmbedMenu(embeds).send(ctx) if len(embeds) > 1 else await ctx.send(embed=embeds[0])
 
 	@commands.cooldown(1, 60, commands.BucketType.guild)
-	@commands.command(name="alb")
+	@commands.command(name="trophies")
 	async def leaderboard(self, ctx: commands.Context):
 		""" Show the server trophy leaderboard. """
 

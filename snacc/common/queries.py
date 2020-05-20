@@ -1,6 +1,6 @@
 
 class ServersSQL:
-    DEFAULT_ROW = {"prefix": "!", "entryRole": 0, "member_role": 0}
+    DEFAULT_ROW = {"prefix": "!", "entry_role": 0, "member_role": 0}
 
     # CREATE
     CREATE_TABLE = "CREATE table IF NOT EXISTS servers (" \
@@ -73,10 +73,10 @@ class HangmanSQL:
                     "wins INTEGER;")
 
     # SELECT
-    SELECT_ALL = "SELECT userID, wins FROM hangman;"
-    SELECT_BEST = "SELECT userID, wins FROM hangman ORDER BY wins DESC LIMIT 10"
+    SELECT_ALL = "SELECT user_id, wins FROM hangman;"
+    SELECT_BEST = "SELECT user_id, wins FROM hangman ORDER BY wins DESC LIMIT 10"
 
     # INSERT
-    ADD_WIN = ("INSERT INTO hangman (userID, wins) VALUES ($1, 1) "
-               "ON CONFLICT (userID) DO "
+    ADD_WIN = ("INSERT INTO hangman (user_id, wins) VALUES ($1, 1) "
+               "ON CONFLICT (user_id) DO "
                "UPDATE SET wins = hangman.wins + 1;")
