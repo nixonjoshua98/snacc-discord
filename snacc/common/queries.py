@@ -57,6 +57,10 @@ class ArenaStatsSQL:
     INSERT_ROW = "INSERT INTO arena_stats (user_id, date_set, level, trophies) " \
                  "VALUES ($1, $2, $3, $4);"
 
+    # DELETE
+    DELETE_ROW = "DELETE FROM arena_stats " \
+                 "WHERE user_id = $1 AND date_set = $2;"
+
 
 class HangmanSQL:
     # CREATE
