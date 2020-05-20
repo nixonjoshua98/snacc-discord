@@ -18,7 +18,7 @@ class UserMember(commands.MemberConverter):
 		if member.bot:
 			raise commands.CommandError("Bot accounts cannot be targeted.")
 
-		elif svr.get("memberrole", None) is None:
+		elif svr.get("member_role", None) is None:
 			raise commands.CommandError("A server member role needs to be set.")
 
 		elif discord.utils.get(member.roles, id=svr["memberrole"]) is None:

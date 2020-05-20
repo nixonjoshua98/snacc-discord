@@ -14,16 +14,18 @@ class Leaderboard:
     async def filter_results(self, results: list):
         return results
 
-    async def create(self):
+    async def create(self, author):
         ctx, bot = self.ctx, self.ctx.bot
 
         widths = list(map(len, self.headers))
         entries = [self.headers.copy()]
 
+        ranks = {}
+
         results = await self.filter_results(await bot.pool.fetch(self.query))
 
         for rank, row in enumerate(results, start=1):
-            id_ = row.get("userid", row.get("user_id", None))
+            id_ = row["user_id"]
 
             user = ctx.guild.get_member(id_)
 
@@ -34,17 +36,27 @@ class Leaderboard:
 
             entry = [f"#{rank:02d}", username]
 
+            ranks[id_] = rank
+
             entry.extend([str(row.get(col, None))[0:20] for col in self.columns])
 
             widths = [max(widths[i], len(col)) for i, col in enumerate(entry)]
 
             entries.append(entry)
 
-        for row in entries:
-            for i, col in enumerate(row[0:-1]):
-                row[i] = f"{col}{' ' * (widths[i] - len(col))}"
+        for i, row in enumerate(entries):
+            for j, col in enumerate(row[0:-1]):
+                row[j] = f"{col}{' ' * (widths[j] - len(col))}"
 
-        return "```c++\n" + f"{self.title}\n\n" + "\n".join(" ".join(row) for row in entries) + "```"
+        text = ("```c+++\n"
+                f"{self.title}\n\n"
+                "\n".join(" ".join(row) for row in entries) + ""
+                f"- " * sum(widths) if author.id in ranks else ""
+                f"> #{ranks[author.id]}" if author.id in ranks else ""
+                "```"
+                )
+
+        return text
 
 
 class TrophyLeaderboard(Leaderboard):
@@ -60,14 +72,14 @@ class TrophyLeaderboard(Leaderboard):
     async def filter_results(self, results: list):
         svr_config = await self.ctx.bot.get_server(self.ctx.guild)
 
-        role = self.ctx.guild.get_role(svr_config["memberrole"])
+        role = self.ctx.guild.get_role(svr_config["member_role"])
 
         ls = []
 
         member_table = {member.id: member for member in role.members}
 
         for row in results:
-            member = member_table.get(row.get("userid", row["user_id"]))
+            member = member_table.get(row["user_id"])
 
             if member is not None:
                 ls.append(row)
