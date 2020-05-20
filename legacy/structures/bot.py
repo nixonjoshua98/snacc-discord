@@ -61,7 +61,7 @@ class SnaccBot(commands.Bot):
 	def run(self):
 		config = ConfigParser()
 
-		config.read("./bot/config/bot.ini")
+		config.read("./legacy/config/legacy.ini")
 
-		super(SnaccBot, self).run(config.get("bot", "token"))
+		super(SnaccBot, self).run(config.get("legacy", "token"))
 

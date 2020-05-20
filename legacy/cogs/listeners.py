@@ -22,7 +22,7 @@ class Listeners(commands.Cog):
     async def on_guild_join(self, guild: discord.Guild):
         bot_info = await self.bot.application_info()
 
-        with open("./bot/data/on_guild_join.txt") as fh:
+        with open("./legacy/data/on_guild_join.txt") as fh:
             template = fh.read()
 
         welc_msg = template.format(guild=guild, bot=self.bot, bot_info=bot_info)

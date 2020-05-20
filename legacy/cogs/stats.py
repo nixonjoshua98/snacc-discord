@@ -9,10 +9,10 @@ class Stats(commands.Cog):
 
     @commands.command(name="lines")
     async def lines(self, ctx):
-        """ Count the number of lines within the bot. """
+        """ Count the number of lines within the legacy. """
         lines = 0
 
-        for root, dirs, files in os.walk("./bot/"):
+        for root, dirs, files in os.walk("./legacy/"):
             for f in files:
                 if f.endswith(".py"):
                     path = os.path.join(root, f)

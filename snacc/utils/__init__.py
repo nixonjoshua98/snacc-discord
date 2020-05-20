@@ -1,6 +1,6 @@
 from configparser import ConfigParser
 
-from . import dis, database, settings
+from . import dis, database, settings, pages
 
 
 def load_config(file: str, section: str) -> dict:

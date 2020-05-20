@@ -3,7 +3,7 @@ import discord
 
 from discord.ext import commands
 
-from bot import utils
+from snacc import utils
 
 
 def chunks(ls, n):

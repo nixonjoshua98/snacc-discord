@@ -11,7 +11,7 @@ class Listeners(commands.Cog):
 
     @commands.Cog.listener("on_guild_join")
     async def on_guild_join(self, guild):
-        """ Called when the bot joins a new server (guild). """
+        """ Called when the legacy joins a new server (guild). """
 
         bot_info = await self.bot.application_info()
 

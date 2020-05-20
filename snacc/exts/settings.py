@@ -37,7 +37,7 @@ class Settings(commands.Cog):
 			await ctx.bot.pool.execute(ServersSQL.UPDATE_DEFAULT_ROLE, ctx.guild.id, role)
 			await ctx.send(f"Default role has been unset.")
 
-		# Role is higher in the hierachy so the bot cannot assign it.
+		# Role is higher in the hierachy so the legacy cannot assign it.
 		elif role > ctx.guild.me.top_role:
 			await ctx.send(f"I cannot use the role `{role.name}` since the role is higher than me.")
 

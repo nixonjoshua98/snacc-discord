@@ -129,4 +129,4 @@ dmypy.json
 .pyre/
 
 /snacc/config/
-/bot/config/
+/legacy/config/

@@ -82,5 +82,5 @@ class HangmanGame:
 
     @staticmethod
     def load_all_words():
-        with open("./bot/data/words.txt") as fh:
+        with open("./legacy/data/words.txt") as fh:
             HangmanGame._all_words = set(fh.read().splitlines())

@@ -26,7 +26,7 @@ class RoleTag(commands.Converter):
 
 
 class DiscordUser(commands.MemberConverter):
-	"""  Converter to ensure that the user is present in the server, not the author or a bot. """
+	"""  Converter to ensure that the user is present in the server, not the author or a legacy. """
 
 	def __init__(self, *, author_ok: bool = False):
 		super().__init__()

@@ -53,9 +53,9 @@ class SnaccBot(commands.Bot):
 
         return "-" if os.getenv("DEBUG", False) else svr.get("prefix", "!")
 
-    async def start(self):
+    def run(self):
         config = utils.load_config("./snacc/config/bot.ini", "bot")
 
-        await super(SnaccBot, self).start(config["token"])
+        super(SnaccBot, self).run(config["token"])
 
 

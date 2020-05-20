@@ -7,7 +7,7 @@ from configparser import ConfigParser
 
 async def create_pool():
     if os.getenv("DEBUG", False):
-        pool = await _create_pool_from_config("./bot/config/postgres.ini", "postgres")
+        pool = await _create_pool_from_config("./legacy/config/postgres.ini", "postgres")
 
     else:
         pool = await _create_pool_from_url(os.environ["DATABASE_URL"])
