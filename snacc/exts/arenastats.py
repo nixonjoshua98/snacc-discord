@@ -19,7 +19,7 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 		return await checks.user_has_member_role(ctx)
 
 	@commands.cooldown(1, 60 * 60 * 12, commands.BucketType.user)
-	@commands.command(name="set", aliases=["s"])
+	@commands.command(name="set", aliases=["s"], cooldown_after_parsing=True)
 	async def set_stats(self, ctx, level: int, trophies: int):
 		"""
 		Set your ABO stats, which are visible on the leaderboard.
@@ -40,15 +40,15 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 
 	@commands.cooldown(1, 60, commands.BucketType.user)
 	@commands.has_permissions(administrator=True)
-	@commands.command(name="setuser", aliases=["su"])
+	@commands.command(name="setuser", aliases=["su"], cooldown_after_parsing=True)
 	async def set_user_stats(self, ctx, target: UserMember(), level: int, trophies: int):
 		""" [Admin] Set another users ABO stats. """
 
 		async with ctx.bot.pool.acquire() as con:
 			async with con.transaction():
-				await con.execute(ArenaStatsSQL.INSERT_ROW, target, datetime.now(), level, trophies)
+				await con.execute(ArenaStatsSQL.INSERT_ROW, target.id, datetime.now(), level, trophies)
 
-				results = await con.fetch(ArenaStatsSQL.SELECT_USER, target)
+				results = await con.fetch(ArenaStatsSQL.SELECT_USER, target.id)
 
 				if len(results) > 9:
 					for result in results[9:]:
@@ -56,7 +56,7 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 
 		await ctx.send(f"**{target.display_name}** :thumbsup:")
 
-	@commands.command(name="me")
+	@commands.command(name="me", aliases=["stats"])
 	async def get_stats(self, ctx):
 		"""
 		View your stat history which is stored (older stats may have been deleted).
