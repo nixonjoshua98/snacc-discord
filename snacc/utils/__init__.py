@@ -1,7 +1,5 @@
 from configparser import ConfigParser
 
-from . import dis, pages
-
 
 def load_config(file: str, section: str) -> dict:
     config = ConfigParser()
@@ -9,3 +7,8 @@ def load_config(file: str, section: str) -> dict:
     config.read(file)
 
     return dict(config.items(section))
+
+
+def chunk_list(ls, n):
+    for i in range(0, len(ls), n):
+        yield ls[i: i + n]
