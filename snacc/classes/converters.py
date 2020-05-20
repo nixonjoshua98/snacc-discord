@@ -3,36 +3,25 @@ import discord
 from discord.ext import commands
 
 
-class Range(commands.Converter):
-	def __init__(self, min_: int, max_: int, *, clamp: bool = False):
-		"""
-		:param min_: Minimum value allowed (inclusive)
-		:param max_: Maximum value allowed (inclusive)
-		"""
+class UserMember(commands.MemberConverter):
+	""" Ensures that the member argument has the member role for the server. """
 
-		self.min_ = min_
-		self.max_ = max_
-
-		self.clamp = clamp
-
-	async def convert(self, ctx: commands.Context, argument: str) -> int:
-		"""
-		:param ctx: The context which the command was called from
-		:param argument: The value which is being checked and converted
-		:return int: Converted value between x and y
-		"""
-
+	async def convert(self, ctx, argument) -> discord.Member:
 		try:
-			val = int(argument)
+			member = await super().convert(ctx, argument)
 
-			# Value out of range
-			if val > self.max_ or val < self.min_:
-				if not self.clamp:
-					raise commands.UserInputError(f"Argument should be within **{self.min_:,} - {self.max_:,}**")
+		except commands.BadArgument:
+			raise commands.CommandError(f"User '{argument}' could not be found")
 
-				val = max(min(val, self.max_), self.min_)
+		svr = await ctx.bot.get_server(ctx.guild)
 
-		except ValueError:
-			raise commands.UserInputError(f"You attempted to use an invalid argument.")
+		if member.bot:
+			raise commands.CommandError("Bot accounts cannot be targeted.")
 
-		return val
+		elif svr.get("memberrole", None) is None:
+			raise commands.CommandError("A server member role needs to be set.")
+
+		elif discord.utils.get(member.roles, id=svr["memberrole"]) is None:
+			raise commands.CommandError(f"User '{member.display_name}' does not have the member role.")
+
+		return member

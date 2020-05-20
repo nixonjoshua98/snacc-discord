@@ -6,10 +6,12 @@ from datetime import datetime
 
 from snacc.common import checks
 from snacc.common.queries import ArenaStatsSQL
+
+from snacc.classes.converters import UserMember
 from snacc.classes.leaderboard import TrophyLeaderboard
 
 
-class ArenaStats(commands.Cog):
+class ArenaStats(commands.Cog, name="Arena Stats"):
 	def __init__(self):
 		self.leaderboards = dict()
 
@@ -23,20 +25,16 @@ class ArenaStats(commands.Cog):
 		Setting your stats regularly also stops you from appearing in the [shame] list.
 		"""
 
-		async with ctx.bot.pool.acquire() as con:
-			async with con.transaction():
-				await ctx.bot.pool.execute(ArenaStatsSQL.INSERT_ROW, ctx.author.id, datetime.now(), level, trophies)
+		await ctx.bot.pool.execute(ArenaStatsSQL.INSERT_ROW, ctx.author.id, datetime.now(), level, trophies)
 
 		await ctx.send(f"**{ctx.author.display_name}** :thumbsup:")
 
 	@commands.has_permissions(administrator=True)
 	@commands.command(name="setuser", aliases=["su"])
-	async def set_user_stats(self, ctx, target: discord.Member, level: int, trophies: int):
+	async def set_user_stats(self, ctx, target: UserMember(), level: int, trophies: int):
 		""" [Admin] Set another users ABO stats. """
 
-		async with ctx.bot.pool.acquire() as con:
-			async with con.transaction():
-				await ctx.bot.pool.execute(ArenaStatsSQL.INSERT_ROW, target.id, datetime.now(), level, trophies)
+		await ctx.bot.pool.execute(ArenaStatsSQL.INSERT_ROW, target.id, datetime.now(), level, trophies)
 
 		await ctx.send(f"**{target.display_name}** :thumbsup:")
 
@@ -54,7 +52,7 @@ class ArenaStats(commands.Cog):
 		embed = discord.Embed(title=f"{ctx.author.display_name}'s Arena Stats", colour=discord.Color.orange())
 
 		for row in results:
-			name = row["date_set"].strftime("%d-%m-%Y")
+			name = row["date_set"].strftime("%d/%m/%Y")
 			value = f"Level: {row['level']:,}\nTrophies: {row['trophies']:,}"
 
 			embed.add_field(name=name, value=value)

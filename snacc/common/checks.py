@@ -14,7 +14,7 @@ async def user_has_member_role(ctx):
 	role = ctx.guild.get_role(svr["memberrole"])
 
 	if svr["memberrole"] == 0 or role is None:
-		raise commands.CommandError("A server member role needs to be set first.")
+		raise commands.CommandError("A server member role needs to be set.")
 
 	elif role not in ctx.author.roles:
 		raise commands.CommandError(f"You need the `{role.name}` role.")

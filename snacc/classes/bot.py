@@ -1,4 +1,6 @@
 import os
+import ssl
+import asyncpg
 
 from discord.ext import commands
 
@@ -15,18 +17,39 @@ class SnaccBot(commands.Bot):
         self.server_cache = dict()
 
     async def on_ready(self):
-        self.load_extensions()
-
-        self.pool = await utils.database.create_pool()
+        await self.create_pool()
+        await self.load_extensions()
 
         print(f"Bot '{self.user.display_name}' is ready")
+
+    async def fetch_message(self, channel_id: int, message_id: int):
+        channel = self.fetch_channel(channel_id)
+
+        print(dir(channel))
 
     def add_cog(self, cog):
         print(f"Adding Cog: {cog.qualified_name}...", end="")
         super(SnaccBot, self).add_cog(cog)
         print("OK")
 
-    def load_extensions(self):
+    async def create_pool(self):
+        print("Creating connection pool...", end="")
+
+        if os.getenv("DEBUG", False):
+            config = utils.load_config("./snacc/config/postgres.ini", "postgres")
+
+            self.pool = await asyncpg.create_pool(**config, max_size=15)
+
+        else:
+            ctx = ssl.create_default_context(cafile="./rds-combined-ca-bundle.pem")
+            ctx.check_hostname = False
+            ctx.verify_mode = ssl.CERT_NONE
+
+            self.pool = await asyncpg.create_pool(os.environ["DATABASE_URL"], ssl=ctx, max_size=15)
+
+        print("OK")
+
+    async def load_extensions(self):
         for root, dirs, files in os.walk(os.path.join(os.getcwd(), "snacc", "exts")):
             for f in files:
                 if not f.startswith("__") and not f.endswith("__") and f.endswith(".py"):
@@ -35,7 +58,9 @@ class SnaccBot(commands.Bot):
                     self.load_extension(ext)
 
     async def update_server_cache(self, guild):
-        self.server_cache[guild.id] = await utils.settings.get_server_settings(self.pool, guild)
+        settings = self.get_cog("Settings")
+
+        self.server_cache[guild.id] = await settings.get_server_settings(guild)
 
     async def get_server(self, guild):
         if self.server_cache.get(guild.id, None) is None:

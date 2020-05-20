@@ -20,6 +20,20 @@ class Settings(commands.Cog):
 	async def cog_after_invoke(self, ctx):
 		await self.bot.update_server_cache(ctx.message.guild)
 
+	async def get_server_settings(self, guild):
+		""" Return the server configuration or add a new entry and return the default configuration """
+
+		async with self.bot.pool.acquire() as con:
+			async with con.transaction():
+				svr = await con.fetchrow(ServersSQL.SELECT_SERVER, guild.id)
+
+				if svr is None:
+					await con.execute(ServersSQL.INSERT_SERVER, guild.id, *ServersSQL.DEFAULT_ROW.values())
+
+					svr = await con.fetchrow(ServersSQL.SELECT_SERVER, guild.id)
+
+		return svr
+
 	@commands.command(name="prefix")
 	async def set_prefix(self, ctx: commands.Context, prefix: str):
 		""" Set the prefix for this server. """
