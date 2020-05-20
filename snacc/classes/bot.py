@@ -2,6 +2,8 @@ import os
 import ssl
 import asyncpg
 
+print("TEST")
+
 from discord.ext import commands
 
 from snacc import utils
