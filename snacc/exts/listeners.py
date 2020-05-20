@@ -44,12 +44,12 @@ class Listeners(commands.Cog):
         try:
             svr = await self.bot.get_server(member.guild)
 
-            role = member.guild.get_role(svr["default_row"])
+            role = member.guild.get_role(svr["default_role"])
 
             if role is not None:
                 await member.add_roles(role)
 
-        except (discord.Forbidden, discord.HTTPException) as e:
+        except (discord.Forbidden, discord.HTTPException):
             """ We failed to add the role """
 
         await send_system_channel(member.guild, msg)

@@ -4,23 +4,23 @@ class ServersSQL:
 
     # CREATE
     CREATE_TABLE = "CREATE table IF NOT EXISTS servers (" \
-                   "serverID BIGINT PRIMARY KEY," \
+                   "server_id BIGINT PRIMARY KEY," \
                    "default_row BIGINT," \
                    "member_role BIGINT," \
                    "prefix VARCHAR(255)" \
                    ");"
 
     # SELECT
-    SELECT_SERVER = "SELECT * FROM servers WHERE serverID=$1;"
+    SELECT_SERVER = "SELECT * FROM servers WHERE server_id=$1;"
 
     # INSERT
-    INSERT_SERVER = "INSERT INTO servers (serverID, prefix, entryRole, member_role) " \
+    INSERT_SERVER = "INSERT INTO servers (server_id, prefix, entryRole, member_role) " \
                     "VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING;"
 
     # UPDATE
-    UPDATE_PREFIX = "UPDATE servers SET prefix = $2 WHERE serverID=$1;"
-    UPDATE_MEMBER_ROLE = "UPDATE servers SET member_role = $2 WHERE serverID=$1;"
-    UPDATE_DEFAULT_ROLE = "UPDATE servers SET default_row = $2 WHERE serverID=$1;"
+    UPDATE_PREFIX = "UPDATE servers SET prefix = $2 WHERE server_id=$1;"
+    UPDATE_MEMBER_ROLE = "UPDATE servers SET member_role = $2 WHERE server_id=$1;"
+    UPDATE_DEFAULT_ROLE = "UPDATE servers SET default_row = $2 WHERE server_id=$1;"
 
 
 class ArenaStatsSQL:
