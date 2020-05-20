@@ -3,11 +3,12 @@ import os
 from discord.ext import commands
 
 from snacc import utils
+from snacc.classes.helpcommand import HelpCommand
 
 
 class SnaccBot(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix=self.get_prefix, case_insensitive=True)
+        super().__init__(command_prefix=self.get_prefix, case_insensitive=True, help_command=HelpCommand())
 
         self.pool = None
 
