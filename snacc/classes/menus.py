@@ -2,7 +2,6 @@ import discord
 import asyncio
 from discord.ext import commands
 
-from snacc import utils
 from snacc.common.emoji import UEmoji
 
 

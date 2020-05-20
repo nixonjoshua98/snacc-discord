@@ -39,17 +39,14 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 
 				results = await con.fetch(ArenaStatsSQL.SELECT_USER, target.id)
 
-				if len(results) > 9:
-					for result in results[9:]:
+				if len(results) > 14:
+					for result in results[14:]:
 						await con.execute(ArenaStatsSQL.DELETE_ROW, target.id, result["date_set"])
 
 	@commands.cooldown(1, 60 * 60 * 12, commands.BucketType.user)
 	@commands.command(name="set", aliases=["s"], cooldown_after_parsing=True)
 	async def set_stats(self, ctx, level: int, trophies: int):
-		"""
-		Set your ABO stats, which are visible on the leaderboard.
-		Setting your stats regularly also stops you from appearing in the [shame] list.
-		"""
+		""" Update your ABO stats, which are visible on the leaderboard. """
 
 		await self.set_users_stats(ctx, ctx.author, level, trophies)
 
@@ -64,6 +61,45 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 		await self.set_users_stats(ctx, target, level, trophies)
 
 		await ctx.send(f"**{target.display_name}** :thumbsup:")
+
+	@commands.has_permissions(administrator=True)
+	@commands.command(name="shame", help="Shame others")
+	async def shame(self, ctx: commands.Context):
+		""" [Admin] Mention the members who are missing or lacking stat updates.  """
+
+		svr_config = await ctx.bot.get_server(ctx.guild)
+
+		role = ctx.guild.get_role(svr_config["member_role"])
+
+		all_data = await ctx.bot.pool.fetch(ArenaStatsSQL.SELECT_ALL_USERS_LATEST)
+
+		data_table = {row["user_id"]: row for row in all_data}
+
+		lacking, missing = [], []
+
+		for member in role.members:
+			user_data = data_table.get(member.id, None)
+
+			if user_data is None:
+				missing.append(member)
+				continue
+
+			days = (datetime.now() - user_data["date_set"]).days
+
+			if days >= 7:
+				lacking.append((member, days))
+
+		msg = f"**Members: {len(role.members)}**\n"
+
+		if len(lacking) > 0:
+			msg += "\n" + "**__Lacking__** - Members who have not updated their stats in the past 7 days\n"
+			msg += " | ".join(map(lambda ele: f"{ele[0].mention} **({ele[1]})**", lacking)) + "\n"
+
+		if len(missing) > 0:
+			msg += "\n" + "**__Missing__** - Set your stats using `!set <level> <trophies>`\n"
+			msg += " | ".join(map(lambda ele: ele.mention, missing))
+
+		await ctx.send(msg)
 
 	@commands.command(name="me", aliases=["stats"])
 	async def get_stats(self, ctx, target: UserMember() = None):

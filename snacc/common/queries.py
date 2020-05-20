@@ -1,12 +1,12 @@
 
 class ServersSQL:
-    DEFAULT_ROW = {"prefix": "!", "entryRole": 0, "memberRole": 0}
+    DEFAULT_ROW = {"prefix": "!", "entryRole": 0, "member_role": 0}
 
     # CREATE
     CREATE_TABLE = "CREATE table IF NOT EXISTS servers (" \
                    "serverID BIGINT PRIMARY KEY," \
                    "defaultRole BIGINT," \
-                   "memberRole BIGINT," \
+                   "member_role BIGINT," \
                    "prefix VARCHAR(255)" \
                    ");"
 
@@ -14,12 +14,12 @@ class ServersSQL:
     SELECT_SERVER = "SELECT * FROM servers WHERE serverID=$1;"
 
     # INSERT
-    INSERT_SERVER = "INSERT INTO servers (serverID, prefix, entryRole, memberRole) " \
+    INSERT_SERVER = "INSERT INTO servers (serverID, prefix, entryRole, member_role) " \
                     "VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING;"
 
     # UPDATE
     UPDATE_PREFIX = "UPDATE servers SET prefix = $2 WHERE serverID=$1;"
-    UPDATE_MEMBER_ROLE = "UPDATE servers SET memberRole = $2 WHERE serverID=$1;"
+    UPDATE_MEMBER_ROLE = "UPDATE servers SET member_role = $2 WHERE serverID=$1;"
     UPDATE_DEFAULT_ROLE = "UPDATE servers SET defaultRole = $2 WHERE serverID=$1;"
 
 
@@ -39,6 +39,10 @@ class ArenaStatsSQL:
                           "FROM arena_stats "
                           "WHERE user_id = $1 "
                           "ORDER BY user_id, date_set DESC;")
+
+    SELECT_ALL_USERS_LATEST = ("SELECT DISTINCT ON (user_id) user_id, date_set, level, trophies "
+                               "FROM arena_stats "
+                               "ORDER BY user_id, date_set DESC;")
 
     SELECT_HIGHEST_TROPHIES = ("SELECT * FROM ("
                                "SELECT DISTINCT ON (user_id) user_id, level, trophies "

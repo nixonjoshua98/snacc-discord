@@ -1,8 +1,24 @@
 import discord
 
-from snacc import utils
-
 from discord.ext import commands
+
+ON_GUILD_JOIN = """
+The infamous **{bot.user.name}** has graced your ~~lowly~~ server! [{guild.owner.mention}]
+
+My default prefix is **!**...obviously
+
+**__Help__**
+- **!help**...durp
+- Contact my almighty creator **{bot_info.owner}**
+"""
+
+
+async def send_system_channel(guild, message):
+    try:
+        await guild.system_channel.send(message)
+
+    except (AttributeError, discord.Forbidden, discord.HTTPException):
+        """ Failed """
 
 
 class Listeners(commands.Cog):
@@ -15,12 +31,9 @@ class Listeners(commands.Cog):
 
         bot_info = await self.bot.application_info()
 
-        with open(".\\snacc\\data\\on_guild_join.txt") as fh:
-            template = fh.read()
+        msg = ON_GUILD_JOIN.format(guild=guild, bot=self.bot, bot_info=bot_info)
 
-        msg = template.format(guild=guild, bot=self.bot, bot_info=bot_info)
-
-        await utils.dis.send_system_channel(guild, msg)
+        await send_system_channel(guild, msg)
 
     @commands.Cog.listener("on_member_join")
     async def on_member_join(self, member):
@@ -39,7 +52,7 @@ class Listeners(commands.Cog):
         except (discord.Forbidden, discord.HTTPException) as e:
             """ We failed to add the role """
 
-        await utils.dis.send_system_channel(member.guild, msg)
+        await send_system_channel(member.guild, msg)
 
     @commands.Cog.listener("on_member_remove")
     async def on_member_remove(self, member):
@@ -47,7 +60,7 @@ class Listeners(commands.Cog):
 
         msg = f"**{str(member)}** " + (f"({member.nick}) " if member.nick else "") + "has left the server"
 
-        await utils.dis.send_system_channel(member.guild, msg)
+        await send_system_channel(member.guild, msg)
 
 
 def setup(bot):

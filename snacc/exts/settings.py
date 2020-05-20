@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 
 from snacc.common import checks
-from snacc.common.queries import ServersSQL, ArenaStatsSQL
+from snacc.common.queries import ServersSQL
 
 
 class Settings(commands.Cog):
