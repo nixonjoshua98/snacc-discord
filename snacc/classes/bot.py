@@ -27,15 +27,10 @@ class SnaccBot(commands.Bot):
         print("OK")
 
     def load_extensions(self):
-        print(os.listdir(".\\snacc\\"))
-        print(os.listdir(".\\snacc\\exts"))
-
-        for root, dirs, files in os.walk(".\\snacc\\exts"):
+        for root, dirs, files in os.walk(os.path.join(os.getcwd(), "snacc", "exts")):
             for f in files:
-                path = os.path.join(root, f)
-
                 if not f.startswith("__") and not f.endswith("__") and f.endswith(".py"):
-                    ext = path[2:].replace("\\", ".")[:-3]
+                    ext = f"snacc.exts.{f[:-3]}"
 
                     self.load_extension(ext)
 
