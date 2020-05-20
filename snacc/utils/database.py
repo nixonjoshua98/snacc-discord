@@ -30,4 +30,4 @@ async def _create_pool_from_url(url: str):
     ctx.check_hostname = False
     ctx.verify_mode = ssl.CERT_NONE
 
-    return await asyncpg.create_pool(url, ssl=_ctx, max_size=15)
+    return await asyncpg.create_pool(url, ssl=ctx, max_size=15)
