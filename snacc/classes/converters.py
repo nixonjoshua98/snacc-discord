@@ -21,7 +21,7 @@ class UserMember(commands.MemberConverter):
 		elif svr.get("member_role", None) is None:
 			raise commands.CommandError("A server member role needs to be set.")
 
-		elif discord.utils.get(member.roles, id=svr["memberrole"]) is None:
+		elif discord.utils.get(member.roles, id=svr["member_role"]) is None:
 			raise commands.CommandError(f"User '{member.display_name}' does not have the member role.")
 
 		return member

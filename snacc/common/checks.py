@@ -11,7 +11,7 @@ def author_is_server_owner(ctx):
 async def user_has_member_role(ctx):
 	svr = await ctx.bot.get_server(ctx.guild)
 
-	role = ctx.guild.get_role(svr["memberrole"])
+	role = ctx.guild.get_role(svr["member_role"])
 
 	if svr["member_role"] == 0 or role is None:
 		raise commands.CommandError("A server member role needs to be set.")
