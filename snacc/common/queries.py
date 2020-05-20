@@ -5,7 +5,7 @@ class ServersSQL:
     # CREATE
     CREATE_TABLE = "CREATE table IF NOT EXISTS servers (" \
                    "serverID BIGINT PRIMARY KEY," \
-                   "defaultRole BIGINT," \
+                   "default_row BIGINT," \
                    "member_role BIGINT," \
                    "prefix VARCHAR(255)" \
                    ");"
@@ -20,7 +20,7 @@ class ServersSQL:
     # UPDATE
     UPDATE_PREFIX = "UPDATE servers SET prefix = $2 WHERE serverID=$1;"
     UPDATE_MEMBER_ROLE = "UPDATE servers SET member_role = $2 WHERE serverID=$1;"
-    UPDATE_DEFAULT_ROLE = "UPDATE servers SET defaultRole = $2 WHERE serverID=$1;"
+    UPDATE_DEFAULT_ROLE = "UPDATE servers SET default_row = $2 WHERE serverID=$1;"
 
 
 class ArenaStatsSQL:

@@ -44,7 +44,7 @@ class Listeners(commands.Cog):
         try:
             svr = await self.bot.get_server(member.guild)
 
-            role = member.guild.get_role(svr["defaultrole"])
+            role = member.guild.get_role(svr["default_row"])
 
             if role is not None:
                 await member.add_roles(role)
