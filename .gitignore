@@ -1,6 +1,3 @@
-snacc/config/
-bot/config/
-
 # PyCharm
 .idea/
 venv/
@@ -130,3 +127,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+/snacc/config/
+/bot/config/
