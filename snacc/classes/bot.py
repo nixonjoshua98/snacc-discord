@@ -2,8 +2,6 @@ import os
 import ssl
 import asyncpg
 
-print("TEST")
-
 from discord.ext import commands
 
 from snacc import utils
@@ -47,12 +45,11 @@ class SnaccBot(commands.Bot):
         print("OK")
 
     async def load_extensions(self):
-        for root, dirs, files in os.walk(os.path.join(os.getcwd(), "snacc", "exts")):
-            for f in files:
-                if not f.startswith("__") and not f.endswith("__") and f.endswith(".py"):
-                    ext = f"snacc.exts.{f[:-3]}"
-
-                    self.load_extension(ext)
+        self.load_extension("snacc.exts.errorhandler")
+        self.load_extension("snacc.exts.listeners")
+        self.load_extension("snacc.exts.arenastats")
+        self.load_extension("snacc.exts.hangman")
+        self.load_extension("snacc.exts.settings")
 
     async def update_server_cache(self, guild):
         settings = self.get_cog("Settings")
