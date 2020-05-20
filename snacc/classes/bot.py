@@ -22,11 +22,6 @@ class SnaccBot(commands.Bot):
 
         print(f"Bot '{self.user.display_name}' is ready")
 
-    async def fetch_message(self, channel_id: int, message_id: int):
-        channel = self.fetch_channel(channel_id)
-
-        print(dir(channel))
-
     def add_cog(self, cog):
         print(f"Adding Cog: {cog.qualified_name}...", end="")
         super(SnaccBot, self).add_cog(cog)
