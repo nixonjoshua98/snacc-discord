@@ -31,8 +31,10 @@ class Miscellaneous(commands.Cog):
 
 	@commands.command(name="whatis")
 	async def what_is_this(self, ctx, query):
+		""" Look for a definition in the Oxford Dictionary. """
+
 		async def send_request(query_: str):
-			url = f"https://od-api.oxforddictionaries.com/api/v2/entries/en-us/{query_.lower()}"
+			url = f"https://od-api.oxforddictionaries.com/api/v2/entries/en-us/{query_.split(' ')[0].lower()}"
 
 			id_, key = os.environ["OXFORD_ID"], os.environ["OXFORD_KEY"]
 
@@ -41,6 +43,7 @@ class Miscellaneous(commands.Cog):
 
 		r = await send_request(query)
 
+		# Request failed
 		if r.status_code != 200:
 			return await ctx.send("I failed to look your query up.")
 
@@ -56,14 +59,17 @@ class Miscellaneous(commands.Cog):
 
 		top_entry = results["results"][0]["lexicalEntries"][0]["entries"][0]
 
+		# Iterate over some key which has the definitions
 		for sense in top_entry["senses"][:3]:
 			definitions.extend(f"{deff}" for deff in sense["definitions"])
 			examples.extend(f"{example['text']}" for example in sense.get("examples", []))
 
+		# Check if we found any definitions
 		if len(definitions) > 0:
 			definitions = [f"{i}. {ele}" for i, ele in enumerate(definitions, start=1)]
 			embed.add_field(name="Definition(s)", value="\n".join(definitions), inline=False)
 
+		# Check if we found any examples
 		if len(examples) > 0:
 			examples = [f"{i}. {ele}" for i, ele in enumerate(examples, start=1)]
 			embed.add_field(name="Example(s)", value="\n".join(examples), inline=False)
