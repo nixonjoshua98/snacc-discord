@@ -36,12 +36,14 @@ class TextLeaderboardBase:
     def _create_author_section(self, widths, row):
         """ Leaderboard footer. """
 
-        text = "-" * sum(widths) + "\n"
+        text = "-" * (sum(widths) + 1) + "\n"
         text += " ".join(f"{col}{' ' * (widths[j] - len(col))}" for j, col in enumerate(row))
 
         return text
 
     def _create_spaced_rows(self, widths, rows):
+        """ Pad the rows so each row is uniformally spaced. """
+
         text_rows = []
 
         for i, row in enumerate(rows):
