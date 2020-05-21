@@ -1,6 +1,8 @@
 import discord
 from discord.ext import commands
 
+from datetime import datetime
+
 from snacc import utils
 from snacc.classes.menus import EmbedMenu
 
@@ -44,6 +46,7 @@ class HelpCommand(commands.HelpCommand):
             embed = discord.Embed(title=cog, description=descriptions[i], color=0xff8000)
 
             embed.set_thumbnail(url=bot.user.avatar_url)
+            embed.set_footer(text=f"{bot.user.name} | Page {i + 1}/{max_pages}", icon_url=bot.user.avatar_url)
 
             for cmd in cmds:
                 sig = cmd.signature.replace("[", "<").replace("]", ">")
@@ -51,8 +54,6 @@ class HelpCommand(commands.HelpCommand):
                 name = f"[{'|'.join([cmd.name] + cmd.aliases)}] {sig}"
 
                 embed.add_field(name=name, value=cmd.callback.__doc__, inline=False)
-
-            embed.set_footer(text=f"{bot.user.name} | Page {i + 1}/{max_pages}", icon_url=bot.user.avatar_url)
 
             pages.append(embed)
 

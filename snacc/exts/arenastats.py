@@ -103,9 +103,7 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 
 	@commands.command(name="stats")
 	async def get_stats(self, ctx, target: UserMember() = None):
-		"""
-		View yours, or an optional users stats.
-		"""
+		""" View your own or another members recorded arena stats. """
 
 		target = ctx.author if target is None else target
 
@@ -116,7 +114,7 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 
 		embeds = []
 
-		today = datetime.today().strftime('%d/%m/%Y %H:%M:%S')
+		today = datetime.today().strftime('%d/%m/%Y %X')
 
 		for page in utils.chunk_list(results, 7):
 			embed = discord.Embed(title=f"{target.display_name}'s Arena Stats", colour=discord.Color.orange())
