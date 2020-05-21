@@ -31,9 +31,7 @@ class SnaccBot(commands.Bot):
         print("Creating connection pool...", end="")
 
         if os.getenv("DEBUG", False):
-            config = utils.load_config("./snacc/config/postgres.ini", "postgres")
-
-            self.pool = await asyncpg.create_pool(**config, max_size=15)
+            self.pool = await asyncpg.create_pool("postgres://postgres:postgres@localhost:5432/snaccbot", max_size=15)
 
         else:
             ctx = ssl.create_default_context(cafile="./rds-combined-ca-bundle.pem")
@@ -71,8 +69,6 @@ class SnaccBot(commands.Bot):
         return "-" if os.getenv("DEBUG", False) else svr.get("prefix", "!")
 
     def run(self):
-        config = utils.load_config("./snacc/config/bot.ini", "bot")
-
-        super(SnaccBot, self).run(config["token"])
+        super(SnaccBot, self).run(os.environ["SNACC_BOT_TOKEN"])
 
 
