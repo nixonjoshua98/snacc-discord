@@ -1,2 +1,2 @@
-Snacc-Bot
+Discord Bot
 -

@@ -43,10 +43,14 @@ class SnaccBot(commands.Bot):
         print("OK")
 
     async def load_extensions(self):
+        # No commands
         self.load_extension("snacc.exts.errorhandler")
         self.load_extension("snacc.exts.listeners")
+
+        # Has commands
         self.load_extension("snacc.exts.arenastats")
         self.load_extension("snacc.exts.hangman")
+        self.load_extension("snacc.exts.misc")
         self.load_extension("snacc.exts.settings")
 
     async def update_server_cache(self, guild):
