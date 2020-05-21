@@ -116,12 +116,14 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 
 		embeds = []
 
+		today = datetime.today().strftime('%d/%m/%Y %H:%M:%S')
+
 		for page in utils.chunk_list(results, 7):
 			embed = discord.Embed(title=f"{target.display_name}'s Arena Stats", colour=discord.Color.orange())
 
 			embed.set_thumbnail(url=target.avatar_url)
 
-			embed.set_footer(text=f"{ctx.bot.user.name}", icon_url=ctx.bot.user.avatar_url)
+			embed.set_footer(text=f"{ctx.bot.user.name} | {today}", icon_url=ctx.bot.user.avatar_url)
 
 			for row in page:
 				name = row["date_set"].strftime("%d/%m/%Y")
