@@ -44,12 +44,13 @@ class ArenaStatsSQL:
                                "FROM arena_stats "
                                "ORDER BY user_id, date_set DESC;")
 
-    SELECT_HIGHEST_TROPHIES = ("SELECT * FROM ("
-                               "SELECT DISTINCT ON (user_id) user_id, level, trophies "
-                               "FROM arena_stats "
-                               "ORDER BY user_id, trophies DESC"
-                               ") q "
-                               "ORDER BY trophies DESC;")
+    SELECT_TROPHY_LEADERBOARD = ("SELECT * FROM"
+                                 "("
+                                 "SELECT DISTINCT ON (user_id) user_id, date_set, level, trophies "
+                                 "FROM arena_stats "
+                                 "ORDER BY user_id, date_set DESC"
+                                 ") q "
+                                 "ORDER BY trophies DESC;")
 
     # SELECT
     SELECT_USER = ("SELECT user_id, date_set, level, trophies "
@@ -74,7 +75,7 @@ class HangmanSQL:
 
     # SELECT
     SELECT_ALL = "SELECT user_id, wins FROM hangman;"
-    SELECT_BEST = "SELECT user_id, wins FROM hangman ORDER BY wins DESC LIMIT 10"
+    SELECT_BEST = "SELECT user_id, wins FROM hangman ORDER BY wins DESC;"
 
     # INSERT
     ADD_WIN = ("INSERT INTO hangman (user_id, wins) VALUES ($1, 1) "

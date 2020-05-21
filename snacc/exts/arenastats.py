@@ -132,7 +132,7 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 	@commands.cooldown(1, 60, commands.BucketType.guild)
 	@commands.command(name="trophies")
 	async def show_leaderboard(self, ctx: commands.Context):
-		""" Show the server trophy leaderboard. """
+		""" Show the server trophy leader-statsboard. """
 
 		return await ctx.send(await TrophyLeaderboard(ctx).create(ctx.author))
 
