@@ -134,7 +134,7 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 	async def show_leaderboard(self, ctx: commands.Context):
 		""" Show the server trophy leader-statsboard. """
 
-		return await ctx.send(await TrophyLeaderboard(ctx).create(ctx.author))
+		await TrophyLeaderboard().send(ctx)
 
 	@commands.command(name="alb")
 	async def alb(self, ctx: commands.Context):

@@ -1,22 +1,23 @@
-from discord.ext import commands
-
 from snacc.common.queries import ArenaStatsSQL, HangmanSQL
 
 
-class Leaderboard:
-    def __init__(self, *, title: str, query: str, size: int, ctx: commands.Context, headers: list, columns: list):
+class TextLeaderboardBase:
+    def __init__(self, *, title: str, query: str, size: int, headers: list, columns: list, order_col: str):
         self.title = title
-        self.ctx = ctx
         self.headers = ["#", "User"] + headers
         self.columns = columns
         self.query = query
         self.size = size
+        self.order_col = order_col
 
-    async def filter_results(self, results: list):
+    async def send(self, ctx):
+        await ctx.send(await self._create(ctx))
+
+    async def filter_results(self, ctx, results: list):
         return results
 
     def _create_row(self, rank, user, row):
-        username = "Mysterious User" if user is None else user.display_name[0:20]
+        username = "Unknown User" if user is None else user.display_name[0:20]
 
         entry = [f"#{rank:02d}", username]
 
@@ -24,66 +25,93 @@ class Leaderboard:
 
         return entry
 
-    async def create(self, author):
-        ctx, bot = self.ctx, self.ctx.bot
+    def _get_user(self, ctx, id_):
+        user = ctx.guild.get_member(id_)
+
+        if user is None:
+            user = ctx.bot.get_user(id_)
+
+        return user
+
+    def _create_author_section(self, widths, row):
+        """ Leaderboard footer. """
+
+        text = "-" * sum(widths) + "\n"
+        text += " ".join(f"{col}{' ' * (widths[j] - len(col))}" for j, col in enumerate(row))
+
+        return text
+
+    def _create_spaced_rows(self, widths, rows):
+        text_rows = []
+
+        for i, row in enumerate(rows):
+            text_rows.append([])
+
+            for j, col in enumerate(row):
+                text_rows[-1].append(f"{col}{' ' * (widths[j] - len(col))}")
+
+        return text_rows
+
+    async def _create(self, ctx):
+        bot, author = ctx.bot, ctx.author
 
         widths = list(map(len, self.headers))
         entries = [self.headers.copy()]
 
-        author_row = None
+        author_row, prev_val, rank = None, None, 0
 
-        results = await self.filter_results(await bot.pool.fetch(self.query))
+        results = await self.filter_results(ctx, await bot.pool.fetch(self.query))
 
-        for rank, row in enumerate(results, start=1):
-            id_ = row["user_id"]
+        for row in results:
+            rank = (rank + 1) if prev_val is None or row[self.order_col] < prev_val else rank
 
-            if rank > self.size and author_row is not None:
+            prev_val = row[self.order_col]
+
+            num_entries = len(entries) - 1
+
+            # We have everything we need so just end the loop
+            if num_entries >= self.size and author_row is not None:
                 break
 
-            user = ctx.guild.get_member(id_)
+            # Get some reference to a user (can be None)
+            user = self._get_user(ctx,  row["user_id"])
 
-            if user is None:
-                user = bot.get_user(id_)
+            # Create the text row for the user
+            entry = self._create_row(rank, user, row)
 
-            if rank <= self.size or author_row is None:
-                entry = self._create_row(rank, user, row)
+            if row["user_id"] == author.id:
+                author_row = entry
 
-                if id_ == author.id and author_row is None:
-                    author_row = self._create_row(rank, user, row)
+            if num_entries < self.size:
+                widths = [max(widths[i], len(col)) for i, col in enumerate(entry)]
 
-                if rank <= self.size:
-                    widths = [max(widths[i], len(col)) for i, col in enumerate(entry)]
+                entries.append(entry)
 
-                    entries.append(entry)
+        text_rows = self._create_spaced_rows(widths, entries)
 
-        for i, row in enumerate(entries):
-            for j, col in enumerate(row[0:-1]):
-                row[j] = f"{col}{' ' * (widths[j] - len(col))}"
-
-        text = self.title + "\n\n" + "\n".join(" ".join(row) for row in entries) + "\n"
+        text = self.title + "\n\n" + "\n".join(" ".join(row) for row in text_rows) + "\n"
 
         if author_row is not None:
-            text += "-" * sum(widths) + "\n"
-            text += " ".join(f"{col}{' ' * (widths[j] - len(col))}" for j, col in enumerate(author_row))
+            text += self._create_author_section(widths, author_row)
 
         return "```c++\n" + text + "```"
 
 
-class TrophyLeaderboard(Leaderboard):
-    def __init__(self, ctx: commands.Context):
+class TrophyLeaderboard(TextLeaderboardBase):
+    def __init__(self):
         super(TrophyLeaderboard, self).__init__(
             title="Trophy Leaderboard",
             query=ArenaStatsSQL.SELECT_TROPHY_LEADERBOARD,
             size=10,
-            ctx=ctx,
             headers=["Level", "Trophies"],
             columns=["level", "trophies"],
+            order_col="trophies"
         )
 
-    async def filter_results(self, results: list):
-        svr_config = await self.ctx.bot.get_server(self.ctx.guild)
+    async def filter_results(self, ctx, results: list):
+        svr_config = await ctx.bot.get_server(ctx.guild)
 
-        role = self.ctx.guild.get_role(svr_config["member_role"])
+        role = ctx.guild.get_role(svr_config["member_role"])
 
         ls = []
 
@@ -98,13 +126,13 @@ class TrophyLeaderboard(Leaderboard):
         return ls
 
 
-class HangmanLeaderboard(Leaderboard):
-    def __init__(self, ctx: commands.Context):
+class HangmanLeaderboard(TextLeaderboardBase):
+    def __init__(self):
         super(HangmanLeaderboard, self).__init__(
             title="Top Hangman Players",
-            query=HangmanSQL.SELECT_BEST,
+            query=HangmanSQL.SELECT_HANGMAN_LEADERBOARD,
             size=10,
-            ctx=ctx,
             headers=["Wins"],
-            columns=["wins"]
+            columns=["wins"],
+            order_col="wins"
         )

@@ -60,7 +60,7 @@ class HangmanLeaderboard(Leaderboard):
     def __init__(self, ctx: commands.Context):
         super(HangmanLeaderboard, self).__init__(
             title="Top Hangman Players",
-            query=HangmanSQL.SELECT_BEST,
+            query=HangmanSQL.SELECT_HANGMAN_LEADERBOARD,
             ctx=ctx,
             headers=["Wins"],
             columns=["wins"]
@@ -71,7 +71,7 @@ class TrophyLeaderboard(Leaderboard):
     def __init__(self, ctx: commands.Context):
         super(TrophyLeaderboard, self).__init__(
             title="Trophy Leaderboard",
-            query=AboSQL.SELECT_BEST,
+            query=AboSQL.SELECT_HANGMAN_LEADERBOARD,
             ctx=ctx,
             headers=["Lvl", "Trophies"],
             columns=["lvl", "trophies"]

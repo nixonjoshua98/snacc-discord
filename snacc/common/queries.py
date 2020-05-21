@@ -74,8 +74,7 @@ class HangmanSQL:
                     "wins INTEGER;")
 
     # SELECT
-    SELECT_ALL = "SELECT user_id, wins FROM hangman;"
-    SELECT_BEST = "SELECT user_id, wins FROM hangman ORDER BY wins DESC;"
+    SELECT_HANGMAN_LEADERBOARD = "SELECT user_id, wins FROM hangman ORDER BY wins DESC;"
 
     # INSERT
     ADD_WIN = ("INSERT INTO hangman (user_id, wins) VALUES ($1, 1) "
