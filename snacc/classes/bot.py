@@ -1,6 +1,7 @@
 import os
 import ssl
 import asyncpg
+import discord
 
 from discord.ext import commands
 

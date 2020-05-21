@@ -20,3 +20,10 @@ async def user_has_member_role(ctx):
 		raise commands.CommandError(f"You need the `{role.name}` role.")
 
 	return True
+
+
+def from_guild(guild_id):
+	async def predicate(ctx):
+		return ctx.guild.id == guild_id
+
+	return commands.check(predicate)

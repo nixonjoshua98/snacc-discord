@@ -14,7 +14,7 @@ from snacc.classes.leaderboards import TrophyLeaderboard
 
 
 class ArenaStats(commands.Cog, name="Arena Stats"):
-	""" Commands related to the Arena mode in the `Auto battles Online` mobile game. """
+	""" Commands related to the Arena mode in the `Auto Battles Online` mobile game. """
 
 	def __init__(self):
 		self.leaderboards = dict()
