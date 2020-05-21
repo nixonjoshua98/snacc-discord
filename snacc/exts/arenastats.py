@@ -119,7 +119,7 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 		for page in utils.chunk_list(results, 7):
 			embed = discord.Embed(title=f"{target.display_name}'s Arena Stats", colour=discord.Color.orange())
 
-			embed.set_thumbnail(url=ctx.author.avatar_url)
+			embed.set_thumbnail(url=target.avatar_url)
 
 			embed.set_footer(text=f"{ctx.bot.user.name}", icon_url=ctx.bot.user.avatar_url)
 
