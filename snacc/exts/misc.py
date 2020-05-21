@@ -45,7 +45,7 @@ class Miscellaneous(commands.Cog):
 		embed.insert_field_at(index, name=name, value=value)
 
 		await message.edit(embed=embed)
-		await ctx.send(f"Added the useful link at index `{index}`.")
+		await ctx.send(f"Added the field at index `{index}`.")
 
 	@checks.from_guild(666613802657382435)
 	@commands.has_permissions(administrator=True)
@@ -61,7 +61,7 @@ class Miscellaneous(commands.Cog):
 		embed.remove_field(index)
 
 		await message.edit(embed=embed)
-		await ctx.send(f"Removed link at index `{index}`.")
+		await ctx.send(f"Removed field at index `{index}`.")
 
 
 def setup(bot):

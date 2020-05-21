@@ -29,7 +29,7 @@ class SnaccBot(commands.Bot):
         print("OK")
 
     async def on_message(self, message):
-        if message.author.id == 569342123296686080 and "see" in message.content.strip().lower():
+        if message.author.id == 569342123296686080 and "see" in message.content.lower():
             try:
                 await message.delete()
             except (discord.HTTPException, discord.Forbidden):

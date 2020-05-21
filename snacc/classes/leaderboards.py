@@ -16,6 +16,9 @@ class TextLeaderboardBase:
     async def filter_results(self, ctx, results: list):
         return results
 
+    async def execute_query(self, ctx) -> list:
+        return await ctx.bot.pool.fetch(self.query)
+
     def _create_row(self, rank, user, row):
         username = "Unknown User" if user is None else user.display_name[0:20]
 
@@ -62,7 +65,8 @@ class TextLeaderboardBase:
 
         author_row, prev_val, rank = None, None, 0
 
-        results = await self.filter_results(ctx, await bot.pool.fetch(self.query))
+        results = await self.execute_query(ctx)
+        results = await self.filter_results(ctx, results)
 
         for row in results:
             rank = (rank + 1) if prev_val is None or row[self.order_col] < prev_val else rank
@@ -103,29 +107,21 @@ class TrophyLeaderboard(TextLeaderboardBase):
     def __init__(self):
         super(TrophyLeaderboard, self).__init__(
             title="Trophy Leaderboard",
-            query=ArenaStatsSQL.SELECT_TROPHY_LEADERBOARD,
+            query=ArenaStatsSQL.SELECT_LEADERBOARD,
             size=10,
             headers=["Level", "Trophies"],
             columns=["level", "trophies"],
             order_col="trophies"
         )
 
-    async def filter_results(self, ctx, results: list):
+    async def execute_query(self, ctx) -> list:
         svr_config = await ctx.bot.get_server(ctx.guild)
 
         role = ctx.guild.get_role(svr_config["member_role"])
 
-        ls = []
+        results = await ctx.bot.pool.fetch(self.query, tuple(member.id for member in role.members))
 
-        member_table = {member.id: member for member in role.members}
-
-        for row in results:
-            member = member_table.get(row["user_id"])
-
-            if member is not None:
-                ls.append(row)
-
-        return ls
+        return results
 
 
 class HangmanLeaderboard(TextLeaderboardBase):

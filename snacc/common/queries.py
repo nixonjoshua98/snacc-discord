@@ -52,6 +52,15 @@ class ArenaStatsSQL:
                                  ") q "
                                  "ORDER BY trophies DESC;")
 
+    SELECT_LEADERBOARD = ("SELECT * FROM"
+                          "("
+                          "SELECT DISTINCT ON (user_id) user_id, date_set, level, trophies "
+                          "FROM arena_stats "
+                          "WHERE user_id = ANY ($1) "
+                          "ORDER BY user_id, date_set DESC"
+                          ") q "
+                          "ORDER BY trophies DESC;")
+
     # SELECT
     SELECT_USER = ("SELECT user_id, date_set, level, trophies "
                    "FROM arena_stats "
