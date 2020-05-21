@@ -4,7 +4,7 @@ from discord.ext import commands
 
 from snacc.common.emoji import UEmoji
 from snacc.common.queries import HangmanSQL
-from snacc.classes.leaderboard import HangmanLeaderboard
+from snacc.classes.leaderboards import HangmanLeaderboard
 from snacc.utils.hangman import HangmanGame, HangmanGuess
 
 
@@ -88,7 +88,7 @@ class Hangman(commands.Cog):
                 await ctx.send("I have DM'ed you the hidden word.")
 
     @commands.command(name="hlb")
-    async def leaderboard(self, ctx):
+    async def show_leaderboard(self, ctx):
         """ Shows the top hangman players. """
 
         return await ctx.send(await HangmanLeaderboard(ctx).create(ctx.author))

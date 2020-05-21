@@ -50,7 +50,7 @@ class HelpCommand(commands.HelpCommand):
 
                 name = f"[{'|'.join([cmd.name] + cmd.aliases)}] {sig}"
 
-                doc = getattr(cmd.callback, "__doc__", "")
+                doc = getattr(cmd.callback, "__doc__", "").strip()
 
                 embed.add_field(name=name, value=doc, inline=False)
 

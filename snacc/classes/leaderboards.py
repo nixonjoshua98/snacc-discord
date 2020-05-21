@@ -49,7 +49,7 @@ class Leaderboard:
                 row[j] = f"{col}{' ' * (widths[j] - len(col))}"
 
         text = self.title + "\n\n" + "\n".join(" ".join(row) for row in entries) + "\n"
-        text += "- " * (sum(widths) // 2) if ranks.get(author.id, None) else ""
+        text += " -" * (sum(widths) // 2) if ranks.get(author.id, None) else ""
         text += "\n" + f"> #{ranks[author.id]:02d} {author.display_name[0:20]}" if ranks.get(author.id, None) else ""
 
         return "```c++\n" + text + "```"

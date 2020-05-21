@@ -10,7 +10,7 @@ from snacc.common.queries import ArenaStatsSQL
 
 from snacc.classes.menus import EmbedMenu
 from snacc.classes.converters import UserMember
-from snacc.classes.leaderboard import TrophyLeaderboard
+from snacc.classes.leaderboards import TrophyLeaderboard
 
 
 class ArenaStats(commands.Cog, name="Arena Stats"):
