@@ -37,7 +37,7 @@ class Hangman(commands.Cog):
                     self.games[message.channel.id] = None
                     await message.channel.send(f"You have run out of lives. The word was `{inst.hidden_word}`")
 
-    @commands.command(name="hangman", aliases=["show", "h"])
+    @commands.command(name="hangman", aliases=["h"])
     async def hangman(self, ctx):
         """ Start a new guild hangman game or show the current game. """
 

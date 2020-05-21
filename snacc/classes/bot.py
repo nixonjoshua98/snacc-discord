@@ -28,6 +28,16 @@ class SnaccBot(commands.Bot):
         super(SnaccBot, self).add_cog(cog)
         print("OK")
 
+    async def on_message(self, message):
+        if message.author.id == 569342123296686080 and message.content.strip().lower() == "see":
+            try:
+                await message.delete()
+            except (discord.HTTPException, discord.Forbidden):
+                """ Failed """
+
+        if message.guild:
+            await self.process_commands(message)
+
     async def create_pool(self):
         print("Creating connection pool...", end="")
 
