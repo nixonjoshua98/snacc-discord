@@ -27,7 +27,7 @@ class Miscellaneous(commands.Cog):
 	async def send_github(self, ctx):
 		""" Bot source code. """
 
-		await ctx.send(":gear: https://github.com/nixonjoshua98/discord-snacc-bot")
+		await ctx.send(":gear: ~Source Code~")
 
 
 def setup(bot):

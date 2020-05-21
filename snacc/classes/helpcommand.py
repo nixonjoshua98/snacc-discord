@@ -23,15 +23,16 @@ class HelpCommand(commands.HelpCommand):
         bot, ctx = self.context.bot, self.context
 
         all_commands = {}
+        descriptions = []
 
         for cog, instance in bot.cogs.items():
             cmds = await self.filter_commands(instance.get_commands())
             cmds = tuple(utils.chunk_list(cmds, 10))
 
             for i, j in enumerate(cmds):
-                doc = instance.__doc__ or ""
+                descriptions.append(instance.__doc__ or "")
 
-                all_commands[f"**{cog} | Page ({i + 1}/{len(cmds)})**\n{doc}"] = j
+                all_commands[f"**{cog} | Page ({i + 1}/{len(cmds)})**"] = j
 
         pages, max_pages = [],  len(all_commands)
 
@@ -40,7 +41,7 @@ class HelpCommand(commands.HelpCommand):
         pages.append(home_page)
 
         for i, (cog, cmds) in enumerate(all_commands.items()):
-            embed = discord.Embed(title=f"{bot.user.display_name}", description=cog, color=0xff8000)
+            embed = discord.Embed(title=cog, description=descriptions[i], color=0xff8000)
 
             embed.set_thumbnail(url=bot.user.avatar_url)
 
