@@ -5,6 +5,7 @@ import discord
 from discord.ext import commands
 
 from datetime import datetime
+from bs4 import BeautifulSoup
 
 from snacc.common import checks
 
@@ -30,51 +31,36 @@ class Miscellaneous(commands.Cog):
 		await ctx.send(f"I am made up of **{lines:,}** lines of code.")
 
 	@commands.command(name="whatis")
-	async def what_is_this(self, ctx, query):
-		""" Look for a definition in the Oxford Dictionary. """
+	async def what_is_this(self, ctx, word):
+		""" Look for a word definition. """
 
-		async def send_request(query_: str):
-			url = f"https://od-api.oxforddictionaries.com/api/v2/entries/en-us/{query_.split(' ')[0].lower()}"
-
-			id_, key = os.environ["OXFORD_ID"], os.environ["OXFORD_KEY"]
-
+		async def send_request(url_: str):
 			async with httpx.AsyncClient() as client:
-				return await client.get(url, headers={"app_id": id_, "app_key": key})
+				return await client.get(url_)
 
-		r = await send_request(query)
+		url = f"http://dictionary.reference.com/browse/{word}?s=t"
 
-		# Request failed
-		if r.status_code != 200:
-			return await ctx.send("I failed to look your query up.")
+		r = await send_request(url)
 
-		results = r.json()
+		if r.status_code != httpx.codes.OK:
+			return await ctx.send("I found not definitions or examples for your query.")
 
-		today = datetime.today().strftime('%d/%m/%Y %X')
+		soup = BeautifulSoup(r.content, "html.parser")
 
-		embed = discord.Embed(title=f"What is '{results['word']}'?", colour=discord.Color.orange())
+		entry = soup.find(class_="css-1urpfgu e16867sm0")
+		defs = entry.find_all(class_="one-click-content css-1p89gle e1q3nk1v4")
 
-		embed.set_footer(text=f"{ctx.bot.user.name} | {today}", icon_url=ctx.bot.user.avatar_url)
+		definitions = [txt for txt in map(lambda ele: ele.text.strip(), defs) if not txt[0].isupper()]
+		definitions = [f"{i}. {d}" for i, d in enumerate(definitions, start=1)]
 
-		definitions, examples = [], []
-
-		top_entry = results["results"][0]["lexicalEntries"][0]["entries"][0]
-
-		# Iterate over some key which has the definitions
-		for sense in top_entry["senses"][:3]:
-			definitions.extend(f"{deff}" for deff in sense["definitions"])
-			examples.extend(f"{example['text']}" for example in sense.get("examples", []))
-
-		# Check if we found any definitions
 		if len(definitions) > 0:
-			definitions = [f"{i}. {ele}" for i, ele in enumerate(definitions, start=1)]
-			embed.add_field(name="Definition(s)", value="\n".join(definitions), inline=False)
+			today = datetime.today().strftime('%d/%m/%Y %X')
 
-		# Check if we found any examples
-		if len(examples) > 0:
-			examples = [f"{i}. {ele}" for i, ele in enumerate(examples, start=1)]
-			embed.add_field(name="Example(s)", value="\n".join(examples), inline=False)
+			embed = discord.Embed(title=word, colour=discord.Color.orange(), url=url)
 
-		if len(examples) > 0 and len(definitions) > 0:
+			embed.set_footer(text=f"{ctx.bot.user.name} | {today}", icon_url=ctx.bot.user.avatar_url)
+			embed.add_field(name="Definitions", value="\n".join(definitions))
+
 			await ctx.send(embed=embed)
 
 		else:
