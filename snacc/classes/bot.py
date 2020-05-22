@@ -29,7 +29,8 @@ class SnaccBot(commands.Bot):
         print("OK")
 
     async def on_message(self, message):
-        if message.author.id == 569342123296686080 and "see" in message.content.lower():
+        # Anti Tisha
+        if message.author.id == 569342123296686080 and "see" in message.content.replace(" ", "").lower():
             try:
                 await message.delete()
             except (discord.HTTPException, discord.Forbidden):

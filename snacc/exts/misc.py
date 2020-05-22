@@ -31,8 +31,10 @@ class Miscellaneous(commands.Cog):
 		await ctx.send(f"I am made up of **{lines:,}** lines of code.")
 
 	@commands.command(name="whatis")
-	async def what_is_this(self, ctx, word):
+	async def what_is_this(self, ctx, word: str):
 		""" Look for a word definition. """
+
+		word = word.lower()
 
 		async def send_request(url_: str):
 			async with httpx.AsyncClient() as client:
