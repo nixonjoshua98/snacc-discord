@@ -63,7 +63,7 @@ class Miscellaneous(commands.Cog):
 			value = "\n".join(definitions)
 			value = value[:1021] + "..." if len(value) > 1024 else value
 
-			embed.add_field(name="Definitions", value=value)
+			embed.add_field(name="Definition(s)", value=value)
 
 			await ctx.send(embed=embed)
 
@@ -74,7 +74,7 @@ class Miscellaneous(commands.Cog):
 	async def send_github(self, ctx):
 		""" Bot source code. """
 
-		await ctx.send("https://github.com/nixonjoshua98/discord-snacc-bot")
+		await ctx.send("**https://github.com/nixonjoshua98/discord-snacc-bot**")
 
 
 def setup(bot):

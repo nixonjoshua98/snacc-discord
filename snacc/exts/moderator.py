@@ -5,6 +5,8 @@ from snacc.classes.converters import NormalUser
 
 
 class Moderator(commands.Cog):
+	""" Some very basic moderation commands. """
+
 	async def get_mute_role(self, ctx):
 		role = discord.utils.get(ctx.guild.roles, name="Muted")
 
@@ -24,17 +26,12 @@ class Moderator(commands.Cog):
 
 		role = await self.get_mute_role(ctx)
 
-		if role in target.roles:
-			await ctx.send("User is already muted.")
-
+		try:
+			await target.add_roles(role)
+		except (discord.HTTPException, discord.Forbidden):
+			await ctx.send("I failed to add the `Muted` role to the user.")
 		else:
-			try:
-				await target.add_roles(role)
-			except (discord.HTTPException, discord.Forbidden):
-				await ctx.send("I failed to add the `Muted` role to the user.")
-
-			else:
-				await ctx.send("User has been muted")
+			await ctx.send("User has been muted")
 
 	@commands.has_permissions(administrator=True)
 	@commands.command(name="unmute")
@@ -43,17 +40,12 @@ class Moderator(commands.Cog):
 
 		role = await self.get_mute_role(ctx)
 
-		if role not in target.roles:
-			await ctx.send("User is not muted.")
-
+		try:
+			await target.remove_roles(role)
+		except (discord.HTTPException, discord.Forbidden):
+			await ctx.send("I failed to unmute and remove the `Muted` role from the user.")
 		else:
-			try:
-				await target.remove_roles(role)
-			except (discord.HTTPException, discord.Forbidden):
-				await ctx.send("I failed to unmute and remove the `Muted` role from the user.")
-
-			else:
-				await ctx.send("User has been unmuted")
+			await ctx.send("User has been unmuted")
 
 
 def setup(bot):
