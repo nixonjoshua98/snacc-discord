@@ -6,14 +6,20 @@ from snacc.common.emoji import UEmoji
 
 
 class MenuBase:
-	def __init__(self, embeds):
+	def __init__(self, embeds, timeout):
 		self.bot = None
 		self.ctx = None
 		self.message = None
 
+		self.timeout = timeout
 		self.embeds = embeds
 
 		self._buttons = dict()
+
+		self.add_buttons()
+
+	def add_buttons(self):
+		raise NotImplemented()
 
 	async def send_initial_message(self) -> discord.Message:
 		raise NotImplemented()
@@ -36,7 +42,7 @@ class MenuBase:
 
 		while True:
 			try:
-				react, user = await self.bot.wait_for("reaction_add", timeout=60, check=wait_for)
+				react, user = await self.bot.wait_for("reaction_add", timeout=self.timeout, check=wait_for)
 
 			except asyncio.TimeoutError:
 				try:
@@ -70,19 +76,20 @@ class MenuBase:
 
 
 class EmbedMenu(MenuBase):
-	def __init__(self, embeds: list, *, start_page: int = 0):
-		super(EmbedMenu, self).__init__(embeds)
+	def __init__(self, embeds: list, *, start_page: int = 0, timeout: int = None):
+		super(EmbedMenu, self).__init__(embeds, timeout)
 
 		self._start_page = start_page
 
 		self.current_page = 0
 
+	async def send_initial_message(self) -> discord.Message:
+		return await self.ctx.send(embed=self.embeds[self._start_page])
+
+	def add_buttons(self):
 		if len(self.embeds) > 1:
 			self.add_button(UEmoji.ARROW_LEFT, self.on_arrow_left)
 			self.add_button(UEmoji.ARROW_RIGHT, self.on_arrow_right)
-
-	async def send_initial_message(self) -> discord.Message:
-		return await self.ctx.send(embed=self.embeds[self._start_page])
 
 	async def update(self):
 		await self.message.edit(embed=self.embeds[self.current_page])
