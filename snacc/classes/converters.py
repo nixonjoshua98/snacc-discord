@@ -25,3 +25,23 @@ class UserMember(commands.MemberConverter):
 			raise commands.CommandError(f"User '{member.display_name}' does not have the member role.")
 
 		return member
+
+
+class NormalUser(commands.MemberConverter):
+	async def convert(self, ctx, argument) -> discord.Member:
+		try:
+			member = await super().convert(ctx, argument)
+
+		except commands.BadArgument:
+			raise commands.CommandError(f"User '{argument}' could not be found")
+
+		if member.bot:
+			raise commands.CommandError("Bot accounts cannot be targeted.")
+
+		elif member.guild_permissions.administrator:
+			raise commands.CommandError("Server admins cannot be targeted.")
+
+		elif ctx.author.id == member.id:
+			raise commands.CommandError("You cannot target youself.")
+
+		return member
