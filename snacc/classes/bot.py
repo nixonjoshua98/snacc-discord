@@ -66,9 +66,9 @@ class SnaccBot(commands.Bot):
         # Has commands
         self.load_extension("snacc.exts.arenastats")
         self.load_extension("snacc.exts.hangman")
-        self.load_extension("snacc.exts.usefulinfo")
-        self.load_extension("snacc.exts.misc")
+        self.load_extension("snacc.exts.usefullinks")
         self.load_extension("snacc.exts.moderator")
+        self.load_extension("snacc.exts.misc")
         self.load_extension("snacc.exts.settings")
 
     async def update_server_cache(self, guild):
