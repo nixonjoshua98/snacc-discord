@@ -3,8 +3,8 @@ from discord.ext import commands
 from snacc.common import checks
 
 
-class UsefulInfo(commands.Cog, name="Useful Info"):
-	""" Set of commands to update the useful info Embed. """
+class UsefulLinks(commands.Cog, name="Useful Links"):
+	""" Set of commands to update the useful links Embed. """
 
 	@checks.from_guild(666613802657382435)
 	@commands.has_permissions(administrator=True)
@@ -40,4 +40,4 @@ class UsefulInfo(commands.Cog, name="Useful Info"):
 
 
 def setup(bot):
-	bot.add_cog(UsefulInfo())
+	bot.add_cog(UsefulLinks())
