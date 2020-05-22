@@ -16,6 +16,8 @@ class SnaccBot(commands.Bot):
 
         self.server_cache = dict()
 
+        self.add_check(self.global_check)
+
     async def on_ready(self):
         await self.create_pool()
         await self.load_extensions()
