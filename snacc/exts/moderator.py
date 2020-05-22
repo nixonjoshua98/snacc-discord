@@ -20,7 +20,7 @@ class Moderator(commands.Cog):
 	@commands.has_permissions(administrator=True)
 	@commands.command(name="mute")
 	async def mute(self, ctx, target: NormalUser()):
-		""" Mutes a user, which will delete each message the user sends. """
+		""" [Admin] Mutes a user, which will delete each message the user sends. """
 
 		role = await self.get_mute_role(ctx)
 
@@ -34,12 +34,12 @@ class Moderator(commands.Cog):
 				await ctx.send("I failed to add the `Muted` role to the user.")
 
 			else:
-				await ctx.send("User had been muted")
+				await ctx.send("User has been muted")
 
 	@commands.has_permissions(administrator=True)
 	@commands.command(name="unmute")
 	async def unmute(self, ctx, target: NormalUser()):
-		""" Unmutes a user and allows them to send messages again. """
+		""" [Admin] Unmutes a user and allows them to send messages again. """
 
 		role = await self.get_mute_role(ctx)
 
@@ -53,7 +53,7 @@ class Moderator(commands.Cog):
 				await ctx.send("I failed to unmute and remove the `Muted` role from the user.")
 
 			else:
-				await ctx.send("User had been unmuted")
+				await ctx.send("User has been unmuted")
 
 
 def setup(bot):
