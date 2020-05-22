@@ -27,10 +27,20 @@ class SnaccBot(commands.Bot):
         super(SnaccBot, self).add_cog(cog)
         print("OK")
 
-    async def on_message(self, message):
-        # Ignore all messages from DM's
-        if not message.guild:
-            return
+    async def global_check(self, message):
+        if message.guild is None:
+            return False
+
+        elif await self.is_user_muted(message):
+            return False
+
+        if message.author.bot:
+            return False
+
+        return True
+
+    async def is_user_muted(self, message):
+        """ Returns a boolean showing if the user is muted, as well as deleting their message if they are muted. """
 
         is_muted = discord.utils.get(message.author.roles, name="Muted") is not None
 
@@ -40,7 +50,10 @@ class SnaccBot(commands.Bot):
             except (discord.HTTPException, discord.Forbidden):
                 """ Failed """
 
-        else:
+        return is_muted
+
+    async def on_message(self, message):
+        if await self.global_check(message):
             await self.process_commands(message)
 
     async def create_pool(self):

@@ -14,9 +14,9 @@ class Hangman(commands.Cog):
 
         self.games = {}
 
-    @commands.Cog.listener()
+    @commands.Cog.listener(name="on_message")
     async def on_message(self, message: discord.Message):
-        if not message.author.bot and message.guild:
+        if await self.bot.global_check(message):
             inst = self.games.get(message.channel.id, None)
 
             if inst is not None:

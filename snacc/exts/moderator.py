@@ -20,7 +20,7 @@ class Moderator(commands.Cog):
 	@commands.has_permissions(administrator=True)
 	@commands.command(name="mute")
 	async def mute(self, ctx, target: NormalUser()):
-		""" [Admin] Mutes a user, which will delete each message the user sends. """
+		""" [Admin] Mutes a user, which will delete every message the user sends. """
 
 		role = await self.get_mute_role(ctx)
 
