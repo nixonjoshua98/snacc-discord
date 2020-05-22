@@ -29,14 +29,19 @@ class SnaccBot(commands.Bot):
         print("OK")
 
     async def on_message(self, message):
-        # Anti Tisha
-        if message.author.id == 569342123296686080 and "see" in message.content.replace(" ", "").lower():
+        # Ignore all messages from DM's
+        if not message.guild:
+            return
+
+        is_muted = discord.utils.get(message.author.roles, name="Muted") is not None
+
+        if is_muted:
             try:
                 await message.delete()
             except (discord.HTTPException, discord.Forbidden):
                 """ Failed """
 
-        if message.guild:
+        else:
             await self.process_commands(message)
 
     async def create_pool(self):
