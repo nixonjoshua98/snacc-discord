@@ -108,7 +108,7 @@ class TrophyLeaderboard(TextLeaderboardBase):
         super(TrophyLeaderboard, self).__init__(
             title="Trophy Leaderboard",
             query=ArenaStatsSQL.SELECT_LEADERBOARD,
-            size=10,
+            size=45,
             headers=["Level", "Trophies"],
             columns=["level", "trophies"],
             order_col="trophies"
