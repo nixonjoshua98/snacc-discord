@@ -62,6 +62,4 @@ class HelpCommand(commands.HelpCommand):
     async def send_bot_help(self, mapping):
         pages = await self.get_pages()
 
-        menu = EmbedMenu(pages)
-
-        await menu.send(self.context)
+        await EmbedMenu(pages).send(self.context)

@@ -6,10 +6,12 @@ from snacc.common.emoji import UEmoji
 
 
 class MenuBase:
-	def __init__(self):
+	def __init__(self, embeds):
 		self.bot = None
 		self.ctx = None
 		self.message = None
+
+		self.embeds = embeds
 
 		self._buttons = dict()
 
@@ -69,15 +71,15 @@ class MenuBase:
 
 class EmbedMenu(MenuBase):
 	def __init__(self, embeds: list, *, start_page: int = 0):
-		super(EmbedMenu, self).__init__()
+		super(EmbedMenu, self).__init__(embeds)
 
 		self._start_page = start_page
 
-		self.embeds = embeds
 		self.current_page = 0
 
-		self.add_button(UEmoji.ARROW_LEFT, self.on_arrow_left)
-		self.add_button(UEmoji.ARROW_RIGHT, self.on_arrow_right)
+		if len(self.embeds) > 1:
+			self.add_button(UEmoji.ARROW_LEFT, self.on_arrow_left)
+			self.add_button(UEmoji.ARROW_RIGHT, self.on_arrow_right)
 
 	async def send_initial_message(self) -> discord.Message:
 		return await self.ctx.send(embed=self.embeds[self._start_page])

@@ -106,32 +106,33 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 		""" View your own or another members recorded arena stats. """
 
 		target = ctx.author if target is None else target
-
 		results = await ctx.bot.pool.fetch(ArenaStatsSQL.SELECT_USER, target.id)
 
-		if results is None:
-			return await ctx.send("I found not stats for you.")
+		if not results:
+			return await ctx.send("I found no stats for you.")
 
 		embeds = []
-
+		chunks = tuple(utils.chunk_list(results, 7))
 		today = datetime.today().strftime('%d/%m/%Y %X')
 
-		for page in utils.chunk_list(results, 7):
+		for i, page in enumerate(chunks):
 			embed = discord.Embed(title=f"{target.display_name}'s Arena Stats", colour=discord.Color.orange())
 
 			embed.set_thumbnail(url=target.avatar_url)
-
-			embed.set_footer(text=f"{ctx.bot.user.name} | {today}", icon_url=ctx.bot.user.avatar_url)
+			embed.set_footer(text=f"{ctx.bot.user.name} | Page {i + 1}/{len(chunks)}", icon_url=ctx.bot.user.avatar_url)
 
 			for row in page:
-				name = row["date_set"].strftime("%d/%m/%Y")
-				value = f"Level: {row['level']:,}\nTrophies: {row['trophies']:,}"
-
-				embed.add_field(name=name, value=value)
+				embed.add_field(
+					name=row["date_set"].strftime("%d/%m/%Y"),
+					value=f"Level: {row['level']:,}\nTrophies: {row['trophies']:,}"
+				)
 
 			embeds.append(embed)
 
-		await EmbedMenu(embeds).send(ctx) if len(embeds) > 1 else await ctx.send(embed=embeds[0])
+		if len(embeds) == 1:
+			embeds[0].set_footer(text=f"{ctx.bot.user.name} | {today}", icon_url=ctx.bot.user.avatar_url)
+
+		await EmbedMenu(embeds).send(ctx)
 
 	@commands.cooldown(1, 60, commands.BucketType.guild)
 	@commands.command(name="trophies")
