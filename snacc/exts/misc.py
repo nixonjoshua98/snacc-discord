@@ -61,7 +61,11 @@ class Miscellaneous(commands.Cog):
 			embed = discord.Embed(title=word, colour=discord.Color.orange(), url=url)
 
 			embed.set_footer(text=f"{ctx.bot.user.name} | {today}", icon_url=ctx.bot.user.avatar_url)
-			embed.add_field(name="Definitions", value="\n".join(definitions))
+
+			value = "\n".join(definitions)
+			value = value[:1021] + "..." if len(value) > 1024 else value
+
+			embed.add_field(name="Definitions", value=value)
 
 			await ctx.send(embed=embed)
 
