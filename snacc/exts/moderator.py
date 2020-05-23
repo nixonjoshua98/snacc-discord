@@ -63,10 +63,8 @@ class Moderator(commands.Cog):
 
 		deleted = 0
 
-		limit += 1
-
 		try:
-			deleted = await ctx.channel.purge(limit=limit, check=check)
+			deleted = await ctx.channel.purge(limit=limit+1, check=check)
 		except (discord.HTTPException, discord.Forbidden):
 			await ctx.send("Channel purge failed.")
 
