@@ -28,12 +28,6 @@ class UserMember(commands.MemberConverter):
 
 
 class NormalUser(commands.MemberConverter):
-	def __init__(self, *, bots: bool = True, author: bool = True):
-		super(NormalUser, self).__init__()
-
-		self.allow_bots = bots
-		self.allow_author = author
-
 	async def convert(self, ctx, argument) -> discord.Member:
 		try:
 			member = await super().convert(ctx, argument)
@@ -41,13 +35,13 @@ class NormalUser(commands.MemberConverter):
 		except commands.BadArgument:
 			raise commands.CommandError(f"User '{argument}' could not be found")
 
-		if member.bot and not self.allow_bots:
+		if member.bot:
 			raise commands.CommandError("Bot accounts cannot be targeted.")
 
 		elif member.guild_permissions.administrator:
 			raise commands.CommandError("Server admins cannot be targeted.")
 
-		elif ctx.author.id == member.id and not self.allow_author:
+		elif ctx.author.id == member.id:
 			raise commands.CommandError("You cannot target youself.")
 
 		return member
