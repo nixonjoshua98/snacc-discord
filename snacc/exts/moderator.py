@@ -59,7 +59,7 @@ class Moderator(commands.Cog):
 		""" [Admin] Purge a channel of messages. Optional user can be targeted. """
 
 		def check(m):
-			return (target is None or m.author == target) and ctx.message.id != m.id
+			return target is None or m.author == target
 
 		deleted = 0
 

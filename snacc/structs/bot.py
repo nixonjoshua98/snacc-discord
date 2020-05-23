@@ -7,6 +7,8 @@ from discord.ext import commands
 
 from snacc.structs.helpcommand import HelpCommand
 
+from snacc.common.queries import ArenaStatsSQL, HangmanSQL, ServersSQL
+
 
 class SnaccBot(commands.Bot):
     def __init__(self):
@@ -21,6 +23,11 @@ class SnaccBot(commands.Bot):
 
     async def on_ready(self):
         await self.create_pool()
+
+        await self.pool.execute(ArenaStatsSQL.CREATE_TABLE)
+        await self.pool.execute(HangmanSQL.CREATE_TABLE)
+        await self.pool.execute(ServersSQL.CREATE_TABLE)
+
         await self.load_extensions()
 
         print(f"Bot '{self.user.display_name}' is ready")
@@ -60,7 +67,7 @@ class SnaccBot(commands.Bot):
         print("Creating connection pool...", end="")
 
         if os.getenv("DEBUG", False):
-            self.pool = await asyncpg.create_pool("postgres://postgres:postgres@localhost:5432/snaccbot", max_size=15)
+            self.pool = await asyncpg.create_pool(os.environ["CON_STR"], max_size=15)
 
         else:
             ctx = ssl.create_default_context(cafile="./rds-combined-ca-bundle.pem")

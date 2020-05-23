@@ -80,7 +80,8 @@ class HangmanSQL:
     # CREATE
     CREATE_TABLE = ("CREATE table IF NOT EXISTS hangman ("
                     "user_id BIGINT PRIMARY KEY, "
-                    "wins INTEGER;")
+                    "wins INTEGER"
+                    ");")
 
     # SELECT
     SELECT_HANGMAN_LEADERBOARD = "SELECT user_id, wins FROM hangman ORDER BY wins DESC;"
