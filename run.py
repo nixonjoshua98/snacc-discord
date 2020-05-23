@@ -13,5 +13,6 @@ if __name__ == "__main__":
 
         os.environ["SNACC_BOT_TOKEN"] = config.get("bot", "TOKEN")
         os.environ["CON_STR"] = config.get("postgres", "CON_STR")
+        os.environ["DEBUG"] = "1"
 
     snacc.run()
