@@ -1,7 +1,7 @@
 import discord
+import string
 import enum
-
-from datetime import datetime
+import time
 
 
 class HangmanGuess(enum.IntEnum):
@@ -14,7 +14,7 @@ class HangmanGuess(enum.IntEnum):
 
 
 class HangmanGame:
-    _all_words = set()
+    _word_cache = set()
 
     def __init__(self):
         self.letter_guesses = set()
@@ -25,13 +25,15 @@ class HangmanGame:
         self.hidden_word = self.get_new_word()
 
     def on_message(self, message: discord.Message):
-        if not self.is_valid_guess(message.content):
+        guess = message.content.upper()
+
+        if not self.is_valid_guess(guess):
             return None
 
         elif self.is_user_on_cooldown(message.author):
             return HangmanGuess.USER_ON_COOLDOWN
 
-        return self.check_guess(message.content.upper())
+        return self.check_guess(guess)
 
     async def show_game(self, dest):
         return await dest.send(f"`{self.encode_word()}` [{self.lives_remaining}]")
@@ -40,14 +42,15 @@ class HangmanGame:
         return self.lives_remaining <= 0
 
     def is_valid_guess(self, guess):
-        return len(guess) == 1
+        return len(guess) == 1 and guess in string.ascii_uppercase
 
     def is_user_on_cooldown(self, author: discord.Member) -> bool:
+        now = time.time()
+
         cooldown = self.cooldowns.get(author.id, None)
 
-        if cooldown is None or (datetime.now() - cooldown).total_seconds() >= 1:
-            self.cooldowns[author.id] = datetime.now()
-
+        if cooldown is None or (now - cooldown >= 1.5):
+            self.cooldowns[author.id] = now
             return False
 
         return True
@@ -75,12 +78,8 @@ class HangmanGame:
 
     @staticmethod
     def get_new_word() -> str:
-        if not HangmanGame._all_words:
-            HangmanGame.load_all_words()
+        if not HangmanGame._word_cache:
+            with open("./snacc/data/words.txt") as fh:
+                HangmanGame._word_cache = set(fh.read().splitlines())
 
-        return HangmanGame._all_words.pop()
-
-    @staticmethod
-    def load_all_words():
-        with open("./snacc/data/words.txt") as fh:
-            HangmanGame._all_words = set(fh.read().splitlines())
+        return HangmanGame._word_cache.pop()

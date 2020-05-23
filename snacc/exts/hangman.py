@@ -4,8 +4,11 @@ from discord.ext import commands
 
 from snacc.common.emoji import UEmoji
 from snacc.common.queries import HangmanSQL
+
+from snacc.classes.hangman import HangmanGame
 from snacc.classes.leaderboards import HangmanLeaderboard
-from snacc.utils.hangman import HangmanGame, HangmanGuess
+
+from snacc.classes.hangman import HangmanGuess
 
 
 class Hangman(commands.Cog):

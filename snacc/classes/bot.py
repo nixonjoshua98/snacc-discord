@@ -84,6 +84,7 @@ class SnaccBot(commands.Bot):
         self.load_extension("snacc.exts.usefullinks")
         self.load_extension("snacc.exts.moderator")
         self.load_extension("snacc.exts.misc")
+        self.load_extension("snacc.exts.botutils")
         self.load_extension("snacc.exts.settings")
 
         self.exts_loaded = True

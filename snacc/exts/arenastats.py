@@ -3,14 +3,17 @@ from discord.ext import commands
 
 from datetime import datetime
 
-from snacc import utils
-
 from snacc.common import checks
 from snacc.common.queries import ArenaStatsSQL
 
 from snacc.classes.menus import EmbedMenu
 from snacc.classes.converters import UserMember
 from snacc.classes.leaderboards import TrophyLeaderboard
+
+
+def chunk_list(ls, n):
+	for i in range(0, len(ls), n):
+		yield ls[i: i + n]
 
 
 class ArenaStats(commands.Cog, name="Arena Stats"):
@@ -112,7 +115,7 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 			return await ctx.send("I found no stats for you.")
 
 		embeds = []
-		chunks = tuple(utils.chunk_list(results, 7))
+		chunks = tuple(chunk_list(results, 7))
 		today = datetime.today().strftime('%d/%m/%Y %X')
 
 		for i, page in enumerate(chunks):

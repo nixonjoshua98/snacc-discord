@@ -1,8 +1,12 @@
 import discord
 from discord.ext import commands
 
-from snacc import utils
 from snacc.classes.menus import EmbedMenu
+
+
+def chunk_list(ls, n):
+    for i in range(0, len(ls), n):
+        yield ls[i: i + n]
 
 
 class HelpCommand(commands.HelpCommand):
@@ -27,7 +31,7 @@ class HelpCommand(commands.HelpCommand):
 
         for cog, instance in bot.cogs.items():
             cmds = await self.filter_commands(instance.get_commands())
-            cmds = tuple(utils.chunk_list(cmds, 10))
+            cmds = tuple(chunk_list(cmds, 10))
 
             for i, j in enumerate(cmds):
                 descriptions.append(instance.__doc__ or "")
