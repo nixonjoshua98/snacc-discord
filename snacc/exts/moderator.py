@@ -3,7 +3,7 @@ import typing
 import discord
 from discord.ext import commands
 
-from snacc.classes.converters import NormalUser, Range
+from snacc.common.converters import NormalUser, Range
 
 
 class Moderator(commands.Cog):

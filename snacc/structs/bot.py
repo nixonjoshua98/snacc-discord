@@ -5,7 +5,7 @@ import discord
 
 from discord.ext import commands
 
-from snacc.classes.helpcommand import HelpCommand
+from snacc.structs.helpcommand import HelpCommand
 
 
 class SnaccBot(commands.Bot):

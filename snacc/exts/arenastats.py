@@ -4,11 +4,11 @@ from discord.ext import commands
 from datetime import datetime
 
 from snacc.common import checks
+from snacc.common.converters import UserMember
 from snacc.common.queries import ArenaStatsSQL
 
-from snacc.classes.menus import EmbedMenu
-from snacc.classes.converters import UserMember
-from snacc.classes.leaderboards import TrophyLeaderboard
+from snacc.structs.menus import EmbedMenu
+from snacc.structs.leaderboards import TrophyLeaderboard
 
 
 def chunk_list(ls, n):

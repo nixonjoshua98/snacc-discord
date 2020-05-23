@@ -5,10 +5,8 @@ from discord.ext import commands
 from snacc.common.emoji import UEmoji
 from snacc.common.queries import HangmanSQL
 
-from snacc.classes.hangman import HangmanGame
-from snacc.classes.leaderboards import HangmanLeaderboard
-
-from snacc.classes.hangman import HangmanGuess
+from snacc.structs.leaderboards import HangmanLeaderboard
+from snacc.structs.hangman import HangmanGame, HangmanGuess
 
 
 class Hangman(commands.Cog):
@@ -33,16 +31,18 @@ class Hangman(commands.Cog):
 
                 elif result == HangmanGuess.GAME_WON:
                     self.games[message.channel.id] = None
+
                     await self.bot.pool.execute(HangmanSQL.ADD_WIN, message.author.id)
                     await message.channel.send(f"{message.author.mention} won! The word was `{inst.hidden_word}`")
 
                 elif result == HangmanGuess.GAME_OVER:
                     self.games[message.channel.id] = None
+
                     await message.channel.send(f"You have run out of lives. The word was `{inst.hidden_word}`")
 
     @commands.command(name="hangman", aliases=["h"])
     async def hangman(self, ctx):
-        """ Start a new guild hangman game or show the current game. """
+        """ Start a new hangman game or show the current game. """
 
         inst = self.games.get(ctx.channel.id, None)
 
