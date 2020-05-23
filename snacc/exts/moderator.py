@@ -54,11 +54,8 @@ class Moderator(commands.Cog):
 	async def purge(self, ctx, target: typing.Optional[NormalUser] = None, limit: Range(0, 100) = 0):
 		""" [Admin] Purge a channel of messages. Optional user can be targeted. """
 
-		# Accomadate the command invoked message
-		limit += 1
-
 		def check(m):
-			return target is None or m.author == target
+			return (target is None or m.author == target) and ctx.message.id != m.id
 
 		deleted = 0
 
