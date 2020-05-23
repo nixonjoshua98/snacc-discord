@@ -1,7 +1,9 @@
+import typing
+
 import discord
 from discord.ext import commands
 
-from snacc.classes.converters import NormalUser
+from snacc.classes.converters import NormalUser, Range
 
 
 class Moderator(commands.Cog):
@@ -46,6 +48,26 @@ class Moderator(commands.Cog):
 			await ctx.send("I failed to unmute and remove the `Muted` role from the user.")
 		else:
 			await ctx.send("User has been unmuted")
+
+	@commands.has_permissions(administrator=True)
+	@commands.command(name="purge")
+	async def purge(self, ctx, target: typing.Optional[NormalUser] = None, *, limit: Range(0, 100)):
+		""" [Admin] Purge a channel of messages. Optional user can be targeted. """
+
+		# Accomadate the command invoked message
+		limit += 1
+
+		def check(m):
+			return target is None or m.author == target
+
+		deleted = 0
+
+		try:
+			deleted = await ctx.channel.purge(limit=limit, check=check)
+		except (discord.HTTPException, discord.Forbidden):
+			await ctx.send("Channel purge failed.")
+
+		await ctx.send(f"Deleted {len(deleted)} message(s)")
 
 
 def setup(bot):

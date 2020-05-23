@@ -45,3 +45,22 @@ class NormalUser(commands.MemberConverter):
 			raise commands.CommandError("You cannot target youself.")
 
 		return member
+
+
+class Range(commands.Converter):
+	def __init__(self, min_: int, max_: int):
+		self.min_ = min_
+		self.max_ = max_
+
+	async def convert(self, ctx: commands.Context, argument: str) -> int:
+		try:
+			val = int(argument)
+
+			# Value out of range
+			if val > self.max_ or val < self.min_:
+				raise commands.UserInputError(f"Argument should be within **{self.min_:,} - {self.max_:,}**")
+
+		except ValueError:
+			raise commands.UserInputError(f"You attempted to use an invalid argument.")
+
+		return val

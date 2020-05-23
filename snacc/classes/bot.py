@@ -13,6 +13,7 @@ class SnaccBot(commands.Bot):
         super().__init__(command_prefix=self.get_prefix, case_insensitive=True, help_command=HelpCommand())
 
         self.pool = None
+        self.exts_loaded = False
 
         self.server_cache = dict()
 
@@ -30,13 +31,10 @@ class SnaccBot(commands.Bot):
         print("OK")
 
     async def global_check(self, message):
-        if message.guild is None:
+        if (not self.exts_loaded) or (message.guild is None) or message.author.bot:
             return False
 
         elif await self.is_user_muted(message):
-            return False
-
-        if message.author.bot:
             return False
 
         return True
@@ -74,6 +72,8 @@ class SnaccBot(commands.Bot):
         print("OK")
 
     async def load_extensions(self):
+        self.exts_loaded = False
+
         # No commands
         self.load_extension("snacc.exts.errorhandler")
         self.load_extension("snacc.exts.listeners")
@@ -85,6 +85,8 @@ class SnaccBot(commands.Bot):
         self.load_extension("snacc.exts.moderator")
         self.load_extension("snacc.exts.misc")
         self.load_extension("snacc.exts.settings")
+
+        self.exts_loaded = True
 
     async def update_server_cache(self, guild):
         settings = self.get_cog("Settings")
