@@ -3,8 +3,15 @@ import discord
 from discord.ext import commands
 
 
-class UserMember(commands.MemberConverter):
-	""" Ensures that the member argument has the member role for the server. """
+class DiscordMember(commands.MemberConverter):
+	def __init__(self, *, allow_bots: bool, allow_admins: bool, allow_author: bool, members_only: bool):
+		super(DiscordMember, self).__init__()
+
+		self.allow_bots = allow_bots
+		self.allow_admins = allow_admins
+		self.allow_author = allow_author
+
+		self.members_only = members_only
 
 	async def convert(self, ctx, argument) -> discord.Member:
 		try:
@@ -13,38 +20,37 @@ class UserMember(commands.MemberConverter):
 		except commands.BadArgument:
 			raise commands.CommandError(f"User '{argument}' could not be found")
 
-		svr = await ctx.bot.get_server(ctx.guild)
+		if not self.allow_bots and member.bot:
+			raise commands.CommandError("Bot users are not allowed to be used here.")
 
-		if member.bot:
-			raise commands.CommandError("Bot accounts cannot be targeted.")
+		elif not self.allow_admins and member.guild_permissions.administrator:
+			raise commands.CommandError("Admin users are not allowed to be used here.")
 
-		elif svr.get("member_role", None) is None:
-			raise commands.CommandError("A server member role needs to be set.")
+		elif not self.allow_author and ctx.author.id == member.id:
+			raise commands.CommandError("YYou cannot target yourself here.")
 
-		elif discord.utils.get(member.roles, id=svr["member_role"]) is None:
-			raise commands.CommandError(f"User '{member.display_name}' does not have the member role.")
+		elif self.members_only:
+			svr = await ctx.bot.get_server(ctx.guild)
 
-		return member
+			role = discord.utils.get(member.roles, id=svr["member_role"])
 
+			if role is None:
+				raise commands.CommandError(f"User does not have the member role.")
 
-class NormalUser(commands.MemberConverter):
-	async def convert(self, ctx, argument) -> discord.Member:
-		try:
-			member = await super().convert(ctx, argument)
-
-		except commands.BadArgument:
-			raise commands.CommandError(f"User '{argument}' could not be found")
-
-		if member.bot:
-			raise commands.CommandError("Bot accounts cannot be targeted.")
-
-		elif member.guild_permissions.administrator:
-			raise commands.CommandError("Server admins cannot be targeted.")
-
-		elif ctx.author.id == member.id:
-			raise commands.CommandError("You cannot target youself.")
+			elif svr.get("member_role", None) is None:
+				raise commands.CommandError("A server member role needs to be set.")
 
 		return member
+
+
+class UserMember(DiscordMember):
+	def __init__(self):
+		super(UserMember, self).__init__(allow_bots=False, allow_author=True, allow_admins=True, members_only=True)
+
+
+class NormalUser(DiscordMember):
+	def __init__(self):
+		super(NormalUser, self).__init__(allow_bots=False, allow_author=False, allow_admins=True, members_only=False)
 
 
 class Range(commands.Converter):
