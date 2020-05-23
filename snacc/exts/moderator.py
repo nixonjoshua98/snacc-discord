@@ -59,12 +59,12 @@ class Moderator(commands.Cog):
 		""" [Admin] Purge a channel of messages. Optional user can be targeted. """
 
 		def check(m):
-			return target is None or m.author == target
+			return (target is None or m.author == target) and m.id != ctx.message.id
 
 		deleted = 0
 
 		try:
-			deleted = await ctx.channel.purge(limit=limit, check=check)
+			deleted = await ctx.channel.purge(limit=limit + 1, check=check)
 		except (discord.HTTPException, discord.Forbidden):
 			await ctx.send("Channel purge failed.")
 

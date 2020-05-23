@@ -113,7 +113,7 @@ class SnaccBot(commands.Bot):
 
         svr = self.server_cache.get(message.guild.id, dict())
 
-        return "-" if os.getenv("DEBUG", False) else svr.get("prefix", "!")
+        return "?" if os.getenv("DEBUG", False) else svr.get("prefix", "!")
 
     def run(self):
         super(SnaccBot, self).run(os.environ["SNACC_BOT_TOKEN"])
