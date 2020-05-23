@@ -1,13 +1,12 @@
 from discord.ext import commands
 
-from snacc.common import checks
-
 
 class UsefulLinks(commands.Cog, name="Useful Links"):
 	""" Set of commands to update the useful links Embed. """
 
-	@checks.from_guild(666613802657382435)
-	@commands.has_permissions(administrator=True)
+	async def cog_check(self, ctx):
+		return ctx.guild.id == 666613802657382435 and ctx.author.has_permissions(administrator=True)
+
 	@commands.command(name="addlink")
 	async def add_useful_link(self, ctx, index: int, name: str, value: str):
 		""" [Admin] Add a new field to the useful link embed. """
@@ -22,8 +21,6 @@ class UsefulLinks(commands.Cog, name="Useful Links"):
 		await message.edit(embed=embed)
 		await ctx.send(f"Added the field.")
 
-	@checks.from_guild(666613802657382435)
-	@commands.has_permissions(administrator=True)
 	@commands.command(name="rmlink")
 	async def remove_useful_link(self, ctx, index: int):
 		""" [Admin] Remove a field from the useful link embed. """
