@@ -45,7 +45,7 @@ class Moderator(commands.Cog):
 		try:
 			await target.remove_roles(role)
 		except (discord.HTTPException, discord.Forbidden):
-			await ctx.send("I failed to unmute and remove the `Muted` role from the user.")
+			await ctx.send("I failed to unmute the user.")
 		else:
 			await ctx.send("User has been unmuted")
 
