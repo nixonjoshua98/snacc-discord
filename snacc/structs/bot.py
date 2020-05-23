@@ -67,9 +67,7 @@ class SnaccBot(commands.Bot):
         print("Creating connection pool...", end="")
 
         if os.getenv("DEBUG", False):
-            con = os.getenv("PG_CON", "postgres://postgres:postgres@localhost:5432/snaccbot")
-
-            self.pool = await asyncpg.create_pool(con, max_size=15)
+            self.pool = await asyncpg.create_pool(os.environ["CON_STR"], max_size=15)
 
         else:
             ctx = ssl.create_default_context(cafile="./rds-combined-ca-bundle.pem")
