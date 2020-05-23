@@ -19,9 +19,6 @@ def chunk_list(ls, n):
 class ArenaStats(commands.Cog, name="Arena Stats"):
 	""" Commands related to the Arena mode in the `Auto Battles Online` mobile game. """
 
-	def __init__(self):
-		self.leaderboards = dict()
-
 	async def cog_check(self, ctx):
 		return await checks.user_has_member_role(ctx)
 
