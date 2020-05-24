@@ -10,7 +10,7 @@ class UsefulLinks(commands.Cog, name="Useful Links"):
 	""" Set of commands to update the useful links Embed. """
 
 	async def cog_check(self, ctx):
-		return ctx.guild.id == MAIN_SERVER and ctx.author.has_permissions(administrator=True)
+		return ctx.guild.id == MAIN_SERVER and ctx.author.guild_permissions.administrator
 
 	@commands.command(name="addlink")
 	async def add_useful_link(self, ctx, index: int, name: str, value: str):
