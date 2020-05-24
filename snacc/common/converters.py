@@ -27,7 +27,7 @@ class DiscordMember(commands.MemberConverter):
 			raise commands.CommandError("Admin users are not allowed to be used here.")
 
 		elif not self.allow_author and ctx.author.id == member.id:
-			raise commands.CommandError("YYou cannot target yourself here.")
+			raise commands.CommandError("You cannot target yourself here.")
 
 		elif self.members_only:
 			svr = await ctx.bot.get_server(ctx.guild)
