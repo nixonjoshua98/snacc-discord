@@ -1,16 +1,7 @@
 import discord
-
 from discord.ext import commands
 
-ON_GUILD_JOIN = """
-The infamous **{bot.user.name}** has graced your ~~lowly~~ server! [{guild.owner.mention}]
-
-My default prefix is **!**...obviously
-
-**__Help__**
-- **!help**...durp
-- Contact my almighty creator **{bot_info.owner}**
-"""
+ON_GUILD_JOIN = "The infamous **{bot.user.name}** has graced your ~~lowly~~ server! [{guild.owner.mention}]"
 
 
 async def send_system_channel(guild, message):

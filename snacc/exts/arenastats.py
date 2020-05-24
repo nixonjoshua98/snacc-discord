@@ -4,8 +4,8 @@ from discord.ext import commands
 from datetime import datetime
 
 from snacc.common import checks
-from snacc.common.converters import UserMember
 from snacc.common.queries import ArenaStatsSQL
+from snacc.common.converters import UserMember
 
 from snacc.structs.menus import EmbedMenu
 from snacc.structs.leaderboards import TrophyLeaderboard
@@ -39,6 +39,7 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 
 				results = await con.fetch(ArenaStatsSQL.SELECT_USER, target.id)
 
+				# Limit the number of user entries in the database
 				if len(results) > 14:
 					for result in results[14:]:
 						await con.execute(ArenaStatsSQL.DELETE_ROW, target.id, result["date_set"])
@@ -137,13 +138,9 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 	@commands.cooldown(1, 60, commands.BucketType.guild)
 	@commands.command(name="trophies")
 	async def show_leaderboard(self, ctx: commands.Context):
-		""" Show the server trophy leader-statsboard. """
+		""" Show the server trophy leaderboard. """
 
 		await TrophyLeaderboard().send(ctx)
-
-	@commands.command(name="alb")
-	async def alb(self, ctx: commands.Context):
-		await ctx.send("`!alb` will soon disappear and has moved to `!trophies`")
 
 
 def setup(bot):

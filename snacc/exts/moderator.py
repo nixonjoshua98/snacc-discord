@@ -1,7 +1,7 @@
-import typing
-
 import discord
 from discord.ext import commands
+
+from typing import Optional
 
 from snacc.common.converters import NormalUser, Range
 
@@ -14,7 +14,7 @@ class Moderator(commands.Cog):
 
 		if role is None:
 			try:
-				return await ctx.guild.create_role(name="Muted", reason="Required for the Snacc bot.")
+				return await ctx.guild.create_role(name="Muted")
 
 			except (discord.Forbidden, discord.HTTPException):
 				raise commands.CommandError("I could not find or create the `Muted` role.")
@@ -31,9 +31,9 @@ class Moderator(commands.Cog):
 		try:
 			await target.add_roles(role)
 		except (discord.HTTPException, discord.Forbidden):
-			await ctx.send("I failed to add the `Muted` role to the user.")
-		else:
-			await ctx.send("User has been muted")
+			return await ctx.send("I failed to mute the target user.")
+
+		await ctx.send("User has been muted")
 
 	@commands.has_permissions(administrator=True)
 	@commands.command(name="unmute")
@@ -45,28 +45,22 @@ class Moderator(commands.Cog):
 		try:
 			await target.remove_roles(role)
 		except (discord.HTTPException, discord.Forbidden):
-			await ctx.send("I failed to unmute the user.")
-		else:
-			await ctx.send("User has been unmuted")
+			return await ctx.send("I failed to unmute the target user.")
+
+		await ctx.send("User has been unmuted")
 
 	@commands.has_permissions(administrator=True)
 	@commands.command(name="purge")
-	async def purge(
-			self, ctx,
-			target: typing.Optional[discord.Member] = None,
-			limit: Range(0, 100) = 0):
-
+	async def purge(self, ctx, target: Optional[discord.Member] = None, limit: Range(0, 100) = 0):
 		""" [Admin] Purge a channel of messages. Optional user can be targeted. """
 
 		def check(m):
 			return (target is None or m.author == target) and m.id != ctx.message.id
 
-		deleted = 0
-
 		try:
 			deleted = await ctx.channel.purge(limit=limit+1, check=check)
 		except (discord.HTTPException, discord.Forbidden):
-			await ctx.send("Channel purge failed.")
+			return await ctx.send("Channel purge failed.")
 
 		await ctx.send(f"Deleted {len(deleted)} message(s)")
 

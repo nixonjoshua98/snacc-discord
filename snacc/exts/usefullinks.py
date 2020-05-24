@@ -1,18 +1,23 @@
 from discord.ext import commands
 
+from snacc.common import MAIN_SERVER
+
+USEFUL_LINKS_EMBED = 708435677511155782
+USEFUL_LINKS_CHANNEL = 666738997468332032
+
 
 class UsefulLinks(commands.Cog, name="Useful Links"):
 	""" Set of commands to update the useful links Embed. """
 
 	async def cog_check(self, ctx):
-		return ctx.guild.id == 666613802657382435 and ctx.author.has_permissions(administrator=True)
+		return ctx.guild.id == MAIN_SERVER and ctx.author.has_permissions(administrator=True)
 
 	@commands.command(name="addlink")
 	async def add_useful_link(self, ctx, index: int, name: str, value: str):
 		""" [Admin] Add a new field to the useful link embed. """
 
-		channel = ctx.bot.get_channel(666738997468332032)
-		message = await channel.fetch_message(708435677511155782)
+		channel = ctx.bot.get_channel(USEFUL_LINKS_CHANNEL)
+		message = await channel.fetch_message(USEFUL_LINKS_EMBED)
 
 		embed = message.embeds[0]
 
@@ -25,8 +30,8 @@ class UsefulLinks(commands.Cog, name="Useful Links"):
 	async def remove_useful_link(self, ctx, index: int):
 		""" [Admin] Remove a field from the useful link embed. """
 
-		channel = ctx.bot.get_channel(666738997468332032)
-		message = await channel.fetch_message(708435677511155782)
+		channel = ctx.bot.get_channel(USEFUL_LINKS_CHANNEL)
+		message = await channel.fetch_message(USEFUL_LINKS_EMBED)
 
 		embed = message.embeds[0]
 

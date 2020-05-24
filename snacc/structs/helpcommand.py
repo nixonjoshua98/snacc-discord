@@ -52,10 +52,10 @@ class HelpCommand(commands.HelpCommand):
 
             for cmd in cmds:
                 sig = cmd.signature.replace("[", "<").replace("]", ">")
-
+                val = cmd.callback.__doc__
                 name = f"[{'|'.join([cmd.name] + cmd.aliases)}] {sig}"
 
-                embed.add_field(name=name, value=cmd.callback.__doc__, inline=False)
+                embed.add_field(name=name, value=val, inline=False)
 
             pages.append(embed)
 
