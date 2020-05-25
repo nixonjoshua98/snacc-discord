@@ -30,6 +30,7 @@ class HangmanGame:
         self.category = category
 
         self.cooldowns = dict()
+        self.participants = set()
         self.letter_guesses = set()
 
         self.lives_remaining = 10
@@ -58,6 +59,8 @@ class HangmanGame:
 
         elif self.is_user_on_cooldown(message.author):
             return HangmanGuess.USER_ON_COOLDOWN
+
+        self.participants.add(message.author)
 
         return self.check_guess(guess)
 
@@ -145,6 +148,7 @@ class Hangman(commands.Cog):
         self.bot = bot
 
         self.games = {}
+        self.votes = {}
 
     @commands.Cog.listener(name="on_message")
     async def on_message(self, message: discord.Message):
@@ -173,7 +177,7 @@ class Hangman(commands.Cog):
                     await message.channel.send(f"You have run out of lives. The word was `{inst.hidden_word}`")
 
     @commands.command(name="hangman", aliases=["h"])
-    async def hangman(self, ctx, category: str = None):
+    async def start_hangman(self, ctx, category: str = None):
         """ Start a new hangman game or show the current game. """
 
         inst = self.games.get(ctx.channel.id, None)
@@ -205,12 +209,40 @@ class Hangman(commands.Cog):
         inst = self.games.get(ctx.channel.id, None)
 
         if inst is None:
-            await ctx.send("Start a hangman game first!")
+            return await ctx.send("No hangman game running.")
 
-        else:
+        self.games[ctx.channel.id] = None
+
+        await ctx.send(f"{ctx.message.author.mention} gave up on the hangman game.")
+
+    @commands.is_owner()
+    @commands.command(name="skip")
+    async def skip(self, ctx):
+        """ Vote to skip the current hangman game. """
+
+        inst: HangmanGame = self.games.get(ctx.channel.id, None)
+
+        if inst is None:
+            return await ctx.send("No hangman game running.")
+
+        elif ctx.author not in inst.participants:
+            return await ctx.send("You are not currently in any hangman game.")
+
+        votes = self.votes.get(ctx.channel.id, 0) + 1
+        num_participants = len(inst.participants)
+        votes_needed = min(1, max(num_participants - 1, 3))
+
+        self.votes[ctx.channel.id] = votes
+
+        await ctx.send(f"Votes: {votes}/{votes_needed}")
+
+        # Skip the game
+        if votes >= votes_needed:
             self.games[ctx.channel.id] = None
 
-            await ctx.send(f"{ctx.message.author.mention} gave up on the hangman game.")
+            await ctx.send("Skipped :thumbsup:")
+
+            await self.start_hangman(ctx)
 
     @commands.is_owner()
     @commands.command(name="cheat")
@@ -220,17 +252,14 @@ class Hangman(commands.Cog):
         inst = self.games.get(ctx.channel.id, None)
 
         if inst is None:
-            await ctx.send("No hangman game running.")
+            return await ctx.send("No hangman game running.")
 
+        try:
+            await ctx.author.send(f"The hidden word is **{inst.hidden_word}**")
+        except (discord.HTTPException, discord.Forbidden):
+            await ctx.send("I failed to DM you.")
         else:
-            try:
-                await ctx.author.send(f"The hidden word is **{inst.hidden_word}**")
-
-            except (discord.HTTPException, discord.Forbidden):
-                await ctx.send("I failed to DM you.")
-
-            else:
-                await ctx.send("I have DM'ed you the hidden word.")
+            await ctx.send("I have DM'ed you the hidden word.")
 
     @commands.cooldown(1, 60, commands.BucketType.guild)
     @commands.command(name="hlb")
