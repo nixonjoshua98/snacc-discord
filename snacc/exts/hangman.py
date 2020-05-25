@@ -234,15 +234,15 @@ class Hangman(commands.Cog):
 
         self.votes[ctx.channel.id] = votes
 
-        await ctx.send(f"Votes: {votes}/{votes_needed}")
-
         # Skip the game
         if votes >= votes_needed:
             self.games[ctx.channel.id] = None
 
             await ctx.send("Skipped :thumbsup:")
 
-            await self.start_hangman(ctx)
+            return await self.start_hangman(ctx)
+
+        await ctx.send(f"Votes: {votes}/{votes_needed}")
 
     @commands.is_owner()
     @commands.command(name="cheat")
