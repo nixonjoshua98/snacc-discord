@@ -1,9 +1,12 @@
-import discord
-import string
+import random
 import enum
 import time
+import json
 
+import discord
 from discord.ext import commands
+
+from typing import Union
 
 from snacc.common.emoji import UEmoji
 from snacc.common.queries import HangmanSQL
@@ -21,18 +24,34 @@ class HangmanGuess(enum.IntEnum):
 
 
 class HangmanGame:
-    _word_cache = set()
+    __word_cache = None
 
-    def __init__(self):
-        self.letter_guesses = set()
+    def __init__(self, category: str = None):
+        self.category = category
+
         self.cooldowns = dict()
+        self.letter_guesses = set()
 
         self.lives_remaining = 10
 
-        self.hidden_word = self.get_new_word()
+        self.hidden_word = self.get_new_word(category)
+
+    @staticmethod
+    def create_instance(category: Union[None, str]):
+        HangmanGame.load_words()
+
+        if category is None:
+            category = random.choice(HangmanGame.get_categories())
+
+            return HangmanGame(category)
+
+        elif category.lower() in HangmanGame.__word_cache.keys():
+            return HangmanGame(category)
+
+        return None
 
     def on_message(self, message: discord.Message):
-        guess = message.content.upper()
+        guess = message.content.upper().strip()
 
         if not self.is_valid_guess(guess):
             return None
@@ -42,14 +61,32 @@ class HangmanGame:
 
         return self.check_guess(guess)
 
+    def check_guess(self, guess: str) -> HangmanGuess:
+        if guess in self.letter_guesses:
+            return HangmanGuess.ALREADY_GUESSED
+
+        elif guess in self.hidden_word.upper():
+            self.letter_guesses.add(guess)
+
+            if self.check_win():
+                return HangmanGuess.GAME_WON
+
+            return HangmanGuess.CORRECT_GUESS
+
+        self.letter_guesses.add(guess)
+
+        self.lives_remaining -= 1
+
+        return HangmanGuess.GAME_OVER if self.is_game_over() else HangmanGuess.WRONG_GUESS
+
     async def show_game(self, dest):
-        return await dest.send(f"`{self.encode_word()}` [{self.lives_remaining}]")
+        return await dest.send(f"`{self.encode_word()} [{self.lives_remaining}]`")
 
     def is_game_over(self):
         return self.lives_remaining <= 0
 
     def is_valid_guess(self, guess):
-        return len(guess) == 1 and guess in string.ascii_uppercase
+        return len(guess) == 1 and guess in "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
     def is_user_on_cooldown(self, author: discord.Member) -> bool:
         now = time.time()
@@ -62,34 +99,39 @@ class HangmanGame:
 
         return True
 
-    def check_guess(self, guess: str) -> HangmanGuess:
-        if guess in self.letter_guesses:
-            return HangmanGuess.ALREADY_GUESSED
-
-        elif guess in self.hidden_word.upper():
-            self.letter_guesses.add(guess)
-
-            return HangmanGuess.GAME_WON if self.check_win() else HangmanGuess.CORRECT_GUESS
-
-        self.letter_guesses.add(guess)
-
-        self.lives_remaining -= 1
-
-        return HangmanGuess.GAME_OVER if self.is_game_over() else HangmanGuess.WRONG_GUESS
-
     def check_win(self):
         return all(char.upper() in self.letter_guesses for char in self.hidden_word if not char.isspace())
 
     def encode_word(self) -> str:
-        return " ".join([w if w.upper() in self.letter_guesses else "_" for w in self.hidden_word])
+        ls = []
+
+        for char in self.hidden_word:
+            upper = char.upper()
+
+            if char.isspace():
+                ls.append("/")
+
+            elif upper in self.letter_guesses:
+                ls.append(char)
+
+            else:
+                ls.append("_")
+
+        return " ".join(ls)
 
     @staticmethod
-    def get_new_word() -> str:
-        if not HangmanGame._word_cache:
-            with open("./snacc/data/words.txt") as fh:
-                HangmanGame._word_cache = set(fh.read().splitlines())
+    def load_words():
+        if HangmanGame.__word_cache is None:
+            with open(".\\snacc\\data\\words.json") as fh:
+                HangmanGame.__word_cache = json.load(fh)
 
-        return HangmanGame._word_cache.pop()
+    @staticmethod
+    def get_new_word(category: str) -> str:
+        return random.choice(HangmanGame.__word_cache[category])
+
+    @staticmethod
+    def get_categories() -> tuple:
+        return tuple(HangmanGame.__word_cache.keys())
 
 
 class Hangman(commands.Cog):
@@ -116,6 +158,7 @@ class Hangman(commands.Cog):
                     self.games[message.channel.id] = None
 
                     await self.bot.pool.execute(HangmanSQL.ADD_WIN, message.author.id)
+
                     await message.channel.send(f"{message.author.mention} won! The word was `{inst.hidden_word}`")
 
                 elif result == HangmanGuess.GAME_OVER:
@@ -124,17 +167,21 @@ class Hangman(commands.Cog):
                     await message.channel.send(f"You have run out of lives. The word was `{inst.hidden_word}`")
 
     @commands.command(name="hangman", aliases=["h"])
-    async def hangman(self, ctx):
+    async def hangman(self, ctx, category: str = None):
         """ Start a new hangman game or show the current game. """
 
         inst = self.games.get(ctx.channel.id, None)
 
         if inst is None:
-            inst = HangmanGame()
+            inst = HangmanGame.create_instance(category)
 
-            self.games[ctx.channel.id] = inst
+            if inst is not None:
+                self.games[ctx.channel.id] = inst
 
-            await ctx.send("A hangman game has started!")
+                await ctx.send(f"A hangman game with category `{inst.category}` has started!")
+
+            else:
+                return await ctx.send(f"Categories include: `{', '.join(HangmanGame.get_categories())}`")
 
         await inst.show_game(ctx)
 
