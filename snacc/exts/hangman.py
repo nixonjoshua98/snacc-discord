@@ -221,6 +221,7 @@ class Hangman(commands.Cog):
             return await ctx.send("No hangman game is currently running.")
 
         self.games[ctx.channel.id] = None
+        self.votes[ctx.channel.id] = set()
 
         await ctx.send(f"{ctx.message.author.mention} gave up on the hangman game.")
 
@@ -249,6 +250,7 @@ class Hangman(commands.Cog):
 
         if num_votes >= votes_needed:
             self.games[ctx.channel.id] = None
+            self.votes[ctx.channel.id] = set()
 
             await ctx.send("Skipped :thumbsup:")
 
