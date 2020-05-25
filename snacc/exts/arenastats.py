@@ -133,7 +133,7 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 		if len(embeds) == 1:
 			embeds[0].set_footer(text=f"{ctx.bot.user.name} | {today}", icon_url=ctx.bot.user.avatar_url)
 
-		await EmbedMenu(embeds).send(ctx)
+		await EmbedMenu(embeds, timeout=60).send(ctx)
 
 	@commands.cooldown(1, 60, commands.BucketType.guild)
 	@commands.command(name="trophies")

@@ -192,6 +192,12 @@ class Hangman(commands.Cog):
 
         await inst.show_game(ctx)
 
+    @commands.command(name="categories")
+    async def categories(self, ctx):
+        """ Show the available categories for hangman. """
+
+        await ctx.send(f"Hangman categories include: `{', '.join(HangmanGame.get_categories())}`")
+
     @commands.has_permissions(administrator=True)
     @commands.command(name="giveup")
     async def giveup(self, ctx):
