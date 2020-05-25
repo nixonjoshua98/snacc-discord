@@ -234,14 +234,15 @@ class Hangman(commands.Cog):
         elif ctx.author not in inst.participants:
             return await ctx.send("You are not currently in any hangman game.")
 
-        elif ctx.author in self.votes.get(ctx.channel.id, set()):
+        elif ctx.author.id in self.votes.get(ctx.channel.id, set()):
             return await ctx.send("You have already voted to skip.")
 
         num_participants = len(inst.participants)
 
         votes_needed = max(1, math.ceil(num_participants / 2))
 
-        self.votes[ctx.channel.id] = self.votes.get(ctx.channel.id, set()) + ctx.author
+        self.votes[ctx.channel.id] = self.votes.get(ctx.channel.id, set())
+        self.votes[ctx.channel.id].add(ctx.author.id)
 
         num_votes = len(self.votes[ctx.channel.id])
 
