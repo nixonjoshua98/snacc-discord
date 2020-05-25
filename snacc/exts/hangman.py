@@ -173,6 +173,7 @@ class Hangman(commands.Cog):
 
                 elif result == HangmanGuess.GAME_WON:
                     self.games[message.channel.id] = None
+                    self.votes[message.channel.id] = set()
 
                     await self.bot.pool.execute(HangmanSQL.ADD_WIN, message.author.id)
 
@@ -180,6 +181,7 @@ class Hangman(commands.Cog):
 
                 elif result == HangmanGuess.GAME_OVER:
                     self.games[message.channel.id] = None
+                    self.votes[message.channel.id] = set()
 
                     await message.channel.send(f"You have run out of lives. The word was `{inst.hidden_word}`")
 
