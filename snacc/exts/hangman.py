@@ -47,7 +47,7 @@ class HangmanGame:
             return HangmanGame(category)
 
         elif category.lower() in HangmanGame.__word_cache.keys():
-            return HangmanGame(category)
+            return HangmanGame(category.lower())
 
         return None
 
