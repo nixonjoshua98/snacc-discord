@@ -44,7 +44,7 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 					for result in results[14:]:
 						await con.execute(ArenaStatsSQL.DELETE_ROW, target.id, result["date_set"])
 
-	@commands.cooldown(1, 60 * 60 * 12, commands.BucketType.user)
+	@commands.cooldown(1, 60 * 60 * 3, commands.BucketType.user)
 	@commands.command(name="set", aliases=["s"], cooldown_after_parsing=True)
 	async def set_stats(self, ctx, level: int, trophies: int):
 		""" Update your ABO stats, which are visible on the leaderboard. """

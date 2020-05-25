@@ -229,7 +229,7 @@ class Hangman(commands.Cog):
 
         votes = self.votes.get(ctx.channel.id, 0) + 1
         num_participants = len(inst.participants)
-        votes_needed = min(1, max(num_participants - 1, 3))
+        votes_needed = max(1, num_participants // 2)
 
         self.votes[ctx.channel.id] = votes
 
