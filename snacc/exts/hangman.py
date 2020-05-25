@@ -1,7 +1,6 @@
 import os
 import enum
 import time
-import json
 import random
 
 import discord
@@ -188,7 +187,7 @@ class Hangman(commands.Cog):
                 await ctx.send(f"A hangman game with the category `{inst.category}` has started!")
 
             else:
-                return await ctx.send(f"Categories include: `{', '.join(HangmanGame.get_categories())}`")
+                return await self.categories(ctx)
 
         await inst.show_game(ctx)
 
