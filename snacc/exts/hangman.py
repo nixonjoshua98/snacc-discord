@@ -6,6 +6,8 @@ import random
 import discord
 from discord.ext import commands
 
+from typing import Union
+
 from snacc.common.emoji import UEmoji
 from snacc.common.queries import HangmanSQL
 
@@ -35,8 +37,13 @@ class HangmanGame:
         self.hidden_word = self.get_new_word(category)
 
     @staticmethod
-    def create_instance(category: str):
+    def create_instance(category: Union[str, None]):
         HangmanGame.load_words()
+
+        if category is None:
+            cats = ("words",)
+
+            category = random.choice(cats)
 
         if category.lower() in HangmanGame.__word_cache.keys():
             return HangmanGame(category.lower())
@@ -166,7 +173,7 @@ class Hangman(commands.Cog):
                     await message.channel.send(f"You have run out of lives. The word was `{inst.hidden_word}`")
 
     @commands.command(name="hangman", aliases=["h"])
-    async def hangman(self, ctx, category: str = "words"):
+    async def hangman(self, ctx, category: str = None):
         """ Start a new hangman game or show the current game. """
 
         inst = self.games.get(ctx.channel.id, None)
