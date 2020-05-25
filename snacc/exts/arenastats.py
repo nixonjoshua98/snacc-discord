@@ -5,7 +5,7 @@ from datetime import datetime
 
 from snacc.common import checks
 from snacc.common.queries import ArenaStatsSQL
-from snacc.common.converters import UserMember
+from snacc.common.converters import UserMember, NormalUser
 
 from snacc.structs.menus import EmbedMenu
 from snacc.structs.leaderboards import TrophyLeaderboard
@@ -103,7 +103,7 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 		await ctx.send(msg)
 
 	@commands.command(name="stats")
-	async def get_stats(self, ctx, target: UserMember() = None):
+	async def get_stats(self, ctx, target: NormalUser() = None):
 		""" View your own or another members recorded arena stats. """
 
 		target = ctx.author if target is None else target
