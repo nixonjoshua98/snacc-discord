@@ -25,7 +25,7 @@ class HangmanGuess(enum.IntEnum):
 
 
 class HangmanGame:
-    __word_cache = None
+    __word_cache = dict()
 
     def __init__(self, category: str = None):
         self.category = category
@@ -122,9 +122,15 @@ class HangmanGame:
 
     @staticmethod
     def load_words():
-        if HangmanGame.__word_cache is None:
-            with open(os.path.join(os.getcwd(), "snacc", "data", "words.json")) as fh:
-                HangmanGame.__word_cache = json.load(fh)
+        if not HangmanGame.__word_cache:
+            for root, dirs, files in os.walk(os.path.join(os.getcwd(), "snacc", "data", "hangman")):
+                for f in files:
+                    if f.endswith(".txt"):
+                        category = f.replace(".txt", "")
+                        path = os.path.join(root, f)
+
+                        with open(path, "r") as fh:
+                            HangmanGame.__word_cache[category] = fh.read().splitlines()
 
     @staticmethod
     def get_new_word(category: str) -> str:
