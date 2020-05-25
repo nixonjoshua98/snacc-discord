@@ -1,5 +1,6 @@
 import os
 import enum
+import math
 import time
 import string
 import random
@@ -235,7 +236,7 @@ class Hangman(commands.Cog):
 
         votes = self.votes.get(ctx.channel.id, 0) + 1
         num_participants = len(inst.participants)
-        votes_needed = max(1, num_participants // 2)
+        votes_needed = max(1, math.ceil(num_participants / 2))
 
         self.votes[ctx.channel.id] = votes
 
