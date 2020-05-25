@@ -2,14 +2,6 @@
 class ServersSQL:
     DEFAULT_ROW = {"prefix": "!", "entry_role": 0, "member_role": 0}
 
-    # CREATE
-    CREATE_TABLE = "CREATE table IF NOT EXISTS servers (" \
-                   "server_id BIGINT PRIMARY KEY," \
-                   "default_role BIGINT," \
-                   "member_role BIGINT," \
-                   "prefix VARCHAR(255)" \
-                   ");"
-
     # SELECT
     SELECT_SERVER = "SELECT * FROM servers WHERE server_id=$1;"
 
@@ -24,16 +16,6 @@ class ServersSQL:
 
 
 class ArenaStatsSQL:
-
-    # CREATE
-    CREATE_TABLE = "CREATE TABLE IF NOT EXISTS arena_stats (" \
-                   "arena_stat_id SERIAL," \
-                   "user_id BIGINT," \
-                   "date_set TIMESTAMP," \
-                   "level SMALLINT," \
-                   "trophies SMALLINT" \
-                   ");"
-
     # SELECT
     SELECT_USER_LATEST = ("SELECT DISTINCT ON (user_id) date_set, level, trophies "
                           "FROM arena_stats "
@@ -77,12 +59,6 @@ class ArenaStatsSQL:
 
 
 class HangmanSQL:
-    # CREATE
-    CREATE_TABLE = ("CREATE table IF NOT EXISTS hangman ("
-                    "user_id BIGINT PRIMARY KEY, "
-                    "wins INTEGER"
-                    ");")
-
     # SELECT
     SELECT_HANGMAN_LEADERBOARD = "SELECT user_id, wins FROM hangman ORDER BY wins DESC;"
 

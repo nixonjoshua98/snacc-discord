@@ -24,7 +24,7 @@ class SnaccBot(commands.Bot):
         """ Invoked once the bot is connected and ready to use. """
 
         await self.create_pool()
-        await self.setup_tables()
+        await self.setup_database()
         await self.load_extensions()
 
         print(f"Bot '{self.user.display_name}' is ready")
@@ -36,12 +36,11 @@ class SnaccBot(commands.Bot):
         super(SnaccBot, self).add_cog(cog)
         print("OK")
 
-    async def setup_tables(self):
+    async def setup_database(self):
         """ Create the database tables required for the bot. """
 
-        await self.pool.execute(ArenaStatsSQL.CREATE_TABLE)
-        await self.pool.execute(HangmanSQL.CREATE_TABLE)
-        await self.pool.execute(ServersSQL.CREATE_TABLE)
+        with open(os.path.join(os.getcwd(), "schema.sql")) as fh:
+            await self.pool.execute(fh.read())
 
     async def on_message_check(self, message) -> bool:
         """
