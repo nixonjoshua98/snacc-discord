@@ -179,7 +179,7 @@ class Hangman(commands.Cog):
             if inst is not None:
                 self.games[ctx.channel.id] = inst
 
-                await ctx.send(f"A hangman game with category `{inst.category}` has started!")
+                await ctx.send(f"A hangman game with the category `{inst.category}` has started!")
 
             else:
                 return await ctx.send(f"Categories include: `{', '.join(HangmanGame.get_categories())}`")
