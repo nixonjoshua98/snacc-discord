@@ -238,7 +238,6 @@ class Hangman(commands.Cog):
             return await ctx.send("You have already voted to skip.")
 
         num_participants = len(inst.participants)
-
         votes_needed = max(1, math.ceil(num_participants / 2))
 
         self.votes[ctx.channel.id] = self.votes.get(ctx.channel.id, set())
