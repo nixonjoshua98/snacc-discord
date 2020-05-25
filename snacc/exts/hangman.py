@@ -1,7 +1,8 @@
-import random
+import os
 import enum
 import time
 import json
+import random
 
 import discord
 from discord.ext import commands
@@ -122,7 +123,7 @@ class HangmanGame:
     @staticmethod
     def load_words():
         if HangmanGame.__word_cache is None:
-            with open(".\\snacc\\data\\words.json") as fh:
+            with open(os.path.join(os.getcwd(), "snacc", "data", "words.json")) as fh:
                 HangmanGame.__word_cache = json.load(fh)
 
     @staticmethod
