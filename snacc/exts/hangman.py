@@ -1,6 +1,7 @@
 import os
 import enum
 import time
+import string
 import random
 
 import discord
@@ -89,7 +90,7 @@ class HangmanGame:
         return self.lives_remaining <= 0
 
     def is_valid_guess(self, guess):
-        return len(guess) == 1 and guess in "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        return len(guess) == 1 and guess in string.ascii_uppercase + string.digits
 
     def is_user_on_cooldown(self, author: discord.Member) -> bool:
         now = time.time()
@@ -103,7 +104,9 @@ class HangmanGame:
         return True
 
     def check_win(self):
-        return all(char.upper() in self.letter_guesses for char in self.hidden_word if not char.isspace())
+        alphanum = string.ascii_uppercase + string.digits
+
+        return all(char.upper() in self.letter_guesses for char in self.hidden_word if char.upper() in alphanum)
 
     def encode_word(self) -> str:
         ls = []
@@ -115,6 +118,9 @@ class HangmanGame:
                 ls.append("/")
 
             elif upper in self.letter_guesses:
+                ls.append(char)
+
+            elif char in string.punctuation:
                 ls.append(char)
 
             else:
@@ -209,7 +215,7 @@ class Hangman(commands.Cog):
         inst = self.games.get(ctx.channel.id, None)
 
         if inst is None:
-            return await ctx.send("No hangman game running.")
+            return await ctx.send("No hangman game is currently running.")
 
         self.games[ctx.channel.id] = None
 
@@ -222,7 +228,7 @@ class Hangman(commands.Cog):
         inst: HangmanGame = self.games.get(ctx.channel.id, None)
 
         if inst is None:
-            return await ctx.send("No hangman game running.")
+            return await ctx.send("No hangman game is currently running.")
 
         elif ctx.author not in inst.participants:
             return await ctx.send("You are not currently in any hangman game.")
@@ -251,7 +257,7 @@ class Hangman(commands.Cog):
         inst = self.games.get(ctx.channel.id, None)
 
         if inst is None:
-            return await ctx.send("No hangman game running.")
+            return await ctx.send("No hangman game is currently running.")
 
         try:
             await ctx.author.send(f"The hidden word is **{inst.hidden_word}**")
