@@ -234,21 +234,25 @@ class Hangman(commands.Cog):
         elif ctx.author not in inst.participants:
             return await ctx.send("You are not currently in any hangman game.")
 
-        votes = self.votes.get(ctx.channel.id, 0) + 1
+        elif ctx.author in self.votes.get(ctx.channel.id, set()):
+            return await ctx.send("You have already voted to skip.")
+
         num_participants = len(inst.participants)
+
         votes_needed = max(1, math.ceil(num_participants / 2))
 
-        self.votes[ctx.channel.id] = votes
+        self.votes[ctx.channel.id] = self.votes.get(ctx.channel.id, set()) + ctx.author
 
-        # Skip the game
-        if votes >= votes_needed:
+        num_votes = len(self.votes[ctx.channel.id])
+
+        if num_votes >= votes_needed:
             self.games[ctx.channel.id] = None
 
             await ctx.send("Skipped :thumbsup:")
 
             return await self.start_hangman(ctx)
 
-        await ctx.send(f"Votes: {votes}/{votes_needed}")
+        await ctx.send(f"Skip votes: {num_votes}/{votes_needed}")
 
     @commands.is_owner()
     @commands.command(name="cheat")
