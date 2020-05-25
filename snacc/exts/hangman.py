@@ -215,7 +215,6 @@ class Hangman(commands.Cog):
 
         await ctx.send(f"{ctx.message.author.mention} gave up on the hangman game.")
 
-    @commands.is_owner()
     @commands.command(name="skip")
     async def skip(self, ctx):
         """ Vote to skip the current hangman game. """
