@@ -103,11 +103,9 @@ class SnaccBot(commands.Bot):
 
         self.exts_loaded = False
 
-        # No commands
         self.load_extension("snacc.exts.errorhandler")
         self.load_extension("snacc.exts.listeners")
 
-        # Has commands
         self.load_extension("snacc.exts.arenastats")
         self.load_extension("snacc.exts.hangman")
         self.load_extension("snacc.exts.usefullinks")

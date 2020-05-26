@@ -57,4 +57,4 @@ class HelpCommand(commands.HelpCommand):
     async def send_bot_help(self, mapping):
         pages = await self.get_pages()
 
-        await utils.embeds.create(self.context, pages)
+        await utils.pages.create(self.context, pages)

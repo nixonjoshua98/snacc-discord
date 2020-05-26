@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-from snacc.structs.menus import EmbedMenu
+from snacc.structs.menus import Menu
 
 
 def chunk_list(ls, n):
@@ -9,7 +9,7 @@ def chunk_list(ls, n):
         yield ls[i: i + n]
 
 
-class HelpCommand(commands.HelpCommand):
+class HelpCommand(commands.DefaultHelpCommand):
     def __init__(self):
         super(HelpCommand, self).__init__()
 
@@ -64,4 +64,4 @@ class HelpCommand(commands.HelpCommand):
     async def send_bot_help(self, mapping):
         pages = await self.get_pages()
 
-        await EmbedMenu(pages, timeout=60).send(self.context)
+        await Menu(pages, timeout=60).send(self.context)

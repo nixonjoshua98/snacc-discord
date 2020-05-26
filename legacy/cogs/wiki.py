@@ -54,7 +54,7 @@ class WikiCog(commands.Cog, name="Wiki"):
 
             embeds.append(embed)
 
-        await utils.embeds.create(ctx, embeds)
+        await utils.pages.create(ctx, embeds)
 
     @commands.command(name="abilities", aliases=["skills"])
     async def abilities(self, ctx):
@@ -64,7 +64,7 @@ class WikiCog(commands.Cog, name="Wiki"):
 
         pages = wiki.get()
 
-        await utils.embeds.create(ctx, pages)
+        await utils.pages.create(ctx, pages)
 
 
 def setup(bot):

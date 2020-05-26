@@ -7,7 +7,7 @@ from snacc.common import checks
 from snacc.common.queries import ArenaStatsSQL
 from snacc.common.converters import UserMember, NormalUser
 
-from snacc.structs.menus import EmbedMenu
+from snacc.structs.menus import Menu
 from snacc.structs.leaderboards import TrophyLeaderboard
 
 
@@ -133,7 +133,7 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 		if len(embeds) == 1:
 			embeds[0].set_footer(text=f"{ctx.bot.user.name} | {today}", icon_url=ctx.bot.user.avatar_url)
 
-		await EmbedMenu(embeds, timeout=60).send(ctx)
+		await Menu(embeds).send(ctx)
 
 	@commands.cooldown(1, 60, commands.BucketType.guild)
 	@commands.command(name="trophies")

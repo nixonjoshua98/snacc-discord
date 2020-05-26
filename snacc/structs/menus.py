@@ -1,31 +1,43 @@
-import discord
 import asyncio
+
+import discord
 from discord.ext import commands
 
 from snacc.common.emoji import UEmoji
 
 
 class MenuBase:
-	def __init__(self, embeds, timeout):
+	def __init__(self, pages: list, timeout: int):
 		self.bot = None
 		self.ctx = None
 		self.message = None
 
+		self.current_page = 0
+
 		self.timeout = timeout
-		self.embeds = embeds
+		self.pages = pages
 
 		self._buttons = dict()
 
 		self.add_buttons()
 
-	def add_buttons(self):
-		raise NotImplemented()
+	def add_buttons(self): ...
 
 	async def send_initial_message(self) -> discord.Message:
-		raise NotImplemented()
+		page = self.pages[0]
+
+		if isinstance(page, discord.Embed):
+			return await self.ctx.send(embed=page)
+
+		return await self.ctx.send(content=page)
 
 	async def update(self):
-		raise NotImplemented()
+		page = self.pages[self.current_page]
+
+		if isinstance(page, discord.Embed):
+			return await self.message.edit(embed=page)
+
+		return await self.message.edit(content=page)
 
 	def add_button(self, emoji, callback):
 		self._buttons[emoji] = callback
@@ -46,6 +58,8 @@ class MenuBase:
 
 			except asyncio.TimeoutError:
 				try:
+					await self.message.clear_reactions()
+
 					await self.message.delete()
 
 				except (discord.Forbidden, discord.HTTPException):
@@ -75,27 +89,17 @@ class MenuBase:
 			""" Failed """
 
 
-class EmbedMenu(MenuBase):
-	def __init__(self, embeds: list, *, start_page: int = 0, timeout: int = None):
-		super(EmbedMenu, self).__init__(embeds, timeout)
-
-		self._start_page = start_page
-
-		self.current_page = 0
-
-	async def send_initial_message(self) -> discord.Message:
-		return await self.ctx.send(embed=self.embeds[self._start_page])
+class Menu(MenuBase):
+	def __init__(self, pages: list, *, timeout: int = None):
+		super(Menu, self).__init__(pages, timeout)
 
 	def add_buttons(self):
-		if len(self.embeds) > 1:
+		if len(self.pages) > 1:
 			self.add_button(UEmoji.ARROW_LEFT, self.on_arrow_left)
 			self.add_button(UEmoji.ARROW_RIGHT, self.on_arrow_right)
-
-	async def update(self):
-		await self.message.edit(embed=self.embeds[self.current_page])
 
 	async def on_arrow_left(self):
 		self.current_page = max(0, self.current_page - 1)
 
 	async def on_arrow_right(self):
-		self.current_page = min(len(self.embeds) - 1, self.current_page + 1)
+		self.current_page = min(len(self.pages) - 1, self.current_page + 1)
