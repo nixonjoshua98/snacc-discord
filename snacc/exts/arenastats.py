@@ -4,6 +4,7 @@ from discord.ext import commands
 from datetime import datetime
 
 from snacc.common import checks
+from snacc.common.emoji import Emoji
 from snacc.common.queries import ArenaStatsSQL
 from snacc.common.converters import UserMember, NormalUser
 
@@ -40,8 +41,8 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 				results = await con.fetch(ArenaStatsSQL.SELECT_USER, target.id)
 
 				# Limit the number of user entries in the database
-				if len(results) > 15:
-					for result in results[15:]:
+				if len(results) > 24:
+					for result in results[24:]:
 						await con.execute(ArenaStatsSQL.DELETE_ROW, target.id, result["date_set"])
 
 	@commands.cooldown(1, 60 * 60 * 3, commands.BucketType.user)
@@ -113,7 +114,7 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 			return await ctx.send("I found no stats for you.")
 
 		embeds = []
-		chunks = tuple(chunk_list(results, 5))
+		chunks = tuple(chunk_list(results, 6))
 		today = datetime.today().strftime('%d/%m/%Y %X')
 
 		for i, page in enumerate(chunks):
@@ -124,7 +125,7 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 
 			for row in page:
 				name = row["date_set"].strftime("%d/%m/%Y")
-				value = f"Level: {row['level']:,}\nTrophies: {row['trophies']:,}"
+				value = f"**{Emoji.XP} {row['level']:,} :trophy: {row['trophies']:,}**"
 
 				embed.add_field(name=name, value=value)
 
