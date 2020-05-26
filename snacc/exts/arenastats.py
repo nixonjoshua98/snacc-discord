@@ -4,6 +4,7 @@ from discord.ext import commands
 from datetime import datetime
 
 from snacc.common import checks
+from snacc.common.emoji import Emoji
 from snacc.common.queries import ArenaStatsSQL
 from snacc.common.converters import UserMember, NormalUser
 
@@ -20,7 +21,7 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 	""" Commands related to the Arena mode in the `Auto Battles Online` mobile game. """
 
 	async def cog_check(self, ctx):
-		return await checks.user_has_member_role(ctx)
+		return await checks.user_has_member_role(ctx) or ctx.author.id == 186944672197902336  # William
 
 	@staticmethod
 	async def set_users_stats(ctx, target: discord.Member, level: int, trophies: int):
@@ -40,8 +41,8 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 				results = await con.fetch(ArenaStatsSQL.SELECT_USER, target.id)
 
 				# Limit the number of user entries in the database
-				if len(results) > 14:
-					for result in results[14:]:
+				if len(results) > 24:
+					for result in results[24:]:
 						await con.execute(ArenaStatsSQL.DELETE_ROW, target.id, result["date_set"])
 
 	@commands.cooldown(1, 60 * 60 * 3, commands.BucketType.user)
@@ -113,7 +114,7 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 			return await ctx.send("I found no stats for you.")
 
 		embeds = []
-		chunks = tuple(chunk_list(results, 7))
+		chunks = tuple(chunk_list(results, 6))
 		today = datetime.today().strftime('%d/%m/%Y %X')
 
 		for i, page in enumerate(chunks):
@@ -123,17 +124,17 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 			embed.set_footer(text=f"{ctx.bot.user.name} | Page {i + 1}/{len(chunks)}", icon_url=ctx.bot.user.avatar_url)
 
 			for row in page:
-				embed.add_field(
-					name=row["date_set"].strftime("%d/%m/%Y"),
-					value=f"Level: {row['level']:,}\nTrophies: {row['trophies']:,}"
-				)
+				name = row["date_set"].strftime("%d/%m/%Y")
+				value = f"**{Emoji.XP} {row['level']:02d} :trophy: {row['trophies']:,}**"
+
+				embed.add_field(name=name, value=value)
 
 			embeds.append(embed)
 
 		if len(embeds) == 1:
 			embeds[0].set_footer(text=f"{ctx.bot.user.name} | {today}", icon_url=ctx.bot.user.avatar_url)
 
-		await Menu(embeds).send(ctx)
+		await Menu(embeds, timeout=60, delete_after=False).send(ctx)
 
 	@commands.cooldown(1, 60, commands.BucketType.guild)
 	@commands.command(name="trophies")

@@ -31,7 +31,7 @@ class TextLeaderboardBase:
 
         print(f"{self.title}: {round(time.time() - now, 3)}s")
 
-        await Menu(pages).send(ctx)
+        await Menu(pages, timeout=60, delete_after=False).send(ctx)
 
     async def filter_results(self, ctx, results: list):
         return results
@@ -47,7 +47,7 @@ class TextLeaderboardBase:
         chunks = tuple(chunk_list(entries, self.page_size))
 
         for i, chunk in enumerate(chunks, start=1):
-            message = "Trophy Leaderboard" + ("\n" * 2)
+            message = "Trophy Leaderboard " + f"[Page {i} / {len(chunks)}]" + ("\n" * 2)
 
             message += headers + "\n"
 
