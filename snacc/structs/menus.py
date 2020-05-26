@@ -7,13 +7,14 @@ from snacc.common.emoji import Emoji
 
 
 class MenuBase:
-	def __init__(self, pages: list, timeout: int):
+	def __init__(self, pages: list, timeout: int, delete_after: bool):
 		self.bot = None
 		self.ctx = None
 		self.message = None
 
 		self.current_page = 0
 
+		self.delete_after = delete_after
 		self.timeout = timeout
 		self.pages = pages
 
@@ -57,25 +58,10 @@ class MenuBase:
 				react, user = await self.bot.wait_for("reaction_add", timeout=self.timeout, check=wait_for)
 
 			except asyncio.TimeoutError:
-				try:
-					await self.message.clear_reactions()
-
-					await self.message.delete()
-
-				except (discord.Forbidden, discord.HTTPException):
-					""" Failed """
-
-				break
+				return await self._after_expired()
 
 			else:
-				callback = self._buttons.get(str(react.emoji), None)
-
-				if callback is not None:
-					await callback()
-
-				await self._after_callback(react, user)
-
-				await self.update()
+				await self._after_reaction_add(react, user)
 
 	async def _add_reactions(self):
 		for emoji in self._buttons:
@@ -88,10 +74,31 @@ class MenuBase:
 		except (discord.Forbidden, discord.HTTPException):
 			""" Failed """
 
+	async def _after_reaction_add(self, react, user):
+		callback = self._buttons.get(str(react.emoji), None)
+
+		if callback is not None:
+			await callback()
+
+		await self._after_callback(react, user)
+
+		await self.update()
+
+	async def _after_expired(self):
+		try:
+			if self.delete_after:
+				await self.message.delete()
+
+			else:
+				await self.message.clear_reactions()
+
+		except (discord.Forbidden, discord.HTTPException):
+			""" Failed """
+
 
 class Menu(MenuBase):
-	def __init__(self, pages: list, *, timeout: int = None):
-		super(Menu, self).__init__(pages, timeout)
+	def __init__(self, pages: list, *, timeout: int = None, delete_after: bool = True):
+		super(Menu, self).__init__(pages, timeout, delete_after=delete_after)
 
 	def add_buttons(self):
 		if len(self.pages) > 1:
