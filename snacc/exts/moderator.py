@@ -49,6 +49,7 @@ class Moderator(commands.Cog):
 
 		await ctx.send("User has been unmuted")
 
+	@commands.cooldown(1, 60, commands.BucketType.user)
 	@commands.has_permissions(administrator=True)
 	@commands.command(name="purge")
 	async def purge(self, ctx, target: Optional[discord.Member] = None, limit: Range(0, 100) = 0):

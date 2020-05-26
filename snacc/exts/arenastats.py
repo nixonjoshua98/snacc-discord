@@ -21,7 +21,7 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 	""" Commands related to the Arena mode in the `Auto Battles Online` mobile game. """
 
 	async def cog_check(self, ctx):
-		return await checks.user_has_member_role(ctx)
+		return await checks.user_has_member_role(ctx) or ctx.author.id == 186944672197902336  # William
 
 	@staticmethod
 	async def set_users_stats(ctx, target: discord.Member, level: int, trophies: int):
@@ -125,7 +125,7 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 
 			for row in page:
 				name = row["date_set"].strftime("%d/%m/%Y")
-				value = f"**{Emoji.XP} {row['level']:,} :trophy: {row['trophies']:,}**"
+				value = f"**{Emoji.XP} {row['level']:02d} :trophy: {row['trophies']:,}**"
 
 				embed.add_field(name=name, value=value)
 
