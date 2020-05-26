@@ -1,99 +1,99 @@
-The Seven Samurai
-Bonnie And Clyde
-Reservoir Dogs
-Airplane!
-Pan's Labyrinth
-Doctor Zhivago
-The Deer Hunter
-Close Encounters Of The Third Kind
-Up
-Rocky
-Memento
-Braveheart
-Slumdog Millionaire
-The Lord Of The Rings: The Return Of The King
-Beauty And The Beast
-Seven
-Inception
-Die Hard
-The Lord Of The Rings: The Fellowship Of The Ring
-Amadeus
-On The Waterfront
-Wall-E
-12 Angry Men
-Ghostbusters
-Brokeback Mountain
-The Bridge On The River Kwai
-Blazing Saddles
-All The President's Men
-Young Frankenstein
-Almost Famous
-Vertigo
-Gladiator
-Monty Python And The Holy Grail
-Avatar
-The Lion King
-Raging Bull
-Mary Poppins
-Groundhog Day
-North By Northwest
-West Side Story
-Amelie
-Thelma & Louise
-Sunset Blvd
-The Dark Knight
-Eternal Sunshine Of The Spotless Mind
-Taxi Driver
-Butch Cassidy And The Sundance Kid
-Good Will Hunting
-All About Eve
-The Big Lebowski
-Jurassic Park
-Rear Window
-The Usual Suspects
-Some Like It Hot
-Saving Private Ryan
-Titanic
-The Matrix
-Toy Story
-Alien
-Psycho
-Fight Club
-The Shining
-When Harry Met Sally
-Dr. Strangelove Or: How I Learned To Stop Worrying And Love The Bomb
-Ferris Bueller'S Day Off
-A Clockwork Orange
-American Beauty
-Fargo
-The Empire Strikes Back
-The Princess Bride
-One Flew Over The Cuckoo'S Nest
-Blade Runner
-The Graduate
-The Breakfast Club
-Singing In The Rain
-The Sound Of Music
-Jaws
-Lawrence Of Arabia
-The Silence Of The Lambs
-Chinatown
-It's A Wonderful Life
-Goodfellas
-Annie Hall
-Apocalypse Now
-To Kill A Mockingbird
-Gone With The Wind
-Forrest Gump
-Raiders Of The Lost Ark
-Back To The Future
-Star Wars
-Schindler's List
-E.T. The Extra-Terrestrial
-The Godfather
-Casablanca
-Pulp Fiction
-The Shawshank Redemption
-Citizen Kane
-The Wizard Of Oz
-The Godfather
+the seven samurai
+bonnie and clyde
+reservoir dogs
+airplane!
+pan's labyrinth
+doctor zhivago
+the deer hunter
+close encounters of the third kind
+up
+rocky
+memento
+braveheart
+slumdog millionaire
+the lord of the rings: the return of the king
+beauty and the beast
+seven
+inception
+die hard
+the lord of the rings: the fellowship of the ring
+amadeus
+on the waterfront
+wall-e
+12 angry men
+ghostbusters
+brokeback mountain
+the bridge on the river kwai
+blazing saddles
+all the president's men
+young frankenstein
+almost famous
+vertigo
+gladiator
+monty python and the holy grail
+avatar
+the lion king
+raging bull
+mary poppins
+groundhog day
+north by northwest
+west side story
+amelie
+thelma & louise
+sunset blvd
+the dark knight
+eternal sunshine of the spotless mind
+taxi driver
+butch cassidy and the sundance kid
+good will hunting
+all about eve
+the big lebowski
+jurassic park
+rear window
+the usual suspects
+some like it hot
+saving private ryan
+titanic
+the matrix
+toy story
+alien
+psycho
+fight club
+the shining
+when harry met sally
+dr. strangelove or: how i learned to stop worrying and love the bomb
+ferris bueller's day off
+a clockwork orange
+american beauty
+fargo
+the empire strikes back
+the princess bride
+one flew over the cuckoo's nest
+blade runner
+the graduate
+the breakfast club
+singing in the rain
+the sound of music
+jaws
+lawrence of arabia
+the silence of the lambs
+chinatown
+it's a wonderful life
+goodfellas
+annie hall
+apocalypse now
+to kill a mockingbird
+gone with the wind
+forrest gump
+raiders of the lost ark
+back to the future
+star wars
+schindler's list
+e.t. the extra-terrestrial
+the godfather
+casablanca
+pulp fiction
+the shawshank redemption
+citizen kane
+the wizard of oz
+the godfather
