@@ -78,7 +78,7 @@ Jaws
 Lawrence Of Arabia
 The Silence Of The Lambs
 Chinatown
-It'S A Wonderful Life
+It's A Wonderful Life
 Goodfellas
 Annie Hall
 Apocalypse Now
@@ -88,7 +88,7 @@ Forrest Gump
 Raiders Of The Lost Ark
 Back To The Future
 Star Wars
-Schindler'S List
+Schindler's List
 E.T. The Extra-Terrestrial
 The Godfather
 Casablanca
