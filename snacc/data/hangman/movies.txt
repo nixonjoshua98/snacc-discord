@@ -1,55 +1,99 @@
-die hard
-the transporter
-the dark knight
-the bourne identity
-james bond: casino
-mary
-wedding crashers
-about time
-10 things i hate about you
-pretty woman
-50 first dates
-love actually
-notting hill
-bridget jones’s diary
-the notebook
-when harry met sally
-clueless
-bridesmaids
-you’ve got mail
-forgetting sarah marshall
-titanic
-the shawshank
-samurai
-mulholland dr
-insomnia
-chinatown
-21 grams
-mystic river
-the prestige
-the usual suspects
-prisoners
-collateral
-jaws
-lucky number slevin
-oldboy
-the sixth sense
-apocalypto
-v for vendetta
-twelve monkeys
-127 hours
-eyes wide shut
-straw dogs
-munich
-the next three days
-it's a wonderful life
-die hard
-a christmas story
-scrooge
-rudolph, the red-nosed
-corner
-silent night
-a charlie brown christmas
-love actually
-the santa clause
-how the grinch stole
+The Seven Samurai
+Bonnie And Clyde
+Reservoir Dogs
+Airplane!
+Pan'S Labyrinth
+Doctor Zhivago
+The Deer Hunter
+Close Encounters Of The Third Kind
+Up
+Rocky
+Memento
+Braveheart
+Slumdog Millionaire
+The Lord Of The Rings: The Return Of The King
+Beauty And The Beast
+Seven
+Inception
+Die Hard
+The Lord Of The Rings: The Fellowship Of The Ring
+Amadeus
+On The Waterfront
+Wall-E
+12 Angry Men
+Ghostbusters
+Brokeback Mountain
+The Bridge On The River Kwai
+Blazing Saddles
+All The President'S Men
+Young Frankenstein
+Almost Famous
+Vertigo
+Gladiator
+Monty Python And The Holy Grail
+Avatar
+The Lion King
+Raging Bull
+Mary Poppins
+Groundhog Day
+North By Northwest
+West Side Story
+Amelie
+Thelma & Louise
+Sunset Blvd
+The Dark Knight
+Eternal Sunshine Of The Spotless Mind
+Taxi Driver
+Butch Cassidy And The Sundance Kid
+Good Will Hunting
+All About Eve
+The Big Lebowski
+Jurassic Park
+Rear Window
+The Usual Suspects
+Some Like It Hot
+Saving Private Ryan
+Titanic
+The Matrix
+Toy Story
+Alien
+Psycho
+Fight Club
+The Shining
+When Harry Met Sally
+Dr. Strangelove Or: How I Learned To Stop Worrying And Love The Bomb
+Ferris Bueller'S Day Off
+A Clockwork Orange
+American Beauty
+Fargo
+The Empire Strikes Back
+The Princess Bride
+One Flew Over The Cuckoo'S Nest
+Blade Runner
+The Graduate
+The Breakfast Club
+Singing In The Rain
+The Sound Of Music
+Jaws
+Lawrence Of Arabia
+The Silence Of The Lambs
+Chinatown
+It'S A Wonderful Life
+Goodfellas
+Annie Hall
+Apocalypse Now
+To Kill A Mockingbird
+Gone With The Wind
+Forrest Gump
+Raiders Of The Lost Ark
+Back To The Future
+Star Wars
+Schindler'S List
+E.T. The Extra-Terrestrial
+The Godfather
+Casablanca
+Pulp Fiction
+The Shawshank Redemption
+Citizen Kane
+The Wizard Of Oz
+The Godfather

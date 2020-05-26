@@ -147,6 +147,8 @@ class HangmanGame:
 
     @staticmethod
     def get_categories() -> tuple:
+        HangmanGame.load_words()
+
         return tuple(HangmanGame.__word_cache.keys())
 
 
