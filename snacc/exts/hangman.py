@@ -10,7 +10,7 @@ from discord.ext import commands
 
 from typing import Union
 
-from snacc.common.emoji import UEmoji
+from snacc.common.emoji import Emoji
 from snacc.common.queries import HangmanSQL
 
 from snacc.structs.leaderboards import HangmanLeaderboard
@@ -169,7 +169,7 @@ class Hangman(commands.Cog):
                     await inst.show_game(message.channel)
 
                 elif result == HangmanGuess.USER_ON_COOLDOWN:
-                    await message.add_reaction(UEmoji.ALARM_CLOCK)
+                    await message.add_reaction(Emoji.ALARM_CLOCK)
 
                 elif result == HangmanGuess.GAME_WON:
                     self.games[message.channel.id] = None

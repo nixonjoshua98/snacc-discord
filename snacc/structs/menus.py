@@ -3,7 +3,7 @@ import asyncio
 import discord
 from discord.ext import commands
 
-from snacc.common.emoji import UEmoji
+from snacc.common.emoji import Emoji
 
 
 class MenuBase:
@@ -95,11 +95,19 @@ class Menu(MenuBase):
 
 	def add_buttons(self):
 		if len(self.pages) > 1:
-			self.add_button(UEmoji.ARROW_LEFT, self.on_arrow_left)
-			self.add_button(UEmoji.ARROW_RIGHT, self.on_arrow_right)
+			self.add_button(Emoji.REWIND, self.on_rewind)
+			self.add_button(Emoji.ARROW_LEFT, self.on_arrow_left)
+			self.add_button(Emoji.ARROW_RIGHT, self.on_arrow_right)
+			self.add_button(Emoji.FAST_FORWARD, self.on_fast_forward)
+
+	async def on_rewind(self):
+		self.current_page = 0
 
 	async def on_arrow_left(self):
 		self.current_page = max(0, self.current_page - 1)
 
 	async def on_arrow_right(self):
 		self.current_page = min(len(self.pages) - 1, self.current_page + 1)
+
+	async def on_fast_forward(self):
+		self.current_page = len(self.pages) - 1
