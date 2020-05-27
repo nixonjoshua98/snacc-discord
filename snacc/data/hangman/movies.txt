@@ -11,12 +11,11 @@ rocky
 memento
 braveheart
 slumdog millionaire
-the lord of the rings: the return of the king
 beauty and the beast
 seven
 inception
 die hard
-the lord of the rings: the fellowship of the ring
+the lord of the rings
 amadeus
 on the waterfront
 wall-e
@@ -61,7 +60,6 @@ psycho
 fight club
 the shining
 when harry met sally
-dr. strangelove or: how i learned to stop worrying and love the bomb
 ferris bueller's day off
 a clockwork orange
 american beauty
