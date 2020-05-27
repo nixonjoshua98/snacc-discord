@@ -1,5 +1,46 @@
+the seven samurai
+bonnie and clyde
+reservoir dogs
+airplane!
+pan's labyrinth
+doctor zhivago
+the deer hunter
+close encounters of the third kind
+up
+rocky
+memento
+braveheart
+slumdog millionaire
+the lord of the rings: the return of the king
+beauty and the beast
+seven
+inception
 die hard
-the transporter
+the lord of the rings: the fellowship of the ring
+amadeus
+on the waterfront
+wall-e
+12 angry men
+ghostbusters
+brokeback mountain
+the bridge on the river kwai
+blazing saddles
+all the president's men
+young frankenstein
+almost famous
+vertigo
+gladiator
+monty python and the holy grail
+avatar
+the lion king
+raging bull
+mary poppins
+groundhog day
+north by northwest
+west side story
+amelie
+thelma & louise
+sunset blvd
 the dark knight
 the bourne identity
 james bond: casino royale
@@ -101,21 +142,42 @@ chinatown
 21 grams
 mystic river
 the prestige
+eternal sunshine of the spotless mind
+taxi driver
+butch cassidy and the sundance kid
+good will hunting
+all about eve
+the big lebowski
+jurassic park
+rear window
 the usual suspects
-prisoners
-collateral
+some like it hot
+saving private ryan
+titanic
+the matrix
+toy story
+alien
+psycho
+fight club
+the shining
+when harry met sally
+dr. strangelove or: how i learned to stop worrying and love the bomb
+ferris bueller's day off
+a clockwork orange
+american beauty
+fargo
+the empire strikes back
+the princess bride
+one flew over the cuckoo's nest
+blade runner
+the graduate
+the breakfast club
+singing in the rain
+the sound of music
 jaws
-lucky number slevin
-oldboy
-the sixth sense
-apocalypto
-v for vendetta
-twelve monkeys
-127 hours
-eyes wide shut
-straw dogs
-munich
-the next three days
+lawrence of arabia
+the silence of the lambs
+chinatown
 it's a wonderful life
 die hard
 a christmas story
@@ -138,3 +200,20 @@ love actually
 the santa clause
 how the grinch stole christmas!
 it happened on fifth avenue
+goodfellas
+annie hall
+apocalypse now
+to kill a mockingbird
+gone with the wind
+forrest gump
+raiders of the lost ark
+back to the future
+star wars
+schindler's list
+e.t. the extra-terrestrial
+casablanca
+pulp fiction
+the shawshank redemption
+citizen kane
+the wizard of oz
+
