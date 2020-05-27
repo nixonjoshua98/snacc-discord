@@ -3,9 +3,14 @@ from discord.ext import commands
 
 
 class OnMessage(commands.Cog):
+	def __init__(self, bot):
+		self.bot = bot
+
 	@commands.Cog.listener("on_message")
 	async def on_message(self, message):
-		# Natsu
+		if not self.bot.on_message_check(message):
+			return
+
 		if message.author.id == 305727745382678528:
 			for i in ("<a:e1:715277287276281866>",):
 				try:
@@ -16,4 +21,4 @@ class OnMessage(commands.Cog):
 
 
 def setup(bot):
-	bot.add_cog(OnMessage())
+	bot.add_cog(OnMessage(bot))
