@@ -41,6 +41,106 @@ amelie
 thelma & louise
 sunset blvd
 the dark knight
+the bourne identity
+james bond: casino royale
+suicide squad
+hancock
+the terminator
+predator
+taken
+mission impossible
+indiana jones: raiders of the lost ark
+gladiator
+tomb raider
+lethal weapon
+anchorman
+superbad
+the other guys
+step brothers
+liar liar
+knocked up
+zoolander
+tropic thunder
+dodgeball
+old school
+the 40-year old virgin
+ghostbusters
+the big lebowski
+dumb and dumber
+meet the fockers
+there's something about mary
+wedding crashers
+about time
+10 things i hate about you
+pretty woman
+50 first dates
+love actually
+notting hill
+bridget jones's diary
+the notebook
+when harry met sally
+clueless
+bridesmaids
+you have got mail
+forgetting sarah marshall
+titanic
+the shawshank
+redemption
+forrest gump
+american beauty
+goodfellas
+taxi driver
+saving private ryan
+the godfather
+rocky
+there will be blood
+a beautiful mind
+12 years a slave
+the green mile
+boyhood
+cast away
+the shining
+paranormal activity
+scream
+the conjuring
+the cabin in the woods
+the exorcist
+the human centipede
+the blair witch project
+jaws
+dawn of the dead
+halloween
+ring
+28 days later
+the texas chain saw
+massacre
+the silence of the lambs
+inception
+the departed
+heat
+the dark knight rises
+leon: the professional
+the bourne ultimatum
+black swan
+no country for old men
+run lola run
+se7en
+sin city
+the silence of the lambs
+minority report
+the game
+shutter island
+the fugitive
+the others
+kill bill: vol. 2
+ghost dog: the way of the
+samurai
+mulholland dr.
+insomnia
+chinatown
+21 grams
+mystic river
+the prestige
 eternal sunshine of the spotless mind
 taxi driver
 butch cassidy and the sundance kid
@@ -77,6 +177,27 @@ lawrence of arabia
 the silence of the lambs
 chinatown
 it's a wonderful life
+die hard
+a christmas story
+scrooge
+rudolph, the red-nosed reindeer
+christmas vacation
+miracle on 34th street
+edward scissorhands
+home alone
+bad santa
+trading places
+scrooged
+joyeux noel
+elf
+the nightmare before christmas
+the shop around the corner
+silent night
+a charlie brown christmas
+love actually
+the santa clause
+how the grinch stole christmas!
+it happened on fifth avenue
 goodfellas
 annie hall
 apocalypse now
@@ -88,10 +209,9 @@ back to the future
 star wars
 schindler's list
 e.t. the extra-terrestrial
-the godfather
 casablanca
 pulp fiction
 the shawshank redemption
 citizen kane
 the wizard of oz
-the godfather
+
