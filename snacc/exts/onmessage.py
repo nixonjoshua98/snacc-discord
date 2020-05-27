@@ -11,10 +11,11 @@ class OnMessage(commands.Cog):
 		if not self.bot.on_message_check(message):
 			return
 
+		# Natsu
 		if message.author.id == 305727745382678528:
-			for i in ("<a:e1:715277287276281866>",):
+			for react in ("<a:e1:715277287276281866>",):
 				try:
-					await message.add_reaction(i)
+					await message.add_reaction(react)
 
 				except (discord.Forbidden, discord.HTTPException):
 					""" Failed """

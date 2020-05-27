@@ -1,217 +1,193 @@
-the seven samurai
-bonnie and clyde
-reservoir dogs
-airplane!
-pan's labyrinth
-doctor zhivago
-the deer hunter
-close encounters of the third kind
-up
-rocky
-memento
-braveheart
-slumdog millionaire
-beauty and the beast
-seven
-inception
-die hard
-the lord of the rings
-amadeus
-on the waterfront
-wall-e
-12 angry men
-ghostbusters
-brokeback mountain
-the bridge on the river kwai
-blazing saddles
-all the president's men
-young frankenstein
-almost famous
-vertigo
-gladiator
-monty python and the holy grail
-avatar
-the lion king
-raging bull
-mary poppins
-groundhog day
-north by northwest
-west side story
-amelie
-thelma & louise
-sunset blvd
-the dark knight
-the bourne identity
-james bond: casino royale
-suicide squad
-hancock
-the terminator
-predator
-taken
-mission impossible
-indiana jones: raiders of the lost ark
-gladiator
-tomb raider
-lethal weapon
-anchorman
-superbad
-the other guys
-step brothers
-liar liar
-knocked up
-zoolander
-tropic thunder
-dodgeball
-old school
-the 40-year old virgin
-ghostbusters
-the big lebowski
-dumb and dumber
-meet the fockers
-there's something about mary
-wedding crashers
-about time
-10 things i hate about you
-pretty woman
-50 first dates
-love actually
 notting hill
-bridget jones's diary
-the notebook
-when harry met sally
-clueless
-bridesmaids
-you have got mail
-forgetting sarah marshall
-titanic
-the shawshank
-redemption
-forrest gump
-american beauty
-goodfellas
-taxi driver
+sunset blvd
+the bourne identity
 saving private ryan
+elf
+joyeux noel
+scrooged
+christmas vacation
+back to the future
+almost famous
+to kill a mockingbird
+blazing saddles
+the game
+edward scissorhands
+meet the fockers
+dawn of the dead
+fargo
+tropic thunder
+the departed
+mystic river
+bad santa
 the godfather
 rocky
-there will be blood
-a beautiful mind
-12 years a slave
-the green mile
-boyhood
 cast away
-the shining
-paranormal activity
-scream
-the conjuring
-the cabin in the woods
-the exorcist
-the human centipede
-the blair witch project
-jaws
-dawn of the dead
-halloween
-ring
-28 days later
-the texas chain saw
-massacre
-the silence of the lambs
-inception
-the departed
-heat
-the dark knight rises
-leon: the professional
-the bourne ultimatum
-black swan
-no country for old men
-run lola run
-se7en
-sin city
-the silence of the lambs
-minority report
-the game
-shutter island
-the fugitive
-the others
-kill bill: vol. 2
-ghost dog: the way of the
-samurai
-mulholland dr.
-insomnia
-chinatown
-21 grams
-mystic river
-the prestige
-eternal sunshine of the spotless mind
-taxi driver
-butch cassidy and the sundance kid
-good will hunting
-all about eve
-the big lebowski
-jurassic park
-rear window
-the usual suspects
-some like it hot
-saving private ryan
-titanic
-the matrix
-toy story
-alien
-psycho
-fight club
-the shining
-when harry met sally
-ferris bueller's day off
-a clockwork orange
-american beauty
-fargo
-the empire strikes back
-the princess bride
-one flew over the cuckoo's nest
-blade runner
-the graduate
-the breakfast club
-singing in the rain
-the sound of music
-jaws
-lawrence of arabia
-the silence of the lambs
-chinatown
-it's a wonderful life
-die hard
-a christmas story
-scrooge
-rudolph, the red-nosed reindeer
-christmas vacation
-miracle on 34th street
-edward scissorhands
 home alone
-bad santa
-trading places
-scrooged
-joyeux noel
-elf
-the nightmare before christmas
-the shop around the corner
-silent night
-a charlie brown christmas
-love actually
-the santa clause
-how the grinch stole christmas!
-it happened on fifth avenue
-goodfellas
-annie hall
-apocalypse now
-to kill a mockingbird
-gone with the wind
-forrest gump
-raiders of the lost ark
-back to the future
-star wars
+amelie
 schindler's list
-e.t. the extra-terrestrial
-casablanca
+the others
+close encounters of the third kind
+12 angry men
+ferris bueller's day off
+the notebook
+memento
+star wars
+singing in the rain
+hancock
+goodfellas
+ghostbusters
+knocked up
+the terminator
+good will hunting
+wedding crashers
+clueless
+groundhog day
+annie hall
+liar liar
+a beautiful mind
+the blair witch project
+twenty-eight days later
+raiders of the lost ark
+beauty and the beast
+chinatown
+up
+die hard
+step brothers
+dumb and dumber
 pulp fiction
+reservoir dogs
+halloween
+lawrence of arabia
+seven
+the conjuring
+no country for old men
+avatar
+mulholland dr.
+wall-e
+the shop around the corner
+the deer hunter
+indiana jones: raiders of the lost ark
+sin city
+ghost dog
+a christmas story
+titanic
+rear window
+there will be blood
+the breakfast club
+massacre
+there's something about mary
+scrooge
+toy story
+the prestige
+shutter island
+braveheart
+north by northwest
+the princess bride
+the big lebowski
+forrest gump
+raging bull
+the nightmare before christmas
+the green mile
+the dark knight rises
+fight club
+fifty first dates
+eternal sunshine of the spotless mind
+butch cassidy and the sundance kid
+how the grinch stole christmas!
+taken
+monty python and the holy grail
+the exorcist
+taxi driver
+old school
+suicide squad
+gone with the wind
+alien
+kill bill
+airplane!
+the bourne ultimatum
+brokeback mountain
+thelma & louise
+heat
 the shawshank redemption
-citizen kane
+forgetting sarah marshall
+boyhood
+a clockwork orange
+dodgeball
+one flew over the cuckoo's nest
+psycho
+the lion king
+bonnie and clyde
+rudolph, the red-nosed reindeer
+a charlie brown christmas
+amadeus
+anchorman
+the cabin in the woods
+predator
+the sound of music
+some like it hot
+the graduate
+ten things i hate about you
+run lola run
+pretty woman
+vertigo
+scream
+pan's labyrinth
+the dark knight
+blade runner
+mary poppins
+about time
+on the waterfront
+the human centipede
+silent night
+all the president's men
+the bridge on the river kwai
+young frankenstein
+the seven samurai
+zoolander
+the santa clause
+love actually
+paranormal activity
+the empire strikes back
+west side story
+the shining
+the lord of the rings
+all about eve
+the usual suspects
+when harry met sally
+lethal weapon
+the fugitive
+the other guys
+jaws
+twenty-one grams
+apocalypse now
+mission impossible
+redemption
 the wizard of oz
-
+slumdog millionaire
+leon: the professional
+ring
+bridesmaids
+doctor zhivago
+bridget jones's diary
+inception
+jurassic park
+trading places
+american beauty
+e.t. the extra-terrestrial
+the silence of the lambs
+insomnia
+twelve years a slave
+james bond: casino royale
+you have got mail
+the matrix
+casablanca
+superbad
+the shawshank
+the texas chain saw
+it's a wonderful life
+minority report
+tomb raider
+black swan
+citizen kane
+it happened on fifth avenue
+gladiator
