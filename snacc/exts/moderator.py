@@ -3,11 +3,15 @@ from discord.ext import commands
 
 from typing import Optional
 
+from snacc.common import checks
 from snacc.common.converters import NormalUser, Range
 
 
 class Moderator(commands.Cog):
 	""" Some very basic moderation commands. """
+
+	async def cog_check(self, ctx):
+		return checks.author_is_admin(ctx)
 
 	async def get_mute_role(self, ctx):
 		role = discord.utils.get(ctx.guild.roles, name="Muted")
@@ -21,7 +25,6 @@ class Moderator(commands.Cog):
 
 		return role
 
-	@commands.has_permissions(administrator=True)
 	@commands.command(name="mute")
 	async def mute(self, ctx, target: NormalUser()):
 		""" [Admin] Mutes a user, which will delete every message the user sends. """
@@ -35,7 +38,6 @@ class Moderator(commands.Cog):
 
 		await ctx.send("User has been muted")
 
-	@commands.has_permissions(administrator=True)
 	@commands.command(name="unmute")
 	async def unmute(self, ctx, target: NormalUser()):
 		""" [Admin] Unmutes a user and allows them to send messages again. """
@@ -50,16 +52,15 @@ class Moderator(commands.Cog):
 		await ctx.send("User has been unmuted")
 
 	@commands.cooldown(1, 60, commands.BucketType.user)
-	@commands.has_permissions(administrator=True)
-	@commands.command(name="purge")
+	@commands.command(name="purge", usage="<target=None> <limit=0>")
 	async def purge(self, ctx, target: Optional[discord.Member] = None, limit: Range(0, 100) = 0):
 		""" [Admin] Purge a channel of messages. Optional user can be targeted. """
 
 		def check(m):
-			return (target is None or m.author == target) and m.id != ctx.message.id
+			return target is None or m.author == target
 
 		try:
-			deleted = await ctx.channel.purge(limit=limit+1, check=check)
+			deleted = await ctx.channel.purge(limit=limit, check=check)
 		except (discord.HTTPException, discord.Forbidden):
 			return await ctx.send("Channel purge failed.")
 

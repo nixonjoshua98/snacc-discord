@@ -1,5 +1,7 @@
 from discord.ext import commands
 
+from snacc.common import checks
+
 from snacc.common import MAIN_SERVER
 
 USEFUL_LINKS_EMBED = 708435677511155782
@@ -10,7 +12,7 @@ class UsefulLinks(commands.Cog, name="Useful Links"):
 	""" Set of commands to update the useful links Embed. """
 
 	async def cog_check(self, ctx):
-		return ctx.guild.id == MAIN_SERVER and ctx.author.guild_permissions.administrator
+		return checks.message_from_guild(ctx, MAIN_SERVER) and checks.author_is_admin(ctx)
 
 	@commands.command(name="addlink")
 	async def add_useful_link(self, ctx, index: int, name: str, value: str):

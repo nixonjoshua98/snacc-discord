@@ -21,7 +21,7 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 	""" Commands related to the Arena mode in the `Auto Battles Online` mobile game. """
 
 	async def cog_check(self, ctx):
-		return await checks.user_has_member_role(ctx) or ctx.author.id == 186944672197902336  # William
+		return await checks.has_role(ctx, key="member_role") or await checks.has_role(ctx, name="VIP")
 
 	@staticmethod
 	async def set_users_stats(ctx, target: discord.Member, level: int, trophies: int):

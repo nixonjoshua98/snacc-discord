@@ -8,7 +8,7 @@ class OnMessage(commands.Cog):
 
 	@commands.Cog.listener("on_message")
 	async def on_message(self, message):
-		if not self.bot.on_message_check(message):
+		if not await self.bot.on_message_check(message):
 			return
 
 		# Natsu

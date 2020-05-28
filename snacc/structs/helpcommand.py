@@ -51,7 +51,7 @@ class HelpCommand(commands.DefaultHelpCommand):
             embed.set_footer(text=f"{bot.user.name} | Page {i + 1}/{max_pages}", icon_url=bot.user.avatar_url)
 
             for cmd in cmds:
-                sig = cmd.signature.replace("[", "<").replace("]", ">")
+                sig = cmd.usage or cmd.signature.replace("[", "<").replace("]", ">")
                 val = cmd.callback.__doc__
                 name = f"[{'|'.join([cmd.name] + cmd.aliases)}] {sig}"
 
