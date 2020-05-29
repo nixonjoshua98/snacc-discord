@@ -23,13 +23,7 @@ class TextLeaderboardBase:
         self.page_size = options.get("page_size", 15)
 
     async def send(self, ctx):
-        import time
-
-        now = time.time()
-
         pages = await self._create_pages(ctx)
-
-        print(f"{self.title}: {round(time.time() - now, 3)}s")
 
         await Menu(pages, timeout=60, delete_after=False).send(ctx)
 

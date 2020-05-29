@@ -18,7 +18,7 @@ class Listeners(commands.Cog):
 
     @commands.Cog.listener("on_guild_join")
     async def on_guild_join(self, guild):
-        """ Called when the legacy joins a new server (guild). """
+        """ Called when the bot joins a new server. """
 
         bot_info = await self.bot.application_info()
 
@@ -47,7 +47,7 @@ class Listeners(commands.Cog):
 
     @commands.Cog.listener("on_member_remove")
     async def on_member_remove(self, member):
-        """ Called when a member leaves (or kicked) from a server. """
+        """ Called when a member leaves a server. """
 
         msg = f"**{str(member)}** " + (f"({member.nick}) " if member.nick else "") + "has left the server"
 

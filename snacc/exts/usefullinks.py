@@ -21,7 +21,7 @@ class UsefulLinks(commands.Cog, name="Useful Links"):
 		channel = ctx.bot.get_channel(USEFUL_LINKS_CHANNEL)
 		message = await channel.fetch_message(USEFUL_LINKS_EMBED)
 
-		embed = message.pages[0]
+		embed = message.embeds[0]
 
 		embed.insert_field_at(index, name=name, value=value)
 
@@ -35,7 +35,7 @@ class UsefulLinks(commands.Cog, name="Useful Links"):
 		channel = ctx.bot.get_channel(USEFUL_LINKS_CHANNEL)
 		message = await channel.fetch_message(USEFUL_LINKS_EMBED)
 
-		embed = message.pages[0]
+		embed = message.embeds[0]
 
 		embed.remove_field(index)
 
