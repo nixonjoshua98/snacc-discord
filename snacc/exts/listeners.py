@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-ON_GUILD_JOIN = "The infamous **{bot.user.name}** has graced your ~~lowly~~ server! [{guild.owner.mention}]"
+from snacc.common import MAIN_SERVER
 
 
 async def send_system_channel(guild, message):
@@ -20,9 +20,7 @@ class Listeners(commands.Cog):
     async def on_guild_join(self, guild):
         """ Called when the bot joins a new server. """
 
-        bot_info = await self.bot.application_info()
-
-        msg = ON_GUILD_JOIN.format(guild=guild, bot=self.bot, bot_info=bot_info)
+        msg = f"The infamous **{self.bot.user.name}** has graced your ~~lowly~~ server! [{guild.owner.mention}]"
 
         await send_system_channel(guild, msg)
 
@@ -40,8 +38,11 @@ class Listeners(commands.Cog):
             if role is not None:
                 await member.add_roles(role)
 
+            if member.guild.id == MAIN_SERVER:
+                await member.dm_channel.send(f"Welcome to {member.guild.name}! Introduce yourself to the server!")
+
         except (discord.Forbidden, discord.HTTPException):
-            """ We failed to add the role """
+            """ We failed to add the role or send the DM. """
 
         await send_system_channel(member.guild, msg)
 
