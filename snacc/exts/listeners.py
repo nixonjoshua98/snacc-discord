@@ -39,7 +39,7 @@ class Listeners(commands.Cog):
                 await member.add_roles(role)
 
             if member.guild.id == MAIN_SERVER:
-                await member.dm_channel.send(f"Welcome to {member.guild.name}! Introduce yourself to the server!")
+                await member.send(f"Welcome to {member.guild.name}! Introduce yourself to the server!")
 
         except (discord.Forbidden, discord.HTTPException):
             """ We failed to add the role or send the DM. """
