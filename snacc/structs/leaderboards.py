@@ -102,11 +102,11 @@ class TextLeaderboardBase:
         return headers, rows, author_row
 
     def _create_row(self, rank, user, row):
-        username = "Unknown User" if user is None else user.display_name[0:20]
+        username = "" if user is None else user.display_name[0:20]
 
         entry = [f"#{rank:02d}", username]
 
-        entry.extend([str(row.get(col, None))[0:20] for col in self.columns])
+        entry.extend([str(row[col])[0:20] for col in self.columns])
 
         return entry
 
