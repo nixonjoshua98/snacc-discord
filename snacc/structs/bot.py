@@ -1,13 +1,10 @@
 import os
 import ssl
 import asyncpg
-import discord
 
 from discord.ext import commands
 
 from snacc.structs.helpcommand import HelpCommand
-
-from snacc.common.queries import ArenaStatsSQL, HangmanSQL, ServersSQL
 
 
 class SnaccBot(commands.Bot):
@@ -53,29 +50,7 @@ class SnaccBot(commands.Bot):
         if (not self.exts_loaded) or (message.guild is None) or message.author.bot:
             return False
 
-        elif await self.is_user_muted(message):
-            return False
-
         return True
-
-    async def is_user_muted(self, message) -> bool:
-        """
-        Returns a boolean showing if the user is muted, as well as deleting their message if they are muted.
-
-        :param message: The discord message
-        :return bool: Returns if the user is muted.
-        """
-
-        is_muted = discord.utils.get(message.author.roles, name="Muted") is not None
-
-        # Attempt to delete the message if they are muted
-        if is_muted:
-            try:
-                await message.delete()
-            except (discord.HTTPException, discord.Forbidden):
-                """ Failed """
-
-        return is_muted
 
     async def on_message(self, message):
         if await self.on_message_check(message):
@@ -110,7 +85,6 @@ class SnaccBot(commands.Bot):
         self.load_extension("snacc.exts.wiki")
         self.load_extension("snacc.exts.hangman")
         self.load_extension("snacc.exts.usefullinks")
-        self.load_extension("snacc.exts.moderator")
         self.load_extension("snacc.exts.misc")
         self.load_extension("snacc.exts.settings")
 

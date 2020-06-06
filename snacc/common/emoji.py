@@ -1,7 +1,6 @@
 
 
 class Emoji:
-    BOT = "<:stinky:714161888983908382>"
     XP = "<:xp:714836955791097998>"
 
     ARROW_LEFT, ARROW_RIGHT = "\U00002b05", "\U000027a1"

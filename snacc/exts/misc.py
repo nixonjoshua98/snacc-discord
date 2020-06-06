@@ -1,11 +1,15 @@
 import os
 import httpx
-
 import discord
+
+from typing import Optional
+
 from discord.ext import commands
 
 from datetime import datetime
 from bs4 import BeautifulSoup
+
+from snacc.common.converters import Range
 
 
 class Miscellaneous(commands.Cog):
@@ -67,6 +71,21 @@ class Miscellaneous(commands.Cog):
 
 		else:
 			await ctx.send("I found not definitions or examples for your query.")
+
+	@commands.cooldown(1, 60, commands.BucketType.user)
+	@commands.command(name="purge", usage="<target=None> <limit=0>")
+	async def purge(self, ctx, target: Optional[discord.Member] = None, limit: Range(0, 100) = 0):
+		""" [Admin] Purge a channel of messages. Optional user can be targeted. """
+
+		def check(m):
+			return target is None or m.author == target
+
+		try:
+			deleted = await ctx.channel.purge(limit=limit, check=check)
+		except (discord.HTTPException, discord.Forbidden):
+			return await ctx.send("Channel purge failed.")
+
+		await ctx.send(f"Deleted {len(deleted)} message(s)")
 
 	@commands.command(name="source")
 	async def send_github(self, ctx):
