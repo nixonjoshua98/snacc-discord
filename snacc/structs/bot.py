@@ -105,7 +105,6 @@ class SnaccBot(commands.Bot):
 
         self.load_extension("snacc.exts.errorhandler")
         self.load_extension("snacc.exts.listeners")
-        self.load_extension("snacc.exts.onmessage")
 
         self.load_extension("snacc.exts.arenastats")
         self.load_extension("snacc.exts.wiki")

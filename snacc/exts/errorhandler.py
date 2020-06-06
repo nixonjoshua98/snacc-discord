@@ -10,11 +10,6 @@ class ErrorHandler(commands.Cog):
         self.bot.on_command_error = self.on_command_error
 
     async def on_command_error(self, ctx, esc):
-        """
-        :param ctx: Discord context
-        :param esc: Exception raised
-        """
-
         if isinstance(esc, commands.CommandNotFound):
             return None
 
