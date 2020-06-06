@@ -1,9 +1,11 @@
 import discord
 from discord.ext import commands
 
+import asyncio
+
 from datetime import datetime
 
-from snacc.common import checks
+from snacc.common import checks, ABO_CHANNEL
 from snacc.common.emoji import Emoji
 from snacc.common.queries import ArenaStatsSQL
 from snacc.common.converters import UserMember, NormalUser
@@ -19,6 +21,11 @@ def chunk_list(ls, n):
 
 class ArenaStats(commands.Cog, name="Arena Stats"):
 	""" Commands related to the Arena mode in the `Auto Battles Online` mobile game. """
+
+	def __init__(self, bot):
+		self.bot = bot
+
+		asyncio.create_task(self.shame_users())
 
 	async def cog_check(self, ctx):
 		return await checks.has_role(ctx, key="member_role") or await checks.has_role(ctx, name="VIP")
@@ -45,6 +52,59 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 					for result in results[24:]:
 						await con.execute(ArenaStatsSQL.DELETE_ROW, target.id, result["date_set"])
 
+	async def shame_users(self):
+		while not self.bot.is_closed():
+			await asyncio.sleep(60 * 60 * 12)
+
+			for channel_id in (ABO_CHANNEL,):
+				channel = self.bot.get_channel(channel_id)
+
+				if channel is None:
+					continue
+
+				conf = await self.bot.get_server(channel.guild)
+				role = channel.guild.get_role(conf["member_role"])
+
+				if role is None:
+					continue
+
+				rows = await self.bot.pool.fetch(ArenaStatsSQL.SELECT_ALL_USERS_LATEST)
+				data = {row["user_id"]: row for row in rows}
+
+				lacking, missing = [], []
+
+				# Iterate over every member who has the role
+				for member in role.members:
+					user_data = data.get(member.id)
+
+					# User has never set their stats before
+					if user_data is None:
+						missing.append(member.mention)
+						continue
+
+					days = (datetime.now() - user_data["date_set"]).days
+
+					# User has not set stats recently
+					if days >= 7:
+						lacking.append((member.mention, days))
+
+				message = ""
+
+				if missing:
+					message = "**__Missing__** - Set your stats `!s <level> <trophies>`\n" + ", ".join(missing)
+
+				if lacking:
+					lacking.sort(key=lambda row: row[1], reverse=True)
+
+					message = message + "\n" * 2 if message else message
+
+					ls = [f"{ele[0]} **({ele[1]})**" for ele in lacking]
+
+					message += "**__Lacking__** - No recent stat updates\n" + ", ".join(ls)
+
+				if message:
+					await channel.send(message)
+
 	@commands.cooldown(1, 60 * 60 * 3, commands.BucketType.user)
 	@commands.command(name="set", aliases=["s"], cooldown_after_parsing=True)
 	async def set_stats(self, ctx, level: int, trophies: int):
@@ -65,43 +125,14 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 		await ctx.send(f"**{target.display_name}** :thumbsup:")
 
 	@commands.has_permissions(administrator=True)
-	@commands.command(name="shame", help="Shame others")
-	async def shame(self, ctx: commands.Context):
-		""" [Admin] Mention the members who are missing or lacking stat updates.  """
+	@commands.command(name="members")
+	async def get_num_members(self, ctx):
+		""" [Admin] Count the number of users who have the server member role. """
 
-		svr_config = await ctx.bot.get_server(ctx.guild)
+		conf = await self.bot.get_server(ctx.guild)
+		role = ctx.guild.get_role(conf["member_role"])
 
-		role = ctx.guild.get_role(svr_config["member_role"])
-
-		all_data = await ctx.bot.pool.fetch(ArenaStatsSQL.SELECT_ALL_USERS_LATEST)
-
-		data_table = {row["user_id"]: row for row in all_data}
-
-		lacking, missing = [], []
-
-		for member in role.members:
-			user_data = data_table.get(member.id, None)
-
-			if user_data is None:
-				missing.append(member)
-				continue
-
-			days = (datetime.now() - user_data["date_set"]).days
-
-			if days >= 7:
-				lacking.append((member, days))
-
-		msg = f"**Members: {len(role.members)}**\n"
-
-		if len(lacking) > 0:
-			msg += "\n" + "**__Lacking__** - Members who have not updated their stats in the past 7 days\n"
-			msg += " | ".join(map(lambda ele: f"{ele[0].mention} **({ele[1]})**", lacking)) + "\n"
-
-		if len(missing) > 0:
-			msg += "\n" + "**__Missing__** - Set your stats using `!set <level> <trophies>`\n"
-			msg += " | ".join(map(lambda ele: ele.mention, missing))
-
-		await ctx.send(msg)
+		await ctx.send(f"Members: {len(role.members)}")
 
 	@commands.command(name="stats")
 	async def get_stats(self, ctx, target: NormalUser() = None):
@@ -145,4 +176,4 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 
 
 def setup(bot):
-	bot.add_cog(ArenaStats())
+	bot.add_cog(ArenaStats(bot))
