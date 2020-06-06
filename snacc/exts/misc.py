@@ -13,7 +13,6 @@ from snacc.common.converters import Range
 
 
 class Miscellaneous(commands.Cog):
-
 	@commands.command(name="lines")
 	async def lines(self, ctx):
 		""" Count the number of lines within the bot. """
@@ -75,7 +74,7 @@ class Miscellaneous(commands.Cog):
 	@commands.cooldown(1, 60, commands.BucketType.user)
 	@commands.command(name="purge", usage="<target=None> <limit=0>")
 	async def purge(self, ctx, target: Optional[discord.Member] = None, limit: Range(0, 100) = 0):
-		""" [Admin] Purge a channel of messages. Optional user can be targeted. """
+		""" [Admin] Purge a channel of messages. """
 
 		def check(m):
 			return target is None or m.author == target

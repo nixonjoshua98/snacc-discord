@@ -67,7 +67,7 @@ class MenuBase:
 		for emoji in self._buttons:
 			await self.message.add_reaction(emoji)
 
-	async def _after_callback(self, react, user):
+	async def _remove_react(self, react, user):
 		try:
 			await react.remove(user)
 
@@ -80,9 +80,10 @@ class MenuBase:
 		if callback is not None:
 			await callback()
 
-		await self._after_callback(react, user)
+		await self._remove_react(react, user)
 
-		await self.update()
+		if callback is not None:
+			await self.update()
 
 	async def _after_expired(self):
 		try:

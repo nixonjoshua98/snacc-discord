@@ -1,7 +1,7 @@
 import discord
-from discord.ext import commands
-
 import asyncio
+
+from discord.ext import commands
 
 from datetime import datetime
 
@@ -20,7 +20,7 @@ def chunk_list(ls, n):
 
 
 class ArenaStats(commands.Cog, name="Arena Stats"):
-	""" Commands related to the Arena mode in the `Auto Battles Online` mobile game. """
+	""" Commands related to the Arena mode. """
 
 	def __init__(self, bot):
 		self.bot = bot
