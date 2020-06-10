@@ -54,7 +54,7 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 
 	async def shame_users(self):
 		while not self.bot.is_closed():
-			await asyncio.sleep(60 * 60 * 8)
+			await asyncio.sleep(60 * 60 * 12)
 
 			for channel_id in (ABO_CHANNEL,):
 				channel = self.bot.get_channel(channel_id)
