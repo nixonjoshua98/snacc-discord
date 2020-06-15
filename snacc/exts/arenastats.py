@@ -1,5 +1,6 @@
 import os
 import discord
+import asyncio
 
 from discord.ext import commands, tasks
 
@@ -55,6 +56,8 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 
 	@tasks.loop(hours=12.0)
 	async def shame_users(self):
+		await asyncio.sleep(60 * 60 * 6)
+
 		channel = self.bot.get_channel(ABO_CHANNEL)
 
 		if channel is None:

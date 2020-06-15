@@ -61,7 +61,6 @@ class PrivateChannels(commands.Cog, name="Private Channels"):
 
 					await channel.send(f"Channel is set to expire in `{cd}`.")
 
-	@commands.cooldown(1, 60 * 30, commands.BucketType.member)
 	@commands.bot_has_permissions(manage_channels=True)
 	@commands.group(name="private", aliases=["pc"], invoke_without_command=True)
 	async def private_channel(self, ctx, name: Optional[str] = None):
@@ -100,13 +99,27 @@ class PrivateChannels(commands.Cog, name="Private Channels"):
 		if row is None:
 			return await ctx.send(f"{ctx.channel.mention} is not a private channel created by me.")
 
+		await ctx.channel.set_permissions(user, read_messages=True)
+
+		await ctx.send(f"{user.mention} has been added to this channel.")
+
+	@commands.bot_has_permissions(manage_roles=True)
+	@private_channel.command(name="remove")
+	async def remove_member(self, ctx, user: NormalUser()):
+		""" Remove a member from the current private channel. """
+
+		row = await ctx.bot.pool.fetchrow(PrivateChannelsSQL.SELECT_CHANNEL, str(ctx.guild.id), str(ctx.channel.id))
+
+		if row is None:
+			return await ctx.send(f"{ctx.channel.mention} is not a private channel created by me.")
+
 		# Author is not the owner of the channel
 		elif str(ctx.author.id) != row["owner_id"]:
 			return await ctx.send(f"Only the creator of the channel can add members.")
 
-		await ctx.channel.set_permissions(user, read_messages=True)
+		await ctx.channel.set_permissions(user, read_messages=False)
 
-		await ctx.send(f"{user.mention} has been added to this channel.")
+		await ctx.send(f"{user.mention} has been removed from the channel.")
 
 	@commands.cooldown(1, 60 * 60, commands.BucketType.channel)
 	@private_channel.command(name="extend")
