@@ -65,6 +65,7 @@ class PrivateChannels(commands.Cog, name="Private Channels"):
 
 					await channel.send(f"Channel is set to expire in `{cd}`.")
 
+	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
 	@commands.bot_has_permissions(manage_channels=True)
 	@commands.group(name="private", aliases=["pc"], invoke_without_command=True)
 	async def private_channel(self, ctx, name: Optional[str] = None):
@@ -128,7 +129,7 @@ class PrivateChannels(commands.Cog, name="Private Channels"):
 	@commands.cooldown(1, 60 * 60, commands.BucketType.channel)
 	@private_channel.command(name="extend")
 	async def extend_lifetime(self, ctx):
-		""" Extend the lifetime of theprivate channel. """
+		""" Extend the lifetime of the private channel. """
 
 		row = await ctx.bot.pool.fetchrow(PrivateChannelsSQL.SELECT_CHANNEL, str(ctx.guild.id), str(ctx.channel.id))
 
