@@ -1,5 +1,5 @@
+import os
 import discord
-import asyncio
 
 from discord.ext import commands, tasks
 
@@ -25,7 +25,8 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 	def __init__(self, bot):
 		self.bot = bot
 
-		self.shame_users.start()
+		if not os.getenv("DEBUG", False):
+			self.shame_users.start()
 
 	async def cog_check(self, ctx):
 		return await checks.has_role(ctx, key="member_role") or await checks.has_role(ctx, name="VIP")

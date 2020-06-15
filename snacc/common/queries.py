@@ -66,3 +66,25 @@ class HangmanSQL:
     ADD_WIN = ("INSERT INTO hangman (user_id, wins) VALUES ($1, 1) "
                "ON CONFLICT (user_id) DO "
                "UPDATE SET wins = hangman.wins + 1;")
+
+
+class PrivateChannelsSQL:
+    # SELECT
+    SELECT_EXPIRING_CHANNELS = "SELECT server_id, channel_id, owner_id, lifetime " \
+                               "FROM private_channels " \
+                               "WHERE can_expire = True;"
+
+    SELECT_CHANNEL = "SELECT * FROM private_channels WHERE server_id = $1 AND channel_id = $2;"
+
+    # INSERT
+    INSERT_CHANNEL = "INSERT INTO private_channels (server_id, channel_id, owner_id, lifetime, can_expire) " \
+                     "VALUES($1, $2, $3, $4, True);"
+
+    # DELETE
+    DELETE_ROW = "DELETE FROM private_channels WHERE server_id = $1 AND channel_id = $2;"
+
+    # Update
+    UPDATE_LIFETIME = "UPDATE private_channels " \
+                      "SET lifetime = private_channels.lifetime + $3 " \
+                      "WHERE server_id = $1 AND channel_id = $2;"
+
