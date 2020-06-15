@@ -1,4 +1,5 @@
 import itertools
+import os
 import discord
 import secrets
 
@@ -13,10 +14,12 @@ from snacc.common.queries import PrivateChannelsSQL
 
 
 class PrivateChannels(commands.Cog, name="Private Channels"):
+	""" All commands are sub commands. E.g `!pc add User#1234` """
 	def __init__(self, bot):
 		self.bot = bot
 
-		self.channel_manager.start()
+		if not os.getenv("DEBUG", False):
+			self.channel_manager.start()
 
 	@staticmethod
 	async def create_category(guild):
@@ -26,7 +29,7 @@ class PrivateChannels(commands.Cog, name="Private Channels"):
 
 		return await guild.create_category("Private")
 
-	@tasks.loop(seconds=15.0)
+	@tasks.loop(minutes=15.0)
 	async def channel_manager(self):
 		results = await self.bot.pool.fetch(PrivateChannelsSQL.SELECT_EXPIRING_CHANNELS)
 
@@ -90,20 +93,17 @@ class PrivateChannels(commands.Cog, name="Private Channels"):
 	@commands.bot_has_permissions(manage_roles=True)
 	@private_channel.command(name="add")
 	async def add_member(self, ctx, user: NormalUser()):
+		""" [Sub Command] Add a member to the current private channel. """
+
 		await ctx.channel.set_permissions(user, read_messages=True)
 
 		await ctx.send(f"{user.mention} has been added to this channel.")
 
-	@commands.bot_has_permissions(manage_roles=True)
-	@private_channel.command(name="remove")
-	async def remove_member(self, ctx, user: NormalUser()):
-		await ctx.channel.set_permissions(user, read_messages=False)
-
-		await ctx.send(f"User `{str(user)}` has been removed from this channel.")
-
 	@commands.cooldown(1, 60 * 60, commands.BucketType.channel)
 	@private_channel.command(name="extend")
 	async def extend_lifetime(self, ctx):
+		""" [Sub Command] Extend the lifetime of theprivate channel. """
+
 		row = await ctx.bot.pool.fetchrow(PrivateChannelsSQL.SELECT_CHANNEL, str(ctx.guild.id), str(ctx.channel.id))
 
 		if row is None:

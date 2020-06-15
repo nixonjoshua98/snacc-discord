@@ -50,12 +50,16 @@ class HelpCommand(commands.DefaultHelpCommand):
             embed.set_thumbnail(url=bot.user.avatar_url)
             embed.set_footer(text=f"{bot.user.name} | Page {i + 1}/{max_pages}", icon_url=bot.user.avatar_url)
 
-            for cmd in cmds:
-                sig = cmd.usage or cmd.signature.replace("[", "<").replace("]", ">")
-                val = cmd.callback.__doc__
-                name = f"[{'|'.join([cmd.name] + cmd.aliases)}] {sig}"
+            for root in cmds:
+                group_commands = [root] + list(root.commands) if isinstance(root, commands.Group) else [root]
 
-                embed.add_field(name=name, value=val, inline=False)
+                for cmd in group_commands:
+                    sig = cmd.usage or cmd.signature.replace("[", "<").replace("]", ">")
+                    val = str(cmd.callback.__doc__)
+
+                    name = f"[{'|'.join([cmd.name] + cmd.aliases)}] {sig}"
+
+                    embed.add_field(name=name, value=val, inline=False)
 
             pages.append(embed)
 
