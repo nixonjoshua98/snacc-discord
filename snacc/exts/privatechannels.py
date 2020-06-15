@@ -72,7 +72,7 @@ class PrivateChannels(commands.Cog, name="Private Channels"):
 
 		overwrites = {
 			ctx.guild.default_role: discord.PermissionOverwrite(read_messages=False),
-			ctx.guild.me: discord.PermissionOverwrite(read_messages=True)
+			ctx.author: discord.PermissionOverwrite(read_messages=True)
 		}
 
 		name = name if name is not None else secrets.token_urlsafe(8).lower()
