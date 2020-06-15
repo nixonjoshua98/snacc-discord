@@ -47,6 +47,10 @@ class PrivateChannels(commands.Cog, name="Private Channels"):
 
 				channel = server.get_channel(int(row["channel_id"]))
 
+				if channel is None:
+					await self.bot.pool.execute(PrivateChannelsSQL.DELETE_ROW, row["server_id"], row["channel_id"])
+					continue
+
 				hours_since_created = (now - channel.created_at).total_seconds() / 3600
 
 				if hours_since_created > row["lifetime"]:
@@ -85,12 +89,12 @@ class PrivateChannels(commands.Cog, name="Private Channels"):
 		await ctx.send(f"Channel with name **{channel.name}** has been created!")
 
 		await channel.send(
-			f"Invite members to this channel by using `{ctx.prefix}pc invite <username>`.\n"
+			f"Invite members to this channel by using `{ctx.prefix}pc add <username>`.\n"
 			f"This channel will be deleted in **6** hours but can be extended using `{ctx.prefix}pc extend`"
 		)
 
 	@commands.bot_has_permissions(manage_roles=True)
-	@private_channel.command(name="add")
+	@private_channel.command(name="add", aliases=["invite"])
 	async def add_member(self, ctx, user: NormalUser()):
 		""" Add a member to the current private channel. """
 
@@ -114,8 +118,8 @@ class PrivateChannels(commands.Cog, name="Private Channels"):
 			return await ctx.send(f"{ctx.channel.mention} is not a private channel created by me.")
 
 		# Author is not the owner of the channel
-		elif str(ctx.author.id) != row["owner_id"]:
-			return await ctx.send(f"Only the creator of the channel can add members.")
+		elif str(user.id) == row["owner_id"]:
+			return await ctx.send(f"You cannot kick the creator of the channel.")
 
 		await ctx.channel.set_permissions(user, read_messages=False)
 
@@ -139,3 +143,4 @@ class PrivateChannels(commands.Cog, name="Private Channels"):
 
 def setup(bot):
 	bot.add_cog(PrivateChannels(bot))
+
