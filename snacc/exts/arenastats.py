@@ -45,7 +45,7 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 
 		async with ctx.bot.pool.acquire() as con:
 			async with con.transaction():
-				await con.execute(ArenaStatsSQL.INSERT_ROW, target.id, datetime.now(), level, trophies)
+				await con.execute(ArenaStatsSQL.INSERT_ROW, target.id, datetime.utcnow(), level, trophies)
 
 				results = await con.fetch(ArenaStatsSQL.SELECT_USER, target.id)
 
@@ -83,7 +83,7 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 				missing.append(member.mention)
 				continue
 
-			days = (datetime.now() - user_data["date_set"]).days
+			days = (datetime.utcnow() - user_data["date_set"]).days
 
 			# User has not set stats recently
 			if days >= 7:
@@ -146,7 +146,7 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 
 		embeds = []
 		chunks = tuple(chunk_list(results, 6))
-		today = datetime.today().strftime('%d/%m/%Y %X')
+		today = datetime.utcnow().strftime('%d/%m/%Y %X')
 
 		for i, page in enumerate(chunks):
 			embed = discord.Embed(title=f"{target.display_name}'s Arena Stats", colour=discord.Color.orange())

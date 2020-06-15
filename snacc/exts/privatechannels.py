@@ -65,7 +65,6 @@ class PrivateChannels(commands.Cog, name="Private Channels"):
 
 					await channel.send(f"Channel is set to expire in `{cd}`.")
 
-	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
 	@commands.bot_has_permissions(manage_channels=True)
 	@commands.group(name="private", aliases=["pc"], invoke_without_command=True)
 	async def private_channel(self, ctx, name: Optional[str] = None):
@@ -84,14 +83,14 @@ class PrivateChannels(commands.Cog, name="Private Channels"):
 
 		await ctx.bot.pool.execute(
 			PrivateChannelsSQL.INSERT_CHANNEL,
-			str(ctx.guild.id), str(channel.id), str(ctx.author.id), 6.0
+			str(ctx.guild.id), str(channel.id), str(ctx.author.id), 3.0
 		)
 
 		await ctx.send(f"Channel with name **{channel.name}** has been created!")
 
 		await channel.send(
 			f"Invite members to this channel by using `{ctx.prefix}pc add <username>`.\n"
-			f"This channel will be deleted in **6** hours but can be extended using `{ctx.prefix}pc extend`"
+			f"This channel will be deleted in **3** hours but can be extended using `{ctx.prefix}pc extend`"
 		)
 
 	@commands.bot_has_permissions(manage_roles=True)
@@ -118,7 +117,7 @@ class PrivateChannels(commands.Cog, name="Private Channels"):
 		if row is None:
 			return await ctx.send(f"{ctx.channel.mention} is not a private channel created by me.")
 
-		# Author is not the owner of the channel
+		# Cannot kick the creator of the channel
 		elif str(user.id) == row["owner_id"]:
 			return await ctx.send(f"You cannot kick the creator of the channel.")
 
@@ -137,9 +136,9 @@ class PrivateChannels(commands.Cog, name="Private Channels"):
 			return await ctx.send(f"{ctx.channel.mention} is not a private channel created by me.")
 
 		# Update the lifetime
-		await ctx.bot.pool.execute(PrivateChannelsSQL.UPDATE_LIFETIME, str(ctx.guild.id), str(ctx.channel.id), 6.0)
+		await ctx.bot.pool.execute(PrivateChannelsSQL.UPDATE_LIFETIME, str(ctx.guild.id), str(ctx.channel.id), 3.0)
 
-		await ctx.send("This channels lifetime has been extended by 6 hours.")
+		await ctx.send("This channels lifetime has been extended by 3 hours.")
 
 
 def setup(bot):
