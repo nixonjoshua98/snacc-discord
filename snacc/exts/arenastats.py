@@ -25,7 +25,7 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 	def __init__(self, bot):
 		self.bot = bot
 
-		asyncio.create_task(self.shame_users())
+		self.shame_users.start()
 
 	async def cog_check(self, ctx):
 		return await checks.has_role(ctx, key="member_role") or await checks.has_role(ctx, name="VIP")
