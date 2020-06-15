@@ -1,7 +1,7 @@
 import discord
 import asyncio
 
-from discord.ext import commands
+from discord.ext import commands, tasks
 
 from datetime import datetime
 
@@ -52,58 +52,54 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 					for result in results[24:]:
 						await con.execute(ArenaStatsSQL.DELETE_ROW, target.id, result["date_set"])
 
+	@tasks.loop(hours=12.0)
 	async def shame_users(self):
-		while not self.bot.is_closed():
-			await asyncio.sleep(60 * 60 * 12)
+		channel = self.bot.get_channel(ABO_CHANNEL)
 
-			for channel_id in (ABO_CHANNEL,):
-				channel = self.bot.get_channel(channel_id)
+		if channel is None:
+			return
 
-				if channel is None:
-					continue
+		conf = await self.bot.get_server(channel.guild)
+		role = channel.guild.get_role(conf["member_role"])
 
-				conf = await self.bot.get_server(channel.guild)
-				role = channel.guild.get_role(conf["member_role"])
+		if role is None:
+			return
 
-				if role is None:
-					continue
+		rows = await self.bot.pool.fetch(ArenaStatsSQL.SELECT_ALL_USERS_LATEST)
+		data = {row["user_id"]: row for row in rows}
 
-				rows = await self.bot.pool.fetch(ArenaStatsSQL.SELECT_ALL_USERS_LATEST)
-				data = {row["user_id"]: row for row in rows}
+		lacking, missing = [], []
 
-				lacking, missing = [], []
+		# Iterate over every member who has the role
+		for member in role.members:
+			user_data = data.get(member.id)
 
-				# Iterate over every member who has the role
-				for member in role.members:
-					user_data = data.get(member.id)
+			# User has never set their stats before
+			if user_data is None:
+				missing.append(member.mention)
+				continue
 
-					# User has never set their stats before
-					if user_data is None:
-						missing.append(member.mention)
-						continue
+			days = (datetime.now() - user_data["date_set"]).days
 
-					days = (datetime.now() - user_data["date_set"]).days
+			# User has not set stats recently
+			if days >= 7:
+				lacking.append((member.mention, days))
 
-					# User has not set stats recently
-					if days >= 7:
-						lacking.append((member.mention, days))
+		message = ""
 
-				message = ""
+		if missing:
+			message = "**__Missing__** - Set your stats `!s <level> <trophies>`\n" + ", ".join(missing)
 
-				if missing:
-					message = "**__Missing__** - Set your stats `!s <level> <trophies>`\n" + ", ".join(missing)
+		if lacking:
+			lacking.sort(key=lambda row: row[1], reverse=True)
 
-				if lacking:
-					lacking.sort(key=lambda row: row[1], reverse=True)
+			message = message + "\n" * 2 if message else message
 
-					message = message + "\n" * 2 if message else message
+			ls = [f"{ele[0]} **({ele[1]})**" for ele in lacking]
 
-					ls = [f"{ele[0]} **({ele[1]})**" for ele in lacking]
+			message += "**__Lacking__** - No recent stat updates\n" + ", ".join(ls)
 
-					message += "**__Lacking__** - No recent stat updates\n" + ", ".join(ls)
-
-				if message:
-					await channel.send(message)
+		await channel.send(message if message else "Everyone is up-to-date!")
 
 	@commands.cooldown(1, 60 * 60 * 3, commands.BucketType.user)
 	@commands.command(name="set", aliases=["s"], cooldown_after_parsing=True)

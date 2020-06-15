@@ -65,7 +65,6 @@ class UserMember(DiscordMember):
 	def __init__(self):
 		super(UserMember, self).__init__(allow_bots=False, allow_author=True, allow_admins=True, members_only=True)
 
-
 class NormalUser(DiscordMember):
 	def __init__(self):
 		super(NormalUser, self).__init__(allow_bots=False, allow_author=False, allow_admins=True, members_only=False)
