@@ -32,6 +32,8 @@ class ErrorHandler(commands.Cog):
             await ctx.send("You are doing that too fast.")
 
         else:
+            print(esc)
+
             await ctx.send(esc)
 
 

@@ -84,7 +84,6 @@ class SnaccBot(commands.Bot):
         self.load_extension("snacc.exts.arenastats")
         self.load_extension("snacc.exts.wiki")
         self.load_extension("snacc.exts.hangman")
-        self.load_extension("snacc.exts.privatechannels")
         self.load_extension("snacc.exts.usefullinks")
         self.load_extension("snacc.exts.misc")
         self.load_extension("snacc.exts.settings")
