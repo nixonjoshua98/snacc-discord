@@ -72,6 +72,7 @@ class Miscellaneous(commands.Cog):
 			await ctx.send("I found not definitions or examples for your query.")
 
 	@commands.cooldown(1, 60, commands.BucketType.user)
+	@commands.has_permissions(administrator=True)
 	@commands.command(name="purge", usage="<target=None> <limit=0>")
 	async def purge(self, ctx, target: Optional[discord.Member] = None, limit: Range(0, 100) = 0):
 		""" [Admin] Purge a channel of messages. """
