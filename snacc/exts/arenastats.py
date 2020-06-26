@@ -124,12 +124,12 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 
 		await ctx.send(f"**{target.display_name}** :thumbsup:")
 
-	@commands.has_permissions(administrator=True)
 	@commands.command(name="members")
 	async def get_num_members(self, ctx):
-		""" [Admin] Count the number of users who have the server member role. """
+		""" Count the number of users who have the server member role. """
 
 		conf = await self.bot.get_server(ctx.guild)
+
 		role = ctx.guild.get_role(conf["member_role"])
 
 		await ctx.send(f"Members: {len(role.members)}")

@@ -82,6 +82,7 @@ class Miscellaneous(commands.Cog):
 
 		try:
 			deleted = await ctx.channel.purge(limit=limit, check=check)
+
 		except (discord.HTTPException, discord.Forbidden):
 			return await ctx.send("Channel purge failed.")
 

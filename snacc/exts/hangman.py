@@ -32,6 +32,7 @@ class HangmanGame:
         self.category = category
 
         self.cooldowns = dict()
+        self.skip_votes = set()
         self.participants = set()
         self.letter_guesses = set()
 
@@ -104,7 +105,7 @@ class HangmanGame:
 
         return True
 
-    def check_win(self):
+    def check_win(self) -> bool:
         alphanum = string.ascii_uppercase + string.digits
 
         return all(char.upper() in self.letter_guesses for char in self.hidden_word if char.upper() in alphanum)
@@ -118,10 +119,7 @@ class HangmanGame:
             if char.isspace():
                 ls.append("/")
 
-            elif upper in self.letter_guesses:
-                ls.append(char)
-
-            elif char in string.punctuation:
+            elif upper in self.letter_guesses or char in string.punctuation:
                 ls.append(char)
 
             else:
@@ -157,7 +155,6 @@ class Hangman(commands.Cog):
         self.bot = bot
 
         self.games = {}
-        self.votes = {}
 
     @commands.Cog.listener(name="on_message")
     async def on_message(self, message: discord.Message):
@@ -175,7 +172,6 @@ class Hangman(commands.Cog):
 
                 elif result == HangmanGuess.GAME_WON:
                     self.games[message.channel.id] = None
-                    self.votes[message.channel.id] = set()
 
                     await self.bot.pool.execute(HangmanSQL.ADD_WIN, message.author.id)
 
@@ -183,7 +179,6 @@ class Hangman(commands.Cog):
 
                 elif result == HangmanGuess.GAME_OVER:
                     self.games[message.channel.id] = None
-                    self.votes[message.channel.id] = set()
 
                     await message.channel.send(f"You have run out of lives. The word was `{inst.hidden_word}`")
 
@@ -223,7 +218,6 @@ class Hangman(commands.Cog):
             return await ctx.send("No hangman game is currently running.")
 
         self.games[ctx.channel.id] = None
-        self.votes[ctx.channel.id] = set()
 
         await ctx.send(f"{ctx.message.author.mention} gave up on the hangman game.")
 
@@ -239,20 +233,18 @@ class Hangman(commands.Cog):
         elif ctx.author not in inst.participants:
             return await ctx.send("You are not currently in any hangman game.")
 
-        elif ctx.author.id in self.votes.get(ctx.channel.id, set()):
+        elif ctx.author.id in inst.skip_votes:
             return await ctx.send("You have already voted to skip.")
 
         num_participants = len(inst.participants)
         votes_needed = max(2, math.ceil(num_participants / 2))
 
-        self.votes[ctx.channel.id] = self.votes.get(ctx.channel.id, set())
-        self.votes[ctx.channel.id].add(ctx.author.id)
+        inst.skip_votes.add(ctx.author.id)
 
-        num_votes = len(self.votes[ctx.channel.id])
+        num_votes = len(inst.skip_votes)
 
         if num_votes >= votes_needed:
             self.games[ctx.channel.id] = None
-            self.votes[ctx.channel.id] = set()
 
             await ctx.send("Skipped :thumbsup:")
 
@@ -265,15 +257,17 @@ class Hangman(commands.Cog):
     async def cheat(self, ctx):
         """ [Creator] Recieve a DM with the hidden word. """
 
-        inst = self.games.get(ctx.channel.id, None)
+        inst = self.games.get(ctx.channel.id)
 
         if inst is None:
             return await ctx.send("No hangman game is currently running.")
 
         try:
             await ctx.author.send(f"The hidden word is **{inst.hidden_word}**")
+
         except (discord.HTTPException, discord.Forbidden):
             await ctx.send("I failed to DM you.")
+
         else:
             await ctx.send("I have DM'ed you the hidden word.")
 
