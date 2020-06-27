@@ -100,9 +100,8 @@ class Miscellaneous(commands.Cog):
 		""" My invite link. """
 
 		await ctx.send(
-			"**https://discord.com/oauth2/authorize?client_id=666616515436478473&scope=bot&permissions=8"
-			"\nor\n"
-			"https://tinyurl.com/snaccbot**"
+			"1. https://discord.com/oauth2/authorize?client_id=666616515436478473&scope=bot&permissions=8\n"
+			"2. https://tinyurl.com/snaccbot"
 		)
 
 
