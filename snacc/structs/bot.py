@@ -60,11 +60,9 @@ class SnaccBot(commands.Bot):
         print("Creating connection pool...", end="")
 
         if os.getenv("DEBUG", False):
-            # Local
             self.pool = await asyncpg.create_pool(os.environ["CON_STR"], max_size=15)
 
         else:
-            # Heroku
             ctx = ssl.create_default_context(cafile="./rds-combined-ca-bundle.pem")
             ctx.check_hostname = False
             ctx.verify_mode = ssl.CERT_NONE
@@ -84,7 +82,6 @@ class SnaccBot(commands.Bot):
         self.load_extension("snacc.exts.arenastats")
         self.load_extension("snacc.exts.wiki")
         self.load_extension("snacc.exts.hangman")
-        self.load_extension("snacc.exts.usefullinks")
         self.load_extension("snacc.exts.misc")
         self.load_extension("snacc.exts.settings")
 
