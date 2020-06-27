@@ -8,6 +8,8 @@ from snacc.structs.helpcommand import HelpCommand
 
 
 class SnaccBot(commands.Bot):
+    EXTENSIONS = ["errorhandler", "listeners", "arenastats", "wiki", "hangman", "misc", "settings"]
+
     def __init__(self):
         super().__init__(command_prefix=self.get_prefix, case_insensitive=True, help_command=HelpCommand())
 
@@ -60,14 +62,14 @@ class SnaccBot(commands.Bot):
         print("Creating connection pool...", end="")
 
         if os.getenv("DEBUG", False):
-            self.pool = await asyncpg.create_pool(os.environ["CON_STR"], max_size=15)
+            self.pool = await asyncpg.create_pool(os.getenv("CON_STR"), max_size=15)
 
         else:
             ctx = ssl.create_default_context(cafile="./rds-combined-ca-bundle.pem")
             ctx.check_hostname = False
             ctx.verify_mode = ssl.CERT_NONE
 
-            self.pool = await asyncpg.create_pool(os.environ["DATABASE_URL"], ssl=ctx, max_size=15)
+            self.pool = await asyncpg.create_pool(os.getenv("DATABASE_URL"), ssl=ctx, max_size=15)
 
         print("OK")
 
@@ -76,14 +78,8 @@ class SnaccBot(commands.Bot):
 
         self.exts_loaded = False
 
-        self.load_extension("snacc.exts.errorhandler")
-        self.load_extension("snacc.exts.listeners")
-
-        self.load_extension("snacc.exts.arenastats")
-        self.load_extension("snacc.exts.wiki")
-        self.load_extension("snacc.exts.hangman")
-        self.load_extension("snacc.exts.misc")
-        self.load_extension("snacc.exts.settings")
+        for ext in self.EXTENSIONS:
+            self.load_extension(f"snacc.exts.{ext}")
 
         self.exts_loaded = True
 
@@ -98,10 +94,10 @@ class SnaccBot(commands.Bot):
 
         self.server_cache[guild.id] = await settings.get_server_settings(guild)
 
-    async def get_server(self, guild):
+    async def get_server(self, guild, *, refresh: bool = False):
         """ Get the settings from either the cache or the database for a guild. """
 
-        if self.server_cache.get(guild.id, None) is None:
+        if refresh or self.server_cache.get(guild.id, None) is None:
             await self.update_server_cache(guild)
 
         return self.server_cache.get(guild.id, None)
@@ -119,6 +115,6 @@ class SnaccBot(commands.Bot):
         return commands.when_mentioned_or(prefix)(self, message)
 
     def run(self):
-        super(SnaccBot, self).run(os.environ["SNACC_BOT_TOKEN"])
+        super(SnaccBot, self).run(os.getenv("SNACC_BOT_TOKEN"))
 
 

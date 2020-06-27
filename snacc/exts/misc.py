@@ -38,39 +38,36 @@ class Miscellaneous(commands.Cog):
 
 		word = word.lower()
 
-		async def send_request(url_: str):
-			async with httpx.AsyncClient() as client:
-				return await client.get(url_)
-
-		url = f"http://dictionary.reference.com/browse/{word}?s=t"
-
-		r = await send_request(url)
+		async with httpx.AsyncClient() as client:
+			r = await client.get(f"http://dictionary.reference.com/browse/{word}?s=t")
 
 		if r.status_code != httpx.codes.OK:
-			return await ctx.send("I found not definitions or examples for your query.")
+			return await ctx.send("I failed to query the dictionary.")
 
+		# Soup extracting
 		soup = BeautifulSoup(r.content, "html.parser")
+		defs = soup.find(class_="css-1urpfgu e16867sm0").find_all(class_="one-click-content css-1p89gle e1q3nk1v4")
 
-		entry = soup.find(class_="css-1urpfgu e16867sm0")
-		defs = entry.find_all(class_="one-click-content css-1p89gle e1q3nk1v4")
-
+		# Create list of definitions
 		definitions = [txt for txt in map(lambda ele: ele.text.strip(), defs) if not txt[0].isupper()]
 		definitions = [f"{i}. {d}" for i, d in enumerate(definitions, start=1)]
 
 		if len(definitions) > 0:
-			today = datetime.today().strftime('%d/%m/%Y %X')
+			# Character limit: 1024
 			value = "\n".join(definitions)
 			value = value[:1021] + "..." if len(value) > 1024 else value
-
-			embed = discord.Embed(title=word, colour=discord.Color.orange(), url=url)
+			embed = discord.Embed(title=word, colour=discord.Color.orange(), url=str(r.url))
 
 			embed.add_field(name="Definition(s)", value=value)
-			embed.set_footer(text=f"{ctx.bot.user.name} | {today}", icon_url=ctx.bot.user.avatar_url)
 
-			await ctx.send(embed=embed)
+			embed.set_footer(
+				text=f"{ctx.bot.user.name} | {datetime.utcnow().strftime('%d/%m/%Y %X')}",
+				icon_url=ctx.bot.user.avatar_url
+			)
 
-		else:
-			await ctx.send("I found not definitions or examples for your query.")
+			return await ctx.send(embed=embed)
+
+		await ctx.send("I found no definitions or examples for your query.")
 
 	@commands.cooldown(1, 60, commands.BucketType.user)
 	@commands.has_permissions(administrator=True)
@@ -100,10 +97,10 @@ class Miscellaneous(commands.Cog):
 		""" My invite link. """
 
 		await ctx.send(
-			"Full Length Link\n"
-			"https://discord.com/oauth2/authorize?client_id=666616515436478473&scope=bot&permissions=8\n"
 			"Shortened Link\n"
-			"https://tinyurl.com/snaccbot"
+			"https://tinyurl.com/snaccbot\n"
+			"Full Length Link\n"
+			"https://discord.com/oauth2/authorize?client_id=666616515436478473&scope=bot&permissions=8"
 		)
 
 

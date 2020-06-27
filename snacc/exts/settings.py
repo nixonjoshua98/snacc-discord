@@ -42,9 +42,9 @@ class Settings(commands.Cog):
 
 		await ctx.send(f"Prefix has been updated to `{prefix}`")
 
-	@commands.command(name="defaultrole")
+	@commands.command(name="setdefaultrole")
 	async def set_default_role(self, ctx: commands.Context, role: discord.Role = None):
-		""" Set the default role which gets added to each member when they join the server. """
+		""" Set (or unset) the default role which gets added to each member when they join the server. """
 
 		# Unset the default role (set it to zero)
 		if role is None:
@@ -60,9 +60,9 @@ class Settings(commands.Cog):
 			await ctx.bot.pool.execute(ServersSQL.UPDATE_DEFAULT_ROLE, ctx.guild.id, role.id)
 			await ctx.send(f"The default role has been set to `{role.name}`")
 
-	@commands.command(name="memberrole")
+	@commands.command(name="setmemberrole")
 	async def set_member_role(self, ctx: commands.Context, role: discord.Role = None):
-		""" Set the member role which can open up server-specific commands for server regulars. """
+		""" Set (or unset) the member role which can open up server-specific commands for server regulars. """
 
 		# Unset the member role
 		if role is None:

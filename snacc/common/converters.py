@@ -1,4 +1,5 @@
 import discord
+
 from discord.ext import commands
 
 
@@ -51,7 +52,6 @@ class Range(commands.Converter):
 		try:
 			val = int(argument)
 
-			# Value out of range
 			if val > self.max_ or val < self.min_:
 				raise commands.UserInputError(f"Argument should be within **{self.min_:,} - {self.max_:,}**")
 

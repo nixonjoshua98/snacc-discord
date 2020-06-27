@@ -57,7 +57,7 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 					for result in results[24:]:
 						await con.execute(ArenaStatsSQL.DELETE_ROW, target.id, result["date_set"])
 
-	@tasks.loop(hours=6.0)
+	@tasks.loop(hours=12.0)
 	async def shame_users(self):
 		await asyncio.sleep(60 * 60 * 6)
 
