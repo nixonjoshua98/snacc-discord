@@ -25,7 +25,7 @@ async def has_role(ctx, *, name: str = None, key: str = None):
 
 
 async def server_has_member_role(ctx):
-	config = await ctx.bot.get_server(ctx.guild.id)
+	config = await ctx.bot.get_server(ctx.guild)
 
 	role = ctx.guild.get_role(config["member_role"])
 
