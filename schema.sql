@@ -18,5 +18,6 @@ CREATE table IF NOT EXISTS servers (
 server_id BIGINT PRIMARY KEY,
 default_role BIGINT,
 member_role BIGINT,
-prefix VARCHAR(255)
+prefix VARCHAR(255),
+display_joins BOOL
 );

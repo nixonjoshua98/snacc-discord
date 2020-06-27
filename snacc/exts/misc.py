@@ -90,7 +90,7 @@ class Miscellaneous(commands.Cog):
 	async def send_github(self, ctx):
 		""" Bot source code. """
 
-		await ctx.send("**https://github.com/nixonjoshua98/discord-snacc-bot**")
+		await ctx.send("https://github.com/nixonjoshua98/discord-snacc-bot")
 
 	@commands.command(name="invite")
 	async def send_bot_invite(self, ctx):

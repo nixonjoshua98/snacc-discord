@@ -32,11 +32,14 @@ class Listeners(commands.Cog):
     async def on_member_join(self, member):
         """ Called when a member joins a server. """
 
+        svr = await self.bot.get_server(member.guild)
+
+        if not svr.get("display_joins"):
+            return
+
         msg = f"Welcome {member.mention} to {member.guild.name}!"
 
         try:
-            svr = await self.bot.get_server(member.guild)
-
             role = member.guild.get_role(svr["default_role"])
 
             if role is not None:
@@ -51,9 +54,12 @@ class Listeners(commands.Cog):
     async def on_member_remove(self, member):
         """ Called when a member leaves a server. """
 
-        msg = f"**{str(member)}** " + (f"({member.nick}) " if member.nick else "") + "has left the server"
+        svr = await self.bot.get_server(member.guild)
 
-        await send_system_channel(member.guild, msg)
+        if svr.get("display_joins"):
+            msg = f"**{str(member)}** " + (f"({member.nick}) " if member.nick else "") + "has left the server"
+
+            await send_system_channel(member.guild, msg)
 
 
 def setup(bot):

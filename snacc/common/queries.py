@@ -2,12 +2,13 @@
 class ServersSQL:
     SELECT_SERVER = "SELECT * FROM servers WHERE server_id=$1;"
 
-    INSERT_SERVER = "INSERT INTO servers (server_id, prefix, default_role, member_role) " \
-                    "VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING;"
+    INSERT_SERVER = "INSERT INTO servers (server_id, prefix, default_role, member_role, display_joins) " \
+                    "VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING;"
 
     UPDATE_PREFIX = "UPDATE servers SET prefix = $2 WHERE server_id=$1;"
     UPDATE_MEMBER_ROLE = "UPDATE servers SET member_role = $2 WHERE server_id=$1;"
     UPDATE_DEFAULT_ROLE = "UPDATE servers SET default_role = $2 WHERE server_id=$1;"
+    UPDATE_DISPLAY_JOINS = "UPDATE servers SET display_joins = $2 WHERE server_id=$1;"
 
 
 class ArenaStatsSQL:
