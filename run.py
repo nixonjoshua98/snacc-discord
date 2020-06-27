@@ -11,11 +11,33 @@ def set_env():
     os.environ["DEBUG"] = "1"
 
 
+def setup_loop():
+    import sys
+    import subprocess
+    import platform
+
+    print(f"Operating System: {platform.system()}")
+
+    if platform.system() == "Linux":
+        try:
+            import uvloop
+        except ImportError:
+            subprocess.check_call([sys.executable, "-m", "pip", "install", 'uvloop'])
+        finally:
+            import uvloop
+
+        uvloop.install()
+
+        print("Installed 'uvloop'")
+
+
 if __name__ == "__main__":
     import os
     import snacc
 
     if os.path.isfile("config.ini"):
         set_env()
+
+    setup_loop()
 
     snacc.run()
