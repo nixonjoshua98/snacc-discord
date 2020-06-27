@@ -41,7 +41,7 @@ class TextLeaderboardBase:
         chunks = tuple(chunk_list(entries, self.page_size))
 
         for i, chunk in enumerate(chunks, start=1):
-            message = "Trophy Leaderboard " + f"[Page {i} / {len(chunks)}]" + ("\n" * 2)
+            message = self.title + f"[Page {i} / {len(chunks)}]" + ("\n" * 2)
 
             message += headers + "\n"
 
