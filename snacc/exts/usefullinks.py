@@ -15,6 +15,7 @@ class UsefulLinks(commands.Cog, name="Useful Links"):
 
 	async def get_embed(self, ctx) -> Tuple[discord.Message, discord.Embed]:
 		""" Get the useful links message. """
+
 		channel = ctx.bot.get_channel(MainServer.USEFUL_LINKS_CHANNEL)
 
 		message = await channel.fetch_message(MainServer.USEFUL_LINKS_EMBED)
@@ -24,6 +25,7 @@ class UsefulLinks(commands.Cog, name="Useful Links"):
 	@commands.command(name="addlink")
 	async def add_useful_link(self, ctx, index: int, name: str, value: str):
 		""" [Admin] Add a new field to the useful link embed. """
+
 		message, embed = await self.get_embed(ctx)
 
 		embed.insert_field_at(index, name=name, value=value)
@@ -35,6 +37,7 @@ class UsefulLinks(commands.Cog, name="Useful Links"):
 	@commands.command(name="rmlink")
 	async def remove_useful_link(self, ctx, index: int):
 		""" [Admin] Remove a field from the useful link embed. """
+
 		message, embed = await self.get_embed(ctx)
 
 		embed.remove_field(index)

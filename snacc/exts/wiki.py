@@ -20,22 +20,6 @@ class Wiki(commands.Cog):
 
         self.bot = bot
 
-    async def get_wiki(self) -> list:
-        def valid_secton(section):
-            """ """
-            title = section["title"]
-
-            return not title.startswith(("V0", "V1", "Main Page", "Auto Battles Online Wiki"))
-
-        async with httpx.AsyncClient() as client:
-            r = await client.get(f"{Wiki.BASE_URL}/api/v1/Articles/List?limit=50")
-
-        data_ = r.json()
-        data_ = [item_ for item_ in data_["items"] if valid_secton(item_)]
-
-        # Group each link by the character it starts with
-        return [(k, list(items)) for k, items in itertools.groupby(data_, lambda ele: ele["title"][0])]
-
     @commands.command(name="wiki")
     async def wiki(self, ctx):
         """ Alphabetical list of Wiki articles. """
@@ -60,6 +44,22 @@ class Wiki(commands.Cog):
             embeds.append(embed)
 
         await Menu(embeds, timeout=60, delete_after=False).send(ctx)
+
+    @staticmethod
+    async def get_wiki() -> list:
+        def valid_secton(section):
+            title = section["title"]
+
+            return not title.startswith(("V0", "V1", "Main Page", "Auto Battles Online Wiki"))
+
+        async with httpx.AsyncClient() as client:
+            r = await client.get(f"{Wiki.BASE_URL}/api/v1/Articles/List?limit=50")
+
+        data_ = r.json()
+        data_ = [item_ for item_ in data_["items"] if valid_secton(item_)]
+
+        # Group each link by the character it starts with
+        return [(k, list(items)) for k, items in itertools.groupby(data_, lambda ele: ele["title"][0])]
 
 
 def setup(bot):
