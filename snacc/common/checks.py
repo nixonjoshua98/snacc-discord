@@ -1,7 +1,7 @@
 import discord
 
 
-def author_is_server_owner(ctx): return ctx.author.id != ctx.guild.owner.id
+def author_is_server_owner(ctx): return ctx.author.id == ctx.guild.owner.id
 
 
 def author_is_admin(ctx): return ctx.author.guild_permissions.administrator

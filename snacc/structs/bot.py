@@ -117,7 +117,7 @@ class SnaccBot(commands.Bot):
 
         svr = self.server_cache.get(message.guild.id, dict())
 
-        prefix = "?" if os.getenv("DEBUG", False) else svr.get("prefix", "!")
+        prefix = "-" if os.getenv("DEBUG", False) else svr.get("prefix", "!")
 
         return commands.when_mentioned_or(prefix)(self, message)
 
