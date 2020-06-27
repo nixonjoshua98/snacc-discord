@@ -132,7 +132,7 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 
 		role = ctx.guild.get_role(conf["member_role"])
 
-		await ctx.send(f"Members: {len(role.members)}")
+		await ctx.send(f"# of users with the ``{role.name}`` role: {len(role.members)}")
 
 	@commands.command(name="stats")
 	async def get_stats(self, ctx, target: NormalUser() = None):
