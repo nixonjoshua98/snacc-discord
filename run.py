@@ -16,8 +16,6 @@ def setup_loop():
     import subprocess
     import platform
 
-    print(f"Operating System: {platform.system()}")
-
     if platform.system() == "Linux":
         try:
             import uvloop
@@ -27,8 +25,6 @@ def setup_loop():
             import uvloop
 
         uvloop.install()
-
-        print("Installed 'uvloop'")
 
 
 if __name__ == "__main__":
