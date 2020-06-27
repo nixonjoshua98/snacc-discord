@@ -1,9 +1,9 @@
+import httpx
 import discord
-from discord.ext import commands
-
 import itertools
 
-from snacc import utils
+from discord.ext import commands
+
 from snacc.structs.menus import Menu
 
 
@@ -16,29 +16,32 @@ class Wiki(commands.Cog):
     BASE_URL = "https://autobattlesonline.fandom.com"
 
     def __init__(self, bot):
-        self.__cache = {}
+        self._cache = {}
 
         self.bot = bot
+
+    async def get_wiki(self) -> list:
+        def valid_secton(section):
+            """ """
+            title = section["title"]
+
+            return not title.startswith(("V0", "V1", "Main Page", "Auto Battles Online Wiki"))
+
+        async with httpx.AsyncClient() as client:
+            r = await client.get(f"{Wiki.BASE_URL}/api/v1/Articles/List?limit=50")
+
+        data_ = r.json()
+        data_ = [item_ for item_ in data_["items"] if valid_secton(item_)]
+
+        # Group each link by the character it starts with
+        return [(k, list(items)) for k, items in itertools.groupby(data_, lambda ele: ele["title"][0])]
 
     @commands.command(name="wiki")
     async def wiki(self, ctx):
         """ Alphabetical list of Wiki articles. """
 
-        async def get_wiki():
-            def valid_secton(section):
-                title = section["title"]
-
-                return not title.startswith(("V0.", "Main Page", "Auto Battles Online Wiki"))
-
-            r = await utils.get(f"{Wiki.BASE_URL}/api/v1/Articles/List?limit=50")
-
-            data_ = r.json()
-            data_ = [item_ for item_ in data_["items"] if valid_secton(item_)]
-
-            return [(k, list(items)) for k, items in itertools.groupby(data_, lambda ele: ele["title"][0])]
-
         # Cache the Wiki to avoid sending a request every command invoked
-        data = self.__cache["wiki"] = await get_wiki() if self.__cache.get("wiki") is None else self.__cache["wiki"]
+        data = self._cache["wiki"] = await self.get_wiki() if self._cache.get("wiki") is None else self._cache["wiki"]
 
         embeds, chunks = [], list(chunk_list(data, 5))
 
@@ -46,7 +49,7 @@ class Wiki(commands.Cog):
         for i, chunk in enumerate(chunks, start=1):
             embed = discord.Embed(title="Auto Battle Online Wiki", url=Wiki.BASE_URL)
 
-            # A, [Sections...]
+            # A, [Links...]
             for letter, links in chunk:
                 rows = [f"{item['title']}\n{Wiki.BASE_URL}{item['url']}" for item in links]
 

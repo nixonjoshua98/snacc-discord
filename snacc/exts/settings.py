@@ -28,7 +28,7 @@ class Settings(commands.Cog):
 				svr = await con.fetchrow(ServersSQL.SELECT_SERVER, guild.id)
 
 				if svr is None:
-					await con.execute(ServersSQL.INSERT_SERVER, guild.id, *ServersSQL.DEFAULT_ROW.values())
+					await con.execute(ServersSQL.INSERT_SERVER, guild.id, "!", 0, 0)
 
 					svr = await con.fetchrow(ServersSQL.SELECT_SERVER, guild.id)
 
@@ -43,15 +43,15 @@ class Settings(commands.Cog):
 		await ctx.send(f"Prefix has been updated to `{prefix}`")
 
 	@commands.command(name="defaultrole")
-	async def set_default_role(self, ctx: commands.Context, role: discord.Role = 0):
+	async def set_default_role(self, ctx: commands.Context, role: discord.Role = None):
 		""" Set the default role which gets added to each member when they join the server. """
 
 		# Unset the default role (set it to zero)
-		if role == 0:
-			await ctx.bot.pool.execute(ServersSQL.UPDATE_DEFAULT_ROLE, ctx.guild.id, role)
+		if role is None:
+			await ctx.bot.pool.execute(ServersSQL.UPDATE_DEFAULT_ROLE, ctx.guild.id, 0)
 			await ctx.send(f"Default role has been unset.")
 
-		# Role is higher in the hierachy so the legacy cannot assign it.
+		# Role is higher in the hierachy so the bot cannot assign it.
 		elif role > ctx.guild.me.top_role:
 			await ctx.send(f"I cannot use the role `{role.name}` since the role is higher than me.")
 
@@ -61,12 +61,12 @@ class Settings(commands.Cog):
 			await ctx.send(f"The default role has been set to `{role.name}`")
 
 	@commands.command(name="memberrole")
-	async def set_member_role(self, ctx: commands.Context, role: discord.Role = 0):
+	async def set_member_role(self, ctx: commands.Context, role: discord.Role = None):
 		""" Set the member role which can open up server-specific commands for server regulars. """
 
 		# Unset the member role
-		if role == 0:
-			await ctx.bot.pool.execute(ServersSQL.UPDATE_MEMBER_ROLE, ctx.guild.id, role)
+		if role is None:
+			await ctx.bot.pool.execute(ServersSQL.UPDATE_MEMBER_ROLE, ctx.guild.id, 0)
 			await ctx.send(f"Member role has been unset.")
 
 		# Update the member role

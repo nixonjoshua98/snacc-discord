@@ -13,6 +13,7 @@ from snacc.common.converters import Range
 
 
 class Miscellaneous(commands.Cog):
+
 	@commands.command(name="lines")
 	async def lines(self, ctx):
 		""" Count the number of lines within the bot. """
@@ -93,6 +94,16 @@ class Miscellaneous(commands.Cog):
 		""" Bot source code. """
 
 		await ctx.send("**https://github.com/nixonjoshua98/discord-snacc-bot**")
+
+	@commands.command(name="invite")
+	async def send_bot_invite(self, ctx):
+		""" My invite link. """
+
+		await ctx.send(
+			"**https://discord.com/oauth2/authorize?client_id=666616515436478473&scope=bot&permissions=8"
+			"\nor\n"
+			"https://tinyurl.com/snaccbot**"
+		)
 
 
 def setup(bot):

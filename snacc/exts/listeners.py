@@ -1,15 +1,19 @@
 import discord
-from discord.ext import commands
 
-from snacc.common import MAIN_SERVER
+from discord.ext import commands
 
 
 async def send_system_channel(guild, message):
-    try:
-        await guild.system_channel.send(message)
+    channels = [guild.system_channel] + guild.text_channels
 
-    except (AttributeError, discord.Forbidden, discord.HTTPException):
-        """ Failed """
+    for c in channels:
+        try:
+            await c.send(message)
+
+        except (AttributeError, discord.Forbidden, discord.HTTPException):
+            continue
+
+        break
 
 
 class Listeners(commands.Cog):
@@ -38,11 +42,8 @@ class Listeners(commands.Cog):
             if role is not None:
                 await member.add_roles(role)
 
-            if member.guild.id == MAIN_SERVER:
-                await member.send(f"Welcome to {member.guild.name}! Introduce yourself to the server!")
-
         except (discord.Forbidden, discord.HTTPException):
-            """ We failed to add the role or send the DM. """
+            """ We failed to add the role. """
 
         await send_system_channel(member.guild, msg)
 

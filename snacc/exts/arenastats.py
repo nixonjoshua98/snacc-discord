@@ -6,7 +6,7 @@ from discord.ext import commands, tasks
 
 from datetime import datetime
 
-from snacc.common import checks, ABO_CHANNEL
+from snacc.common import checks, MainServer
 from snacc.common.emoji import Emoji
 from snacc.common.queries import ArenaStatsSQL
 from snacc.common.converters import UserMember, NormalUser
@@ -30,7 +30,10 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 			self.shame_users.start()
 
 	async def cog_check(self, ctx):
-		return await checks.has_role(ctx, key="member_role") or await checks.has_role(ctx, name="VIP")
+		return await checks.server_has_member_role(ctx) and (
+				await checks.has_role(ctx, key="member_role") or
+				await checks.has_role(ctx, name="VIP")
+		)
 
 	@staticmethod
 	async def set_users_stats(ctx, target: discord.Member, level: int, trophies: int):
@@ -58,7 +61,7 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 	async def shame_users(self):
 		await asyncio.sleep(60 * 60 * 6)
 
-		channel = self.bot.get_channel(ABO_CHANNEL)
+		channel = self.bot.get_channel(MainServer.ABO_CHANNEL)
 
 		if channel is None:
 			return
@@ -132,7 +135,7 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 
 		role = ctx.guild.get_role(conf["member_role"])
 
-		await ctx.send(f"# of users with the ``{role.name}`` role: {len(role.members)}")
+		await ctx.send(f"# of users with the ``{role.name}`` role: **{len(role.members)}**")
 
 	@commands.command(name="stats")
 	async def get_stats(self, ctx, target: NormalUser() = None):
@@ -146,7 +149,6 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 
 		embeds = []
 		chunks = tuple(chunk_list(results, 6))
-		today = datetime.utcnow().strftime('%d/%m/%Y %X')
 
 		for i, page in enumerate(chunks):
 			embed = discord.Embed(title=f"{target.display_name}'s Arena Stats", colour=discord.Color.orange())
@@ -163,6 +165,8 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 			embeds.append(embed)
 
 		if len(embeds) == 1:
+			today = datetime.utcnow().strftime('%d/%m/%Y %X')
+
 			embeds[0].set_footer(text=f"{ctx.bot.user.name} | {today}", icon_url=ctx.bot.user.avatar_url)
 
 		await Menu(embeds, timeout=60, delete_after=False).send(ctx)
