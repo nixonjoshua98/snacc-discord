@@ -61,7 +61,7 @@ class HangmanGame:
         elif self.is_user_on_cooldown(message.author):
             return HangmanGuess.USER_ON_COOLDOWN
 
-        self.participants.add(message.author)
+        self.participants.add(message.author.id)
 
         return self.check_guess(guess)
 
