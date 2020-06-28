@@ -73,7 +73,7 @@ class TextLeaderboardBase:
 
             prev_val = row[self.order_col]
 
-            num_entries = len(entries) - 1
+            num_entries = len(entries)
 
             # We have everything we need so just end the loop
             if (self.max_rows is not None and num_entries >= self.max_rows) and author_row is not None:
