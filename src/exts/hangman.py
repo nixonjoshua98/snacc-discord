@@ -62,6 +62,12 @@ class HangmanGame:
 
         return self.check_guess(guess)
 
+    def valid_guess(self, guess: str) -> bool:
+        is_word_guess = len(guess) == len(self.hidden_word)
+        is_letter_guess = len(guess) == 1 and guess in string.ascii_uppercase + string.digits
+
+        return is_word_guess or is_letter_guess
+
     def check_guess(self, guess: str) -> HangmanGuess:
         if guess in self.letter_guesses:
             return HangmanGuess.ALREADY_GUESSED
