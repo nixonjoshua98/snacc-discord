@@ -30,7 +30,7 @@ class Money(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 	async def free_money(self, ctx):
 		""" Gain some free money """
 
-		money = random.randint(500, 2_500)
+		money = random.randint(500, 1_500)
 
 		await ctx.bot.pool.execute(BankSQL.ADD_MONEY, ctx.author.id, money)
 
