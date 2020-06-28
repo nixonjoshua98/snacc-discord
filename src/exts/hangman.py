@@ -55,10 +55,7 @@ class HangmanGame:
     def on_message(self, message: discord.Message):
         guess = message.content.upper().strip()
 
-        if not self.is_valid_guess(guess):
-            return None
-
-        elif self.is_user_on_cooldown(message.author):
+        if self.is_user_on_cooldown(message.author):
             return HangmanGuess.USER_ON_COOLDOWN
 
         self.participants.add(message.author.id)
@@ -69,13 +66,16 @@ class HangmanGame:
         if guess in self.letter_guesses:
             return HangmanGuess.ALREADY_GUESSED
 
-        elif guess in self.hidden_word.upper():
+        elif len(guess) == 1 and guess in self.hidden_word.upper():
             self.letter_guesses.add(guess)
 
             if self.check_win():
                 return HangmanGuess.GAME_WON
 
             return HangmanGuess.CORRECT_GUESS
+
+        elif guess.upper() == self.hidden_word.upper():
+            return HangmanGuess.GAME_WON
 
         self.letter_guesses.add(guess)
 
@@ -88,9 +88,6 @@ class HangmanGame:
 
     def is_game_over(self):
         return self.lives_remaining <= 0
-
-    def is_valid_guess(self, guess):
-        return len(guess) == 1 and guess in string.ascii_uppercase + string.digits
 
     def is_user_on_cooldown(self, author: discord.Member) -> bool:
         now = time.time()
