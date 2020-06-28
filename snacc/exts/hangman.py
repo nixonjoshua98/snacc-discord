@@ -237,7 +237,7 @@ class Hangman(commands.Cog):
             return await ctx.send("You have already voted to skip.")
 
         num_participants = len(inst.participants)
-        votes_needed = math.ceil(num_participants / 2)
+        votes_needed = max(2, math.ceil(num_participants / 2))
 
         inst.skip_votes.add(ctx.author.id)
 
