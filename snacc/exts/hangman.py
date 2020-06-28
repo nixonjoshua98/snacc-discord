@@ -45,9 +45,7 @@ class HangmanGame:
         HangmanGame.load_words()
 
         if category is None:
-            cats = ("words",)
-
-            category = random.choice(cats)
+            category = random.choice(HangmanGame.get_categories())
 
         if category.lower() in HangmanGame.__word_cache.keys():
             return HangmanGame(category.lower())
