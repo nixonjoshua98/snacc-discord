@@ -7,11 +7,11 @@ from snacc.common.converters import Range
 from typing import Optional
 
 
-class Moderator(commands.Cog):
+class Moderator(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 
 	@commands.has_role("Mod")
 	@commands.cooldown(1, 60, commands.BucketType.member)
-	@commands.command(name="purge", aliases=["clear"], usage="<target=None> <limit=0>")
+	@commands.command(name="purge", usage="<target=None> <limit=0>")
 	async def purge(self, ctx, target: Optional[discord.Member] = None, limit: Range(0, 100) = 0):
 		""" [Mod] Clear a channel of messages. """
 
