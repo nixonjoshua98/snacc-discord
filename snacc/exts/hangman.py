@@ -230,7 +230,7 @@ class Hangman(commands.Cog):
         if inst is None:
             return await ctx.send("No hangman game is currently running.")
 
-        elif ctx.author not in inst.participants:
+        elif ctx.author.id not in inst.participants:
             return await ctx.send("You are not currently in any hangman game.")
 
         elif ctx.author.id in inst.skip_votes:
