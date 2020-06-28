@@ -25,7 +25,7 @@ class Money(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 
 		return row
 
-	@commands.cooldown(1, 60 * 60 * 6, commands.BucketType.user)
+	@commands.cooldown(1, 60 * 60 * 1, commands.BucketType.user)
 	@commands.command(name="free")
 	async def free_money(self, ctx):
 		""" Gain some free money """
@@ -44,7 +44,7 @@ class Money(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 
 		bal = await self.get_balance(ctx.bot.pool, user)
 
-		await ctx.send(f":moneybag: **{user.display_name}** has **${bal['money']:,}**.")
+		await ctx.send(f":moneybag: **{user.display_name}** has **${bal['money']:,}**")
 
 	@commands.cooldown(1, 60, commands.BucketType.guild)
 	@commands.command(name="richest")
