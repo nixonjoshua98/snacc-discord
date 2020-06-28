@@ -77,11 +77,15 @@ class HangmanGame:
         elif guess.upper() == self.hidden_word.upper():
             return HangmanGuess.GAME_WON
 
-        self.letter_guesses.add(guess)
+        else:
+            if len(guess) == 1:
+                self.letter_guesses.add(guess)
 
-        self.lives_remaining -= 1
+                self.lives_remaining -= 1
 
-        return HangmanGuess.GAME_OVER if self.is_game_over() else HangmanGuess.WRONG_GUESS
+                return HangmanGuess.GAME_OVER if self.is_game_over() else HangmanGuess.WRONG_GUESS
+
+            return None
 
     async def show_game(self, dest):
         return await dest.send(f"`{self.encode_word()} [{self.lives_remaining}]`")
