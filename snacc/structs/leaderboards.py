@@ -147,7 +147,8 @@ class HangmanLeaderboard(TextLeaderboardBase):
             title="Top Hangman Players",
             query=HangmanSQL.SELECT_LEADERBOARD,
             columns=["wins"],
-            order_col="wins"
+            order_col="wins",
+            max_rows=15
         )
 
 
@@ -157,5 +158,6 @@ class RichestLeaderboard(TextLeaderboardBase):
             title="Richest Players",
             query=BankSQL.SELECT_LEADERBOARD,
             columns=["money"],
-            order_col="money"
+            order_col="money",
+            max_rows=15
         )
