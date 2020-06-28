@@ -59,7 +59,7 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 
 	@tasks.loop(hours=12.0)
 	async def shame_users(self):
-		await asyncio.sleep(60 * 60 * 6)
+		await asyncio.sleep(60 * 60)
 
 		channel = self.bot.get_channel(MainServer.ABO_CHANNEL)
 
