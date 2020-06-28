@@ -192,6 +192,8 @@ class Hangman(commands.Cog):
             if inst is not None:
                 self.games[ctx.channel.id] = inst
 
+                inst.participants.add(ctx.author.id)
+
                 await ctx.send(f"A hangman game with the category `{inst.category}` has started!")
 
             else:
