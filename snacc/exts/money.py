@@ -28,13 +28,13 @@ class Money(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 	@commands.cooldown(1, 60 * 60 * 6, commands.BucketType.user)
 	@commands.command(name="free")
 	async def free_money(self, ctx):
-		""" Get some free money! """
+		""" Gain some free money """
 
 		money = random.randint(500, 2_500)
 
 		await ctx.bot.pool.execute(BankSQL.ADD_MONEY, ctx.author.id, money)
 
-		await ctx.send(f"You gained **${money}**!")
+		await ctx.send(f"You gained **${money:,}**!")
 
 	@commands.command(name="balance", aliases=["bal"])
 	async def balance(self, ctx, user: NormalUser() = None):
