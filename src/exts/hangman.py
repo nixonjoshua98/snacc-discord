@@ -58,7 +58,7 @@ class HangmanGame:
         if not self.valid_guess(guess):
             return None
 
-        if self.is_user_on_cooldown(message.author):
+        elif self.is_user_on_cooldown(message.author):
             return HangmanGuess.USER_ON_COOLDOWN
 
         self.participants.add(message.author.id)
@@ -247,7 +247,7 @@ class Hangman(commands.Cog):
             return await ctx.send("You have already voted to skip.")
 
         num_participants = len(inst.participants)
-        votes_needed = max(2, math.ceil(num_participants / 2))
+        votes_needed = 1 if num_participants == 1 else max(2, math.ceil(num_participants / 2))
 
         inst.skip_votes.add(ctx.author.id)
 
