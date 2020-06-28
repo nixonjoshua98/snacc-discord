@@ -69,3 +69,13 @@ class UserMember(DiscordMember):
 class NormalUser(DiscordMember):
 	def __init__(self):
 		super(NormalUser, self).__init__(allow_bots=False, allow_author=False, allow_admins=True, members_only=False)
+
+
+class CoinSide(commands.Converter):
+	async def convert(self, ctx, argument):
+		argument = argument.lower()
+
+		if argument not in ["tails", "heads"]:
+			raise commands.CommandError("That is an invalid coin side.")
+
+		return argument

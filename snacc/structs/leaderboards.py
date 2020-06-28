@@ -1,4 +1,4 @@
-from snacc.common.queries import ArenaStatsSQL, HangmanSQL
+from snacc.common.queries import ArenaStatsSQL, HangmanSQL, BankSQL
 
 from snacc.structs.menus import Menu
 
@@ -145,7 +145,17 @@ class HangmanLeaderboard(TextLeaderboardBase):
     def __init__(self):
         super(HangmanLeaderboard, self).__init__(
             title="Top Hangman Players",
-            query=HangmanSQL.SELECT_HANGMAN_LEADERBOARD,
+            query=HangmanSQL.SELECT_LEADERBOARD,
             columns=["wins"],
             order_col="wins"
+        )
+
+
+class RichestLeaderboard(TextLeaderboardBase):
+    def __init__(self):
+        super(RichestLeaderboard, self).__init__(
+            title="Richest Players",
+            query=BankSQL.SELECT_LEADERBOARD,
+            columns=["money"],
+            order_col="money"
         )

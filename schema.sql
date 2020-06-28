@@ -21,3 +21,8 @@ member_role BIGINT,
 prefix VARCHAR(255),
 display_joins BOOL
 );
+
+CREATE table IF NOT EXISTS bank (
+user_id BIGINT PRIMARY KEY,
+money BIGINT
+);

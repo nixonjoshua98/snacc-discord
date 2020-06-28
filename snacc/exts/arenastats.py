@@ -9,7 +9,7 @@ from datetime import datetime
 from snacc.common import checks, MainServer
 from snacc.common.emoji import Emoji
 from snacc.common.queries import ArenaStatsSQL
-from snacc.common.converters import UserMember, NormalUser
+from snacc.common.converters import UserMember, NormalUser, Range
 
 from snacc.structs.menus import Menu
 from snacc.structs.leaderboards import TrophyLeaderboard
@@ -36,7 +36,7 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 		)
 
 	@staticmethod
-	async def set_users_stats(ctx, target: discord.Member, level: int, trophies: int):
+	async def set_users_stats(ctx, target: discord.Member, level: Range(1, 125), trophies: Range(1, 7_500)):
 		"""
 		Add a new stat entry for the user and limit the number of stat entries for the user in the database.
 
@@ -110,7 +110,7 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 
 	@commands.cooldown(1, 60 * 60 * 3, commands.BucketType.user)
 	@commands.command(name="set", aliases=["s"], cooldown_after_parsing=True)
-	async def set_stats(self, ctx, level: int, trophies: int):
+	async def set_stats(self, ctx, level: Range(1, 125), trophies: Range(1, 7_500)):
 		""" Update your ABO stats, which are visible on the leaderboard. """
 
 		await self.set_users_stats(ctx, ctx.author, level, trophies)
