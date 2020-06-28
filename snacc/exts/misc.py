@@ -103,6 +103,10 @@ class Miscellaneous(commands.Cog):
 			"https://discord.com/oauth2/authorize?client_id=666616515436478473&scope=bot&permissions=8"
 		)
 
+	@commands.command(name="ping")
+	async def ping(self, ctx):
+		await ctx.send(f"Pong! {round(ctx.bot.latency * 1000, 3)}ms")
+
 
 def setup(bot):
 	bot.add_cog(Miscellaneous())
