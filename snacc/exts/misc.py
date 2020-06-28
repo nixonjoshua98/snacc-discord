@@ -94,7 +94,7 @@ class Miscellaneous(commands.Cog):
 
 	@commands.command(name="invite")
 	async def send_bot_invite(self, ctx):
-		""" My invite link. """
+		""" Bot invite link. """
 
 		await ctx.send(
 			"Shortened Link\n"
@@ -105,6 +105,8 @@ class Miscellaneous(commands.Cog):
 
 	@commands.command(name="ping")
 	async def ping(self, ctx):
+		""" Check the bot latency. """
+
 		await ctx.send(f"Pong! {round(ctx.bot.latency * 1000, 3)}ms")
 
 
