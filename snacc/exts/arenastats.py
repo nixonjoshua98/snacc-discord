@@ -20,7 +20,7 @@ def chunk_list(ls, n):
 		yield ls[i: i + n]
 
 
-class ArenaStats(commands.Cog, name="Arena Stats"):
+class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_after_parsing=True))):
 	""" Commands related to the Arena mode. """
 
 	def __init__(self, bot):
@@ -109,7 +109,7 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 		await channel.send(message if message else "Everyone is up-to-date!")
 
 	@commands.cooldown(1, 60 * 60 * 3, commands.BucketType.user)
-	@commands.command(name="set", aliases=["s"], cooldown_after_parsing=True)
+	@commands.command(name="set", aliases=["s"])
 	async def set_stats(self, ctx, level: Range(1, 125), trophies: Range(1, 7_500)):
 		""" Update your ABO stats, which are visible on the leaderboard. """
 
@@ -119,7 +119,7 @@ class ArenaStats(commands.Cog, name="Arena Stats"):
 
 	@commands.cooldown(1, 60, commands.BucketType.user)
 	@commands.has_permissions(administrator=True)
-	@commands.command(name="setuser", aliases=["su"], cooldown_after_parsing=True)
+	@commands.command(name="setuser", aliases=["su"])
 	async def set_user_stats_command(self, ctx, target: UserMember(), level: int, trophies: int):
 		""" [Admin] Set another users ABO stats. """
 

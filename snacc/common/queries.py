@@ -55,4 +55,6 @@ class BankSQL:
 
     SELECT_USER = "SELECT * FROM bank WHERE user_id = $1;"
 
-    ADD_MONEY = "UPDATE bank SET money = bank.money + $2 WHERE user_id = $1;"
+    ADD_MONEY = "INSERT INTO bank (user_id, money) VALUES ($1, $2) " \
+                "ON CONFLICT (user_id) DO "\
+                "UPDATE SET money = bank.money + $2;"

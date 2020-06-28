@@ -1,4 +1,5 @@
 import discord
+import random
 
 from discord.ext import commands
 
@@ -18,11 +19,22 @@ class Money(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 				row = await con.fetchrow(BankSQL.SELECT_USER, user.id)
 
 				if row is None:
-					await con.execute(BankSQL.INSERT_USER, user.id, 500)
+					await con.execute(BankSQL.INSERT_USER, user.id, 2_500)
 
 					row = await con.fetchrow(BankSQL.SELECT_USER, user.id)
 
 		return row
+
+	@commands.cooldown(1, 60 * 60 * 6, commands.BucketType.user)
+	@commands.command(name="free")
+	async def free_money(self, ctx):
+		""" Get some free money! """
+
+		money = random.randint(500, 2_500)
+
+		await ctx.bot.pool.execute(BankSQL.ADD_MONEY, ctx.author.id, money)
+
+		await ctx.send(f"You gained **${money}**!")
 
 	@commands.command(name="balance", aliases=["bal"])
 	async def balance(self, ctx, user: NormalUser() = None):
