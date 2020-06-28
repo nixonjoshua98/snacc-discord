@@ -16,7 +16,7 @@ class Miscellaneous(commands.Cog):
 
 		lines = 0
 
-		for root, dirs, files in os.walk("./snacc/"):
+		for root, dirs, files in os.walk("./src/"):
 			for f in files:
 				if f.endswith(".py"):
 					path = os.path.join(root, f)

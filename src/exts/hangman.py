@@ -10,10 +10,10 @@ from discord.ext import commands
 
 from typing import Union
 
-from snacc.common.emoji import Emoji
-from snacc.common.queries import HangmanSQL
+from src.common.emoji import Emoji
+from src.common.queries import HangmanSQL
 
-from snacc.structs.leaderboards import HangmanLeaderboard
+from src.structs.leaderboards import HangmanLeaderboard
 
 
 class HangmanGuess(enum.IntEnum):
@@ -128,7 +128,7 @@ class HangmanGame:
     @staticmethod
     def load_words():
         if not HangmanGame.__word_cache:
-            for root, dirs, files in os.walk(os.path.join(os.getcwd(), "snacc", "data", "hangman")):
+            for root, dirs, files in os.walk(os.path.join(os.getcwd(), "src", "data", "hangman")):
                 for f in files:
                     if f.endswith(".txt"):
                         category = f.replace(".txt", "")

@@ -1,6 +1,6 @@
-from snacc.common.queries import ArenaStatsSQL, HangmanSQL, BankSQL
+from src.common.queries import ArenaStatsSQL, HangmanSQL, BankSQL
 
-from snacc.structs.menus import Menu
+from src.structs.menus import Menu
 
 
 def chunk_list(ls, n):
@@ -25,7 +25,11 @@ class TextLeaderboardBase:
     async def send(self, ctx):
         pages = await self._create_pages(ctx)
 
-        await Menu(pages, timeout=60, delete_after=False).send(ctx)
+        if pages:
+            await Menu(pages, timeout=60, delete_after=False).send(ctx)
+
+        else:
+            await ctx.send("No records yet.")
 
     async def filter_results(self, ctx, results: list):
         return results
@@ -35,7 +39,6 @@ class TextLeaderboardBase:
 
     async def _create_pages(self, ctx):
         headers, entries, author_entry = await self._create(ctx)
-
         pages = []
 
         chunks = tuple(chunk_list(entries, self.page_size))

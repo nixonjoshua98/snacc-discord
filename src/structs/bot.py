@@ -4,7 +4,7 @@ import asyncpg
 
 from discord.ext import commands
 
-from snacc.structs.helpcommand import HelpCommand
+from src.structs.helpcommand import HelpCommand
 
 
 class SnaccBot(commands.Bot):
@@ -82,7 +82,7 @@ class SnaccBot(commands.Bot):
         self.exts_loaded = False
 
         for ext in self.EXTENSIONS:
-            self.load_extension(f"snacc.exts.{ext}")
+            self.load_extension(f"src.exts.{ext}")
 
         self.exts_loaded = True
 

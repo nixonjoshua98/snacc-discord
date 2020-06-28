@@ -2,7 +2,7 @@ import discord
 
 from discord.ext import commands
 
-from snacc.common.converters import Range
+from src.common.converters import Range
 
 from typing import Optional
 

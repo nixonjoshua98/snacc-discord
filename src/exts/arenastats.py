@@ -6,13 +6,13 @@ from discord.ext import commands, tasks
 
 from datetime import datetime
 
-from snacc.common import checks, MainServer
-from snacc.common.emoji import Emoji
-from snacc.common.queries import ArenaStatsSQL
-from snacc.common.converters import UserMember, NormalUser, Range
+from src.common import checks, MainServer
+from src.common.emoji import Emoji
+from src.common.queries import ArenaStatsSQL
+from src.common.converters import UserMember, NormalUser, Range
 
-from snacc.structs.menus import Menu
-from snacc.structs.leaderboards import TrophyLeaderboard
+from src.structs.menus import Menu
+from src.structs.leaderboards import TrophyLeaderboard
 
 
 def chunk_list(ls, n):

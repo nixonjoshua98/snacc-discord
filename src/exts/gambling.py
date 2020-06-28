@@ -3,9 +3,9 @@ import typing
 
 from discord.ext import commands
 
-from snacc.common.converters import Range, CoinSide
+from src.common.converters import Range, CoinSide
 
-from snacc.common.queries import BankSQL
+from src.common.queries import BankSQL
 
 
 class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):

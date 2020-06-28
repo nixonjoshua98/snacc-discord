@@ -29,11 +29,11 @@ def setup_loop():
 
 if __name__ == "__main__":
     import os
-    import snacc
+    import src
 
     if os.path.isfile("config.ini"):
         set_env()
 
     setup_loop()
 
-    snacc.run()
+    src.run()

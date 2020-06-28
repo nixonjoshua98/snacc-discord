@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-from snacc.structs.menus import Menu
+from src.structs.menus import Menu
 
 
 def chunk_list(ls, n):

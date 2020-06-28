@@ -1,6 +1,6 @@
 
 def run():
-    from snacc.structs.bot import SnaccBot
+    from src.structs.bot import SnaccBot
 
     bot = SnaccBot()
 

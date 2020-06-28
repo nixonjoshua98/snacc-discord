@@ -3,11 +3,11 @@ import random
 
 from discord.ext import commands
 
-from snacc.common.queries import BankSQL
+from src.common.queries import BankSQL
 
-from snacc.common.converters import NormalUser
+from src.common.converters import NormalUser
 
-from snacc.structs.leaderboards import RichestLeaderboard
+from src.structs.leaderboards import RichestLeaderboard
 
 
 class Money(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
