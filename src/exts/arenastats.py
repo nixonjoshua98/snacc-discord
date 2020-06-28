@@ -6,7 +6,7 @@ from discord.ext import commands, tasks
 
 from datetime import datetime
 
-from src.common import checks, MainServer
+from src.common import checks, MainServer, SNACCMAN
 from src.common.emoji import Emoji
 from src.common.queries import ArenaStatsSQL
 from src.common.converters import UserMember, NormalUser, Range
@@ -26,7 +26,9 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 	def __init__(self, bot):
 		self.bot = bot
 
-		if not os.getenv("DEBUG", False):
+		# We don't want to send the spam if we are debugging and the bot owner is not Snaccman.
+		if not os.getenv("DEBUG", False) and bot.owner_id == SNACCMAN:
+			print("Shaming!")
 			self.shame_users.start()
 
 	async def cog_check(self, ctx):

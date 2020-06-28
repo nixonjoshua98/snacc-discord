@@ -25,6 +25,10 @@ class SnaccBot(commands.Bot):
     async def on_ready(self):
         """ Invoked once the bot is connected and ready to use. """
 
+        app = await self.application_info()
+
+        self.owner_id = app.owner.id
+
         await self.create_pool()
         await self.setup_database()
         await self.load_extensions()
