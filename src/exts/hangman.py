@@ -55,6 +55,9 @@ class HangmanGame:
     def on_message(self, message: discord.Message):
         guess = message.content.upper().strip()
 
+        if not self.valid_guess(guess):
+            return None
+
         if self.is_user_on_cooldown(message.author):
             return HangmanGuess.USER_ON_COOLDOWN
 
