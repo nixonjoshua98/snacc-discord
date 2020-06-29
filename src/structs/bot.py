@@ -9,7 +9,7 @@ from src.structs.helpcommand import HelpCommand
 
 class SnaccBot(commands.Bot):
     EXTENSIONS = [
-        "errorhandler", "listeners", "arenastats", "moderator", "wiki",
+        "errorhandler", "serverdoor", "arenastats", "applications", "moderator", "wiki",
         "hangman", "gambling", "money", "misc", "settings"
     ]
 
