@@ -4,7 +4,7 @@ import itertools
 
 from discord.ext import commands
 
-from src.structs.menus import Menu
+from src.menus.pagemenu import PageMenu
 
 
 def chunk_list(ls, n):
@@ -25,7 +25,7 @@ class Wiki(commands.Cog):
         """ Alphabetical list of Wiki articles. """
 
         # Cache the Wiki to avoid sending a request every command invoked
-        data = self._cache["wiki"] = await self.get_wiki() if self._cache.get("wiki") is None else self._cache["wiki"]
+        data = self._cache["wiki"] = await self.get_wiki_links() if self._cache.get("wiki") is None else self._cache["wiki"]
 
         embeds, chunks = [], list(chunk_list(data, 5))
 
@@ -43,10 +43,10 @@ class Wiki(commands.Cog):
 
             embeds.append(embed)
 
-        await Menu(embeds, timeout=60, delete_after=False).send(ctx)
+        await PageMenu(ctx.bot, embeds, timeout=60.0).send(ctx)
 
     @staticmethod
-    async def get_wiki() -> list:
+    async def get_wiki_links() -> list:
         def valid_secton(section):
             title = section["title"]
 

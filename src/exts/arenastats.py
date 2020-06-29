@@ -7,11 +7,14 @@ from discord.ext import commands, tasks
 from datetime import datetime
 
 from src.common import checks, MainServer
+
 from src.common.emoji import Emoji
+
 from src.common.queries import ArenaStatsSQL
 from src.common.converters import UserMember, NormalUser, Range
 
-from src.structs.menus import Menu
+from src.menus.pagemenu import PageMenu
+
 from src.structs.leaderboards import TrophyLeaderboard
 
 
@@ -178,7 +181,7 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 
 			embeds[0].set_footer(text=f"{ctx.bot.user.name} | {today}", icon_url=ctx.bot.user.avatar_url)
 
-		await Menu(embeds, timeout=60, delete_after=False).send(ctx)
+		await PageMenu(ctx.bot, embeds, timeout=60.0).send(ctx)
 
 	@commands.cooldown(1, 60, commands.BucketType.guild)
 	@commands.command(name="trophies")

@@ -1,6 +1,6 @@
 from src.common.queries import ArenaStatsSQL, HangmanSQL, BankSQL
 
-from src.structs.menus import Menu
+from src.menus.pagemenu import PageMenu
 
 
 def chunk_list(ls, n):
@@ -26,7 +26,7 @@ class TextLeaderboardBase:
         pages = await self._create_pages(ctx)
 
         if pages:
-            await Menu(pages, timeout=60, delete_after=False).send(ctx)
+            await PageMenu(ctx.bot, pages, timeout=60.0).send(ctx)
 
         else:
             await ctx.send("No records yet.")

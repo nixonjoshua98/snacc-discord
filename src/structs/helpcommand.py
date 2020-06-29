@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-from src.structs.menus import Menu
+from src.menus.pagemenu import PageMenu
 
 
 def chunk_list(ls, n):
@@ -68,4 +68,4 @@ class HelpCommand(commands.DefaultHelpCommand):
     async def send_bot_help(self, mapping):
         pages = await self.get_pages()
 
-        await Menu(pages, timeout=60).send(self.context)
+        await PageMenu(self.context.bot, pages, timeout=60.0).send(self.context)
