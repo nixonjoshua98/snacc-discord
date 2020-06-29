@@ -25,10 +25,6 @@ class SnaccBot(commands.Bot):
     async def on_ready(self):
         """ Invoked once the bot is connected and ready to use. """
 
-        app = await self.application_info()
-
-        self.owner_id = app.owner.id
-
         await self.create_pool()
         await self.setup_database()
         await self.load_extensions()
@@ -41,6 +37,14 @@ class SnaccBot(commands.Bot):
         print(f"Adding Cog: {cog.qualified_name}...", end="")
         super(SnaccBot, self).add_cog(cog)
         print("OK")
+
+    async def is_snacc_owner(self) -> bool:
+        if self.owner_id is None:
+            app = await self.application_info()
+
+            self.owner_id = app.owner.id
+
+        return self.owner_id == 281171949298647041
 
     async def setup_database(self):
         """ Create the database tables required for the bot. """

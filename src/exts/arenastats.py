@@ -6,7 +6,7 @@ from discord.ext import commands, tasks
 
 from datetime import datetime
 
-from src.common import checks, MainServer, SNACCMAN
+from src.common import checks, MainServer
 from src.common.emoji import Emoji
 from src.common.queries import ArenaStatsSQL
 from src.common.converters import UserMember, NormalUser, Range
@@ -26,9 +26,7 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 	def __init__(self, bot):
 		self.bot = bot
 
-		# We don't want to send the spam if we are debugging and the bot owner is not Snaccman.
-		if not os.getenv("DEBUG", False) and bot.owner_id == SNACCMAN:
-			self.shame_users.start()
+		self.start_shame_users()
 
 	async def cog_check(self, ctx):
 		return await checks.server_has_member_role(ctx) and (
@@ -58,8 +56,16 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 					for result in results[24:]:
 						await con.execute(ArenaStatsSQL.DELETE_ROW, target.id, result["date_set"])
 
+	def start_shame_users(self):
+		async def predicate():
+			if not os.getenv("DEBUG", False) and await self.bot.is_snacc_owner():
+				self.shame_users.start()
+
+		asyncio.create_task(predicate())
+
 	@tasks.loop(hours=12.0)
 	async def shame_users(self):
+
 		await asyncio.sleep(60 * 60)
 
 		channel = self.bot.get_channel(MainServer.ABO_CHANNEL)
