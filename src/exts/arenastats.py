@@ -59,6 +59,8 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 	def start_shame_users(self):
 		async def predicate():
 			if not os.getenv("DEBUG", False) and await self.bot.is_snacc_owner():
+				print("Starting 'ArenaStats.shame_users' loop.")
+
 				self.shame_users.start()
 
 		asyncio.create_task(predicate())
