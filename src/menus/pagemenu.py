@@ -14,10 +14,14 @@ class PageMenu(MenuBase):
 		self._page = 0
 		self._pages = pages
 
-		self.add_button(Emoji.REWIND, self.on_rewind)
-		self.add_button(Emoji.ARROW_LEFT, self.on_arrow_left)
-		self.add_button(Emoji.ARROW_RIGHT, self.on_arrow_right)
-		self.add_button(Emoji.FAST_FORWARD, self.on_fast_forward)
+		self.add_buttons()
+
+	def add_buttons(self):
+		if len(self._pages) > 1:
+			self.add_button(Emoji.REWIND, self.on_rewind)
+			self.add_button(Emoji.ARROW_LEFT, self.on_arrow_left)
+			self.add_button(Emoji.ARROW_RIGHT, self.on_arrow_right)
+			self.add_button(Emoji.FAST_FORWARD, self.on_fast_forward)
 
 	async def send_initial_message(self, destination: discord.abc.Messageable) -> discord.Message:
 		content, embed = self.get_next_message()
