@@ -28,7 +28,6 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 
 		# We don't want to send the spam if we are debugging and the bot owner is not Snaccman.
 		if not os.getenv("DEBUG", False) and bot.owner_id == SNACCMAN:
-			print("Shaming!")
 			self.shame_users.start()
 
 	async def cog_check(self, ctx):

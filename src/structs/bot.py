@@ -86,7 +86,11 @@ class SnaccBot(commands.Bot):
         self.exts_loaded = False
 
         for ext in self.EXTENSIONS:
-            self.load_extension(f"src.exts.{ext}")
+            try:
+                self.load_extension(f"src.exts.{ext}")
+
+            except commands.ExtensionAlreadyLoaded:
+                continue
 
         self.exts_loaded = True
 
