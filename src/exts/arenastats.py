@@ -64,14 +64,14 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 			if not os.getenv("DEBUG", False) and await self.bot.is_snacc_owner():
 				print("Starting 'ArenaStats.shame_users' loop.")
 
+				await asyncio.sleep(60 * 60 * 6)
+
 				self.shame_users.start()
 
 		asyncio.create_task(predicate())
 
 	@tasks.loop(hours=12.0)
 	async def shame_users(self):
-
-		await asyncio.sleep(60 * 60 * 3)
 
 		channel = self.bot.get_channel(MainServer.ABO_CHANNEL)
 
