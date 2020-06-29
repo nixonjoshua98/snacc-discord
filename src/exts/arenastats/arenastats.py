@@ -15,7 +15,7 @@ from src.common.converters import UserMember, NormalUser, Range
 
 from src.menus.pagemenu import PageMenu
 
-from src.structs.leaderboards import TrophyLeaderboard
+from .trophyleaderboard import TrophyLeaderboard
 
 
 def chunk_list(ls, n):
@@ -189,7 +189,3 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 		""" Show the server trophy leaderboard. """
 
 		await TrophyLeaderboard().send(ctx)
-
-
-def setup(bot):
-	bot.add_cog(ArenaStats(bot))

@@ -7,7 +7,7 @@ from src.common.queries import BankSQL
 
 from src.common.converters import NormalUser
 
-from src.structs.leaderboards import RichestLeaderboard
+from .moneyleaderboard import MoneyLeaderboard
 
 
 class Money(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
@@ -51,8 +51,4 @@ class Money(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 	async def show_richest_leaderboard(self, ctx):
 		""" Display the richest players. """
 
-		await RichestLeaderboard().send(ctx)
-
-
-def setup(bot):
-	bot.add_cog(Money())
+		await MoneyLeaderboard().send(ctx)
