@@ -1,193 +1,2418 @@
-notting hill
-elf
-there will be blood
-a charlie brown christmas
-knocked up
+'twas the night before christmas
 a beautiful mind
-pulp fiction
-fifty first dates
-no country for old men
-star wars
-mystic river
-lawrence of arabia
-jurassic park
-ten things i hate about you
-forrest gump
-citizen kane
-it's a wonderful life
-lethal weapon
-zoolander
-the fugitive
-bad santa
-the shining
-schindler's list
-beauty and the beast
-the terminator
-reservoir dogs
-the human centipede
-alien
-bridget jones's diary
-annie hall
-massacre
-scrooge
-boyhood
-joyeux noel
-jaws
-singing in the rain
-casablanca
-to kill a mockingbird
-the matrix
-fargo
-titanic
-anchorman
-scream
-the bridge on the river kwai
-gladiator
-shutter island
-west side story
-saving private ryan
-liar liar
-the lion king
-about time
-the dark knight
-redemption
-the texas chainsaw massacre
-suicide squad
-halloween
-avatar
-leon: the professional
-forgetting sarah marshall
-twenty-eight days later
-old school
-the deer hunter
-good will hunting
-ghost dog
-the green mile
-raging bull
-the seven samurai
-cast away
-gone with the wind
-inception
-almost famous
-angry men
-american beauty
-wall-e
-mulholland dr.
-rudolph, the red-nosed reindeer
-the big lebowski
-wedding crashers
-taxi driver
-some like it hot
-the bourne ultimatum
-butch cassidy and the sundance kid
-psycho
-the graduate
-sin city
-dumb and dumber
-the nightmare before christmas
-pretty woman
-home alone
-on the waterfront
-dodgeball
-the wizard of oz
-predator
-clueless
-the princess bride
-the sound of music
-raiders of the lost ark
-mary poppins
-the game
-twenty-one grams
-rocky
-ghostbusters
-you've got mail
-north by northwest
-the shawshank redemption
-one flew over the cuckoo's nest
-silent night
-christmas vacation
-step brothers
-the cabin in the woods
-paranormal activity
-love actually
-minority report
-the others
-close encounters of the third kind
-heat
-taken
-vertigo
-amelie
-there's something about mary
-edward scissorhands
-all about eve
-the dark knight rises
-mission impossible
-bonnie and clyde
-the bourne identity
-dawn of the dead
-black swan
-twelve years a slave
-the silence of the lambs
-hancock
-the notebook
-memento
-trading places
-kill bill
-superbad
-the breakfast club
-fight club
-the conjuring
-eternal sunshine of the spotless mind
-groundhog day
-the prestige
-monty python and the holy grail
-the departed
-the exorcist
-the godfather
-the santa clause
-doctor zhivago
-it happened on fifth avenue
-up
-seven
-tropic thunder
-a clockwork orange
-thelma & louise
-blazing saddles
-young frankenstein
-when harry met sally
-back to the future
-scrooged
-the shawshank
-goodfellas
-how the grinch stole christmas!
-run lola run
-brokeback mountain
-meet the fockers
-james bond: casino royale
-the shop around the corner
-the blair witch project
-braveheart
-the usual suspects
-apocalypse now
-chinatown
-pan's labyrinth
-bridesmaids
-slumdog millionaire
-rear window
-tomb raider
-toy story
-indiana jones: raiders of the lost ark
-e.t. the extra-terrestrial
-die hard
-the empire strikes back
-blade runner
-the lord of the rings
-ferris bueller's day off
-airplane!
-ring
+a bothered conscience
+a brief history of time
+a bug's life
+a charlie brown christmas
+a charlie brown thanksgiving
+a christmas carol
+a christmas horror story
 a christmas story
-insomnia
-sunset blvd
+a clockwork orange
+a corner in wheat
+a dark song
+a decade under the influence
+a film unfinished
+a fish called wanda
+a funny thing happened on the way to the forum
+a girl walks home alone at night
+a hard day's night
+a haunting at the rectory
+a man for all seasons
+a matter of life and death
+a midsummer night's sex comedy
+a mighty wind
+a minute to pray, a second to die
+a more perfect union
+a most violent year
+a night at the opera
+a night to remember
+a nightmare on elm street
+a ninja pays half my rent
+a personal journey with martin scorsese through american movies
+a shot in the dark
+a streetcar named desire
+a taste of blood
+a view to a kill
+a woman is a woman
+a woman under the influence
+about time
+absolution
+ace ventura: pet detective
+across the universe
+adaptation
+adventure in sahara
+afflicted
+africa blood and guts
+african safari
+after hours
+after.life
+against all odds
+age of consent
+aguirre: the wrath of god
+aileen wuernos: the selling of a serial killer
+airplane!
+airport
+aladdin
+alama yama
+ali baba and the seven saracens
+ali zaoua: prince of the streets
+ali: fear eats the soul
+alice doesn't live here anymore
+alice in wonderland
+alice's restaurant
+alice, sweet alice
+alien
+alien abduction
+alien contamination
+aliens
+aliens of the deep
+all about eve
+all cheerleaders die
+all hallow's eve
+all is lost
+all monsters attack
+all quiet on the western front
+all that heaven allows
+all the boys love mandy lane
+all the love you cannes
 all the president's men
-the other guys
+all the real girls
+all-american co-ed
+alligator
+almost famous
+alphaville
+altered
+altered states
 amadeus
+amarcord
+amazon women on the moon
+amelie
+american beauty
+american gothic
+american graffiti
+american grindhouse
+american mary
+american scary
+american splendor
+american swing
+amusement
+an american haunting
+an american hippie in israel
+an american in paris
+an american werewolf in london
+an evening of edgar allan poe
+analyze this
+anchoress
+anchorman
+anchorman: the legend of ron burgundy
+and god created woman
+and now for something completely different
+and the ship sails on
+andrei rublev
+angel
+angel heart
+angel unchained
+angels with dirty faces
+angry men
+animal crackers
+anna christie
+anne of the thousand days
+annie hall
+anonymous
+antwone fisher
+any which way you can
+anzio
+aphrodisiac: the sexual secret of marijuana
+apocalypse now
+april fool's day
+arabia
+arcade
+armageddon
+army of frankensteins
+arsenic and old lace
+arthur
+arthur christmas
+as above, so below
+asmodexia
+assault of the sasquatch
+atari: game over
+atlantic city
+atlantis, the lost continent
+ator, the fighting eagle
+atragon
+atrocious
+attack force z
+attack the block
+audition
+austin powers in goldmember
+austin powers: international man of mystery
+austin powers: the spy who shagged me
+australia
+australia after dark
+australia: land beyond time
+auto focus
+automaton transfusion
+ava's possessions
+avalanche
+avatar
+baadasssss cinema
+baadasssss!
+baby face
+back to school
+back to the future
+backbeat
+backcountry
+bad boy bubby
+bad channels
+bad day at black rock
+bad dreams
+bad moon
+bad santa
+bad taste
+badgered
+badlands
+bait
+bananas
+band of outsiders
+baraka
+baran
+barbarella
+barbarian queen
+barfly
+barton fink
+basket case
+batman
+batman returns
+batman: the movie
+battleship potemkin
+beauty and the beast
+beauty parlor
+bedazzled
+beetlejuice
+before sunrise
+before sunset
+behind convent walls
+behind locked doors
+behind the green door
+being john malkovich
+bela lugosi meets a brooklyn gorilla
+bella
+ben-hur
+ben-hur: a tale of the christ
+bend of the river
+beneath the planet of the apes
+bernie
+better watch out
+beverly hills cop
+beyond the door
+beyond the walls of sleep
+bicycle thieves
+big ass spider!
+big wednesday
+bill & ted's bogus journey
+bill & ted's excellent adventure
+birdman or
+bite
+black caesar
+black christmas
+black dynamite
+black friday
+black hawk down
+black magic rites
+black mask
+black sabbath
+black sheep
+black sunday
+black swan
+black water
+blackadder's christmas carol
+blackmail
+blackout
+blacula
+blade
+blade runner
+blazing saddles
+blood feast
+blood orgy of the she-devils
+blood simple
+bloodsucking freaks
+bloody mama
+bloody pit of horror
+bloody sunday
+blow-up
+blue jasmine
+blue planet
+blue water, white death
+bmx bandits
+body melt
+bonnie and clyde
+bonnie's kids
+boogie nights
+born to be wild
+bottle rocket
+bound
+boyhood
+boys town
+brain of blood
+bram stoker's dracula
+brave
+braveheart
+breaker morant
+breakfast at tiffany's
+breakin'
+breathe
+breeders
+brewster mccloud
+bride of the monster
+bridesmaids
+bridget jones's diary
+bringing out the dead
+bringing up baby
+britannia hospital
+british intelligence
+broadway danny rose
+brokeback mountain
+broken
+broken blossoms
+bronson
+brooklyn
+bubba ho-tep
+buck privates
+bucktown
+bugsy
+bugsy malone
+bullitt
+bully
+burial ground
+burke & hare
+bury my heart at wounded knee
+bustin' loose
+butch cassidy and the sundance kid
+bye bye birdie
+cabaret
+cabiria
+caddyshack
+caged heat
+cahill u.s. marshal
+caligula
+calypso countdown: rigging for the amazon
+cameraman: the life and works of jack cardiff
+candy stripe nurses
+candyman
+candyman: the david klein story
+cannibal apocalypse
+cannibal holocaust
+cape fear
+captain america: the first avenger
+captain fantastic
+captain phillips
+captive wild woman
+carnage park
+carnal knowledge
+carnival of blood
+carnival of souls
+carny
+carrie
+carriers
+carving magic
+casablanca
+casino
+cast away
+castle freak
+castle of blood
+cat on a hot tin roof
+cat people
+cat's eye
+catacombs
+cave of forgotten dreams
+celia
+cemetery man
+centurion
+chain letter
+chained for life
+chandu the magician
+chariots of fire
+charley varrick
+charlie's farm
+chatterbox
+cheerleader ninjas
+chicago
+child's play
+children of a lesser god
+children of eve
+children shouldn't play with dead things
+chinatown
+chloe in the afternoon
+choke canyon
+chopping mall
+chosen survivors
+christine
+christmas vacation
+chronos
+chungking express
+cinderella
+cinemania
+circus of fear
+cisco pike
+citizen kane
+city lights
+city of god
+city of the living dead
+clash of the titans
+class of nuke 'em high
+cleanflix
+cleopatra
+clerks
+climb it, tarzan!
+close encounters of the third kind
+close-up
+cloverfield
+clown
+clowntown
+club paradise
+clue
+clueless
+cobra verde
+cockneys vs. zombies
+coffy
+cold prey
+cold prey ii
+cold turkey
+colin
+color me blood red
+color me kubrick
+coming distractions
+conan the barbarian
+coney island
+congo
+conquest
+contact
+containment
+contempt
+contracted
+cool hand luke
+coral reef adventure
+coraline
+cosmic voyage
+count dracula
+count yorga, vampire
+countess perverse
+crawl or die
+creation of the humanoids
+creature from the black lagoon
+creatures the world forgot
+creep
+creepshow
+cries and whispers
+crimson peak
+critters
+cromwell
+crooklyn
+crouching tiger, hidden dragon
+crumb
+cry of the banshee
+cujo
+cult of the cobra
+cyborg
+dallas buyers club
+dames
+dark angel: the ascent
+dark city
+dark command
+dark floors
+dark house
+dark remains
+dark ride
+dark star
+darling
+das rad
+dawn of the dead
+day for night
+day of the animals
+day of the dead
+day of the panther
+days of heaven
+dead & buried
+dead alive
+dead calm
+dead end
+dead end drive-in
+dead hooker in a trunk
+dead man
+dead men don't wear plaid
+dead men walk
+dead of night
+dead season
+dead snow
+deadlier than the male
+deadly blessing
+deadly weapons
+death becomes her
+death of a snowman
+death on the nile
+death watch
+deathtrap
+deck dogz
+deep blue sea
+deep impact
+deliverance
+demonia
+demonic toys
+demonlover
+demons
+desperado
+desperate living
+destiny in space
+devil dog: the hound of hell
+devil girl from mars
+devil's island
+diabolique
+dial m for murder
+diamonds are forever
+die another day
+die hard
+die sister, die!
+digging up the marrow
+dillinger
+diner
+dinner at eight
+dinosaurs alive
+dinoshark
+directed by john ford
+dirty mary crazy larry
+django
+django, prepare a coffin
+do the right thing
+doctor x
+doctor zhivago
+documenting the grey man
+dodgeball
+dog day afternoon
+dog soldiers
+doghouse
+dogs
+dogtown and z boys
+dolemite
+dollman
+dolly dearest
+don's party
+don't answer the phone!
+don't be afraid of the dark
+don't breathe
+don't go in the woods
+don't hang up
+don't open till christmas
+donnie brasco
+donnie darko
+doomsday
+double exposure
+dr. cyclops
+dr. jekyll and mr. hyde
+dr. no
+dr. phibes rides again
+dr. renault's secret
+dr. strangelove, or how i learned to stop worrying...
+dracula
+dracula vs. frankenstein
+dracula's daughter
+dracula: spanish version
+drag me to hell
+dragonslayer
+dressed to kill
+drums along the mohawk
+drums in the deep south
+drunken master
+drux flux
+duck amuck
+duck soup
+duel in the sun
+dumb & dumber
+dumb and dumber
+dumbo
+dummy
+dying breed
+dynamite chicken
+e.t. the extra-terrestrial
+eagles over london
+earth vs. the spider
+earthquake
+east of eden
+easy money
+easy rider
+easy riders, raging bulls
+eaten alive!
+eaters
+eating raoul
+ed wood
+eddie murphy raw
+eden lake
+edward scissorhands
+eegah
+eight legged freaks
+eight men out
+el cid
+election
+electra glide in blue
+electric boogaloo: the wild, untold story of cannon films
+elephant
+elf
+elysium
+emmanuelle
+emmet otter's jug-band christmas
+emperor of the north
+empire of the ants
+employees' entrance
+encounter with the unknown
+enter the dragon
+enter the ninja
+entrails of a virgin
+erotic nights of the living dead
+escape from l.a.
+escape from new york
+escape from the planet of the apes
+eternal sunshine of the spotless mind
+ethel
+europa report
+even dwarfs started small
+even pigeons go to heaven
+every which way but loose
+evidence
+evil aliens
+evil dead
+evil dead ii
+evil things
+ex-lady
+excalibur
+executive decision
+existenz
+exists
+exorcist ii: the heretic
+exotica
+extra weird sampler
+eyes of laura mars
+f for fake
+fairy tales
+fame
+family guy presents blue harvest
+family guy presents it's a trap
+family guy presents something something something dark side
+family plot
+fangoria's blood drive
+fantasm
+fantastic mr. fox
+fantastic voyage
+far from heaven
+fargo
+fascination
+fast times at ridgemont high
+fata morgana
+father's day
+fatso
+faust
+fear and loathing in las vegas
+fear, inc.
+feast
+felicity
+female
+female animal
+female trouble
+ferris bueller's day off
+fertile ground
+fiddler on the roof
+fido
+fifty first dates
+fight club
+fighting the war
+film geek
+final destination
+final exam
+final prayer
+finding vivian maier
+fingerprints
+fire and ice
+fire in the sky
+fire!
+first blood
+first men in the moon
+five deadly venoms
+five easy pieces
+five minutes to live
+flash gordon
+flatliners
+flesh + blood
+flesh for the beast
+flesh gordon
+flesheater
+flight of the living dead: outbreak on a plane
+floating weeds
+fog over frisco
+footlight parade
+for a few dollars more
+for the birds
+for the first time
+for your eyes only
+forbidden photos of a lady above suspicion
+forgetting sarah marshall
+forrest gump
+foxy brown
+frankenhooker
+frankenstein
+frankenstein and the monster from hell
+frankenstein meets the wolf man
+frankenstein's army
+frankenstein's castle of freaks
+freaks
+frenzy
+friday foster
+fright night
+fritz the cat
+from beyond
+from dusk till dawn
+from hell
+from russia with love
+from within
+frosty the snowman
+frozen
+funny farm
+gabriel
+galaxy of terror
+galaxy quest
+gallipoli
+gangs of new york
+garden of the dead
+garden state
+gates of heaven
+gator bait
+general idi amin dada
+george harrison: living in the material world
+george washington
+georgy girl
+geri's game
+gesualdo: death for five voices
+get a horse!
+ghost dog
+ghost story
+ghostbusters
+ghosts of the abyss
+ghostwatcher
+ginger
+ginger snaps
+ginger snaps: unleashed
+girl on the run
+girly
+gladiator
+glassland
+glen or glenda
+glengarry glen ross
+glory
+godzilla against mechagodzilla
+godzilla raids again
+going to pieces: the rise and fall of the slasher film
+gojira
+goldeneye
+goldfinger
+gone with the pope
+gone with the wind
+good morning
+good will hunting
+goodfellas
+gothic
+gothika
+grace
+graduation day
+grand canyon
+grand hotel
+grand illusion
+grave encounters
+grave of the fireflies
+gravity
+gravy
+grease
+great expectations
+gremlins
+grey gardens
+grindhouse
+grizzly
+grizzly man
+ground floor
+groundhog day
+group marriage
+grudge match
+guardians of the galaxy
+gummo
+gun crazy
+gunga din
+gymkata
+ha'aki
+halloween
+halloween ii
+halloween iii: season of the witch
+hancock
+hangover square
+hannibal
+happy birthday to me
+happy gilmore
+hard eight
+hardbodies
+hardcore henry
+harlow
+harper
+harry and the hendersons
+hatchet for the honeymoon
+haunted summer
+haunter
+hauntings
+haxan: witchcraft through the ages
+he died with a felafel in his hand
+he knows you're alone
+head office
+headless horseman
+headspace
+heart of glass
+hearts of darkness: a filmmaker's apocalypse
+heat
+heavenly creatures
+heavy metal
+heavy traffic
+hedwig and the angry inch
+hell or high water
+hellbound: hellraiser ii
+hellions
+hellraiser
+hellraiser iii: hell on earth
+henry v
+henry: portrait of a serial killer
+here comes peter cottontail
+hero
+herod the great
+herschell gordon lewis: the godfather of gore
+hidden
+hidden agenda
+high and low
+high anxiety
+high fidelity
+high noon
+high rolling in a hot corvette
+high school caesar
+highwater
+hillbilllys in a haunted house
+hiroshima mon amour
+his girl friday
+his name was king
+hitchcock
+hitchcock / truffaut
+hollywood boulevard
+hollywood chainsaw hookers
+hollywood ghosts & gravesites
+home alone
+home movie
+hood of horror
+hope and glory
+horns
+horror business
+horror island
+horror of dracula
+horrors of the black museum
+horrors of war
+horse feathers
+hot fuzz
+hot saturday
+hotel terminus
+house hunting
+house of flying daggers
+house of frankenstein
+house of last things
+house of the damned
+house of usher
+house of wax
+house on bare mountain
+house on haunted hill
+how green was my valley
+how hitler lost the war
+how much wood would a woodchuck chuck
+how the grinch stole christmas!
+how to hook up your home theater
+howard the duck
+hubble
+humanoids from the deep
+humongous
+hungu
+hush... hush, sweet charlotte
+i am not a serial killer
+i confess
+i drink your blood
+i knew it was you: rediscovering john cazalre
+i know how many runs you scored last summer
+i sell the dead
+i spit on your grave
+i'll wait for the next one...
+i, madman
+identity
+immortal beloved
+in america
+in god we trust
+in hot pursuit
+in the mood for love
+in the mouth of madness
+in the name of the father
+inception
+inch'allah dimanche
+independence day
+indiana jones and the last crusade
+indiana jones and the temple of doom
+indiana jones: raiders of the lost ark
+infernal affairs
+infestation
+inherit the wind
+initiation
+inner demons
+inserts
+inside
+insomnia
+intermission
+interview with the vampire
+intolerance
+intruder
+intruders
+invaders from mars
+invasion of the body snatchers
+invasion of the space lobsters
+iron man
+iron monkey
+island of lost souls
+island of the fishmen
+it came from beneath the sea
+it came from outer space
+it follows
+it happened on fifth avenue
+it happened one night
+it's a mad, mad, mad, mad world
+it's a wonderful life
+it's alive
+it's the great pumpkin, charlie brown
+ivanhoe
+jack the giant killer
+jack the ripper
+jackie brown
+jackson county jail
+jamaica inn
+james bond: casino royale
+jan-gel: the beast from the east
+jason and the argonauts
+jason goes to hell: the final friday
+jason x
+jaws
+jay and silent bob strike back
+jeepers creepers
+jeepers creepers ii
+jennifer's body
+jerusalem
+joe bullet
+john henry
+joshua
+journey into amazing caves
+journey to the seventh planet
+joyeux noel
+joysticks
+ju-on
+jubal
+judgment at nuremberg
+jules and jim
+julius caesar
+jungle holocaust
+jurassic park
+jurassic world
+just before dawn
+kansas city bomber
+kansas pacific
+karla
+kelly's heroes
+key largo
+kids in the hall: brain candy
+kiki's delivery service
+kilimanjaro: to the roof of africa
+kill bill
+killbillies
+killer nun
+killer party
+killer's moon
+king kong
+king kong vs. godzilla
+king solomon's mines
+kingdom of the spiders
+kingpin
+kinsey
+knick knack
+knights of badassdom
+knocked up
+krull
+kubo and the two strings
+kull the conqueror
+kundun
+l'age d'or
+l'avventura
+la dolce vita
+la femme nikita
+la luna
+la soufriere
+ladies and gentlemen, the fabulous stains
+lady frankenstein
+lady in white
+lady killer
+lady snowblood
+lady terminator
+ladyhawke
+lake mungo
+lake placid
+land of silence and darkness
+land of the dead
+land of the heads
+land of the pharaohs
+lansky
+last shift
+last train from gun hill
+laugh, clown, laugh
+lawrence of arabia
+learning hebrew
+leaving las vegas
+legendary amazons
+legends of flight
+legong: dance of the virgins
+lenny
+lenny bruce without tears
+leon: the professional
+les carabiniers
+lessons of darkness
+let me die a woman
+let the right one in
+let's scare jessica to death
+lethal weapon
+leviathan
+liar liar
+liberty heights
+licence to kill
+lick the star
+life itself
+life of brian
+life of pi
+lifeboat
+lights out
+lilo & stitch
+lincoln
+lips of blood
+little caesar
+little dieter needs to fly
+little rita
+little shop of horrors
+live and let die
+living in oblivion
+local hero
+lock, stock and two smoking barrels
+lolly madonna xxx
+london in the raw
+lone wolf mcquade
+long weekend
+lords of dogtown
+lorenzo
+lost after dark
+lost in la mancha
+lost in translation
+lost world: life in the balance
+love actually
+love and death
+love at first bite
+lovely & amazing
+lumiere films
+luxo jr.
+mabel's wilful way
+macbeth
+mad dog morgan
+mad love
+mad max
+mad max beyond thunderdome
+mad max: fury road
+mad monkey kung fu
+mad ron's prevues from hell
+madame tutli-putli
+made in britain
+maggie
+magical mystery tour
+magnificent obsession
+magnolia
+making a living
+malcolm x
+malibu beach
+malibu express
+man on fire
+man on wire
+man's best friend
+man-made monster
+manhattan
+maniac
+maniac cop
+manos: the hands of fate
+mansion of the doomed
+marie antoinette
+mark of the devil
+mark of the vampire
+mark twain's america
+marquis de sade's justine
+mars needs women
+mary of scotland
+mary poppins
+mary, queen of scots
+mash
+massacre
+massacre in dinosaur valley
+massacre mafia style
+massacre time
+master and commander: the far side of the world
+master of the flying guillotine
+masters of horror: the black cat
+mata hari
+matango
+matchstick men
+maximum overdrive
+mccabe & mrs. miller
+mean johnny barrows
+mean streets
+meat loaf: hits out of hell
+meatballs
+medium cool
+meet me in st. louis
+meet the feebles
+meet the fockers
+mega piranha
+mega shark vs. giant octopus
+memento
+men in black
+metropolis
+michael jackson's thriller
+microwave massacre
+midnight cowboy
+midnight express
+midnight frolics
+midnight in paris
+mighty joe young
+mike's new car
+mildred pierce
+miller's crossing
+minority report
+mirrors
+misery
+missing in action
+mission impossible
+mission of the shark: the saga of the u.s.s. indianapolis
+mission to mir
+moby dick
+modern problems
+modern times
+mondo cane
+monkey business
+monster
+monsters, inc.
+monstrosity
+monty python and the holy grail
+monty python live at aspen
+monty python live at the hollywood bowl
+moonraker
+moonrise kingdom
+more
+morvern callar
+mother's day
+mother's red dress
+mothra
+mothra vs. godzilla
+moulin rouge!
+mr. jones
+mr. magoo's christmas carol
+mr. smith goes to washington
+mulberry street
+mulholland dr.
+mummies: secrets of the pharaohs
+murderous maids
+murders in the rue morgue
+muscle beach party
+mutant girls squad
+mutiny
+my bloody valentine
+my bodyguard
+my brilliant career
+my brother's wife
+my darling clementine
+my favorite year
+my little eye
+my name is bruce
+my voyage to italy
+my year with marilyn
+mysteries of egypt
+mysterious island
+mystery men
+mystery of the wax museum
+mystery train
+mystic river
+napoleon dynamite
+narc
+nascar: the imax experience
+nashville
+national lampoon's christmas vacation
+national lampoon's vacation
+nausicaa of the valley of the wind
+navajo joe
+near dark
+neil young: heart of gold
+network
+new jack city
+new year's evil
+newsfront
+night and fog
+night call nurses
+night key
+night monster
+night of the ghouls
+night of the living dead
+night of the living deb
+night shift
+nightbreed
+nightmare castle
+nightmare city
+nightmare man
+nightmare sisters
+nightmares
+nightmares in red, white and blue
+nine to five
+ninja assassin
+ninja cheerleaders
+no corras tanto
+no country for old men
+no direction home: bob dylan
+no retreat, no surrender
+north by northwest
+northfork
+nosferatu
+not of this earth
+not quite hollywood: the wild, untold story of ozploitation
+not the messiah: he's a very naught boy
+nothing
+notting hill
+now you see me
+nun of that
+nurse
+oasis of the zombies
+octopussy
+of human bondage
+of time and the city
+office space
+oklahoma crude
+old school
+oliver!
+on her majesty's secret service
+on the waterfront
+once upon a time in america
+once upon a time in the west
+one crazy summer
+one flew over the cuckoo's nest
+one froggy evening
+one hour fantasy girl
+one hour photo
+one million years b.c.
+one, two, three
+ong-bak: the thai warrior
+onibaba
+orca
+ot: our town
+outlander
+over ireland
+oversexed rugsuckers from mars
+owning mahowny
+ozploitation: trailer explosion
+pacific rim
+paint your wagon
+pan's labyrinth
+panzer chocolate
+paper moon
+paperman
+papillon
+paranormal activity
+pat garrett and billy the kid
+paths of glory
+patrick
+patton
+pee wee's big adventure
+pelts
+pennies from heaven
+penny dreadful
+personal best
+pet sematary
+phase iv
+pickup on south street
+picnic at hanging rock
+picture snatcher
+pieces
+pigs
+pink angels
+pink flamingos
+pink floyd the wall
+pinocchio
+piranha
+pit stop
+planet earth: caves
+planet of the apes
+planet of the vampires
+point break
+pollyanna
+poltergeist
+poltergeist ii: the other side
+poltergeist iii
+polyester
+pontypool
+popcorn
+popeye
+porky's
+power of the press
+predator
+premium rush
+prep and landing: operation: secret santa
+preservation
+pretty in pink
+pretty poison
+pretty woman
+primal
+princess mononoke
+prisoners of the lost universe
+private buckaroo
+private resort
+prom night
+psycho
+psycho ii
+psychomania
+pufnstuf
+pulp fiction
+pumpkinhead
+punch-drunk love
+pursued
+pyramid
+q: the winged serpent
+quackser fortune has a cousin in the bronx
+quadrophenia
+quantrill's raiders
+queen christina
+quest for fire
+quiet days in clichy
+quiz show
+rabid
+race with the devil
+radio days
+raging bull
+ragtime
+raiders of the lost ark
+rambo: first blood part ii
+rare exports: a christmas tale
+rashomon
+ratcatcher
+rats - night of terror
+raw meat
+ray harryhausen: special effects titan
+razorback
+re-animator
+reap the wild wind
+rear window
+rebecca
+reckless
+red dawn
+red sonja
+red state
+red's dream
+red-headed woman
+redemption
+reign of fire
+rendez-vous
+repo man
+requiem for a dream
+rescue from gilligan's island
+reservoir dogs
+resident evil
+resident evil: apocalypse
+resident evil: extinction
+rest stop
+return of the fly
+return of the jedi
+revenge of the creature
+revenge of the nerds
+rhapsody in august
+rich little's christmas carol
+richard pryor live on the sunset strip
+ride around the world
+ride the high country
+riding giants
+rikki-tikki-tavi
+ring
+rio bravo
+rio grande
+rita
+rituals
+road kill
+road to morocco
+road to perdition
+roadie
+roar!
+rob roy
+robes of war
+robin hood: men in tights
+robocop
+rock & rule
+rocketship x-m
+rocky
+rodan
+rogue
+roller boogie
+rollercoaster
+roma
+romancing the stone
+rome, open city
+romper stomper
+rope
+rosemary's baby
+roving mars
+roy orbison and friends: a black and white night
+rudolph, the red-nosed reindeer
+run lola run
+run silent, run deep
+run, man, run
+rushmore
+russian ark
+ryan
+s.o.b.
+saawariya
+sabotage
+saboteur
+sabrina
+safe
+safety last!
+sagebrush trail
+sahara
+saint nick
+sainte barbe
+salem's lot
+salon kitty
+sam peckinpah's west: legecy of a hollywood renegade
+samsara
+san andreas
+san quentin
+santa claus conquers the martians
+santa claus is comin' to town
+satan's blade
+satan's sadists
+saturday night and sunday morning
+savage beach
+saving private ryan
+scanners
+scarecrow
+scarecrows
+scarface
+scary movie
+scavenger hunt
+scherzo diabolico
+schindler's list
+school for scoundrels
+schoolgirls in chains
+scream
+screaming in high heels
+screwballs
+scrooge
+scrooged
+scum of the earth
+sea child
+secret agent
+secretary
+secrets of the french police
+see no evil
+seems like old times
+sense and sensibility
+seven
+seven psychopaths
+seven samurai
+seven up!
+seventh moon
+severance
+sex and fury
+sex, lies, and videotape
+sextette
+sexy battle girls
+sexy beast
+shadow of a doubt
+shadow of the vampire
+shadow: dead riot
+shadows
+shaft
+shane
+shark
+shark attack in the mediterranean
+shark night
+shaun of the dead
+she freak
+she wore a yellow ribbon
+she-devils on wheels
+she-wolf of london
+she-wolves of the wasteland
+sherlock holmes and the secret weapon
+shine a light
+shock waves
+shocking asia
+shogun assassin
+short cuts
+shredder
+shrek
+shrooms
+shutter island
+shuttle
+signs
+silent movie
+silent night
+silent night, deadly night
+silkwood
+silver lode
+simon
+simon and garfunkel: the concert in central park
+simon, king of the witches
+sin city
+sinbad and the eye of the tiger
+singin' in the rain
+singing in the rain
+siren
+sisters
+skyscraper symphony
+slap shot
+slaughter hotel
+slave girls from beyond infinity
+sleepaway camp
+sleepaway camp ii: unhappy campers
+sleeper
+sleeping betty
+sleepy hollow
+slime city
+sling blade
+slither
+slugs: the movie
+slumdog millionaire
+smart money
+smokey and the bandit
+snapshot
+snatch
+snow white and the seven dwarfs
+snowbeast
+so you've grown attached
+solaris
+some kind of hate
+some like it hot
+someone's watching me!
+something wicked this way comes
+something's gonna live
+son of dracula
+son of frankenstein
+son of kong
+sorority babes in the slimeball bowl-a-rama
+space station
+spaceballs
+spacehunter: adventures in the forbidden zone
+spare change
+spartacus
+special
+special effects
+spellbound
+spider baby
+spine tingler! the william castle story
+spirited away
+spooks run wild
+spotlight
+squirm
+ss girl
+ss hell camp
+stagecoach
+stake land
+stalin
+stalking santa
+stand by me
+star trek ii: the wrath of khan
+star trek iii: the search for spock
+star trek: the motion picture
+star wars
+stardust: the bette davis story
+stark fear
+starry eyes
+starstruck
+steamboat bill, jr.
+step brothers
+step into liquid
+stevie
+stir of echoes
+stitches
+stolen moments
+stone
+storm warning
+stormchasers
+straight up: helicopters in action
+strange brew
+stranger than paradise
+street fighter
+street trash
+streetwalkin'
+stripes
+stroszek
+stung
+stunt rock
+subservience
+subspecies
+suburban mayhem
+suburbia
+sucker punch
+suddenly
+sugar hill
+suicide squad
+suicidegirls: guide to living
+sullivan's travels
+sunset blvd
+sunset boulevard
+sunshine state
+super fly
+super fuzz
+super size me
+superbad
+superdad
+superman
+superman and the mole men
+superman ii
+surf nazis must die
+survive!
+sweatshop
+sweet georgia
+sympathy for mr. vengeance
+symphony in f
+tai-chi master
+taken
+tale of tales
+tales from the crypt
+tales from the darkside: the movie
+tales that witness madness
+talk to her
+tarantula
+tarzan and his mate
+tarzan the ape man
+taxi driver
+teen wolf
+teenage caveman
+teenage mother
+teenagers from outer space
+ten things i hate about you
+tenacious d in the pick of destiny
+tender mercies
+tenement
+terms of endearment
+terror in a texas town
+terror in the aisles
+testament
+thale
+thank you mask man
+that uncertain feeling
+that's entertainment!
+that's entertainment! iii
+that's entertainment, part ii
+the abominable dr. phibes
+the addams family
+the adventure of sherlock holmes' smarter brother
+the adventures of ichabod and mr. toad
+the adventures of priscilla, queen of the desert
+the adventures of robin hood
+the african queen
+the age of innocence
+the amazing transparent man
+the american dreamer
+the apostle
+the apparition
+the apple
+the apple dumpling gang
+the arena
+the asphyx
+the autopsy of jane doe
+the avengers
+the baby
+the bad and the beautiful
+the bad news bears
+the bad news bears go to japan
+the bad news bears in breaking training
+the ballad of nessie
+the bandit of sherwood forest
+the barrens
+the bat
+the battle at elderbush gulch
+the beast
+the beast that killed women
+the beastmaster
+the being
+the bells of san angelo
+the beyond
+the big bus
+the big country
+the big lebowski
+the big red one
+the big trail
+the birds
+the black castle
+the black cat
+the black hole
+the black sleep
+the blackcoat's daughter
+the blair witch project
+the bling ring
+the blob
+the blood of dracula's castle
+the blue max
+the blues brothers
+the bodyguard
+the boondock saints
+the bourne identity
+the bourne ultimatum
+the box man
+the boxtrolls
+the boy
+the boys in company c
+the brain that wouldn't die
+the breakfast club
+the breed
+the brick dollhouse
+the bride of frankenstein
+the brides of dracula
+the bridge on the river kwai
+the brood
+the brothers rico
+the brothers warner
+the burning
+the burning moon
+the burrowers
+the cabin in the woods
+the cabinet of dr. caligari
+the call of cthulhu
+the canal
+the cannonball run
+the cat and the canary
+the cathedral
+the centerfold girls
+the changeling
+the chant of jimmie blacksmith
+the chiefs
+the chinese connection
+the chubbchubbs!
+the clowns
+the cocoanuts
+the comedy of terrors
+the commitments
+the company of wolves
+the conjuring
+the conversation
+the core
+the corpse bride
+the corpse grinders
+the corpse vanishes
+the corridor
+the cossacks
+the crater lake monster
+the crazies
+the crusades
+the curse
+the curse of frankenstein
+the curse of the werewolf
+the cyclops
+the dancer upstairs
+the dark knight
+the dark knight rises
+the day after tomorrow
+the day of the jackal
+the dead
+the dead hate the living!
+the dead lands
+the dead next door
+the dead room
+the deadly bees
+the deadly mantis
+the deadly spawn
+the deep end
+the deer hunter
+the defilers
+the delta force
+the demoniacs
+the departed
+the descent
+the devil bat
+the devil commands
+the devil lives here
+the devil rides out
+the devil's candy
+the devil's playground
+the devil's rain
+the devil's rejects
+the devil's sword
+the devil-doll
+the dirty dozen
+the dirty mind of young sally
+the dish
+the dogs of war
+the don is dead
+the dorm that dripped blood
+the dreamers
+the dreaming
+the dresser
+the driller killer
+the eagle
+the echo
+the edge of seventeen
+the emerald forest
+the empire strike back
+the empire strikes back
+the end
+the enigma of kaspar hauser
+the entertainer
+the evil
+the evil dead
+the evil within
+the exorcism of emily rose
+the exorcist
+the exorcist iii
+the expendables
+the exterminator
+the eye
+the eyes of the mummy
+the fall of the house of usher
+the fall of the roman empire
+the family jewels
+the fast and the furious
+the fifth element
+the filth and the fury
+the final destination
+the final girls
+the fly
+the fog
+the football factory
+the fortune cookie
+the four seasons
+the four skulls of jonathan drake
+the french connection
+the fugitive
+the funhouse
+the furies
+the game
+the gate
+the gathering storm
+the geek
+the general
+the getting of wisdom
+the ghost
+the ghost breakers
+the ghost of frankenstein
+the ghoul
+the giant of marathon
+the girl
+the goat
+the godfather
+the godfather part ii
+the godfather part iii
+the gold rush
+the golden voyage of sinbad
+the golem
+the good neighbor
+the good, the bad and the ugly
+the goonies
+the gore gore girls
+the graduate
+the grand budapest hotel
+the grapes of death
+the grapes of wrath
+the gravedancers
+the graveyard
+the great ecstasy of the woodcarver steiner
+the great escape
+the great gatsby
+the great smokey roadblock
+the great texas dynamite chase
+the great train robbery
+the greatest show on earth
+the greatest story ever told
+the green inferno
+the green mile
+the green room
+the green slime
+the gruesome twosome
+the hallow
+the hand
+the hateful eight
+the haunted palace
+the haunting
+the hearse
+the hebrew hammer
+the heroin busters
+the hills have eyes
+the hills run red
+the hindenburg
+the hitcher
+the hollow
+the hollywood knights
+the horde
+the horse soldiers
+the horseman
+the host
+the hostage
+the hound of the baskervilles
+the hours
+the house by the cemetery
+the house on sorority row
+the house where evil dwells
+the human centipede
+the human monster
+the human tornado
+the hunchback of notre dame
+the ice pirates
+the iceman
+the image
+the importance of being earnest
+the impossible
+the incredible hulk
+the incubus
+the initiation
+the innkeepers
+the innocents
+the inside of the white slave traffic
+the invisible man
+the invisible menace
+the invisible ray
+the invitation
+the iron rose
+the italian connection
+the jazz singer
+the jerk
+the jungle book
+the kentucky fried movie
+the kids are alright
+the killer
+the killer shrews
+the killing fields
+the killing gene
+the land unknown
+the last american virgin
+the last days
+the last days of disco
+the last farm
+the last house on the left
+the last laugh
+the last man on earth
+the last picture show
+the last remake of beau geste
+the last stand
+the last temptation of christ
+the last waltz
+the late great planet earth
+the lavender hill mob
+the learning tree
+the legend of bigfoot
+the legend of billie jean
+the legend of boggy creek
+the legend of hell house
+the legend of the chupacabra
+the lenny bruce performance film
+the letter
+the lickerish quartet
+the life aquatic with steve zissou
+the linda vista project
+the lion in winter
+the lion king
+the little drummer boy
+the little matchgirl
+the little mermaid
+the living daylights
+the living dead girl
+the living sea
+the lodger
+the lodger: a story of the london fog
+the loneliness of the long distance runner
+the long good friday
+the long riders
+the long, hot summer
+the lord of the rings
+the lord of the rings: the fellowship of the ring
+the lord of the rings: the two towers
+the lost boys
+the lost patrol
+the lost weekend
+the loved ones
+the machine girl
+the madness of king george
+the magnificent seven
+the maid
+the majorettes
+the maltese falcon
+the man from deep river
+the man from earth
+the man from laramie
+the man from planet x
+the man in the moon
+the man of la mancha
+the man who knew too much
+the man who shot liberty valance
+the man who wasn't there
+the man who would be king
+the man with bogart's face
+the man with the golden arm
+the man with the golden gun
+the man with two brains
+the manchurian candidate
+the manipulator
+the martian
+the mask
+the mask of fu manchu
+the masque of the red death
+the match king
+the matrix
+the meaning of life
+the mechanic
+the midnight meat train
+the missouri breaks
+the mist
+the monster squad
+the monster that challenged the world
+the most dangerous game
+the mummy
+the mummy's curse
+the mummy's ghost
+the mummy's hand
+the mummy's shroud
+the mummy's tomb
+the music man
+the musketeers of pig alley
+the mutations
+the mutilator
+the nail gun massacre
+the naked gun
+the naked spur
+the naughty nineties
+the neighbor
+the new barbarians
+the new york ripper
+the night child
+the night evelyn came out of the grave
+the night of the hunter
+the nightmare before christmas
+the north avenue irregulars
+the notebook
+the notorious bettie page
+the nude bomb
+the nude vampire
+the oblong box
+the odd couple
+the old dark house
+the omega man
+the omen
+the other guys
+the other hell
+the other side of the door
+the others
+the pack
+the paradine case
+the party
+the passion of joan of arc
+the penalty
+the people under the stairs
+the perks of being a wallflower
+the petrified forest
+the phantom carriage
+the phantom of the opera
+the philadelphia story
+the pianist
+the piano teacher
+the picture of dorian gray
+the pink panther
+the pit and the pendulum
+the plague dogs
+the player
+the pom pom girls
+the pope of greenwich village
+the poseidon adventure
+the prestige
+the pride of the yankees
+the prince and the showgirl
+the prince of darkness
+the princess bride
+the private eyes
+the private life of henry viii
+the producers
+the proposition
+the prowler
+the public enemy
+the purple rose of cairo
+the quick and the dead
+the quiet man
+the rage
+the rapture
+the raven
+the rescuers
+the return of dr. x
+the return of the living dead
+the return of the pink panther
+the return of the vampire
+the revenant
+the revenge of frankenstein
+the rhoads opera house fire: the legacy of a tragedy
+the right stuff
+the ring
+the rise and fall of the third reich
+the road warrior
+the rocky horror picture show
+the room
+the royal tenenbaums
+the ruins
+the rules of the game
+the running man
+the santa clause
+the savage bees
+the sci-fi boys
+the screaming skull
+the search for dracula
+the search for the great sharks
+the searchers
+the secret of kells
+the secret policeman's ball
+the serpent and the rainbow
+the seven samurai
+the seven wonders of the ancient world
+the seven year itch
+the seventh seal
+the shallows
+the shawshank
+the shawshank redemption
+the shining
+the shock
+the shop around the corner
+the shortcut
+the siege of firebase gloria
+the sign of the cross
+the signal
+the silence of the lambs
+the simpsons movie
+the sin of nora moran
+the sinful dwarf
+the sinful nuns of st. valentine
+the sister in law
+the sixth sense
+the slayer
+the slumber party massacre
+the sound of music
+the specials
+the spy who loved me
+the st. francisville experiment
+the st. valentine's day massacre
+the station agent
+the sting
+the story of mankind
+the strange case of dr. jekyll and miss osbourne
+the strange door
+the stranger and the gunfighter
+the street fighter
+the streets of new york
+the stuff
+the stunt man
+the survivor
+the sweet hereafter
+the swinging cheerleaders
+the sword and the sorcerer
+the taking of deborah logan
+the tale of the princess kaguya
+the tall t
+the ten commandments
+the terminator
+the terror
+the terror of tony town
+the texas chainsaw massacre
+the theatre bizarre
+the theory of everything
+the thief of bagdad
+the thin man
+the thing
+the thing with two heads
+the third man
+the three musketeers
+the three stooges: the curly years
+the time machine
+the time of their lives
+the tomb of ligeia
+the toolbox murders
+the towering inferno
+the town that dreaded sundown
+the toxic avenger
+the tracker
+the transporter
+the treasure of the sierra madre
+the trouble with harry
+the truman show
+the tunnel
+the twelve chairs
+the ugly
+the ultimate wave tahiti
+the undying monster
+the unholy rollers
+the unholy three
+the uninvited
+the unknown
+the untouchables
+the usual suspects
+the valley of gwangi
+the vampire bat
+the vatican tapes
+the velvet vampire
+the verdict
+the vikings
+the violent years
+the virgin queen
+the visit
+the wages of fear
+the walk
+the walking dead
+the war lord
+the wasp woman
+the white buffalo
+the white diamond
+the wild angels
+the wild blue yonder
+the wild bunch
+the wild child
+the wild party
+the wild thornberrys movie
+the wild world of batwoman
+the wind that shakes the barley
+the witch
+the wizard of gore
+the wizard of oz
+the wolf man
+the wolf of wall street
+the woman in black
+the wonderful wizard of oz
+the working girls
+the world is not enough
+the world's end
+the world, the flesh and the devil
+the wrestler
+the year of living dangerously
+the year without a santa claus
+the zombie diaries
+thelma & louise
+there will be blood
+there's something about mary
+they call her one eye
+they call me trinity
+they saved hitler's brain
+they're watching
+thirst
+thirteen days
+this is not a test
+this is spinal tap
+this is the end
+this island earth
+this sporting life
+thor
+thor the conqueror
+three colors: blue
+three colors: red
+three colors: white
+three kings
+three on a match
+three on a meathook
+thunderball
+tidal wave
+tigrero: a film that was never made
+time after time
+time bandits
+timerider: the adventure of lyle swann
+tin toy
+titanic
+titanica
+to kill a mockingbird
+to the arctic
+tokyo gore police
+tokyo story
+tomb raider
+tomboy
+tommy
+tomorrow never dies
+tony rome
+tooth and nail
+topaz
+torch singer
+tormented
+touch of evil
+tourist trap
+tower of london
+toy story
+trading places
+traffic
+trailer park boys: the movie
+trailer war
+treasure island
+treasure planet
+trekkies
+tremors
+trick 'r treat
+trilogy of terror
+troll hunter
+troma's war
+tromeo and juliet
+tropic thunder
+tropical rainforest
+trouble in paradise
+true confessions
+true grit
+true romance
+turkey shoot
+twelve years a slave
+twenty-eight days later
+twenty-one grams
+twice dead
+twice-told tales
+twilight zone: the movie
+twins of evil
+twister
+two evil eyes
+two-minute warning
+un chien andalou
+unbreakable
+uncle sam
+unconventional
+under capricorn
+under the rainbow
+under the sand
+under the sea
+under the shadow
+underworld
+unforgiven
+up
+used cars
+vacancy
+valley girl
+vampira: the movie
+vampire circus
+vampires
+vampyres
+van nuys blvd
+vanishing point
+varsity show
+venom
+vertical ray of the sun
+vertigo
+vice squad
+vicky cristina barcelona
+videodrome
+vigilante
+viking women and the sea serpent
+village of the damned
+vincent
+viral
+virgin witch
+virgins from hell
+virus
+visions of england
+visions of light
+viva las vegas
+voodoo island
+voodoo man
+voyage to the bottom of the sea
+waiting for guffman
+wake in fright
+waking sleeping beauty
+walkabout
+wall street
+wall-e
+wanderlust
+wanted: dead or alive
+war between the planets
+wargames
+warlock
+watership down
+way of the vampire
+we are monster
+we are still here
+we are the night
+we are what we are
+we go on
+we of the never never
+wedding crashers
+weekend pass
+welcome to nollywood
+welcome to the jungle
+werewolf of london
+werewolves on wheels
+werner herzog eats his shoe
+west of shanghai
+west side story
+westworld
+what am i doing in new jersey?
+what ever happened to baby jane?
+what we become
+what's up, tiger lily?
+when a stranger calls
+when dinosaurs ruled the earth
+when harry met sally
+when marnie was there
+where the green ants dream
+where the wild things are
+which way is up?
+whiplash
+white dog
+white pongo
+white slave
+white zombie
+who framed roger rabbit
+wholly moses!
+whore angels
+wicked little things
+wide open
+wild australia: the edge
+wild riders
+wilderness
+will penny
+willard
+willow creek
+willy wonka and the chocolate factory
+winged migration
+wings of desire
+wishcraft
+wishmaster
+witchfinder general
+wizards
+wolf creek
+women behind bars
+won ton ton: the dog who saved hollywood
+woodstock
+woyzeck
+wreck-it ralph
+wrong turn
+wyrmwood: road of the dead
+x-men
+y tu mama tambien
+yankee doodle dandy
+year of the dragon
+yellow hair and the fortress of gold
+yellowbeard
+yojimbo
+yor, the hunter from the future
+you only live twice
+you'll find out
+you've got mail
+young and innocent
+young cassidy
+young frankenstein
+z channel: a magnificent obsession
+zapped!
+zelig
+zeppelin
+zeta one
+zombie
+zombie holocaust
+zombieland
+zombies on broadway
+zoolander
