@@ -42,9 +42,9 @@ class Hangman(commands.Cog):
 
                     await message.channel.send(f"You have run out of lives. The word was `{inst.hidden_word}`")
 
-    @commands.command(name="hangman", aliases=["h"])
+    @commands.command(name="words", aliases=["h"])
     async def start_hangman(self, ctx, category: str = None):
-        """ Start a new hangman game or show the current game. """
+        """ Start a new words game or show the current game. """
 
         inst = self.games.get(ctx.channel.id, None)
 
@@ -56,7 +56,7 @@ class Hangman(commands.Cog):
 
                 inst.participants.add(ctx.author.id)
 
-                await ctx.send(f"A hangman game with the category `{inst.category}` has started!")
+                await ctx.send(f"A words game with the category `{inst.category}` has started!")
 
             else:
                 return await self.categories(ctx)
@@ -65,35 +65,35 @@ class Hangman(commands.Cog):
 
     @commands.command(name="categories")
     async def categories(self, ctx):
-        """ Show the available categories for hangman. """
+        """ Show the available categories for words. """
 
         await ctx.send(f"Hangman categories include: `{', '.join(HangmanGame.get_categories())}`")
 
     @commands.has_permissions(administrator=True)
     @commands.command(name="giveup")
     async def giveup(self, ctx):
-        """ [Admin] Give up the current hangman game. """
+        """ [Admin] Give up the current words game. """
 
         inst = self.games.get(ctx.channel.id, None)
 
         if inst is None:
-            return await ctx.send("No hangman game is currently running.")
+            return await ctx.send("No words game is currently running.")
 
         self.games[ctx.channel.id] = None
 
-        await ctx.send(f"{ctx.message.author.mention} gave up on the hangman game.")
+        await ctx.send(f"{ctx.message.author.mention} gave up on the words game.")
 
     @commands.command(name="skip")
     async def skip(self, ctx):
-        """ Vote to skip the current hangman game. """
+        """ Vote to skip the current words game. """
 
         inst: HangmanGame = self.games.get(ctx.channel.id, None)
 
         if inst is None:
-            return await ctx.send("No hangman game is currently running.")
+            return await ctx.send("No words game is currently running.")
 
         elif ctx.author.id not in inst.participants:
-            return await ctx.send("You are not currently in any hangman game.")
+            return await ctx.send("You are not currently in any words game.")
 
         elif ctx.author.id in inst.skip_votes:
             return await ctx.send("You have already voted to skip.")
@@ -122,7 +122,7 @@ class Hangman(commands.Cog):
         inst = self.games.get(ctx.channel.id)
 
         if inst is None:
-            return await ctx.send("No hangman game is currently running.")
+            return await ctx.send("No words game is currently running.")
 
         try:
             await ctx.author.send(f"The hidden word is **{inst.hidden_word}**")
@@ -136,6 +136,6 @@ class Hangman(commands.Cog):
     @commands.cooldown(1, 60, commands.BucketType.guild)
     @commands.command(name="hlb")
     async def show_leaderboard(self, ctx):
-        """ Shows the top hangman players. """
+        """ Shows the top words players. """
 
         await HangmanLeaderboard().send(ctx)
