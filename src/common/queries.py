@@ -45,7 +45,7 @@ class HangmanSQL:
 
     ADD_WIN = ("INSERT INTO hangman (user_id, wins) VALUES ($1, 1) "
                "ON CONFLICT (user_id) DO "
-               "UPDATE SET wins = words.wins + 1;")
+               "UPDATE SET wins = hangman.wins + 1;")
 
 
 class BankSQL:

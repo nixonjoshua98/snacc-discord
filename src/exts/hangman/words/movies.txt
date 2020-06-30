@@ -1383,7 +1383,6 @@ run, man, run
 rushmore
 russian ark
 ryan
-s.o.b.
 saawariya
 sabotage
 saboteur
@@ -2290,7 +2289,6 @@ under the sea
 under the shadow
 underworld
 unforgiven
-up
 used cars
 vacancy
 valley girl
@@ -2393,7 +2391,6 @@ wreck-it ralph
 wrong turn
 wyrmwood: road of the dead
 x-men
-y tu mama tambien
 yankee doodle dandy
 year of the dragon
 yellow hair and the fortress of gold
