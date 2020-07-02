@@ -2,17 +2,20 @@ import discord
 
 from discord.ext import commands
 
+from src.common import MainServer, checks
+
 
 class Darkness(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
 	async def cog_check(self, ctx):
-		return True
+		return ctx.guild.id == MainServer.ID
 
+	@commands.check(checks.server_has_member_role)
 	@commands.command(name="members")
 	async def get_num_members(self, ctx):
-		""" Count the number of guild members in the server. """
+		""" The number of guild members in the server. """
 
 		conf = await self.bot.get_server(ctx.guild)
 
