@@ -3,6 +3,7 @@ import math
 import discord
 from discord.ext import commands
 
+from src.common import checks
 from src.common.emoji import Emoji
 from src.common.queries import HangmanSQL
 
@@ -114,10 +115,10 @@ class Hangman(commands.Cog):
 
         await ctx.send(f"Skip votes: {num_votes}/{votes_needed}")
 
-    @commands.is_owner()
+    @checks.snaccman_only()
     @commands.command(name="cheat")
     async def cheat(self, ctx):
-        """ [Creator] Recieve a DM with the hidden word. """
+        """ [Snacc] Recieve a DM with the hidden word. """
 
         inst = self.games.get(ctx.channel.id)
 

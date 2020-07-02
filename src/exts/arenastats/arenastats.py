@@ -66,20 +66,13 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 
 				await asyncio.sleep(60 * 60 * 6)
 
-				self.shame_users.start()
+				self.shame_users_loop.start()
 
 		asyncio.create_task(predicate())
 
-	@tasks.loop(hours=12.0)
-	async def shame_users(self):
-
-		channel = self.bot.get_channel(MainServer.ABO_CHANNEL)
-
-		if channel is None:
-			return
-
-		conf = await self.bot.get_server(channel.guild)
-		role = channel.guild.get_role(conf["member_role"])
+	async def create_shame_message(self, destination: discord.TextChannel):
+		conf = await self.bot.get_server(destination.guild)
+		role = destination.guild.get_role(conf["member_role"])
 
 		if role is None:
 			return
@@ -99,13 +92,13 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 			# User has never set their stats before
 			if user_data is None:
 				missing.append(member.mention)
-				continue
 
-			days = (datetime.utcnow() - user_data["date_set"]).days
+			else:
+				days = (datetime.utcnow() - user_data["date_set"]).days
 
-			# User has not set stats recently
-			if days >= 7:
-				lacking.append((member.mention, days))
+				# User has not set stats recently
+				if days >= 7:
+					lacking.append((member.mention, days))
 
 		message = ""
 
@@ -121,7 +114,23 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 
 			message += "**__Lacking__** - No recent stat updates\n" + ", ".join(ls)
 
-		await channel.send(message if message else "Everyone is up-to-date!")
+		return message if message else "Everyone is up-to-date!"
+
+	@tasks.loop(hours=12.0)
+	async def shame_users_loop(self):
+		channel = self.bot.get_channel(MainServer.ABO_CHANNEL)
+
+		message = self.create_shame_message(channel)
+
+		await channel.send(message)
+
+	@checks.snaccman_only()
+	@commands.command(name="shame")
+	async def shame(self, ctx):
+		""" [Snacc] Posts the shame message. """
+		message = await self.create_shame_message(ctx.channel)
+
+		await ctx.send(message)
 
 	@commands.cooldown(1, 60 * 60 * 3, commands.BucketType.user)
 	@commands.command(name="set", aliases=["s"])

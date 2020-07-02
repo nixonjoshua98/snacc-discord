@@ -1,7 +1,16 @@
 import discord
 
+from discord.ext import commands
+
 
 def author_is_server_owner(ctx): return ctx.author.id == ctx.guild.owner.id
+
+
+def snaccman_only():
+	async def predicate(ctx):
+		return await ctx.bot.is_snacc_owner()
+
+	return commands.check(predicate)
 
 
 async def has_role(ctx, *, name: str = None, key: str = None):
