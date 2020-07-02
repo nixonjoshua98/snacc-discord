@@ -37,7 +37,7 @@ class DiscordMember(commands.MemberConverter):
 			if role is None:
 				raise commands.CommandError(f"User does not have the member role.")
 
-			elif svr.get("member_role", None) is None:
+			elif svr.get("member_role") is None:
 				raise commands.CommandError("A server member role needs to be set.")
 
 		return member

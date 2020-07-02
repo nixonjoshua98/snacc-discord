@@ -4,12 +4,6 @@ import discord
 def author_is_server_owner(ctx): return ctx.author.id == ctx.guild.owner.id
 
 
-def author_is_admin(ctx): return ctx.author.guild_permissions.administrator
-
-
-def message_from_guild(ctx, id_): return ctx.guild.id == id_
-
-
 async def has_role(ctx, *, name: str = None, key: str = None):
 	role = None
 

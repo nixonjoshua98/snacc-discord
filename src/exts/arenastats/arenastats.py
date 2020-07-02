@@ -91,6 +91,9 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 
 		# Iterate over every member who has the role
 		for member in role.members:
+			if discord.utils.get(member.roles, name="Free Agent"):
+				continue
+
 			user_data = data.get(member.id)
 
 			# User has never set their stats before
