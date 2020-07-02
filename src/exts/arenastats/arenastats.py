@@ -24,8 +24,6 @@ def chunk_list(ls, n):
 
 
 class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_after_parsing=True))):
-	""" Commands related to the Arena mode. """
-
 	def __init__(self, bot):
 		self.bot = bot
 
@@ -120,7 +118,7 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 	async def shame_users_loop(self):
 		channel = self.bot.get_channel(MainServer.ABO_CHANNEL)
 
-		message = self.create_shame_message(channel)
+		message = await self.create_shame_message(channel)
 
 		await channel.send(message)
 
