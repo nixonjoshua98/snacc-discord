@@ -11,7 +11,7 @@ class SnaccBot(commands.Bot):
     EXTENSIONS = [
         "errorhandler", "serverdoor", "arenastats", "conquest",
         "applications", "moderator", "wiki", "hangman",
-        "gambling", "money", "misc", "settings"
+        "gambling", "money", "darkness", "misc", "settings"
     ]
 
     def __init__(self):

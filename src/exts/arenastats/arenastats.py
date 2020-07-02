@@ -151,16 +151,6 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 
 		await ctx.send(f"**{target.display_name}** :thumbsup:")
 
-	@commands.command(name="members")
-	async def get_num_members(self, ctx):
-		""" Count the number of users who have the server member role. """
-
-		conf = await self.bot.get_server(ctx.guild)
-
-		role = ctx.guild.get_role(conf["member_role"])
-
-		await ctx.send(f"# of users with the ``{role.name}`` role: **{len(role.members)}**")
-
 	@commands.command(name="stats")
 	async def get_stats(self, ctx, target: discord.Member = None):
 		""" View your own or another members recorded arena stats. """
