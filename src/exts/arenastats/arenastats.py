@@ -11,7 +11,7 @@ from src.common import checks, MainServer
 from src.common.emoji import Emoji
 
 from src.common.queries import ArenaStatsSQL
-from src.common.converters import UserMember, NormalUser, Range
+from src.common.converters import MemberUser, Range
 
 from src.menus.pagemenu import PageMenu
 
@@ -144,7 +144,7 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 	@commands.cooldown(1, 60, commands.BucketType.user)
 	@commands.has_permissions(administrator=True)
 	@commands.command(name="setuser", aliases=["su"])
-	async def set_user_stats_command(self, ctx, target: UserMember(), level: int, trophies: int):
+	async def set_user_stats_command(self, ctx, target: MemberUser(), level: int, trophies: int):
 		""" [Admin] Set another users ABO stats. """
 
 		await self.set_users_stats(ctx, target, level, trophies)

@@ -61,9 +61,9 @@ class Range(commands.Converter):
 		return val
 
 
-class UserMember(DiscordMember):
+class MemberUser(DiscordMember):
 	def __init__(self):
-		super(UserMember, self).__init__(allow_bots=False, allow_author=True, allow_admins=True, members_only=True)
+		super(MemberUser, self).__init__(allow_bots=False, allow_author=True, allow_admins=True, members_only=True)
 
 
 class NormalUser(DiscordMember):
