@@ -97,7 +97,7 @@ class Miscellaneous(commands.Cog):
 
 	@checks.snaccman_only()
 	@commands.command(name="exec")
-	async def exec_code(self, ctx: commands.Context, *, s: PythonCode()):
+	async def exec_code(self, ctx: commands.Context, *, code: PythonCode()):
 		"""[Snacc] Dynamically run code. VERY DANGEROUS! """
 
 		path = os.path.join(os.getcwd(), "temp")
@@ -107,15 +107,18 @@ class Miscellaneous(commands.Cog):
 		name = hash(ctx)
 
 		with open(f"temp/{name}.py", "w") as fh:
-			fh.write(s)
+			fh.write(code)
 
-		module: Callable = importlib.import_module(f"temp.{name}")
+		result = "None"
 
-		result = "No async run function found."
+		try:
+			module: Callable = importlib.import_module(f"temp.{name}")
 
-		if hasattr(module, "run"):
-			if asyncio.iscoroutinefunction(module.run):
+			if hasattr(module, "run") and asyncio.iscoroutinefunction(module.run):
 				result = await module.run(ctx)
+
+		except Exception as e:
+			result = e
 
 		os.remove(f"temp/{name}.py")
 

@@ -83,7 +83,10 @@ class CoinSide(commands.Converter):
 
 class PythonCode(commands.Converter):
 	async def convert(self, ctx, argument):
-		if argument.startswith("```py") and argument.endswith("```"):
-			return argument[5:-3]
+		if not argument.startswith("```py") and not argument.endswith("```"):
+			raise commands.CommandError("Python code should be wrapped as a Python code block.")
 
-		raise commands.CommandError("Python code should be wrapped as a Python code block.")
+		elif "async def run(ctx)" not in argument:
+			raise commands.CommandError("No function matching the signature `async def run(ctx)` found")
+
+		return argument[5:-3]
