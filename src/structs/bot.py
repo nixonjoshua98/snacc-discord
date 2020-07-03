@@ -37,7 +37,7 @@ class SnaccBot(commands.Bot):
 
             self.owner_id = app.owner.id
 
-        return self.owner_id == 281171949298647041
+        return self.owner_id == SNACCMAN
 
     async def setup_database(self):
         """ Create the database tables required for the bot. """

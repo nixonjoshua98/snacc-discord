@@ -2,7 +2,7 @@ import discord
 
 from discord.ext import commands
 
-from src.common import MainServer
+from src.common import SNACCMAN, MainServer
 
 
 def server_owner_only():
@@ -14,7 +14,7 @@ def server_owner_only():
 
 def snaccman_only():
 	async def predicate(ctx):
-		return await ctx.author.id == 281171949298647041
+		return await ctx.author.id == SNACCMAN
 
 	return commands.check(predicate)
 
