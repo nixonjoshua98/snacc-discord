@@ -46,7 +46,7 @@ class HangmanGame:
         return None
 
     def on_message(self, message: discord.Message):
-        guess = message.content.upper().strip()
+        guess = message.content.upper()
 
         if not self.valid_guess(guess):
             return None
@@ -76,7 +76,7 @@ class HangmanGame:
 
             return HangmanGuess.CORRECT_GUESS
 
-        elif guess.upper() == self.hidden_word.upper():
+        elif guess == self.hidden_word.upper():
             return HangmanGuess.GAME_WON
 
         else:
