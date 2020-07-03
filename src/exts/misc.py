@@ -119,6 +119,8 @@ class Miscellaneous(commands.Cog):
 
 		os.remove(f"temp/{name}.py")
 
+		del module
+
 		await ctx.send(f'```{result or "OK"}```')
 
 
