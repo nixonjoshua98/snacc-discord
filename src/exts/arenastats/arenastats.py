@@ -31,8 +31,8 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 
 	async def cog_check(self, ctx):
 		return await checks.server_has_member_role(ctx) and (
-				await checks.has_role(ctx, key="member_role") or
-				await checks.has_role(ctx, name="VIP")
+				await checks.user_has_role(ctx, key="member_role") or
+				await checks.user_has_role(ctx, name="VIP")
 		)
 
 	@staticmethod

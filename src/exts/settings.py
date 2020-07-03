@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
 
-from src.common import checks
 from src.common.queries import ServersSQL
 
 
@@ -10,7 +9,7 @@ class Settings(commands.Cog):
 		self.bot = bot
 
 	async def cog_check(self, ctx: commands.Context):
-		return checks.author_is_server_owner(ctx) or await self.bot.is_owner(ctx.author)
+		return ctx.author.id == ctx.guild.owner.id
 
 	async def cog_before_invoke(self, ctx: commands.Context):
 		""" Ensure that we have an entry for the guild in the database. """
