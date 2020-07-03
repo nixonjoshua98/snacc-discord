@@ -32,13 +32,6 @@ class SnaccBot(commands.Bot):
 
         print(f"Bot '{self.user.display_name}' is ready")
 
-    def add_cog(self, cog):
-        """ [Override] Adds a cog and logs it to the console. """
-
-        print(f"Adding Cog: {cog.qualified_name}...", end="")
-        super(SnaccBot, self).add_cog(cog)
-        print("OK")
-
     async def is_snacc_owner(self) -> bool:
         if self.owner_id is None:
             app = await self.application_info()
@@ -71,12 +64,16 @@ class SnaccBot(commands.Bot):
             await self.process_commands(message)
 
     async def create_pool(self):
-        print("Creating connection pool...", end="")
+        print("Creating connection pool", end="...")
 
-        if os.getenv("DEBUG", False):
+        if os.getenv("DEBUG"):
+            print("local", end="...")
+
             self.pool = await asyncpg.create_pool(os.getenv("CON_STR"), max_size=15)
 
         else:
+            print("heroku", end="...")
+
             ctx = ssl.create_default_context(cafile="./rds-combined-ca-bundle.pem")
             ctx.check_hostname = False
             ctx.verify_mode = ssl.CERT_NONE
@@ -91,11 +88,16 @@ class SnaccBot(commands.Bot):
         self.exts_loaded = False
 
         for ext in self.EXTENSIONS:
+            print(f"Loading extension {ext}", end="...")
+
             try:
                 self.load_extension(f"src.exts.{ext}")
 
-            except commands.ExtensionAlreadyLoaded:
-                continue
+            except (commands.ExtensionNotFound, commands.ExtensionAlreadyLoaded) as e:
+                print(e)
+
+            else:
+                print("OK")
 
         self.exts_loaded = True
 
@@ -126,11 +128,11 @@ class SnaccBot(commands.Bot):
 
         svr = self.server_cache.get(message.guild.id, dict())
 
-        prefix = "-" if os.getenv("DEBUG", False) else svr.get("prefix", "!")
+        prefix = "-" if os.getenv("DEBUG") else svr.get("prefix", "!")
 
         return commands.when_mentioned_or(prefix)(self, message)
 
     def run(self):
-        super(SnaccBot, self).run(os.getenv("SNACC_BOT_TOKEN"))
+        super(SnaccBot, self).run(os.getenv("BOT_TOKEN"))
 
 

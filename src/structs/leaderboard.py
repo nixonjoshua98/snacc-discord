@@ -1,5 +1,3 @@
-from src.common.queries import ArenaStatsSQL, HangmanSQL, BankSQL
-
 from src.menus.pagemenu import PageMenu
 
 
@@ -113,7 +111,8 @@ class TextLeaderboardBase:
 
         return entry
 
-    def _get_user(self, ctx, id_):
+    @staticmethod
+    def _get_user(ctx, id_):
         user = ctx.guild.get_member(id_)
 
         if user is None:
@@ -121,5 +120,6 @@ class TextLeaderboardBase:
 
         return user
 
-    def _pad_row(self, row, widths):
+    @staticmethod
+    def _pad_row(row, widths):
         return " ".join(f"{col}{' ' * (widths[j] - len(col))}" for j, col in enumerate(row))
