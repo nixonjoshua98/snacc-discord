@@ -8,7 +8,7 @@ def author_is_server_owner(ctx): return ctx.author.id == ctx.guild.owner.id
 
 def snaccman_only():
 	async def predicate(ctx):
-		return await ctx.bot.is_snacc_owner()
+		return await ctx.bot.is_snacc_owner() and ctx.author.id == 281171949298647041
 
 	return commands.check(predicate)
 
