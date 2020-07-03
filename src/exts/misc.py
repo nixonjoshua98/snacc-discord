@@ -1,8 +1,15 @@
 import os
 import httpx
 import discord
+import asyncio
+import importlib
 
 from discord.ext import commands
+
+from typing import Callable
+
+from src.common import checks
+from src.common.converters import PythonCode
 
 from datetime import datetime
 from bs4 import BeautifulSoup
@@ -87,6 +94,32 @@ class Miscellaneous(commands.Cog):
 		""" Check the bot latency. """
 
 		await ctx.send(f"Pong! {round(ctx.bot.latency * 1000, 3)}ms")
+
+	@checks.snaccman_only()
+	@commands.command(name="exec")
+	async def exec_code(self, ctx: commands.Context, *, s: PythonCode()):
+		"""[Snacc] Dynamically run code. VERY DANGEROUS! """
+
+		path = os.path.join(os.getcwd(), "temp")
+
+		os.makedirs(path, exist_ok=True)
+
+		name = hash(ctx)
+
+		with open(f"temp/{name}.py", "w") as fh:
+			fh.write(s)
+
+		module: Callable = importlib.import_module(f"temp.{name}")
+
+		result = "No async run function found."
+
+		if hasattr(module, "run"):
+			if asyncio.iscoroutinefunction(module.run):
+				result = await module.run(ctx)
+
+		os.remove(f"temp/{name}.py")
+
+		await ctx.send(f'```{result or "OK"}```')
 
 
 def setup(bot):

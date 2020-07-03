@@ -79,3 +79,11 @@ class CoinSide(commands.Converter):
 			raise commands.CommandError("That is an invalid coin side.")
 
 		return argument
+
+
+class PythonCode(commands.Converter):
+	async def convert(self, ctx, argument):
+		if argument.startswith("```py") and argument.endswith("```"):
+			return argument[5:-3]
+
+		raise commands.CommandError("Python code should be wrapped as a Python code block.")
