@@ -123,6 +123,7 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 		await channel.send(message)
 
 	@checks.snaccman_only()
+	@checks.main_server_only()
 	@commands.command(name="shame")
 	async def shame(self, ctx):
 		""" [Snacc] Posts the shame message. """

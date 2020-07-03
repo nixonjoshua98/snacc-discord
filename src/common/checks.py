@@ -2,6 +2,8 @@ import discord
 
 from discord.ext import commands
 
+from src.common import MainServer
+
 
 def server_owner_only():
 	async def predicate(ctx):
@@ -12,7 +14,14 @@ def server_owner_only():
 
 def snaccman_only():
 	async def predicate(ctx):
-		return await ctx.bot.is_snacc_owner() and ctx.author.id == 281171949298647041
+		return await ctx.author.id == 281171949298647041
+
+	return commands.check(predicate)
+
+
+def main_server_only():
+	async def predicate(ctx):
+		return await ctx.guild.id == MainServer.ID
 
 	return commands.check(predicate)
 
