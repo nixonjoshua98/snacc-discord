@@ -4,13 +4,15 @@ import asyncpg
 
 from discord.ext import commands
 
+from src.common import SNACCMAN
+
 from src.structs.helpcommand import HelpCommand
 
 
 class SnaccBot(commands.Bot):
     EXTENSIONS = [
         "errorhandler", "serverdoor", "arenastats", "moderator", "wiki", "hangman",
-        "gambling", "money", "darkness", "misc", "settings"
+        "gambling", "money", "misc", "settings"
     ]
 
     def __init__(self):
@@ -22,6 +24,10 @@ class SnaccBot(commands.Bot):
 
         self.add_check(self.on_message_check)
 
+    @property
+    def debug(self):
+        return int(os.getenv("DEBUG", 0))
+
     async def on_ready(self):
         """ Invoked once the bot is connected and ready to use. """
 
@@ -30,6 +36,10 @@ class SnaccBot(commands.Bot):
         await self.load_extensions()
 
         print(f"Bot '{self.user.display_name}' is ready")
+
+    def add_cog(self, cog):
+        print(f"Adding {cog.qualified_name}")
+        super().add_cog(cog)
 
     async def is_snacc_owner(self) -> bool:
         if self.owner_id is None:
@@ -87,16 +97,11 @@ class SnaccBot(commands.Bot):
         self.exts_loaded = False
 
         for ext in self.EXTENSIONS:
-            print(f"Loading extension {ext}", end="...")
-
             try:
                 self.load_extension(f"src.exts.{ext}")
 
             except (commands.ExtensionNotFound, commands.ExtensionAlreadyLoaded) as e:
                 print(e)
-
-            else:
-                print("OK")
 
         self.exts_loaded = True
 
