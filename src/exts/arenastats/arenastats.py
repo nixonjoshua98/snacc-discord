@@ -101,7 +101,7 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 		message = ""
 
 		if missing:
-			message = "**__Missing__** - Set your stats `!s <level> <trophies>`\n" + ", ".join(missing)
+			message = f"**__Missing__** - Set your stats `{conf['prefix']}s <level> <trophies>`\n" + ", ".join(missing)
 
 		if lacking:
 			lacking.sort(key=lambda row: row[1], reverse=True)
