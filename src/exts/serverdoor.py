@@ -24,7 +24,14 @@ class ServerDoor(commands.Cog):
     async def on_guild_join(self, guild):
         """ Called when the bot joins a new server. """
 
-        msg = f"The infamous **{self.bot.user.name}** has graced your ~~lowly~~ server! [{guild.owner.mention}]"
+        msg = (
+            f"The infamous **{self.bot.user.name}** has graced your ~~lowly~~ server! [{guild.owner.mention}]"
+            f"\n"
+            f"Commands can be found at **!help**"
+            f"\n"
+            f"Some commands will need a role to be set. For example, the ArenaStats commands need a 'member' role."
+            f"Find out how to assign roles by looking at settings (last page of !help)"
+        )
 
         await self.send_message(guild, msg)
 
