@@ -14,14 +14,14 @@ def server_owner_only():
 
 def snaccman_only():
 	async def predicate(ctx):
-		return await ctx.author.id == SNACCMAN
+		return ctx.author.id == SNACCMAN
 
 	return commands.check(predicate)
 
 
 def main_server_only():
 	async def predicate(ctx):
-		return await ctx.guild.id == MainServer.ID
+		return ctx.guild.id == MainServer.ID
 
 	return commands.check(predicate)
 
