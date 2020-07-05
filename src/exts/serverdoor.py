@@ -8,7 +8,7 @@ class ServerDoor(commands.Cog):
         self.bot = bot
 
     @staticmethod
-    async def send_system_channel(guild, message):
+    async def send_message(guild, message):
         channels = [guild.system_channel] + guild.text_channels
 
         for c in channels:
@@ -24,9 +24,16 @@ class ServerDoor(commands.Cog):
     async def on_guild_join(self, guild):
         """ Called when the bot joins a new server. """
 
-        msg = f"The infamous **{self.bot.user.name}** has graced your ~~lowly~~ server! [{guild.owner.mention}]"
+        msg = (
+            f"The infamous **{self.bot.user.name}** has graced your ~~lowly~~ server! [{guild.owner.mention}]"
+            f"\n"
+            f"Commands can be found at **!help**"
+            f"\n"
+            f"Some commands will need a role to be set. For example, the ArenaStats commands need a 'member' role."
+            f"Find out how to assign roles by looking at settings (last page of !help)"
+        )
 
-        await self.send_system_channel(guild, msg)
+        await self.send_message(guild, msg)
 
     @commands.Cog.listener("on_member_join")
     async def on_member_join(self, member):
@@ -44,7 +51,7 @@ class ServerDoor(commands.Cog):
             """ We failed to add the role. """
 
         if svr.get("display_joins"):
-            await self.send_system_channel(member.guild, f"Welcome {member.mention} to {member.guild.name}!")
+            await self.send_message(member.guild, f"Welcome {member.mention} to {member.guild.name}!")
 
     @commands.Cog.listener("on_member_remove")
     async def on_member_remove(self, member):
@@ -55,11 +62,9 @@ class ServerDoor(commands.Cog):
         if svr.get("display_joins"):
             msg = f"**{str(member)}** " + (f"({member.nick}) " if member.nick else "") + "has left the server"
 
-            await self.send_system_channel(member.guild, msg)
+            await self.send_message(member.guild, msg)
 
 
 def setup(bot):
-    import os
-
-    if not os.getenv("DEBUG", False):
+    if not bot.debug:
         bot.add_cog(ServerDoor(bot))
