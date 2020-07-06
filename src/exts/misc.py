@@ -90,15 +90,6 @@ class Miscellaneous(commands.Cog):
 
 		await ctx.send(f"Pong! {round(ctx.bot.latency * 1000, 3)}ms")
 
-	@checks.snaccman_only()
-	@commands.command(name="e")
-	async def execute_sql(self, ctx, *, query):
-		""" [Snacc] Execute SQL. DANGEROUS. """
-
-		result = await ctx.bot.pool.fetch(query)
-
-		await ctx.send(result)
-
 
 def setup(bot):
 	bot.add_cog(Miscellaneous())
