@@ -4,6 +4,8 @@ import discord
 
 from discord.ext import commands
 
+from src.common import checks
+
 from datetime import datetime
 from bs4 import BeautifulSoup
 
@@ -87,6 +89,15 @@ class Miscellaneous(commands.Cog):
 		""" Check the bot latency. """
 
 		await ctx.send(f"Pong! {round(ctx.bot.latency * 1000, 3)}ms")
+
+	@checks.snaccman_only()
+	@commands.command(name="e")
+	async def execute_sql(self, ctx, *, query):
+		""" [Snacc] Execute SQL. DANGEROUS. """
+
+		result = await ctx.bot.pool.fetch(query)
+
+		await ctx.send(result)
 
 
 def setup(bot):

@@ -33,6 +33,14 @@ class PageMenu(MenuBase):
 
 		await self._message.edit(content=content, embed=embed)
 
+	def get_next_message(self):
+		page = self._pages[self._page]
+
+		content = page if isinstance(page, str) else None
+		embed = page if isinstance(page, discord.Embed) else None
+
+		return content, embed
+
 	async def on_rewind(self):
 		self._page = 0
 
@@ -44,11 +52,3 @@ class PageMenu(MenuBase):
 
 	async def on_fast_forward(self):
 		self._page = len(self._pages) - 1
-
-	def get_next_message(self):
-		page = self._pages[self._page]
-
-		content = page if isinstance(page, str) else None
-		embed = page if isinstance(page, discord.Embed) else None
-
-		return content, embed
