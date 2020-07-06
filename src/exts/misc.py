@@ -90,12 +90,6 @@ class Miscellaneous(commands.Cog):
 
 		await ctx.send(f"Pong! {round(ctx.bot.latency * 1000, 3)}ms")
 
-	@commands.command(name="e")
-	async def execute_query(self, ctx, * query):
-		results = await ctx.bot.pool.execute(query)
-
-		await ctx.send(results)
-
 
 def setup(bot):
 	bot.add_cog(Miscellaneous())
