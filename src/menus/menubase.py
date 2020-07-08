@@ -15,6 +15,7 @@ class MenuBase:
 		self._destination = None
 
 		self._timeout = options.get("timeout")
+		self._delete_after = options.get("delete_after", False)
 
 	async def on_reaction_add(self, react: discord.Reaction):
 		callback = self._buttons.get(str(react.emoji))
@@ -24,7 +25,8 @@ class MenuBase:
 
 	async def send_initial_message(self, destination: discord.abc.Messageable) -> discord.Message: ...
 
-	async def update_message(self): ...
+	async def update_message(self) -> bool:
+		return False
 
 	async def send(self, destination: discord.abc.Messageable):
 		self._message = await self.send_initial_message(destination)
@@ -48,11 +50,16 @@ class MenuBase:
 
 				await self._remove_react(react, user)
 
-				await self.update_message()
+				if await self.update_message():
+					return await self.after_menu_expire()
 
 	async def after_menu_expire(self):
 		try:
-			await self._message.clear_reactions()
+			if self._delete_after:
+				await self._message.delete()
+
+			else:
+				await self._message.clear_reactions()
 
 		except (discord.HTTPException, discord.Forbidden):
 			pass

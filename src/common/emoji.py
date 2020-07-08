@@ -3,6 +3,8 @@
 class Emoji:
     XP = "<:xp:714836955791097998>"
 
+    TICK, CROSS = "<:tick:730456072715894795>", "<:cross:730456273652416582>"
+
     A = "\U0001f1e6"
 
     ARROW_LEFT, ARROW_RIGHT = "\U00002b05", "\U000027a1"
