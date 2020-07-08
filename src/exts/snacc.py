@@ -1,11 +1,8 @@
-import discord
-
-from discord import Forbidden, HTTPException
+from discord import Role, Forbidden, HTTPException
 
 from discord.ext import commands
 
-from src.menus import YesNoMenu
-
+from src import menus
 from src.common import SNACCMAN
 
 
@@ -17,17 +14,12 @@ class Snacc(commands.Cog):
 		return ctx.author.id == SNACCMAN
 
 	@commands.command(name="dm")
-	async def dm_role(self, ctx, role: discord.Role, *, message: str):
-		""" Send a DM to every server member with a certain role. """
+	async def dm_role(self, ctx, role: Role, *, message: str):
+		""" [Snacc] Send a DM to every server member with a certain role. """
 
-		async def confirm() -> bool:
-			menu = YesNoMenu(ctx.bot, f"Send a DM to **{len(role.members)}** member(s)?")
+		members = [member for member in role.members if not member.bot]
 
-			await menu.send(ctx)
-
-			return menu.get()
-
-		if not await confirm():
+		if not await menus.confirm(ctx, f"Send a DM to **{len(members)}** member(s)?"):
 			return await ctx.send("Command cancelled")
 
 		success, failed = [], []
@@ -36,7 +28,7 @@ class Snacc(commands.Cog):
 
 		txt = f"No members found with the `{role.name}` role."
 
-		for i, member in enumerate(role.members):
+		for i, member in enumerate(members):
 			try:
 				await member.send(message)
 
@@ -46,7 +38,7 @@ class Snacc(commands.Cog):
 			else:
 				success.append(member)
 
-			txt = f"Sucess: **{len(success)}/{len(role.members)}** | Failed: {', '.join(map(lambda m: str(m), failed))}"
+			txt = f"Sucess: **{len(success)}/{len(members)}** | Failed: {', '.join(map(lambda m: str(m), failed))}"
 
 			if i % 10 == 0:
 				await msg.edit(content=txt)
