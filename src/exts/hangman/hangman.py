@@ -57,7 +57,7 @@ class Hangman(commands.Cog):
 
                 inst.participants.add(ctx.author.id)
 
-                await ctx.send(f"A words game with the category `{inst.category}` has started!")
+                await ctx.send(f"A hangman game with the category `{inst.category}` has started!")
 
             else:
                 return await self.categories(ctx)
@@ -78,11 +78,11 @@ class Hangman(commands.Cog):
         inst = self.games.get(ctx.channel.id, None)
 
         if inst is None:
-            return await ctx.send("No words game is currently running.")
+            return await ctx.send("No hangman game is currently running.")
 
         self.games[ctx.channel.id] = None
 
-        await ctx.send(f"{ctx.message.author.mention} gave up on the words game.")
+        await ctx.send(f"{ctx.message.author.mention} gave up on the hangman game.")
 
     @commands.command(name="skip")
     async def skip(self, ctx):
@@ -91,10 +91,10 @@ class Hangman(commands.Cog):
         inst: HangmanGame = self.games.get(ctx.channel.id, None)
 
         if inst is None:
-            return await ctx.send("No words game is currently running.")
+            return await ctx.send("No hangman game is currently running.")
 
         elif ctx.author.id not in inst.participants:
-            return await ctx.send("You are not currently in any words game.")
+            return await ctx.send("You are not currently in any hangman game.")
 
         elif ctx.author.id in inst.skip_votes:
             return await ctx.send("You have already voted to skip.")
@@ -123,7 +123,7 @@ class Hangman(commands.Cog):
         inst = self.games.get(ctx.channel.id)
 
         if inst is None:
-            return await ctx.send("No words game is currently running.")
+            return await ctx.send("No hangman game is currently running.")
 
         try:
             await ctx.author.send(f"The hidden word is **{inst.hidden_word}**")
