@@ -21,7 +21,7 @@ class Snacc(commands.Cog):
 		""" Send a DM to every server member with a certain role. """
 
 		async def confirm() -> bool:
-			menu = YesNoMenu(ctx.bot, f"Send a DM to **{len(role.members)}** members?")
+			menu = YesNoMenu(ctx.bot, f"Send a DM to **{len(role.members)}** member(s)?")
 
 			await menu.send(ctx)
 
