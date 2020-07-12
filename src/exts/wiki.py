@@ -13,8 +13,6 @@ def chunk_list(ls, n):
 
 
 class Wiki(commands.Cog):
-    """ Commands for autobattlesonline.fandom.com/ """
-
     BASE_URL = "https://autobattlesonline.fandom.com"
 
     def __init__(self, bot):

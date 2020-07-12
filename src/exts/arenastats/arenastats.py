@@ -97,7 +97,7 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 				if days >= 7:
 					lacking.append((member.mention, days))
 
-		message = ""
+		message = None
 
 		if missing:
 			message = f"**__Missing__** - Set your stats `{conf['prefix']}s <level> <trophies>`\n" + ", ".join(missing)
@@ -105,13 +105,13 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 		if lacking:
 			lacking.sort(key=lambda row: row[1], reverse=True)
 
-			message = message + "\n" * 2 if message else message
+			message = message + "\n" * 2 if message is not None else ""
 
 			ls = [f"{ele[0]} **({ele[1]})**" for ele in lacking]
 
 			message += "**__Lacking__** - No recent stat updates\n" + ", ".join(ls)
 
-		return message if message else "Everyone is up-to-date!"
+		return message if message is not None else "Everyone is up-to-date!"
 
 	@tasks.loop(hours=12.0)
 	async def shame_users_loop(self):
@@ -134,7 +134,7 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 	@commands.cooldown(1, 60 * 60 * 3, commands.BucketType.user)
 	@commands.command(name="set", aliases=["s"])
 	async def set_stats(self, ctx, level: Range(1, 125), trophies: Range(1, 7_500)):
-		""" Update your ABO stats, which are visible on the leaderboard. """
+		""" Update your arena stats. Stats are used to track activity and are displayed on the trophy leaderboard. """
 
 		await self.set_users_stats(ctx, ctx.author, level, trophies)
 

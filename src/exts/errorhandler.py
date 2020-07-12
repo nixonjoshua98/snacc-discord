@@ -1,42 +1,41 @@
 import datetime
 
-from discord.ext import commands
+from discord.ext.commands import (
+    Cog,
+
+    CommandNotFound,
+    CommandOnCooldown,
+    MissingRequiredArgument,
+    MissingRole,
+)
 
 
-class ErrorHandler(commands.Cog):
+class ErrorHandler(Cog):
     def __init__(self, bot):
         self.bot = bot
 
         self.bot.on_command_error = self.on_command_error
 
     async def on_command_error(self, ctx, esc):
-        if isinstance(esc, commands.CommandNotFound):
+        if isinstance(esc, CommandNotFound):
             return None
 
-        elif isinstance(esc, commands.CommandOnCooldown):
+        elif isinstance(esc, CommandOnCooldown):
             seconds = float(esc.args[0].split(" ")[-1][0:-1])
 
             cd = datetime.timedelta(seconds=int(seconds))
 
             await ctx.send(f"You are on cooldown. Try again in `{cd}`")
 
-        elif isinstance(esc, commands.MissingRequiredArgument):
+        elif isinstance(esc, MissingRequiredArgument):
             arg = esc.args[0].split(" ")[0]
 
             await ctx.send(f"`{arg}` is a required argument that is missing.")
 
-        elif isinstance(esc, commands.CheckFailure):
-            await ctx.send("You do not have access to this command.")
-
-        elif isinstance(esc, commands.MaxConcurrencyReached):
-            await ctx.send("You are doing that too fast.")
-
-        elif isinstance(esc, commands.CommandError):
-            await ctx.send(esc)
+        elif isinstance(esc, MissingRole):
+            await ctx.send(f"Role `{esc.missing_role}` is required to run this command.")
 
         else:
-            print(esc)
-
             await ctx.send(esc)
 
 

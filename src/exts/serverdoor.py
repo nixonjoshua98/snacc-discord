@@ -27,10 +27,10 @@ class ServerDoor(commands.Cog):
         msg = (
             f"The infamous **{self.bot.user.name}** has graced your ~~lowly~~ server! [{guild.owner.mention}]"
             f"\n"
-            f"Commands can be found at **!help**"
+            f"Commands can be found at `!help`"
             f"\n"
-            f"Some commands will need a role to be set. For example, the ArenaStats commands need a 'member' role."
-            f"Find out how to assign roles by looking at settings (last page of !help)"
+            f"Some commands will need a role to be set. For example, the ArenaStats commands need a `member` role."
+            f"Find out how to assign roles by looking at settings (last page of `!help` or `!help Settings`)"
         )
 
         await self.send_message(guild, msg)

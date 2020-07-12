@@ -8,9 +8,6 @@ class Settings(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-	async def cog_check(self, ctx: commands.Context):
-		return ctx.author.id == ctx.guild.owner.id
-
 	async def cog_before_invoke(self, ctx: commands.Context):
 		""" Ensure that we have an entry for the guild in the database. """
 
@@ -33,17 +30,19 @@ class Settings(commands.Cog):
 
 		return svr
 
+	@commands.has_permissions(administrator=True)
 	@commands.command(name="prefix")
 	async def set_prefix(self, ctx: commands.Context, prefix: str):
-		""" Set the prefix for this server. """
+		""" [Admin] Set the prefix for this server. """
 
 		await ctx.bot.pool.execute(ServersSQL.UPDATE_PREFIX, ctx.guild.id, prefix)
 
 		await ctx.send(f"Prefix has been updated to `{prefix}`")
 
+	@commands.has_permissions(administrator=True)
 	@commands.command(name="toggledoor")
 	async def toggle_door(self, ctx):
-		""" Toggle the messages posted when a member joins or leaves the server. """
+		""" [Admin] Toggle the messages posted when a member joins or leaves the server. """
 
 		config = await ctx.bot.get_server(ctx.guild, refresh=True)
 
@@ -53,9 +52,10 @@ class Settings(commands.Cog):
 
 		await ctx.send(f"Server door: {'`Hidden`' if display_joins else '`Shown`'}")
 
+	@commands.has_permissions(administrator=True)
 	@commands.command(name="setdefaultrole")
 	async def set_default_role(self, ctx: commands.Context, role: discord.Role = None):
-		""" Set (or unset) the default role which gets added to each member when they join the server. """
+		""" [Admin] Set (or unset) the default role which gets added to each member when they join the server. """
 
 		# Unset the default role (set it to zero)
 		if role is None:
@@ -71,9 +71,10 @@ class Settings(commands.Cog):
 			await ctx.bot.pool.execute(ServersSQL.UPDATE_DEFAULT_ROLE, ctx.guild.id, role.id)
 			await ctx.send(f"The default role has been set to `{role.name}`")
 
+	@commands.has_permissions(administrator=True)
 	@commands.command(name="setmemberrole")
 	async def set_member_role(self, ctx: commands.Context, role: discord.Role = None):
-		""" Set (or unset) the member role which can open up server-specific commands for server regulars. """
+		""" [Admin] Set (or unset) the member role which can open up server-specific commands for server regulars. """
 
 		# Unset the member role
 		if role is None:

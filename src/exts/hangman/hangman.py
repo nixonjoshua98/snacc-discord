@@ -115,7 +115,7 @@ class Hangman(commands.Cog):
 
         await ctx.send(f"Skip votes: {num_votes}/{votes_needed}")
 
-    @checks.server_owner_only()
+    @checks.snaccman_only()
     @commands.command(name="cheat")
     async def cheat(self, ctx):
         """ [Snacc] Recieve a DM with the hidden word. """

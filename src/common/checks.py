@@ -2,18 +2,19 @@ import discord
 
 from discord.ext import commands
 
+from src.common.errors import (
+	SnaccmanOnly,
+	MainServerOnly
+)
+
 from src.common import SNACCMAN, MainServer
-
-
-def server_owner_only():
-	async def predicate(ctx):
-		return ctx.author.id == ctx.guild.owner.id
-
-	return commands.check(predicate)
 
 
 def snaccman_only():
 	async def predicate(ctx):
+		if ctx.author.id != SNACCMAN:
+			raise SnaccmanOnly("This command can only be used by Snaccman.")
+
 		return ctx.author.id == SNACCMAN
 
 	return commands.check(predicate)
@@ -21,6 +22,9 @@ def snaccman_only():
 
 def main_server_only():
 	async def predicate(ctx):
+		if ctx.guild.id != MainServer.ID:
+			raise MainServerOnly("This command can only be used in the main server.")
+
 		return ctx.guild.id == MainServer.ID
 
 	return commands.check(predicate)
