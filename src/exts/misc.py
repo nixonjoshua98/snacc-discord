@@ -4,8 +4,6 @@ import discord
 
 from discord.ext import commands
 
-from src.common import checks
-
 from datetime import datetime
 from bs4 import BeautifulSoup
 
@@ -66,12 +64,6 @@ class Miscellaneous(commands.Cog):
 			return await ctx.send(embed=embed)
 
 		await ctx.send("I found no definitions or examples for your query.")
-
-	@commands.command(name="source")
-	async def send_github(self, ctx):
-		""" Bot source code. """
-
-		await ctx.send("https://github.com/nixonjoshua98/discord-snacc-bot")
 
 	@commands.command(name="invite")
 	async def send_bot_invite(self, ctx):

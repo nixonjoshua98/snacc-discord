@@ -43,9 +43,9 @@ class Hangman(commands.Cog):
 
                     await message.channel.send(f"You have run out of lives. The word was `{inst.hidden_word}`")
 
-    @commands.command(name="words", aliases=["h"])
+    @commands.command(name="hangman", aliases=["h"])
     async def start_hangman(self, ctx, category: str = None):
-        """ Start a new words game or show the current game. """
+        """ Start a new hangman game or show the current game. """
 
         inst = self.games.get(ctx.channel.id, None)
 
@@ -118,7 +118,7 @@ class Hangman(commands.Cog):
     @checks.server_owner_only()
     @commands.command(name="cheat")
     async def cheat(self, ctx):
-        """ [Creator] Recieve a DM with the hidden word. """
+        """ [Snacc] Recieve a DM with the hidden word. """
 
         inst = self.games.get(ctx.channel.id)
 

@@ -1,5 +1,7 @@
 import discord
 
+from discord import HTTPException, Forbidden
+
 from discord.ext import commands
 
 from src.menus.menubase import MenuBase
@@ -11,6 +13,8 @@ class PageMenu(MenuBase):
 	def __init__(self, bot: commands.Bot, pages, **options):
 		super().__init__(bot, **options)
 
+		self._stop_menu = False
+
 		self._page = 0
 		self._pages = pages
 
@@ -20,6 +24,7 @@ class PageMenu(MenuBase):
 		if len(self._pages) > 1:
 			self.add_button(Emoji.REWIND, self.on_rewind)
 			self.add_button(Emoji.ARROW_LEFT, self.on_arrow_left)
+			self.add_button(Emoji.STOP, self.on_stop_menu)
 			self.add_button(Emoji.ARROW_RIGHT, self.on_arrow_right)
 			self.add_button(Emoji.FAST_FORWARD, self.on_fast_forward)
 
@@ -29,9 +34,16 @@ class PageMenu(MenuBase):
 		return await destination.send(content=content, embed=embed)
 
 	async def update_message(self):
-		content, embed = self.get_next_message()
+		if not self._stop_menu:
+			content, embed = self.get_next_message()
 
-		await self._message.edit(content=content, embed=embed)
+			try:
+				await self._message.edit(content=content, embed=embed)
+
+			except (HTTPException, Forbidden):
+				pass
+
+		return self._stop_menu
 
 	def get_next_message(self):
 		page = self._pages[self._page]
@@ -52,3 +64,6 @@ class PageMenu(MenuBase):
 
 	async def on_fast_forward(self):
 		self._page = len(self._pages) - 1
+
+	async def on_stop_menu(self):
+		self._stop_menu = True

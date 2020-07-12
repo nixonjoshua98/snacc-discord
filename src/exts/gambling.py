@@ -9,6 +9,7 @@ from src.common.queries import BankSQL
 
 
 class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
+
 	@commands.cooldown(1, 3, commands.BucketType.user)
 	@commands.command(name="flip")
 	async def flip(self, ctx, side: typing.Optional[CoinSide] = "heads", bet: Range(0, 50_000) = 0):

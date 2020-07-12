@@ -13,6 +13,8 @@ def chunk_list(ls, n):
 
 
 class Wiki(commands.Cog):
+    """ Commands for autobattlesonline.fandom.com/ """
+
     BASE_URL = "https://autobattlesonline.fandom.com"
 
     def __init__(self, bot):
@@ -25,7 +27,10 @@ class Wiki(commands.Cog):
         """ Alphabetical list of Wiki articles. """
 
         # Cache the Wiki to avoid sending a request every command invoked
-        data = self._cache["wiki"] = await self.get_wiki_links() if self._cache.get("wiki") is None else self._cache["wiki"]
+        if self._cache.get("wiki") is None:
+            self._cache["wiki"] = await self.get_wiki_links()
+
+        data = self._cache["wiki"]
 
         embeds, chunks = [], list(chunk_list(data, 5))
 

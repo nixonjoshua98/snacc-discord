@@ -20,7 +20,7 @@ class Snacc(commands.Cog):
 		members = [member for member in role.members if not member.bot]
 
 		if not await menus.confirm(ctx, f"Send a DM to **{len(members)}** member(s)?"):
-			return await ctx.send("Command cancelled")
+			return await ctx.send("DM cancelled.")
 
 		success, failed = [], []
 

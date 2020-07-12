@@ -6,17 +6,20 @@ from discord.ext import commands
 
 from src.common import SNACCMAN
 
-from src.structs.helpcommand import HelpCommand
+from src.structs.help import Help
 
 
 class SnaccBot(commands.Bot):
     EXTENSIONS = [
-        "errorhandler", "serverdoor", "arenastats", "moderator", "wiki", "hangman",
-        "gambling", "money", "misc", "snacc", "settings"
+        # No commands
+        "errorhandler", "serverdoor",
+
+        "arenastats", "wiki", "hangman", "gambling",
+        "money", "moderator", "misc", "snacc", "settings"
     ]
 
     def __init__(self):
-        super().__init__(command_prefix=self.get_prefix, case_insensitive=True, help_command=HelpCommand())
+        super().__init__(command_prefix=self.get_prefix, case_insensitive=True, help_command=Help())
 
         self.pool = None
         self.exts_loaded = False
