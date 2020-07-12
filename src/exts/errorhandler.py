@@ -18,7 +18,7 @@ class ErrorHandler(commands.Cog):
 
             cd = datetime.timedelta(seconds=int(seconds))
 
-            await ctx.send(f"You are on cooldown. Try again in `{cd}`.")
+            await ctx.send(f"You are on cooldown. Try again in `{cd}`")
 
         elif isinstance(esc, commands.MissingRequiredArgument):
             arg = esc.args[0].split(" ")[0]
@@ -30,6 +30,9 @@ class ErrorHandler(commands.Cog):
 
         elif isinstance(esc, commands.MaxConcurrencyReached):
             await ctx.send("You are doing that too fast.")
+
+        elif isinstance(esc, commands.CommandError):
+            await ctx.send(esc)
 
         else:
             print(esc)
