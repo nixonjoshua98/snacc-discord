@@ -1,4 +1,3 @@
-import os
 import discord
 import asyncio
 
@@ -13,7 +12,7 @@ from src.common.emoji import Emoji
 from src.common.queries import ArenaStatsSQL
 from src.common.converters import MemberUser, Range
 
-from src.menus.pagemenu import PageMenu
+from src.menus import PageMenu
 
 from .trophyleaderboard import TrophyLeaderboard
 
@@ -59,7 +58,7 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 
 	def start_shame_users(self):
 		async def predicate():
-			if not os.getenv("DEBUG", False) and await self.bot.is_snacc_owner():
+			if not self.bot.debug and await self.bot.is_snacc_owner():
 				print("Starting 'ArenaStats.shame_users' loop.")
 
 				await asyncio.sleep(60 * 60 * 6)
@@ -127,6 +126,7 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 	@commands.command(name="shame")
 	async def shame(self, ctx):
 		""" [Snacc] Posts the shame message. """
+
 		message = await self.create_shame_message(ctx.channel)
 
 		await ctx.send(message)
