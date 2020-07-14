@@ -7,7 +7,7 @@ from .reactionmenubase import ReactionMenuBase, button
 
 class Confirmation(ReactionMenuBase):
 	def __init__(self, bot, author, question):
-		super().__init__(bot, author)
+		super().__init__(bot, author, timeout=5 * 60.0)
 
 		self.question = question
 

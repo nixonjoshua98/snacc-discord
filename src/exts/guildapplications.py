@@ -6,7 +6,6 @@ from datetime import datetime
 
 from src import inputs
 from src.common import MainServer, checks
-from src.common.queries import ApplicationsSQL
 
 
 class Arguments:
@@ -29,16 +28,19 @@ class GuildApplications(commands.Cog, name="Guild Applications"):
         await ctx.send("Check your DM. I have started an application with you.")
 
         questions = {
-            "username": (inputs.get_input, Arguments(ctx, "What is your in-game-name?", send_dm=True)),
-
             "trophies": (inputs.options,
                          Arguments(ctx,
                                    "What is your trophy count?",
-                                   ("0-1000", "1001-2500", "2501-4000", "4001-5000", "5001+"),
+                                   ("0-1000", "1001-2500", "2501-4000", "4001-5000", "500+"),
                                    send_dm=True)
                          ),
 
-            "play time": (inputs.get_input, Arguments(ctx, "How long have you played?", send_dm=True)),
+            "play time": (inputs.options,
+                          Arguments(ctx,
+                                    "How long have you played?",
+                                    ("0-2 months", "3-5 months", "6-8 months", "9+ months"),
+                                    send_dm=True)
+                          ),
 
             "device": (inputs.options,
                        Arguments(ctx,
