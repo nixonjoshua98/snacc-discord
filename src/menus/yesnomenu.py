@@ -1,15 +1,13 @@
 import discord
 
-from datetime import datetime
-
 from discord.ext import commands
 
-from src.menus.menubase import MenuBase
+from src.menus.reactionmenubase import ReactionMenuBase
 
 from src.common.emoji import Emoji
 
 
-class YesNoMenu(MenuBase):
+class YesNoMenu(ReactionMenuBase):
 	def __init__(self, bot: commands.Bot, question):
 		super().__init__(bot, delete_after=True, timeout=60.0)
 
@@ -27,11 +25,7 @@ class YesNoMenu(MenuBase):
 		self.add_button(Emoji.CROSS, self.on_no)
 
 	async def send_initial_message(self, destination: discord.abc.Messageable) -> discord.Message:
-		today = datetime.utcnow().strftime('%d/%m/%Y %X')
-
-		embed = discord.Embed(title="Yes or No?", colour=discord.Color.orange(), description=self.question)
-
-		embed.set_footer(text=f"{self._bot.user.name} | {today}", icon_url=self._bot.user.avatar_url)
+		embed = discord.Embed(title=self.question, colour=discord.Color.orange())
 
 		return await destination.send(embed=embed)
 

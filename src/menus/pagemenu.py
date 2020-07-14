@@ -4,12 +4,12 @@ from discord import HTTPException, Forbidden
 
 from discord.ext import commands
 
-from src.menus.menubase import MenuBase
+from src.menus.reactionmenubase import ReactionMenuBase
 
 from src.common.emoji import Emoji
 
 
-class PageMenu(MenuBase):
+class PageMenu(ReactionMenuBase):
 	def __init__(self, bot: commands.Bot, pages, **options):
 		super().__init__(bot, **options)
 

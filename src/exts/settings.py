@@ -40,19 +40,6 @@ class Settings(commands.Cog):
 		await ctx.send(f"Prefix has been updated to `{prefix}`")
 
 	@commands.has_permissions(administrator=True)
-	@commands.command(name="toggledoor")
-	async def toggle_door(self, ctx):
-		""" [Admin] Toggle the messages posted when a member joins or leaves the server. """
-
-		config = await ctx.bot.get_server(ctx.guild, refresh=True)
-
-		display_joins = config.get("display_joins")
-
-		await ctx.bot.pool.execute(ServersSQL.UPDATE_DISPLAY_JOINS, ctx.guild.id, not display_joins)
-
-		await ctx.send(f"Server door: {'`Hidden`' if display_joins else '`Shown`'}")
-
-	@commands.has_permissions(administrator=True)
 	@commands.command(name="setdefaultrole")
 	async def set_default_role(self, ctx: commands.Context, role: discord.Role = None):
 		""" [Admin] Set (or unset) the default role which gets added to each member when they join the server. """
