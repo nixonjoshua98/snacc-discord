@@ -17,13 +17,10 @@ class Arguments:
 class GuildApplications(commands.Cog, name="Guild Applications"):
 
     @checks.main_server_only()
-    @commands.command(name="application", aliases=["app", "join"])
+    @commands.command(name="join")
     @commands.max_concurrency(1, commands.BucketType.user)
     async def application(self, ctx):
         """ Apply to the guild! """
-
-        if not await inputs.confirm(ctx, "Are you looking to join the Darkness Alliance?"):
-            return
 
         await ctx.send("Check your DM. I have started an application with you.")
 
@@ -71,7 +68,7 @@ class GuildApplications(commands.Cog, name="Guild Applications"):
 
             current_question += 1
 
-        await ctx.author.send("Your application has been completed!")
+        await ctx.author.send("Your application is complete!")
 
         #  - - - LOG RESULTS - - - #
 

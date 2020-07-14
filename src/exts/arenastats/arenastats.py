@@ -22,7 +22,7 @@ def chunk_list(ls, n):
 		yield ls[i: i + n]
 
 
-class ArenaStats(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
+class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_after_parsing=True))):
 	def __init__(self, bot):
 		self.bot = bot
 
