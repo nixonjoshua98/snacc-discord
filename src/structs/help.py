@@ -49,7 +49,7 @@ class Help(HelpCommand):
 		embeds = await self.create_embeds(mapping)
 
 		if embeds:
-			await inputs.send_pages(self.context, embeds, timeout=60.0)
+			await inputs.send_pages(self.context, embeds)
 
 		else:
 			await self.context.send("You do not have access to help for this command.")
