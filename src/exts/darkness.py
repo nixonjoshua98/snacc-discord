@@ -8,7 +8,7 @@ from src import inputs
 from src.common import MainServer, checks
 
 
-class GuildApplications(commands.Cog, name="Guild Applications"):
+class Darkness(commands.Cog):
 
     @checks.main_server_only()
     @commands.command(name="join")
@@ -16,7 +16,7 @@ class GuildApplications(commands.Cog, name="Guild Applications"):
     async def application(self, ctx):
         """ Apply to the guild! """
 
-        await ctx.send("Check your DM. I have started an application with you.")
+        await ctx.send("Check your DM.")
 
         questions = {
             "trophies": inputs.options(ctx,

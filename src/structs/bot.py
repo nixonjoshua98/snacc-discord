@@ -12,7 +12,7 @@ from src.structs.help import Help
 class SnaccBot(commands.Bot):
     EXTENSIONS = [
         "errorhandler", "arenastats", "wiki", "hangman", "gambling", "money",
-        "guildapplications", "moderator", "misc", "serverdoor", "settings"
+        "darkness", "moderator", "misc", "serverdoor", "settings"
     ]
 
     def __init__(self):
