@@ -4,7 +4,7 @@ from discord.ext import commands
 from src.common.queries import ServersSQL
 
 
-class ServerDoor(commands.Cog):
+class ServerDoor(commands.Cog, name="Server Door"):
     def __init__(self, bot):
         self.bot = bot
 

@@ -31,7 +31,7 @@ class GuildApplications(commands.Cog, name="Guild Applications"):
             "trophies": (inputs.options,
                          Arguments(ctx,
                                    "What is your trophy count?",
-                                   ("0-1000", "1001-2500", "2501-4000", "4001-5000", "500+"),
+                                   ("0-1000", "1001-2500", "2501-4000", "4001-5000", "5000+"),
                                    send_dm=True)
                          ),
 
