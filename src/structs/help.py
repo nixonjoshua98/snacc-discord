@@ -2,7 +2,7 @@ import discord
 
 from discord.ext.commands import HelpCommand
 
-from src.menus import PageMenu
+from src import inputs
 
 
 class Help(HelpCommand):
@@ -49,7 +49,7 @@ class Help(HelpCommand):
 		embeds = await self.create_embeds(mapping)
 
 		if embeds:
-			await PageMenu(self.context.bot, embeds, timeout=60.0).send(self.context)
+			await inputs.send_pages(self.context, embeds)
 
 		else:
 			await self.context.send("You do not have access to help for this command.")

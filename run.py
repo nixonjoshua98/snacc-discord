@@ -20,9 +20,8 @@ def setup_loop():
         try:
             import uvloop
         except ImportError:
-            subprocess.check_call([sys.executable, "-m", "pip", "install", 'uvloop'])
-        finally:
-            import uvloop
+            if subprocess.check_call([sys.executable, "-m", "pip", "install", 'uvloop']) == 0:
+                import uvloop
 
         uvloop.install()
 

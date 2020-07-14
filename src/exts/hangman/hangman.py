@@ -66,14 +66,14 @@ class Hangman(commands.Cog):
 
     @commands.command(name="categories")
     async def categories(self, ctx):
-        """ Show the available categories for words. """
+        """ Show the available categories for hangman. """
 
         await ctx.send(f"Hangman categories include: `{', '.join(HangmanGame.get_categories())}`")
 
     @commands.has_permissions(administrator=True)
     @commands.command(name="giveup")
     async def giveup(self, ctx):
-        """ [Admin] Give up the current words game. """
+        """ [Admin] Give up the current hangman game. """
 
         inst = self.games.get(ctx.channel.id, None)
 
@@ -86,7 +86,7 @@ class Hangman(commands.Cog):
 
     @commands.command(name="skip")
     async def skip(self, ctx):
-        """ Vote to skip the current words game. """
+        """ Vote to skip the current hangman game. """
 
         inst: HangmanGame = self.games.get(ctx.channel.id, None)
 
@@ -137,6 +137,6 @@ class Hangman(commands.Cog):
     @commands.cooldown(1, 60, commands.BucketType.guild)
     @commands.command(name="hlb")
     async def show_leaderboard(self, ctx):
-        """ Shows the top words players. """
+        """ Shows the top hangman players. """
 
         await HangmanLeaderboard().send(ctx)

@@ -40,8 +40,9 @@ class SnaccBot(commands.Bot):
         print(f"Bot '{self.user.display_name}' is ready")
 
     def add_cog(self, cog):
-        print(f"Adding {cog.qualified_name}")
+        print(f"Adding {cog.qualified_name}", end=": ")
         super().add_cog(cog)
+        print("OK")
 
     async def is_snacc_owner(self) -> bool:
         if self.owner_id is None:

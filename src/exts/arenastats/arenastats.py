@@ -5,14 +5,14 @@ from discord.ext import commands, tasks
 
 from datetime import datetime
 
+from src import inputs
+
 from src.common import checks, MainServer
 
 from src.common.emoji import Emoji
 
 from src.common.queries import ArenaStatsSQL
 from src.common.converters import MemberUser, Range
-
-from src.menus import PageMenu
 
 from .trophyleaderboard import TrophyLeaderboard
 
@@ -182,7 +182,7 @@ class ArenaStats(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))
 
 			embeds[0].set_footer(text=f"{ctx.bot.user.name} | {today}", icon_url=ctx.bot.user.avatar_url)
 
-		await PageMenu(ctx.bot, embeds, timeout=60.0).send(ctx)
+		await inputs.send_pages(ctx, embeds)
 
 	@commands.cooldown(1, 60, commands.BucketType.guild)
 	@commands.command(name="trophies")

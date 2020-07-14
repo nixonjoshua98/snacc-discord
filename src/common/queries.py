@@ -41,7 +41,7 @@ class ArenaStatsSQL:
 
 
 class HangmanSQL:
-    SELECT_LEADERBOARD = "SELECT user_id, wins FROM hangman ORDER BY wins DESC;"
+    SELECT_LEADERBOARD = "SELECT user_id, wins FROM hangman ORDER BY wins DESC LIMIT;"
 
     ADD_WIN = ("INSERT INTO hangman (user_id, wins) VALUES ($1, 1) "
                "ON CONFLICT (user_id) DO "

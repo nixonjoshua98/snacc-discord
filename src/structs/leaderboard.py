@@ -1,5 +1,4 @@
-from src.menus.pagemenu import PageMenu
-
+from src import inputs
 
 def chunk_list(ls, n):
     for i in range(0, len(ls), n):
@@ -24,7 +23,7 @@ class TextLeaderboardBase:
         pages = await self._create_pages(ctx)
 
         if pages:
-            await PageMenu(ctx.bot, pages, timeout=60.0).send(ctx)
+            await inputs.send_pages(ctx, pages)
 
         else:
             await ctx.send("No records yet.")

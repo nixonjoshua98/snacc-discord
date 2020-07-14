@@ -4,7 +4,7 @@ import itertools
 
 from discord.ext import commands
 
-from src.menus.pagemenu import PageMenu
+from src import inputs
 
 
 def chunk_list(ls, n):
@@ -46,7 +46,7 @@ class Wiki(commands.Cog):
 
             embeds.append(embed)
 
-        await PageMenu(ctx.bot, embeds, timeout=60.0).send(ctx)
+        await inputs.send_pages(ctx, embeds)
 
     @staticmethod
     async def get_wiki_links() -> list:
