@@ -10,7 +10,7 @@ from .reactionmenubase import ReactionMenuBase
 
 class OptionMenu(ReactionMenuBase):
 	def __init__(self, bot, author, title, options):
-		super().__init__(bot, author, timeout=5 * 60.0)
+		super().__init__(bot, author)
 
 		self.title = title
 		self.options = options
@@ -22,6 +22,15 @@ class OptionMenu(ReactionMenuBase):
 	def add_options(self):
 		for i, opt in enumerate(self.options):
 			self.add_button(Emoji.LETTERS[i], ft.partial(self.on_react_event, i), i)
+
+	async def on_timeout(self):
+		await super().on_timeout()
+
+		embed = self.message.embeds[0]
+
+		embed.description = "Timed out"
+
+		await self.edit_message(embed=embed)
 
 	async def send_initial_message(self, destination) -> discord.Message:
 		embed = discord.Embed(title=self.title, colour=discord.Color.orange())
@@ -41,11 +50,7 @@ class OptionMenu(ReactionMenuBase):
 	async def on_react_event(self, index):
 		embed = self.message.embeds[0]
 
-		embed.add_field(
-			name="Response",
-			value=f":regional_indicator_{string.ascii_lowercase[index]}: {self.options[index]}",
-			inline=False
-		)
+		embed.description = f":regional_indicator_{string.ascii_lowercase[index]}: {self.options[index]}"
 
 		await self.edit_message(embed=embed)
 

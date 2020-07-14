@@ -26,8 +26,8 @@ class Button:
 
 
 class ReactionMenuBase(InputBase):
-	def __init__(self, bot, author, **options):
-		super().__init__(bot, author, **options)
+	def __init__(self, bot, author):
+		super().__init__(bot, author, timeout=60.0)
 
 		self._buttons = self.get_buttons()
 
@@ -35,6 +35,9 @@ class ReactionMenuBase(InputBase):
 		return react.message.id == self.message.id and user.id == self.author.id
 
 	async def on_update(self): ...
+
+	async def on_timeout(self):
+		await self.clear_reactions()
 
 	async def on_exit(self):
 		await self.clear_reactions()
@@ -49,7 +52,7 @@ class ReactionMenuBase(InputBase):
 				react, user = await self.bot.wait_for("reaction_add", timeout=self.timeout, check=self.wait_for)
 
 			except asyncio.TimeoutError:
-				return await self.on_exit()
+				return await self.on_timeout()
 
 			else:
 				btn = discord.utils.get(self._buttons, emoji=str(react.emoji))

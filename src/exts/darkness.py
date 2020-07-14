@@ -18,7 +18,7 @@ class Darkness(commands.Cog):
 
     @checks.main_server_only()
     @commands.command(name="join")
-    @commands.cooldown(1, 60 * 60, commands.BucketType.member)
+    @commands.cooldown(1, 60 * 60 * 12, commands.BucketType.member)
     @commands.max_concurrency(1, commands.BucketType.member)
     async def application(self, ctx):
         """ Apply to the guild! """
@@ -30,21 +30,21 @@ class Darkness(commands.Cog):
 
             "trophies": (inputs.options, Arguments(ctx,
                                                    "What is your trophy count?",
-                                                   ("0-1000", "1001-2500", "2501-4000", "4001-5000", "5000+"),
+                                                   ("0-3000", "3001-4000", "4001-5000", "5001-6000", "6000+"),
                                                    send_dm=True
                                                    )
                          ),
 
             "play time": (inputs.options, Arguments(ctx,
-                                                    "How long have you played?",
-                                                    ("0-2 months", "3-5 months", "6-8 months", "9+ months"),
+                                                    "How long have you been playing?",
+                                                    ("0-3 months", "4-7 months", "8+ months"),
                                                     send_dm=True
                                                     )
                           ),
 
             "device": (inputs.options, Arguments(ctx,
                                                  "How do you play?",
-                                                 ("Phone/Tablet", "PC", "Spare Phone", "Other"),
+                                                 ("Phone/Tablet", "Emulator", "Spare Phone", "Other"),
                                                  send_dm=True
                                                  )
                        ),

@@ -167,7 +167,7 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 			embed = discord.Embed(title=f"{target.display_name}'s Arena Stats", colour=discord.Color.orange())
 
 			embed.set_thumbnail(url=target.avatar_url)
-			embed.set_footer(text=f"{ctx.bot.user.name} | Page {i + 1}/{len(chunks)}", icon_url=ctx.bot.user.avatar_url)
+			embed.set_footer(text=f"{str(ctx.bot.user)} | Page {i + 1}/{len(chunks)}", icon_url=ctx.bot.user.avatar_url)
 
 			for row in page:
 				name = row["date_set"].strftime("%d/%m/%Y")
@@ -176,11 +176,6 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 				embed.add_field(name=name, value=value)
 
 			embeds.append(embed)
-
-		if len(embeds) == 1:
-			today = datetime.utcnow().strftime('%d/%m/%Y %X')
-
-			embeds[0].set_footer(text=f"{ctx.bot.user.name} | {today}", icon_url=ctx.bot.user.avatar_url)
 
 		await inputs.send_pages(ctx, embeds)
 

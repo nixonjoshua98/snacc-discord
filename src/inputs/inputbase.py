@@ -8,7 +8,7 @@ class InputBase:
 
 		self.is_ended = False
 
-		self.timeout = options.get("timeout")
+		self.timeout = options.get("timeout", 60.0)
 
 		self.message = None
 		self.destination = None
