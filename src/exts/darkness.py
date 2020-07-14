@@ -8,6 +8,12 @@ from src import inputs
 from src.common import MainServer, checks
 
 
+class Arguments:
+    def __init__(self, *args, **kwargs):
+        self.args = args
+        self.kwargs = kwargs
+
+
 class Darkness(commands.Cog):
 
     @checks.main_server_only()
@@ -20,43 +26,43 @@ class Darkness(commands.Cog):
         await ctx.send("Check your DM.")
 
         questions = {
-            "username": inputs.get_input(ctx, "What is your in-game-name?", send_dm=True),
+            "username": (inputs.get_input, Arguments(ctx, "What is your in-game-name?", send_dm=True)),
 
-            "trophies": inputs.options(ctx,
-                                       "What is your trophy count?",
-                                       ("0-1000", "1001-2500", "2501-4000", "4001-5000", "5000+"),
-                                       send_dm=True
-                                       ),
+            "trophies": (inputs.options, Arguments(ctx,
+                                                   "What is your trophy count?",
+                                                   ("0-1000", "1001-2500", "2501-4000", "4001-5000", "5000+"),
+                                                   send_dm=True
+                                                   )
+                         ),
 
-            "play time": inputs.options(ctx,
-                                        "How long have you played?",
-                                        ("0-2 months", "3-5 months", "6-8 months", "9+ months"),
-                                        send_dm=True
-                                        ),
+            "play time": (inputs.options, Arguments(ctx,
+                                                    "How long have you played?",
+                                                    ("0-2 months", "3-5 months", "6-8 months", "9+ months"),
+                                                    send_dm=True
+                                                    )
+                          ),
 
-            "device": inputs.options(ctx,
-                                     "How do you play?",
-                                     ("Phone/Tablet", "PC", "Spare Phone", "Other"),
-                                     send_dm=True
-                                     ),
+            "device": (inputs.options, Arguments(ctx,
+                                                 "How do you play?",
+                                                 ("Phone/Tablet", "PC", "Spare Phone", "Other"),
+                                                 send_dm=True
+                                                 )
+                       ),
         }
 
         answers = dict()
-        current_question = 0
-        keys = tuple(questions.keys())
 
         # - - - ASK QUESTIONS - - - #
 
-        while current_question < len(keys):
-            response = await questions[keys[current_question]]
+        for k in questions:
+            func, args = questions[k]
 
-            # Timed out
+            response = await func(*args.args, **args.kwargs)
+
             if response is None:
                 return
 
-            answers[keys[current_question]] = response
-
-            current_question += 1
+            answers[k] = response
 
         await ctx.author.send("Your application is complete!")
 
