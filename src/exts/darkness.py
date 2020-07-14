@@ -20,6 +20,8 @@ class Darkness(commands.Cog):
         await ctx.send("Check your DM.")
 
         questions = {
+            "username": inputs.get_input(ctx, "What is your in-game-name?", send_dm=True),
+
             "trophies": inputs.options(ctx,
                                        "What is your trophy count?",
                                        ("0-1000", "1001-2500", "2501-4000", "4001-5000", "5000+"),
@@ -75,4 +77,4 @@ class Darkness(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(GuildApplications())
+    bot.add_cog(Darkness())
