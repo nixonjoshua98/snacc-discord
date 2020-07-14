@@ -6,8 +6,8 @@ from .reactionmenubase import ReactionMenuBase, button
 
 
 class Pages(ReactionMenuBase):
-	def __init__(self, bot, author, pages, **options):
-		super().__init__(bot, author, **options)
+	def __init__(self, bot, author, pages):
+		super().__init__(bot, author)
 
 		self.pages = pages
 

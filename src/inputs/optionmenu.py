@@ -23,15 +23,6 @@ class OptionMenu(ReactionMenuBase):
 		for i, opt in enumerate(self.options):
 			self.add_button(Emoji.LETTERS[i], ft.partial(self.on_react_event, i), i)
 
-	async def on_timeout(self):
-		await super().on_timeout()
-
-		embed = self.message.embeds[0]
-
-		embed.description = "Timed out"
-
-		await self.edit_message(embed=embed)
-
 	async def send_initial_message(self, destination) -> discord.Message:
 		embed = discord.Embed(title=self.title, colour=discord.Color.orange())
 

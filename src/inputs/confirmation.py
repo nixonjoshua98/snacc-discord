@@ -7,7 +7,7 @@ from .reactionmenubase import ReactionMenuBase, button
 
 class Confirmation(ReactionMenuBase):
 	def __init__(self, bot, author, question):
-		super().__init__(bot, author, timeout=5 * 60.0)
+		super().__init__(bot, author)
 
 		self.question = question
 
@@ -15,11 +15,6 @@ class Confirmation(ReactionMenuBase):
 
 	def get(self):
 		return self.answer
-
-	async def on_exit(self):
-		await super().on_exit()
-
-		await self.on_update()
 
 	async def send_initial_message(self, destination: discord.abc.Messageable) -> discord.Message:
 		embed = discord.Embed(title=self.question, colour=discord.Color.orange())

@@ -44,7 +44,7 @@ class Darkness(commands.Cog):
 
             "device": (inputs.options, Arguments(ctx,
                                                  "How do you play?",
-                                                 ("Phone/Tablet", "Emulator", "Spare Phone", "Other"),
+                                                 ("Phone/Tablet", "Emulator", "Spare phone", "Other"),
                                                  send_dm=True
                                                  )
                        ),

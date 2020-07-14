@@ -27,7 +27,7 @@ class Moderator(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True)))
 		except (discord.HTTPException, discord.Forbidden):
 			return await ctx.send("Channel purge failed.")
 
-		await ctx.send(f"Deleted {len(deleted)} message(s)")
+		await ctx.send(f"Deleted {len(deleted):,} message(s)")
 
 
 def setup(bot):
