@@ -8,12 +8,6 @@ from src import inputs
 from src.common import MainServer, checks
 
 
-class Arguments:
-    def __init__(self, *args, **kwargs):
-        self.args = args
-        self.kwargs = kwargs
-
-
 class GuildApplications(commands.Cog, name="Guild Applications"):
 
     @checks.main_server_only()
@@ -25,26 +19,23 @@ class GuildApplications(commands.Cog, name="Guild Applications"):
         await ctx.send("Check your DM. I have started an application with you.")
 
         questions = {
-            "trophies": (inputs.options,
-                         Arguments(ctx,
-                                   "What is your trophy count?",
-                                   ("0-1000", "1001-2500", "2501-4000", "4001-5000", "5000+"),
-                                   send_dm=True)
-                         ),
+            "trophies": inputs.options(ctx,
+                                       "What is your trophy count?",
+                                       ("0-1000", "1001-2500", "2501-4000", "4001-5000", "5000+"),
+                                       send_dm=True
+                                       ),
 
-            "play time": (inputs.options,
-                          Arguments(ctx,
-                                    "How long have you played?",
-                                    ("0-2 months", "3-5 months", "6-8 months", "9+ months"),
-                                    send_dm=True)
-                          ),
+            "play time": inputs.options(ctx,
+                                        "How long have you played?",
+                                        ("0-2 months", "3-5 months", "6-8 months", "9+ months"),
+                                        send_dm=True
+                                        ),
 
-            "device": (inputs.options,
-                       Arguments(ctx,
-                                 "How do you play?",
-                                 ("Phone/Tablet", "PC", "Spare Phone", "Other"),
-                                 send_dm=True)
-                       ),
+            "device": inputs.options(ctx,
+                                     "How do you play?",
+                                     ("Phone/Tablet", "PC", "Spare Phone", "Other"),
+                                     send_dm=True
+                                     ),
         }
 
         answers = dict()
@@ -54,11 +45,7 @@ class GuildApplications(commands.Cog, name="Guild Applications"):
         # - - - ASK QUESTIONS - - - #
 
         while current_question < len(keys):
-            question_template = questions[keys[current_question]]
-
-            func, args = question_template
-
-            response = await func(*args.args, **args.kwargs)
+            response = await questions[keys[current_question]]
 
             # Timed out
             if response is None:
