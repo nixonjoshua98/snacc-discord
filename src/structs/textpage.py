@@ -1,12 +1,10 @@
 
 
 class TextPage:
-	def __init__(self, fixes: str = "```"):
+	def __init__(self):
 		self.title = None
 		self.headers = None
 		self.footer = None
-
-		self.fixes = fixes if fixes is not None else ""
 
 		self.rows = []
 
@@ -19,12 +17,10 @@ class TextPage:
 			s.append(self._pad_row(row, widths))
 
 		if self.footer is not None:
-			if isinstance(self.footer, (list, tuple)):
-				s.append("-\n" + self._pad_row(self.footer, widths))
-			else:
-				s.append("-\n" + self.footer)
+			s.append("-")
+			s.append(self._pad_row(self.footer, widths) if isinstance(self.footer, (list, tuple)) else self.footer)
 
-		return self.fixes + "\n" + '\n'.join(s) + self.fixes
+		return "```c++\n" + '\n'.join(s) + "```"
 
 	def _get_max_widths(self):
 		widths = [0 for _ in range(max(map(len, [self.headers] + self.rows)))]
