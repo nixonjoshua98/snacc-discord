@@ -82,7 +82,7 @@ class Empire(commands.Cog):
 		page = TextPage()
 
 		page.set_title(f"Units for Hire")
-		page.set_headers(["ID", "Unit", "Owned", "$/hour", "Price"])
+		page.set_headers(["ID", "Unit", "Owned", "$/hour", "Cost"])
 
 		best_unit = None
 		best_efficieny = None

@@ -14,7 +14,7 @@ class Unit:
 		price = 0
 
 		for i in range(total_buying):
-			price += self.base_price * pow(1.05, total_owned + i)
+			price += self.base_price * pow(1.065, total_owned + i)
 
 		return math.ceil(price)
 
