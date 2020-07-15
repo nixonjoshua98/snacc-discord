@@ -20,9 +20,12 @@ class Unit:
 
 
 ALL = (
-	Unit(0, "Peasants", 	"peasants", 	100, 	25),
-	Unit(1, "Farmers", 		"farmers", 		150, 	50),
-	Unit(2, "Butchers", 	"butchers", 	300, 	100),
-	Unit(3, "Bakers", 		"bakers", 		1_000, 	250),
-	Unit(4, "Winemakers", 	"winemakers", 	3_500, 	750),
+	Unit(0, "Peasant", 		"peasants", 	100, 	25),
+	Unit(1, "Farmer", 		"farmers", 		150, 	50),
+	Unit(2, "Butcher", 		"butchers", 	300, 	75),
+	Unit(3, "Baker", 		"bakers", 		500, 	150),
+	Unit(4, "Cooks", 		"cook", 		750, 	225),
+	Unit(5, "Winemaker", 	"winemakers", 	1_500, 	500),
+	Unit(6, "Tanner", 		"tanners", 		2_500, 	750),
+	Unit(7, "Blacksmith", 	"blacksmiths", 	5_000, 	1_000),
 )
