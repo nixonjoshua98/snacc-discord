@@ -22,13 +22,13 @@ display_joins BOOL
 
 CREATE table IF NOT EXISTS bank (
 user_id BIGINT PRIMARY KEY,
-money BIGINT
+money BIGINT DEFAULT 1000
 );
 
 
 CREATE TABLE IF NOT EXISTS empire (
 user_id BIGINT PRIMARY KEY,
-name VARCHAR,
+name VARCHAR DEFAULT 'My Empire',
 farmers SMALLINT DEFAULT 0,
 butchers SMALLINT DEFAULT 0,
 cooks SMALLINT DEFAULT 0,

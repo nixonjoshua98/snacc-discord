@@ -11,20 +11,14 @@ from .moneyleaderboard import MoneyLeaderboard
 
 
 class Money(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
-	def __init__(self, bot):
-		self.bot = bot
 
-	async def get_balance(self, user: discord.Member):
-		async with self.bot.pool.acquire() as con:
-			async with con.transaction():
-				row = await con.fetchrow(BankSQL.SELECT_USER, user.id)
+	async def get_user_balance(self, con, user: discord.Member):
+		bal = await con.fetchrow(BankSQL.SELECT_USER, user.id)
 
-				if row is None:
-					await con.execute(BankSQL.INSERT_USER, user.id, 2_500)
+		if bal is None:
+			bal = await con.fetchrow(BankSQL.INSERT_USER, user.id)
 
-					row = await con.fetchrow(BankSQL.SELECT_USER, user.id)
-
-		return row
+		return bal
 
 	@commands.cooldown(1, 60 * 60 * 1, commands.BucketType.user)
 	@commands.command(name="free")
@@ -43,7 +37,7 @@ class Money(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 
 		user = user if user is not None else ctx.author
 
-		bal = await self.get_balance(user)
+		bal = self.get_user_balance(ctx.bot.pool, user)
 
 		await ctx.send(f":moneybag: **{user.display_name}** has **${bal['money']:,}**")
 

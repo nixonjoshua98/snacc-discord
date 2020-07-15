@@ -51,7 +51,7 @@ class HangmanSQL:
 class BankSQL:
     SELECT_LEADERBOARD = "SELECT * FROM bank ORDER BY money DESC;"
 
-    INSERT_USER = "INSERT INTO bank (user_id, money) VALUES ($1, $2) ON CONFLICT DO NOTHING;"
+    INSERT_USER = "INSERT INTO bank (user_id) VALUES ($1) ON CONFLICT DO NOTHING RETURNING *;"
 
     SELECT_USER = "SELECT * FROM bank WHERE user_id = $1;"
 

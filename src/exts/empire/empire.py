@@ -43,6 +43,12 @@ class Empire(commands.Cog):
 		await self.show_empire(ctx)
 
 	@checks.has_empire()
+	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
+	@commands.command(name="battle")
+	async def battle(self, ctx):
+		""" Attack a rival empire. """
+
+	@checks.has_empire()
 	@commands.command(name="empire")
 	async def show_empire(self, ctx):
 		""" View your empire. """
@@ -113,31 +119,35 @@ class Empire(commands.Cog):
 
 		await ctx.send(page.get())
 
+	@checks.has_empire()
 	@commands.command(name="hire")
 	@commands.max_concurrency(1, commands.BucketType.user)
-	@checks.has_empire()
 	async def hire_unit(self, ctx, unit: EmpireUnit(), amount: Range(1, 100) = 1):
 		""" Hire a new unit. """
 
-		money_cog = ctx.bot.get_cog("Money")
+		async with ctx.bot.pool.acquire() as con:
+			empire = await con.fetchrow(EmpireSQL.SELECT_USER, ctx.author.id)
 
-		bal = await money_cog.get_balance(ctx.author)
-		empire = await ctx.bot.pool.fetchrow(EmpireSQL.SELECT_USER, ctx.author.id)
+			bal = await ctx.bot.get_cog("Money").get_user_balance(con, ctx.author)
 
-		price = unit.get_price(empire[unit.db_col], amount)
+			price = unit.get_price(empire[unit.db_col], amount)
 
-		if price > bal["money"]:
-			diff = price - bal['money']
+			user_money = bal["money"]
 
-			return await ctx.send(f"You need another **${diff:,}** to buy **{amount}x {unit.display_name}**")
+			# User cannot afford the units
+			if price > user_money:
+				await ctx.send(f"You need another **${price - user_money:,}** to buy **{amount}x {unit.display_name}**")
 
-		elif empire[unit.db_col] + amount > unit.max_amount:
-			return await ctx.send(f"You may only have a maximum of **{unit.max_amount}** of this unit.")
+			# Buying the units will make the user go over the purchase limit
+			elif empire[unit.db_col] + amount > unit.max_amount:
+				await ctx.send(f"You may only have a maximum of **{unit.max_amount}** of this unit.")
 
-		await ctx.bot.pool.execute(BankSQL.SUB_MONEY, ctx.author.id, price)
-		await ctx.bot.pool.execute(EmpireSQL.add_unit(unit), ctx.author.id, amount)
+			# Everything is OK :)
+			else:
+				await con.execute(BankSQL.SUB_MONEY, ctx.author.id, price)
+				await con.execute(EmpireSQL.add_unit(unit), ctx.author.id, amount)
 
-		await ctx.send(f"Bought **{amount}x {unit.display_name}** for **${price:,}**!")
+				await ctx.send(f"Bought **{amount}x {unit.display_name}** for **${price:,}**!")
 
 	@tasks.loop(hours=1.0)
 	async def income_loop(self):
@@ -148,16 +158,15 @@ class Empire(commands.Cog):
 		self.last_income = now
 
 		async with self.bot.pool.acquire() as con:
-			async with con.transaction():
-				empires = await con.fetch(EmpireSQL.SELECT_ALL)
+			empires = await con.fetch(EmpireSQL.SELECT_ALL)
 
-				for emp in empires:
-					income = 0
+			for emp in empires:
+				income = 0
 
-					for unit, total in {u: emp[u.db_col] for u in units.ALL}.items():
-						income += (unit.income_hour * total) * delta_time
+				for unit, total in {u: emp[u.db_col] for u in units.ALL}.items():
+					income += (unit.income_hour * total) * delta_time
 
-					income = math.ceil(income)
+				income = math.ceil(income)
 
-					if income > 0:
-						await con.execute(BankSQL.ADD_MONEY, emp["user_id"], income)
+				if income > 0:
+					await con.execute(BankSQL.ADD_MONEY, emp["user_id"], income)
