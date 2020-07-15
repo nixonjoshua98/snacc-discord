@@ -120,7 +120,7 @@ class Empire(commands.Cog):
 
 			return await ctx.send(f"You need another **${diff:,}** to buy **{amount}x {unit.display_name}**")
 
-		elif empire[unit.db_col] + amount > 250:
+		elif empire[unit.db_col] + amount > 25:
 			return await ctx.send(f"You may only have a maximum of **250** of each unit.")
 
 		await ctx.bot.pool.execute(BankSQL.SUB_MONEY, ctx.author.id, price)
