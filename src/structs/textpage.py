@@ -1,10 +1,12 @@
 
 
 class TextPage:
-	def __init__(self):
+	def __init__(self, fixes: str = "```"):
 		self.title = None
 		self.headers = None
 		self.footer = None
+
+		self.fixes = fixes if fixes is not None else ""
 
 		self.rows = []
 
@@ -22,7 +24,7 @@ class TextPage:
 			else:
 				s.append("-\n" + self.footer)
 
-		return "```\n" + '\n'.join(s) + "```"
+		return self.fixes + "\n" + '\n'.join(s) + self.fixes
 
 	def _get_max_widths(self):
 		widths = [0 for _ in range(max(map(len, [self.headers] + self.rows)))]

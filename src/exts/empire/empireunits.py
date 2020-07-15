@@ -24,7 +24,7 @@ ALL = (
 	Unit(1, "Farmer", 		"farmers", 		150, 	25),
 	Unit(2, "Butcher", 		"butchers", 	300, 	50),
 	Unit(3, "Baker", 		"bakers", 		500, 	100),
-	Unit(4, "Cooks", 		"cooks", 		750, 	175),
+	Unit(4, "Cook", 		"cooks", 		750, 	175),
 	Unit(5, "Winemaker", 	"winemakers", 	1_500, 	250),
 	Unit(6, "Tanner", 		"tanners", 		2_500, 	350),
 	Unit(7, "Blacksmith", 	"blacksmiths", 	5_000, 	500),

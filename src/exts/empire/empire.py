@@ -52,7 +52,7 @@ class Empire(commands.Cog):
 		page = TextPage()
 
 		page.set_title(f"The '{empire['name']}' Empire")
-		page.set_headers(["Unit", "Total", "$/hour"])
+		page.set_headers(["Unit", "Owned", "$/hour"])
 
 		ttoal_income = 0
 		for unit in units.ALL:
@@ -82,17 +82,23 @@ class Empire(commands.Cog):
 		page = TextPage()
 
 		page.set_title(f"Units for Hire")
-		page.set_headers(["ID", "Unit", "$/hour", "Price"])
+		page.set_headers(["ID", "Unit", "Owned", "$/hour", "Price"])
+
+		best_unit = None
+		best_efficieny = None
 
 		for unit in units.ALL:
-			page.add_row(
-				[
-					unit.id,
-					unit.display_name,
-					f"${unit.income_hour:,}",
-					f"${unit.get_price(empire[unit.db_col]):,}",
-				]
-			)
+			price = unit.get_price(empire[unit.db_col])
+
+			efficency = price / unit.income_hour
+
+			if best_efficieny is None or efficency < best_efficieny:
+				best_unit = unit
+				best_efficieny = efficency
+
+			page.add_row([unit.id, unit.display_name, empire[unit.db_col], f"${unit.income_hour:,}", f"${price:,}"])
+
+		page.set_footer(f"Hint: {best_unit.display_name}")
 
 		await ctx.send(page.get())
 
