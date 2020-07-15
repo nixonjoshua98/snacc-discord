@@ -21,6 +21,10 @@ class Pages(ReactionMenuBase):
 
 		return embed, content
 
+	async def add_reactions(self):
+		if len(self.pages) > 1:
+			await super().add_reactions()
+
 	async def send_initial_message(self, destination) -> discord.Message:
 		embed, content = self.get_next_message()
 

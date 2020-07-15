@@ -4,10 +4,13 @@ from discord.ext import commands
 
 from src.common.errors import (
 	SnaccmanOnly,
-	MainServerOnly
+	MainServerOnly,
+	MissingEmpire,
+	HasEmpire
 )
 
 from src.common import SNACCMAN, MainServer
+from src.common.queries import EmpireSQL
 
 
 def snaccman_only():
@@ -16,6 +19,30 @@ def snaccman_only():
 			raise SnaccmanOnly("This command can only be used by Snaccman.")
 
 		return ctx.author.id == SNACCMAN
+
+	return commands.check(predicate)
+
+
+def has_empire():
+	async def predicate(ctx):
+		user = await ctx.bot.pool.fetchrow(EmpireSQL.SELECT_USER, ctx.author.id)
+
+		if user is None:
+			raise MissingEmpire(f"You do not have an empire yet. You can establish one using `{ctx.prefix}create`")
+
+		return user is not None
+
+	return commands.check(predicate)
+
+
+def no_empire():
+	async def predicate(ctx):
+		user = await ctx.bot.pool.fetchrow(EmpireSQL.SELECT_USER, ctx.author.id)
+
+		if user is not None:
+			raise HasEmpire(f"You already have an established empire. View your empire using `{ctx.prefix}empire`")
+
+		return user is None
 
 	return commands.check(predicate)
 

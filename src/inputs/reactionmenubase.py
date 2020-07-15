@@ -27,7 +27,7 @@ class Button:
 
 class ReactionMenuBase(InputBase):
 	def __init__(self, bot, author):
-		super().__init__(bot, author, timeout=60.0)
+		super().__init__(bot, author, timeout=180.0)
 
 		self._buttons = self.get_buttons()
 

@@ -60,7 +60,7 @@ class Darkness(commands.Cog):
             response = await func(*args.args, **args.kwargs)
 
             if response is None:
-                return
+                return self.application.reset_cooldown(ctx)
 
             answers[k] = response
 

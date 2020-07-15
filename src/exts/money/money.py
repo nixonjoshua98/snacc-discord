@@ -11,10 +11,11 @@ from .moneyleaderboard import MoneyLeaderboard
 
 
 class Money(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
+	def __init__(self, bot):
+		self.bot = bot
 
-	@staticmethod
-	async def get_balance(pool, user: discord.Member):
-		async with pool.acquire() as con:
+	async def get_balance(self, user: discord.Member):
+		async with self.bot.pool.acquire() as con:
 			async with con.transaction():
 				row = await con.fetchrow(BankSQL.SELECT_USER, user.id)
 
@@ -42,7 +43,7 @@ class Money(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 
 		user = user if user is not None else ctx.author
 
-		bal = await self.get_balance(ctx.bot.pool, user)
+		bal = await self.get_balance(user)
 
 		await ctx.send(f":moneybag: **{user.display_name}** has **${bal['money']:,}**")
 

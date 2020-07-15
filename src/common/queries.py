@@ -41,7 +41,7 @@ class ArenaStatsSQL:
 
 
 class HangmanSQL:
-    SELECT_LEADERBOARD = "SELECT user_id, wins FROM hangman ORDER BY wins DESC LIMIT;"
+    SELECT_LEADERBOARD = "SELECT user_id, wins FROM hangman ORDER BY wins DESC LIMIT 15;"
 
     ADD_WIN = ("INSERT INTO hangman (user_id, wins) VALUES ($1, 1) "
                "ON CONFLICT (user_id) DO "
@@ -58,3 +58,22 @@ class BankSQL:
     ADD_MONEY = "INSERT INTO bank (user_id, money) VALUES ($1, $2) " \
                 "ON CONFLICT (user_id) DO "\
                 "UPDATE SET money = bank.money + $2;"
+
+    SUB_MONEY = "INSERT INTO bank (user_id, money) VALUES ($1, $2) " \
+                "ON CONFLICT (user_id) DO "\
+                "UPDATE SET money = bank.money - $2;"
+
+
+class EmpireSQL:
+    SELECT_ALL = "SELECT * FROM empire;"
+
+    CREATE_EMPIRE = "INSERT INTO empire (user_id, name) VALUES ($1, $2);"
+
+    SELECT_USER = "SELECT * FROM empire WHERE user_id = $1;"
+
+    UPDATE_NAME = "UPDATE empire SET name = $2 WHERE user_id = $1;"
+
+    @staticmethod
+    def add_unit(unit):
+        return f"UPDATE empire SET {unit.db_col} = {unit.db_col} + $2 WHERE user_id = $1;"
+

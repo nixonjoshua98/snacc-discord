@@ -79,3 +79,22 @@ class CoinSide(commands.Converter):
 			raise commands.CommandError("That is an invalid coin side.")
 
 		return argument
+
+
+class EmpireUnit(commands.Converter):
+	async def convert(self, ctx, argument):
+		from src.exts.empire import empireunits
+
+		try:
+			val = int(argument)
+
+		except ValueError:
+			raise commands.UserInputError(f"Please use the unit IDs.")
+
+		else:
+			unit = discord.utils.get(empireunits.ALL, id=val)
+
+			if unit is None:
+				raise commands.UserInputError(f"A unit could not be found with the ID {val}")
+
+		return unit

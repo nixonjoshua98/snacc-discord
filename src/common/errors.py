@@ -7,3 +7,11 @@ class SnaccmanOnly(CommandError):
 
 class MainServerOnly(CommandError):
 	""" Command can only be used in the main server. """
+
+
+class MissingEmpire(CommandError):
+	""" User does not have a empire yet. """
+
+
+class HasEmpire(CommandError):
+	""" User already has an emire. """

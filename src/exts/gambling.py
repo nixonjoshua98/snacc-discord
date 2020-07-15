@@ -17,7 +17,7 @@ class Gambling(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 
 		money_cog = ctx.bot.get_cog("Money")
 
-		bal = await money_cog.get_balance(ctx.bot.pool, ctx.author)
+		bal = await money_cog.get_balance(ctx.author)
 
 		if bal["money"] < bet:
 			raise commands.CommandError("You do not have enough money.")

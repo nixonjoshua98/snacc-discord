@@ -11,7 +11,7 @@ from src.structs.help import Help
 
 class SnaccBot(commands.Bot):
     EXTENSIONS = [
-        "errorhandler", "arenastats", "wiki", "hangman", "gambling", "money",
+        "errorhandler", "arenastats", "empire", "wiki", "hangman", "gambling", "money",
         "darkness", "moderator", "misc", "serverdoor", "settings"
     ]
 

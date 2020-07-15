@@ -6,7 +6,7 @@ from .inputbase import InputBase
 
 class TextInputBase(InputBase):
     def __init__(self, bot, author, question):
-        super().__init__(bot, author, timeout=60 * 3)
+        super().__init__(bot, author, timeout=300.0)
 
         self._question = question
 

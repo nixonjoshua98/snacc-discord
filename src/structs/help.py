@@ -7,7 +7,7 @@ from src import inputs
 
 class Help(HelpCommand):
 	def __init__(self):
-		super(Help, self).__init__()
+		super(Help, self).__init__(verify_checks=False)
 
 	async def update_bot_mapping(self, mapping):
 		for k, v in mapping.items():
