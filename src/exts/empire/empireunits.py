@@ -24,5 +24,5 @@ ALL = (
 	Unit(1, "Farmers", 		"farmers", 		150, 	50),
 	Unit(2, "Butchers", 	"butchers", 	300, 	100),
 	Unit(3, "Bakers", 		"bakers", 		1_000, 	250),
-	Unit(4, "Winemakers", 	"winemakers", 	5_000, 	750),
+	Unit(4, "Winemakers", 	"winemakers", 	4_500, 	750),
 )
