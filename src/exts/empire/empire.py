@@ -58,7 +58,13 @@ class Empire(commands.Cog):
 		for unit in units.ALL:
 			ttoal_income += unit.income_hour * empire[unit.db_col]
 
-			page.add_row([unit.display_name, empire[unit.db_col], f"${unit.income_hour * empire[unit.db_col]:,}"])
+			page.add_row(
+				[
+					unit.display_name,
+					f"{empire[unit.db_col]}/{unit.max_amount}",
+					f"${unit.income_hour * empire[unit.db_col]:,}"
+				]
+			)
 
 		page.set_footer(f"${ttoal_income:,}/hour")
 
@@ -120,8 +126,8 @@ class Empire(commands.Cog):
 
 			return await ctx.send(f"You need another **${diff:,}** to buy **{amount}x {unit.display_name}**")
 
-		elif empire[unit.db_col] + amount > 25:
-			return await ctx.send(f"You may only have a maximum of **250** of each unit.")
+		elif empire[unit.db_col] + amount > unit.max_amount:
+			return await ctx.send(f"You may only have a maximum of **{unit.max_amount}** of this unit.")
 
 		await ctx.bot.pool.execute(BankSQL.SUB_MONEY, ctx.author.id, price)
 		await ctx.bot.pool.execute(EmpireSQL.add_unit(unit), ctx.author.id, amount)

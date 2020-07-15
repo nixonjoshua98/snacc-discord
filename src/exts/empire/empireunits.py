@@ -10,11 +10,14 @@ class Unit:
 	base_price: int
 	income_hour: int
 
+	max_amount: int = 25
+	exponent: float = 1.1
+
 	def get_price(self, total_owned: int, total_buying: int = 1) -> int:
 		price = 0
 
 		for i in range(total_buying):
-			price += self.base_price * pow(1.1, total_owned + i)
+			price += self.base_price * pow(self.exponent, total_owned + i)
 
 		return math.ceil(price)
 
