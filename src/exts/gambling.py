@@ -29,9 +29,7 @@ class Gambling(commands.Cog):
 
 			# No point updating the database if we bet nothing
 			if winnings != 0:
-				query = BankSQL.ADD_MONEY if winnings > 0 else BankSQL.SUB_MONEY
-
-				await con.execute(query, ctx.author.id, winnings)
+				await con.execute(BankSQL.ADD_MONEY, ctx.author.id, winnings)
 
 		await ctx.send(f"It's **{side_landed}**! You {'won' if correct_side else 'lost'} **${abs(winnings):,}**!")
 

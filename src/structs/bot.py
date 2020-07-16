@@ -8,6 +8,8 @@ from src.common import SNACCMAN
 
 from src.structs.help import Help
 
+# TODO: switch to models.py
+
 
 class SnaccBot(commands.Bot):
     EXTENSIONS = [
