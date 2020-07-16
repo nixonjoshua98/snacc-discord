@@ -32,5 +32,3 @@ ALL = (
 	_Unit(4, "Cook", 		EmpireM.COOKS, 		1000, 	40),
 	_Unit(5, "Winemaker", 	EmpireM.WINEMAKERS, 1500, 	50),
 )
-
-print(sum((unit.income_hour * unit.max_amount for unit in ALL)))

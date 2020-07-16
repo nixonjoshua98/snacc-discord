@@ -94,26 +94,21 @@ class Empire(commands.Cog):
 		page.set_title(f"Units for Hire")
 		page.set_headers(["ID", "Unit", "Owned", "$/hour", "Cost"])
 
-		best_unit = None
-		best_efficieny = None
-
 		for unit in units.ALL:
 			if empire[unit.db_col] >= unit.max_amount:
 				continue
 
 			price = unit.get_price(empire[unit.db_col])
 
-			efficency = price / unit.income_hour
-
-			if best_efficieny is None or efficency < best_efficieny:
-				best_unit = unit
-				best_efficieny = efficency
-
-			page.add_row([unit.id, unit.display_name, empire[unit.db_col], f"${unit.income_hour:,}", f"${price:,}"])
-
-		footer = f"Hint: {best_unit.display_name}" if best_unit is not None else "You own the max of everything!"
-
-		page.set_footer(footer)
+			page.add_row(
+				[
+					unit.id,
+					unit.display_name,
+					f"{empire[unit.db_col]}/{unit.max_amount}",
+					f"${unit.income_hour:,}",
+					f"${price:,}"
+				]
+			)
 
 		await ctx.send(page.get())
 
