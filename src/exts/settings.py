@@ -42,7 +42,7 @@ class Settings(commands.Cog):
 	@commands.has_permissions(administrator=True)
 	@commands.command(name="setdefaultrole")
 	async def set_default_role(self, ctx: commands.Context, role: discord.Role = None):
-		""" [Admin] Set (or unset) the default role which gets added to each member when they join the server. """
+		""" [Admin] Set (or remove) the default role which gets added to each member when they join the server. """
 
 		if role > ctx.guild.me.top_role:
 			return await ctx.send(f"I cannot use the role `{role.name}` since the role is higher than me.")
@@ -50,7 +50,7 @@ class Settings(commands.Cog):
 		await ctx.bot.pool.execute(ServersSQL.UPDATE_DEFAULT_ROLE, ctx.guild.id, 0 if role is None else role.id)
 
 		if role is None:
-			await ctx.send(f"Default role has been unset.")
+			await ctx.send(f"Default role has been removed")
 
 		else:
 			await ctx.send(f"The default role has been set to `{role.name}`")
@@ -58,12 +58,12 @@ class Settings(commands.Cog):
 	@commands.has_permissions(administrator=True)
 	@commands.command(name="setmemberrole")
 	async def set_member_role(self, ctx: commands.Context, role: discord.Role = None):
-		""" [Admin] Set (or unset) the member role which can open up server-specific commands for server regulars. """
+		""" [Admin] Set (or remove) the member role which can open up server-specific commands for server regulars. """
 
 		await ctx.bot.pool.execute(ServersSQL.UPDATE_MEMBER_ROLE, ctx.guild.id, 0 if role is None else role.id)
 
 		if role is None:
-			await ctx.send(f"Member role has been unset.")
+			await ctx.send(f"Member role has been removed.")
 
 		else:
 			await ctx.send(f"The member role has been set to `{role.name}`")

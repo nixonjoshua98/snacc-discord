@@ -59,7 +59,7 @@ class Empire(commands.Cog):
 		options = (events.ambush_event, events.treaure_event)
 		weights = (50, 50)
 
-		chosen_events = random.choices(options, weights=weights)
+		chosen_events = random.choices(options, weights=weights, k=1)
 
 		for event in chosen_events:
 			await event(ctx)

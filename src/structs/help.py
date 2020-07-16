@@ -7,7 +7,7 @@ from src import inputs
 
 class Help(HelpCommand):
 	def __init__(self):
-		super(Help, self).__init__(verify_checks=False)
+		super(Help, self).__init__(verify_checks=True)
 
 	async def update_bot_mapping(self, mapping):
 		for k, v in mapping.items():
@@ -23,7 +23,7 @@ class Help(HelpCommand):
 		mapping = await self.update_bot_mapping(mapping)
 
 		for i, (cog, cog_cmds) in enumerate(mapping.items()):
-			cog_cmds = await self.filter_commands(cog_cmds, sort=True)
+			cog_cmds = await self.filter_commands(cog_cmds)
 
 			chunked_cmds = [cog_cmds[i:i + 10] for i in range(0, len(cog_cmds), 10)]
 
