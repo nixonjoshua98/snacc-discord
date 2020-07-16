@@ -9,6 +9,6 @@ class MoneyLeaderboard(TextLeaderboardBase):
         super(MoneyLeaderboard, self).__init__(
             title="Richest Players",
             query=BankM.SELECT_RICHEST,
-            columns=["money"],
-            order_col="money",
+            columns=[BankM.MONEY],
+            order_col=BankM.MONEY,
         )

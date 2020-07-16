@@ -51,13 +51,13 @@ class Empire(commands.Cog):
 		await ctx.send("Not yet")
 
 	@checks.has_empire()
-	@commands.cooldown(1, 60 * 60 * 3, commands.BucketType.user)
+	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
 	@commands.command(name="empireevent", aliases=["ee"])
 	async def empire_event(self, ctx):
 		""" Trigger an empire event. """
 
 		options = (events.ambush_event, events.treaure_event)
-		weights = (75, 50)
+		weights = (100, 50)
 
 		chosen_events = random.choices(options, weights=weights, k=1)
 
@@ -98,6 +98,7 @@ class Empire(commands.Cog):
 		""" Rename your established empire. """
 
 		await ctx.bot.pool.execute(EmpireM.UPDATE_NAME, ctx.author.id, empire_name)
+
 		await ctx.send(f"Your empire has been renamed to `{empire_name}`")
 
 	@checks.has_empire()
@@ -147,11 +148,9 @@ class Empire(commands.Cog):
 
 			user_money = row[BankM.MONEY]
 
-			# User cannot afford the units
 			if price > user_money:
-				await ctx.send(f"You need another **${price - user_money:,}** to buy **{amount}x {unit.display_name}**")
+				await ctx.send(f"You can't afford **{amount}x {unit.display_name}**")
 
-			# Buying the units will make the user go over the purchase limit
 			elif empire[unit.db_col] + amount > unit.max_amount:
 				await ctx.send(f"You may only have a maximum of **{unit.max_amount}** of this unit.")
 

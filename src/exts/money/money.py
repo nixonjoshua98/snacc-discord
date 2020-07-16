@@ -9,7 +9,7 @@ from .moneyleaderboard import MoneyLeaderboard
 
 class Money(commands.Cog):
 
-	@commands.cooldown(1, 60 * 60 * 1, commands.BucketType.user)
+	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
 	@commands.command(name="free")
 	async def free_money(self, ctx):
 		""" Gain some free money """
