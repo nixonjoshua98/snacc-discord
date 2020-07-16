@@ -167,3 +167,5 @@ class Empire(commands.Cog):
 
 				if income > 0:
 					await con.execute(BankM.ADD_MONEY, emp[EmpireM.USER_ID], income)
+
+				await con.execute(EmpireM.UPDATE_LAST_UPDATE, emp[EmpireM.USER_ID], now)

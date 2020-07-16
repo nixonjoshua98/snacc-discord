@@ -54,6 +54,8 @@ class EmpireM:
 
 	UPDATE_NAME = "UPDATE empire SET name = $2 WHERE user_id = $1;"
 
+	UPDATE_LAST_UPDATE = "UPDATE empire SET last_income = $2 WHERE user_id = $1;"
+
 	@classmethod
 	async def add_unit(cls, con, user_id: int, unit, amount: int):
 		await con.execute(f"UPDATE empire SET {unit.db_col} = {unit.db_col} + $2 WHERE user_id = $1;", user_id, amount)
