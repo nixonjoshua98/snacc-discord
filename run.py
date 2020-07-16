@@ -1,7 +1,4 @@
 
-# TODO: Set the default money to 2_500 in the table and remove `get_balance()` since it
-#  wont be needed after modifying the query
-
 
 def set_env():
     from configparser import ConfigParser
