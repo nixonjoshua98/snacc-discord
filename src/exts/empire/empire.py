@@ -57,7 +57,7 @@ class Empire(commands.Cog):
 		""" Trigger an empire event. """
 
 		options = (events.ambush_event, events.treaure_event)
-		weights = (50, 100)
+		weights = (50, 50)
 
 		chosen_events = random.choices(options, weights=weights)
 
