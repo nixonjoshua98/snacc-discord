@@ -10,7 +10,8 @@ class TrophyLeaderboard(TextLeaderboardBase):
             title="Trophy Leaderboard",
             query=ArenaStatsSQL.SELECT_LEADERBOARD,
             columns=["level", "trophies"],
-            order_col="trophies"
+            order_col="trophies",
+            max_rows=None
         )
 
     async def execute_query(self, ctx) -> list:
