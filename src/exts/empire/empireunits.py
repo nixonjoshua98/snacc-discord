@@ -19,7 +19,7 @@ class _Unit:
 	def get_price(self, total_owned: int, total_buying: int = 1) -> int:
 		price = 0
 
-		for i in range(total_owned, total_buying):
+		for i in range(total_owned, total_owned + total_buying):
 			price += self.base_price * pow(self.exponent, i)
 
 		return math.ceil(price)
