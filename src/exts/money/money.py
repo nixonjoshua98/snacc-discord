@@ -3,7 +3,6 @@ import random
 from discord.ext import commands
 
 from src.common.models import BankM
-from src.common.converters import NormalUser
 
 from .moneyleaderboard import MoneyLeaderboard
 
@@ -22,14 +21,12 @@ class Money(commands.Cog):
 		await ctx.send(f"You gained **${money:,}**!")
 
 	@commands.command(name="balance", aliases=["bal"])
-	async def balance(self, ctx, user: NormalUser() = None):
-		""" Show the bank balance of the user, or supply an optional target user. """
+	async def balance(self, ctx):
+		""" Show your bank balance. """
 
-		user = user if user is not None else ctx.author
+		row = await BankM.get_row(ctx.bot.pool, ctx.author.id)
 
-		row = await BankM.get_row(ctx.bot.pool, user.id)
-
-		await ctx.send(f":moneybag: **{user.display_name}** has **${row['money']:,}**")
+		await ctx.send(f":moneybag: **{ctx.author.display_name}** has **${row['money']:,}**")
 
 	@commands.cooldown(1, 60, commands.BucketType.guild)
 	@commands.command(name="richest")

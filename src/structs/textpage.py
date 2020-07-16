@@ -3,8 +3,8 @@
 class TextPage:
 	def __init__(self):
 		self.title = None
-		self.headers = None
 		self.footer = None
+		self.headers = None
 
 		self.rows = []
 
