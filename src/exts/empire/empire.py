@@ -51,9 +51,11 @@ class Empire(commands.Cog):
 		await ctx.send("Not yet")
 
 	@checks.has_empire()
-	#@commands.cooldown(1, 60 * 60 * 3, commands.BucketType.user)
-	@commands.command(name="empirevent", aliases=["ee"])
+	@commands.cooldown(1, 60 * 60 * 3, commands.BucketType.user)
+	@commands.command(name="empireevent", aliases=["ee"])
 	async def empire_event(self, ctx):
+		""" Trigger an empire event. """
+
 		options = (events.ambush_event, events.treaure_event)
 		weights = (50, 100)
 
