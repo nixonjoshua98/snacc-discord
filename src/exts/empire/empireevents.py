@@ -21,7 +21,7 @@ async def ambush_event(ctx):
 			for i in range(num_units_lost):
 				unit = random.choice(target_units)
 
-				amount_lost = random.randint(1, max(1, empire[unit.db_col] // (5 / num_units_lost)))
+				amount_lost = random.randint(1, max(1, empire[unit.db_col] // 4))
 
 				units_lost.append((unit, amount_lost))
 
