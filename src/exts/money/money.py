@@ -37,7 +37,7 @@ class Money(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 
 		user = user if user is not None else ctx.author
 
-		bal = self.get_user_balance(ctx.bot.pool, user)
+		bal = await self.get_user_balance(ctx.bot.pool, user)
 
 		await ctx.send(f":moneybag: **{user.display_name}** has **${bal['money']:,}**")
 
