@@ -144,7 +144,7 @@ class Empire(commands.Cog):
 			else:
 				await con.execute(BankM.SUB_MONEY, ctx.author.id, price)
 
-				await EmpireM.add_unit(con, unit, ctx.author.id)
+				await EmpireM.add_unit(con, ctx.author.id, unit, amount)
 
 				await ctx.send(f"Bought **{amount}x {unit.display_name}** for **${price:,}**!")
 
