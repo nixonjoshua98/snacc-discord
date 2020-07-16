@@ -4,8 +4,10 @@ import discord
 
 from discord.ext import commands
 
-from datetime import datetime
+import datetime as dt
 from bs4 import BeautifulSoup
+
+from src.structs.textpage import TextPage
 
 
 class Miscellaneous(commands.Cog):
@@ -57,7 +59,7 @@ class Miscellaneous(commands.Cog):
 			embed.add_field(name="Definition(s)", value=value)
 
 			embed.set_footer(
-				text=f"{ctx.bot.user.name} | {datetime.utcnow().strftime('%d/%m/%Y %X')}",
+				text=f"{ctx.bot.user.name} | {dt.datetime.utcnow().strftime('%d/%m/%Y %X')}",
 				icon_url=ctx.bot.user.avatar_url
 			)
 
@@ -81,6 +83,36 @@ class Miscellaneous(commands.Cog):
 		""" Check the bot latency. """
 
 		await ctx.send(f"Pong! {round(ctx.bot.latency * 1000, 3)}ms")
+
+	@commands.command(name="cooldowns", aliases=["cd"])
+	async def cooldowns(self, ctx):
+		""" Display your command cooldowns. """
+
+		page = TextPage(title="Your Cooldowns", headers=("Command", "Cooldown"))
+
+		for name, inst in ctx.bot.cogs.items():
+			for cmd in inst.walk_commands():
+
+				if cmd._buckets._cooldown:
+					try:
+						can_run = await cmd.can_run(ctx)
+					except commands.CommandError:
+						continue
+
+					if not can_run:
+						continue
+
+					current = ctx.message.created_at.replace(tzinfo=dt.timezone.utc).timestamp()
+					bucket = cmd._buckets.get_bucket(ctx.message, current)
+
+					if bucket._tokens == 0:
+						retry_after = bucket.per - (current - bucket._window)
+
+						page.add_row((cmd.name, dt.timedelta(seconds=int(retry_after))))
+
+		page.set_footer(["# Cooldowns: ", len(page.rows)])
+
+		await ctx.send(page.get())
 
 
 def setup(bot):

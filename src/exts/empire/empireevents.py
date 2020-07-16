@@ -29,7 +29,7 @@ async def treaure_event(ctx):
 
 		await ctx.bot.pool.execute(BankM.ADD_MONEY, ctx.author.id, money_gained)
 
-	await ctx.send(f"You found a **{random.choice(items)}** which sold for **${money_gained}**")
+	await ctx.send(f"You found a **{random.choice(items)}** which sold for **${money_gained:,}**")
 
 
 async def _lose_units_event(ctx):

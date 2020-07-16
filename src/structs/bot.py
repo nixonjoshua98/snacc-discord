@@ -9,6 +9,7 @@ from src.common import SNACCMAN
 from src.structs.help import Help
 
 # TODO: switch to models.py
+# TODO: Add sections to TextPage
 
 
 class SnaccBot(commands.Bot):

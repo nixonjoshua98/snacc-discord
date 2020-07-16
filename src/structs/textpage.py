@@ -1,10 +1,10 @@
 
 
 class TextPage:
-	def __init__(self):
-		self.title = None
-		self.footer = None
-		self.headers = None
+	def __init__(self, title=None, footer=None, headers=None):
+		self.title = title
+		self.footer = footer
+		self.headers = headers
 
 		self.rows = []
 

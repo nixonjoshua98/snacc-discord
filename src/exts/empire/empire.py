@@ -21,6 +21,14 @@ class Empire(commands.Cog):
 
 		self.start_income_loop()
 
+	@commands.command(name="test")
+	async def test(self, ctx):
+		from src.structs.sectionator import Sectionator
+
+		ator = Sectionator("Epic Title", headers=("1", "2", "3"))
+
+		await ctx.send(ator.get())
+
 	def start_income_loop(self):
 		async def predicate():
 			if await self.bot.is_snacc_owner():
@@ -149,7 +157,7 @@ class Empire(commands.Cog):
 			user_money = row[BankM.MONEY]
 
 			if price > user_money:
-				await ctx.send(f"You can't afford **{amount}x {unit.display_name}**")
+				await ctx.send(f"You can't afford to hire **{amount}x {unit.display_name}**")
 
 			elif empire[unit.db_col] + amount > unit.max_amount:
 				await ctx.send(f"You may only have a maximum of **{unit.max_amount}** of this unit.")
