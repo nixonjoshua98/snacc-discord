@@ -27,8 +27,10 @@ class _Unit:
 
 ALL = (
 	_Unit(1, "Farmer", 		EmpireM.FARMERS, 	250, 	10),
-	_Unit(2, "Butcher", 	EmpireM.BUTCHERS, 	500, 	25),
-	_Unit(3, "Baker", 		EmpireM.BAKERS, 	750, 	35),
-	_Unit(4, "Cook", 		EmpireM.COOKS, 		1000, 	45),
+	_Unit(2, "Butcher", 	EmpireM.BUTCHERS, 	500, 	20),
+	_Unit(3, "Baker", 		EmpireM.BAKERS, 	750, 	30),
+	_Unit(4, "Cook", 		EmpireM.COOKS, 		1000, 	40),
 	_Unit(5, "Winemaker", 	EmpireM.WINEMAKERS, 1500, 	50),
 )
+
+print(sum((unit.income_hour * unit.max_amount for unit in ALL)))
