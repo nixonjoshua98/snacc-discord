@@ -1,5 +1,6 @@
 import math
 import asyncio
+import random
 
 from discord.ext import commands, tasks
 
@@ -11,6 +12,7 @@ from src.structs.textpage import TextPage
 from src.common.converters import EmpireUnit, Range
 
 from . import empireunits as units
+from . import empireevents as events
 
 
 class Empire(commands.Cog):
@@ -45,6 +47,20 @@ class Empire(commands.Cog):
 	@commands.command(name="battle")
 	async def battle(self, ctx):
 		""" Attack a rival empire. """
+
+		await ctx.send("Not yet")
+
+	@checks.has_empire()
+	#@commands.cooldown(1, 60 * 60 * 3, commands.BucketType.user)
+	@commands.command(name="empirevent", aliases=["ee"])
+	async def empire_event(self, ctx):
+		options = (events.ambush_event, events.treaure_event)
+		weights = (50, 100)
+
+		chosen_events = random.choices(options, weights=weights)
+
+		for event in chosen_events:
+			await event(ctx)
 
 	@checks.has_empire()
 	@commands.command(name="empire")

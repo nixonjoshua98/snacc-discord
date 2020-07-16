@@ -59,3 +59,7 @@ class EmpireM:
 	@classmethod
 	async def add_unit(cls, con, user_id: int, unit, amount: int):
 		await con.execute(f"UPDATE empire SET {unit.db_col} = {unit.db_col} + $2 WHERE user_id = $1;", user_id, amount)
+
+	@classmethod
+	async def sub_unit(cls, con, user_id: int, unit, amount: int):
+		await con.execute(f"UPDATE empire SET {unit.db_col} = {unit.db_col} - $2 WHERE user_id = $1;", user_id, amount)
