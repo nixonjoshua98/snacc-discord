@@ -1,9 +1,6 @@
 
-class _Section:
-	pass
 
-
-class Sectionator:
+class _TextPage:
 	def __init__(self, title=None, footer=None, headers=None):
 		self.title = title
 		self.footer = footer

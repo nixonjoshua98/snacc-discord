@@ -23,9 +23,9 @@ class Empire(commands.Cog):
 
 	@commands.command(name="test")
 	async def test(self, ctx):
-		from src.structs.sectionator import Sectionator
+		from src.structs._textpage import _TextPage
 
-		ator = Sectionator("Epic Title", headers=("1", "2", "3"))
+		ator = _TextPage("Epic Title", headers=("1", "2", "3"))
 
 		await ctx.send(ator.get())
 
@@ -65,7 +65,7 @@ class Empire(commands.Cog):
 		""" Trigger an empire event. """
 
 		options = (events.ambush_event, events.treaure_event)
-		weights = (100, 50)
+		weights = (50, 100)
 
 		chosen_events = random.choices(options, weights=weights, k=1)
 
