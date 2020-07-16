@@ -10,7 +10,7 @@ class Unit:
 	base_price: int
 	income_hour: int
 
-	max_amount: int = 25
+	max_amount: int = 10
 	exponent: float = 1.1
 
 	def get_price(self, total_owned: int, total_buying: int = 1) -> int:
