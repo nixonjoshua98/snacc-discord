@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 
 from discord.ext.commands import (
     Cog,
@@ -23,7 +23,7 @@ class ErrorHandler(Cog):
         elif isinstance(esc, CommandOnCooldown):
             seconds = float(esc.args[0].split(" ")[-1][0:-1])
 
-            cd = datetime.timedelta(seconds=int(seconds))
+            cd = dt.timedelta(seconds=int(seconds))
 
             await ctx.send(f"You are on cooldown. Try again in `{cd}`")
 

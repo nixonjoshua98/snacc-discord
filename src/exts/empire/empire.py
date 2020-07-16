@@ -151,21 +151,21 @@ class Empire(commands.Cog):
 	@tasks.loop(hours=1.0)
 	async def income_loop(self):
 		async with self.bot.pool.acquire() as con:
-			empires = await con.fetch(EmpireM.SELECT_ALL)
+			rows = await con.fetch(EmpireM.SELECT_ALL)
 
-			for emp in empires:
+			for row in rows:
 				now = datetime.utcnow()
 
-				delta_time = (now - emp[EmpireM.LAST_INCOME]).total_seconds() / 3600
+				delta_time = (now - row[EmpireM.LAST_INCOME]).total_seconds() / 3600
 
 				income = 0
 
-				for unit, total in {u: emp[u.db_col] for u in units.ALL}.items():
+				for unit, total in {u: row[u.db_col] for u in units.ALL}.items():
 					income += (unit.income_hour * total) * delta_time
 
 				income = math.ceil(income)
 
 				if income > 0:
-					await con.execute(BankM.ADD_MONEY, emp[EmpireM.USER_ID], income)
+					await con.execute(BankM.ADD_MONEY, row[EmpireM.USER_ID], income)
 
-				await con.execute(EmpireM.UPDATE_LAST_UPDATE, emp[EmpireM.USER_ID], now)
+				await con.execute(EmpireM.UPDATE_LAST_INCOME, row[EmpireM.USER_ID], now)
