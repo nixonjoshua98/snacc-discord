@@ -25,7 +25,7 @@ async def treaure_event(ctx):
 
 		money = bank[BankM.MONEY]
 
-		money_gained = random.randint(max(250, money // 50), max(1_000, money // 25))
+		money_gained = random.randint(max(1_000, money // 50), max(2_500, money // 25))
 
 		await ctx.bot.pool.execute(BankM.ADD_MONEY, ctx.author.id, money_gained)
 
