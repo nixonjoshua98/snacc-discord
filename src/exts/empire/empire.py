@@ -110,7 +110,7 @@ class Empire(commands.Cog):
 				]
 			)
 
-		page.set_footer("You own the maximum number of each unit!" if len(page.rows) == 0 else None)
+		page.set_footer("All possible units hired" if len(page.rows) == 0 else None)
 
 		await ctx.send(page.get())
 
