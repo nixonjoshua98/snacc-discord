@@ -25,9 +25,9 @@ class Empire(commands.Cog):
 	async def test(self, ctx):
 		from src.structs._textpage import _TextPage
 
-		ator = _TextPage("Epic Title", headers=("1", "2", "3"))
+		page = _TextPage("Epic Title", headers=("1", "2", "3"))
 
-		await ctx.send(ator.get())
+		await ctx.send(page.get())
 
 	def start_income_loop(self):
 		async def predicate():
@@ -56,7 +56,7 @@ class Empire(commands.Cog):
 	async def battle(self, ctx):
 		""" Attack a rival empire. """
 
-		await ctx.send("Not yet")
+		await ctx.send("Soon^TM")
 
 	@checks.has_empire()
 	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
@@ -162,7 +162,6 @@ class Empire(commands.Cog):
 			elif empire[unit.db_col] + amount > unit.max_amount:
 				await ctx.send(f"You may only have a maximum of **{unit.max_amount}** of this unit.")
 
-			# Everything is OK :)
 			else:
 				await con.execute(BankM.SUB_MONEY, ctx.author.id, price)
 
