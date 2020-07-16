@@ -29,6 +29,7 @@ money BIGINT DEFAULT 1000
 CREATE TABLE IF NOT EXISTS empire (
 user_id BIGINT PRIMARY KEY,
 name VARCHAR DEFAULT 'My Empire',
+last_income TIMESTAMP WITHOUT time zone default (now() at time zone 'utc'),
 farmers SMALLINT DEFAULT 0,
 butchers SMALLINT DEFAULT 0,
 cooks SMALLINT DEFAULT 0,

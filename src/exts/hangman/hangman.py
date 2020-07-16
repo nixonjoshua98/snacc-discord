@@ -5,7 +5,8 @@ from discord.ext import commands
 
 from src.common import checks
 from src.common.emoji import Emoji
-from src.common.queries import HangmanSQL
+
+from src.common.models import HangmanM
 
 from .hangmanleaderboard import HangmanLeaderboard
 from .hangmangame import HangmanGame, HangmanGuess
@@ -34,7 +35,7 @@ class Hangman(commands.Cog):
                 elif result == HangmanGuess.GAME_WON:
                     self.games[message.channel.id] = None
 
-                    await self.bot.pool.execute(HangmanSQL.ADD_WIN, message.author.id)
+                    await self.bot.pool.execute(HangmanM.ADD_WIN, message.author.id)
 
                     await message.channel.send(f"{message.author.mention} won! The word was `{inst.hidden_word}`")
 
@@ -47,7 +48,7 @@ class Hangman(commands.Cog):
     async def start_hangman(self, ctx, category: str = None):
         """ Start a new hangman game or show the current game. """
 
-        inst = self.games.get(ctx.channel.id, None)
+        inst = self.games.get(ctx.channel.id)
 
         if inst is None:
             inst = HangmanGame.create_instance(category)

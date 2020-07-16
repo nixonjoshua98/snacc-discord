@@ -2,9 +2,11 @@ import math
 
 from dataclasses import dataclass
 
+from src.common.models import EmpireM
+
 
 @dataclass(frozen=True)
-class Unit:
+class _Unit:
 	id: int
 	display_name: str
 	db_col: str
@@ -24,9 +26,9 @@ class Unit:
 
 
 ALL = (
-	Unit(1, "Farmer", 		"farmers", 		100, 	10),
-	Unit(2, "Butcher", 		"butchers", 	250, 	25),
-	Unit(3, "Baker", 		"bakers", 		500, 	35),
-	Unit(4, "Cook", 		"cooks", 		750, 	45),
-	Unit(5, "Winemaker", 	"winemakers", 	1000, 	50),
+	_Unit(1, "Farmer", 		EmpireM.FARMERS, 	100, 	10),
+	_Unit(2, "Butcher", 	EmpireM.BUTCHERS, 	250, 	25),
+	_Unit(3, "Baker", 		EmpireM.BAKERS, 	500, 	35),
+	_Unit(4, "Cook", 		EmpireM.COOKS, 		750, 	45),
+	_Unit(5, "Winemaker", 	EmpireM.WINEMAKERS, 1000, 	50),
 )

@@ -10,7 +10,7 @@ from src.common.errors import (
 )
 
 from src.common import SNACCMAN, MainServer
-from src.common.queries import EmpireSQL
+from src.common.models import EmpireM
 
 
 def snaccman_only():
@@ -25,24 +25,24 @@ def snaccman_only():
 
 def has_empire():
 	async def predicate(ctx):
-		user = await ctx.bot.pool.fetchrow(EmpireSQL.SELECT_USER, ctx.author.id)
+		row = await ctx.bot.pool.fetchrow(EmpireM.SELECT_ROW, ctx.author.id)
 
-		if user is None:
+		if row is None:
 			raise MissingEmpire(f"You do not have an empire yet. You can establish one using `{ctx.prefix}create`")
 
-		return user is not None
+		return row is not None
 
 	return commands.check(predicate)
 
 
 def no_empire():
 	async def predicate(ctx):
-		user = await ctx.bot.pool.fetchrow(EmpireSQL.SELECT_USER, ctx.author.id)
+		row = await ctx.bot.pool.fetchrow(EmpireM.SELECT_ROW, ctx.author.id)
 
-		if user is not None:
+		if row is not None:
 			raise HasEmpire(f"You already have an established empire. View your empire using `{ctx.prefix}empire`")
 
-		return user is None
+		return row is None
 
 	return commands.check(predicate)
 

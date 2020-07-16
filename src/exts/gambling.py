@@ -5,7 +5,7 @@ from discord.ext import commands
 
 from src.common.converters import Range, CoinSide
 
-from src.common.queries import BankSQL
+from src.common.models import BankM
 
 
 class Gambling(commands.Cog):
@@ -16,9 +16,9 @@ class Gambling(commands.Cog):
 		""" Flip a coin and bet on which side it lands on. """
 
 		async with ctx.bot.pool.acquire() as con:
-			bal = await ctx.bot.get_cog("Money").get_user_balance(con, ctx.author)
+			row = await BankM.get_row(con, ctx.author.id)
 
-			if bal["money"] < bet:
+			if row["money"] < bet:
 				raise commands.CommandError("You do not have enough money.")
 
 			side_landed = random.choice(["heads", "tails"])
@@ -27,9 +27,8 @@ class Gambling(commands.Cog):
 
 			winnings = bet if correct_side else bet * -1
 
-			# No point updating the database if we bet nothing
 			if winnings != 0:
-				await con.execute(BankSQL.ADD_MONEY, ctx.author.id, winnings)
+				await con.execute(BankM.ADD_MONEY, ctx.author.id, winnings)
 
 		await ctx.send(f"It's **{side_landed}**! You {'won' if correct_side else 'lost'} **${abs(winnings):,}**!")
 

@@ -1,5 +1,5 @@
 
-from src.common.queries import BankSQL
+from src.common.models import BankM
 
 from src.structs.leaderboard import TextLeaderboardBase
 
@@ -8,8 +8,7 @@ class MoneyLeaderboard(TextLeaderboardBase):
     def __init__(self):
         super(MoneyLeaderboard, self).__init__(
             title="Richest Players",
-            query=BankSQL.SELECT_LEADERBOARD,
+            query=BankM.SELECT_RICHEST,
             columns=["money"],
             order_col="money",
-            max_rows=15
         )

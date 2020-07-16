@@ -87,8 +87,8 @@ class SnaccBot(commands.Bot):
             print("heroku", end="...")
 
             ctx = ssl.create_default_context(cafile="./rds-combined-ca-bundle.pem")
-            ctx.check_hostname = False
             ctx.verify_mode = ssl.CERT_NONE
+            ctx.check_hostname = False
 
             self.pool = await asyncpg.create_pool(os.getenv("DATABASE_URL"), ssl=ctx, max_size=15)
 

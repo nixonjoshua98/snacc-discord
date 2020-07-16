@@ -6,7 +6,7 @@ from discord.ext import commands, tasks
 from datetime import datetime
 
 from src.common import checks
-from src.common.queries import EmpireSQL, BankSQL
+from src.common.models import BankM, EmpireM
 from src.structs.textpage import TextPage
 from src.common.converters import EmpireUnit, Range
 
@@ -16,8 +16,6 @@ from . import empireunits as units
 class Empire(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
-
-		self.last_income = datetime.utcnow()
 
 		self.start_income_loop()
 
@@ -36,7 +34,7 @@ class Empire(commands.Cog):
 	async def create_empire(self, ctx, *, empire_name: str):
 		""" Establish an empire under your name. """
 
-		await ctx.bot.pool.execute(EmpireSQL.CREATE_EMPIRE, ctx.author.id, empire_name)
+		await ctx.bot.pool.execute(EmpireM.INSERT_ROW, ctx.author.id, empire_name)
 
 		await ctx.send(f"Your empire named `{empire_name}` has been established!")
 
@@ -53,7 +51,7 @@ class Empire(commands.Cog):
 	async def show_empire(self, ctx):
 		""" View your empire. """
 
-		empire = await ctx.bot.pool.fetchrow(EmpireSQL.SELECT_USER, ctx.author.id)
+		empire = await ctx.bot.pool.fetchrow(EmpireM.SELECT_ROW, ctx.author.id)
 
 		page = TextPage()
 
@@ -81,7 +79,7 @@ class Empire(commands.Cog):
 	async def rename_empire(self, ctx, *, empire_name):
 		""" Rename your established empire. """
 
-		await ctx.bot.pool.execute(EmpireSQL.UPDATE_NAME, ctx.author.id, empire_name)
+		await ctx.bot.pool.execute(EmpireM.UPDATE_NAME, ctx.author.id, empire_name)
 		await ctx.send(f"Your empire has been renamed to `{empire_name}`")
 
 	@checks.has_empire()
@@ -89,7 +87,7 @@ class Empire(commands.Cog):
 	async def show_units(self, ctx):
 		""" Show all the possible units which you can buy. """
 
-		empire = await ctx.bot.pool.fetchrow(EmpireSQL.SELECT_USER, ctx.author.id)
+		empire = await ctx.bot.pool.fetchrow(EmpireM.SELECT_ROW, ctx.author.id)
 
 		page = TextPage()
 
@@ -126,13 +124,13 @@ class Empire(commands.Cog):
 		""" Hire a new unit. """
 
 		async with ctx.bot.pool.acquire() as con:
-			empire = await con.fetchrow(EmpireSQL.SELECT_USER, ctx.author.id)
+			empire = await con.fetchrow(EmpireM.SELECT_ROW, ctx.author.id)
 
-			bal = await ctx.bot.get_cog("Money").get_user_balance(con, ctx.author)
+			row = await BankM.get_row(con, ctx.author.id)
 
 			price = unit.get_price(empire[unit.db_col], amount)
 
-			user_money = bal["money"]
+			user_money = row[BankM.MONEY]
 
 			# User cannot afford the units
 			if price > user_money:
@@ -144,23 +142,22 @@ class Empire(commands.Cog):
 
 			# Everything is OK :)
 			else:
-				await con.execute(BankSQL.SUB_MONEY, ctx.author.id, price)
-				await con.execute(EmpireSQL.add_unit(unit), ctx.author.id, amount)
+				await con.execute(BankM.SUB_MONEY, ctx.author.id, price)
+
+				await EmpireM.add_unit(con, unit, ctx.author.id)
 
 				await ctx.send(f"Bought **{amount}x {unit.display_name}** for **${price:,}**!")
 
 	@tasks.loop(hours=1.0)
 	async def income_loop(self):
-		now = datetime.utcnow()
-
-		delta_time = (now - self.last_income).total_seconds() / 3600
-
-		self.last_income = now
-
 		async with self.bot.pool.acquire() as con:
-			empires = await con.fetch(EmpireSQL.SELECT_ALL)
+			empires = await con.fetch(EmpireM.SELECT_ALL)
 
 			for emp in empires:
+				now = datetime.utcnow()
+
+				delta_time = (now - emp[EmpireM.LAST_INCOME]).total_seconds() / 3600
+
 				income = 0
 
 				for unit, total in {u: emp[u.db_col] for u in units.ALL}.items():
@@ -169,4 +166,4 @@ class Empire(commands.Cog):
 				income = math.ceil(income)
 
 				if income > 0:
-					await con.execute(BankSQL.ADD_MONEY, emp["user_id"], income)
+					await con.execute(BankM.ADD_MONEY, emp[EmpireM.USER_ID], income)
