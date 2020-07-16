@@ -3,7 +3,6 @@ import random
 from discord.ext import commands
 
 from src.common.models import BankM
-
 from src.common.converters import NormalUser
 
 from .moneyleaderboard import MoneyLeaderboard
@@ -16,7 +15,7 @@ class Money(commands.Cog):
 	async def free_money(self, ctx):
 		""" Gain some free money """
 
-		money = random.randint(500, 1_500)
+		money = random.randint(500, 1_000)
 
 		await ctx.bot.pool.execute(BankM.ADD_MONEY, ctx.author.id, money)
 
