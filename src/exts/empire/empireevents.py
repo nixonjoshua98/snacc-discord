@@ -6,7 +6,7 @@ from . import empireunits as units
 
 
 async def ambush_event(ctx):
-	units_lost = _lose_units_event(ctx)
+	units_lost = await _lose_units_event(ctx)
 
 	s = []
 	for unit, n in units_lost:
