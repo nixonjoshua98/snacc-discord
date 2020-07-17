@@ -100,12 +100,12 @@ class Empire(commands.Cog):
 
 	@checks.has_empire()
 	@commands.command(name="rename")
-	async def rename_empire(self, ctx, *, empire_name):
+	async def rename_empire(self, ctx, *, new_name):
 		""" Rename your established empire. """
 
-		await ctx.bot.pool.execute(EmpireM.UPDATE_NAME, ctx.author.id, empire_name)
+		await EmpireM.set(ctx.bot.pool, ctx.guild.id, name=new_name)
 
-		await ctx.send(f"Your empire has been renamed to `{empire_name}`")
+		await ctx.send(f"Your empire has been renamed to `{new_name}`")
 
 	@checks.has_empire()
 	@commands.command(name="units")
@@ -174,4 +174,4 @@ class Empire(commands.Cog):
 				if money_change != 0:
 					await con.execute(BankM.ADD_MONEY, empire["user_id"], money_change)
 
-				await con.execute(EmpireM.UPDATE_LAST_INCOME, empire["user_id"], now)
+				await EmpireM.set(con, empire["user_id"], last_income=now)

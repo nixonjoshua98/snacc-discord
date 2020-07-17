@@ -19,7 +19,7 @@ class Settings(commands.Cog):
 	async def set_prefix(self, ctx: commands.Context, prefix: str):
 		""" [Admin] Set the prefix for this server. """
 
-		await ServersM.update(ctx.bot.pool, ctx.guild.id, prefix=prefix)
+		await ServersM.set(ctx.bot.pool, ctx.guild.id, prefix=prefix)
 
 		await ctx.send(f"Prefix has been updated to `{prefix}`")
 
@@ -31,7 +31,7 @@ class Settings(commands.Cog):
 		if role is not None and role > ctx.guild.me.top_role:
 			return await ctx.send(f"I cannot use the role `{role.name}` since the role is higher than me.")
 
-		await ServersM.update(ctx.bot.pool, ctx.guild.id, default_role=getattr(role, "id", 0))
+		await ServersM.set(ctx.bot.pool, ctx.guild.id, default_role=getattr(role, "id", 0))
 
 		if role is None:
 			await ctx.send(f"Default role has been removed")
@@ -44,7 +44,7 @@ class Settings(commands.Cog):
 	async def set_member_role(self, ctx: commands.Context, role: discord.Role = None):
 		""" [Admin] Set (or remove) the member role which can open up server-specific commands for server regulars. """
 
-		await ServersM.update(ctx.bot.pool, ctx.guild.id, member_role=getattr(role, "id", 0))
+		await ServersM.set(ctx.bot.pool, ctx.guild.id, member_role=getattr(role, "id", 0))
 
 		if role is None:
 			await ctx.send(f"The member role has been removed.")

@@ -1,10 +1,24 @@
 
-class ServersM:
+class TableModel:
+	_TABLE = None
+
+	@classmethod
+	async def set(cls, con, server, **kwargs):
+		set_values = ", ".join([f"{k}=${i}" for i, k in enumerate(kwargs.keys(), start=2)])
+
+		q = f"UPDATE {cls._TABLE} SET {set_values} WHERE server_id=$1;"
+
+		await con.execute(q, server, *list(kwargs.values()))
+
+
+class ServersM(TableModel):
+	_TABLE = "servers"
+
 	SELECT_SERVER = "SELECT * FROM servers WHERE server_id=$1 LIMIT 1;"
 
 	INSERT_SERVER = """
-	INSERT INTO servers (server_id, prefix, default_role, member_role, display_joins)
-	VALUES ($1, $2, $3, $4, $5)
+	INSERT INTO servers (server_id)
+	VALUES ($1)
 	ON CONFLICT
 		DO NOTHING;
 	RETURNING *
@@ -18,14 +32,6 @@ class ServersM:
 			row = await con.execute(cls.INSERT_SERVER, svr)
 
 		return row
-
-	@classmethod
-	async def update(cls, con, server, **kwargs):
-		set_values = ", ".join([f"{k}=${i}" for i, k in enumerate(kwargs.keys(), start=2)])
-
-		q = f"UPDATE servers SET {set_values} WHERE server_id=$1;"
-
-		await con.execute(q, server, *list(kwargs.values()))
 
 
 class ArenaStatsM:
@@ -95,14 +101,12 @@ class HangmanM:
 	"""
 
 
-class EmpireM:
+class EmpireM(TableModel):
+	_TABLE = "empire"
+
 	SELECT_ALL = "SELECT * FROM empire;"
 	SELECT_ROW = "SELECT * FROM empire WHERE user_id = $1 LIMIT 1;"
 	INSERT_ROW = "INSERT INTO empire (user_id, name) VALUES ($1, $2);"
-
-	UPDATE_NAME = "UPDATE empire SET name = $2 WHERE user_id = $1;"
-
-	UPDATE_LAST_INCOME = "UPDATE empire SET last_income = $2 WHERE user_id = $1;"
 
 	@classmethod
 	async def add_unit(cls, con, user_id: int, unit, amount: int):
@@ -111,3 +115,17 @@ class EmpireM:
 	@classmethod
 	async def sub_unit(cls, con, user_id: int, unit, amount: int):
 		await con.execute(f"UPDATE empire SET {unit.db_col} = {unit.db_col} - $2 WHERE user_id = $1;", user_id, amount)
+
+
+class UnitsM:
+	SELECT_ROW = "SELECT * FROM units WHERE units_id = $1 LIMIT 1;"
+
+	@classmethod
+	async def add_unit(cls, con, user_id: int, unit, amount: int):
+		await con.execute(f"UPDATE units SET {unit.db_col} = {unit.db_col} + $2 WHERE units_id = $1;", user_id, amount)
+
+	@classmethod
+	async def sub_unit(cls, con, user_id: int, unit, amount: int):
+		await con.execute(f"UPDATE units SET {unit.db_col} = {unit.db_col} - $2 WHERE units_id = $1;", user_id, amount)
+
+
