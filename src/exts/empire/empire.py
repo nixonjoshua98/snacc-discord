@@ -2,20 +2,20 @@ import math
 import asyncio
 import random
 
-from collections import namedtuple
-
 from discord.ext import commands, tasks
 
 from datetime import datetime
 
 from src import inputs
-from src.common import MainServer, checks
+from src.common import checks
 from src.common.models import BankM, EmpireM
 from src.structs.textpage import TextPage
 from src.common.converters import EmpireUnit, Range
 
 from . import empireunits as units
 from . import empireevents as events
+
+from .empireunits import UnitGroupType
 
 
 class Empire(commands.Cog):
@@ -51,7 +51,7 @@ class Empire(commands.Cog):
 	async def battle(self, ctx):
 		""" Attack a rival empire. """
 
-		await ctx.send(self.battle.__doc__ or "")
+		await ctx.send(str(self.battle.__doc__)[:2000])
 
 	@checks.has_empire()
 	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
@@ -74,26 +74,12 @@ class Empire(commands.Cog):
 
 		empire = await ctx.bot.pool.fetchrow(EmpireM.SELECT_ROW, ctx.author.id)
 
-		page = TextPage()
+		pages = []
 
-		page.set_title(f"The '{empire['name']}' Empire")
-		page.set_headers(["Unit", "Owned", "$/hour"])
+		for type_, group in units.UNIT_GROUPS.items():
+			pages.append(group.create_empire_page(empire).get())
 
-		total_income = 0
-		for unit in units.ALL:
-			total_income += unit.income_hour * empire[unit.db_col]
-
-			page.add_row(
-				[
-					unit.display_name,
-					f"{empire[unit.db_col]}/{unit.max_amount}",
-					f"${unit.income_hour * empire[unit.db_col]:,}"
-				]
-			)
-
-		page.set_footer(f"${total_income:,}/hour")
-
-		await ctx.send(page.get())
+		await inputs.send_pages(ctx, pages)
 
 	@checks.has_empire()
 	@commands.command(name="rename")
@@ -109,32 +95,28 @@ class Empire(commands.Cog):
 	async def show_units(self, ctx):
 		""" Show all the possible units which you can buy. """
 
+		def create_page(unit_group):
+			page = TextPage(unit_group.name, headers=["ID", "Unit", "Owned", "$/hour", "Cost"])
+
+			for unit in unit_group.units:
+				if empire[unit.db_col] >= unit.max_amount:
+					continue
+
+				page.add_row(unit.create_units_row(empire[unit.db_col]))
+
+			return page
+
 		empire = await ctx.bot.pool.fetchrow(EmpireM.SELECT_ROW, ctx.author.id)
 
-		page = TextPage()
+		pages = []
+		for _, group in units.UNIT_GROUPS.items():
+			p = create_page(group)
 
-		page.set_title(f"Units for Hire")
-		page.set_headers(["ID", "Unit", "Owned", "$/hour", "Cost"])
+			p.set_footer("No units available to hire" if len(p.rows) == 0 else None)
 
-		for unit in units.ALL:
-			if empire[unit.db_col] >= unit.max_amount:
-				continue
+			pages.append(p.get())
 
-			price = unit.get_price(empire[unit.db_col])
-
-			page.add_row(
-				[
-					unit.id,
-					unit.display_name,
-					f"{empire[unit.db_col]}/{unit.max_amount}",
-					f"${unit.income_hour:,}",
-					f"${price:,}"
-				]
-			)
-
-		page.set_footer("No units available to hire" if len(page.rows) == 0 else None)
-
-		await ctx.send(page.get())
+		await inputs.send_pages(ctx, pages)
 
 	@checks.has_empire()
 	@commands.command(name="hire")
@@ -176,7 +158,9 @@ class Empire(commands.Cog):
 
 				income = 0
 
-				for unit, total in {u: row[u.db_col] for u in units.MONEY_UNITS}.items():
+				money_units = {u: row[u.db_col] for u in units.get_group(UnitGroupType.MONEY).units}
+
+				for unit, total in money_units.items():
 					income += (unit.income_hour * total) * delta_time
 
 				income = math.ceil(income)

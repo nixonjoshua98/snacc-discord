@@ -30,7 +30,7 @@ class Money(commands.Cog):
 		await ctx.send(f":moneybag: **{ctx.author.display_name}** has **${row['money']:,}**")
 
 	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
-	@commands.command(name="steal")
+	@commands.command(name="steal", cooldown_after_parsing=True)
 	async def steal_coins(self, ctx, target: NormalUser()):
 		""" Attempt to steal from another user. """
 

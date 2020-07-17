@@ -45,12 +45,11 @@ class TextLeaderboardBase:
         chunks = tuple(chunk_list(entries, self.page_size))
 
         for i, chunk in enumerate(chunks, start=1):
-            page = TextPage()
+            page = TextPage(headers=self.headers)
 
             title = self.title + (f" [Page {i} / {len(chunks)}]" if len(chunks) > 1 else "")
 
             page.set_title(title)
-            page.set_headers(self.headers)
 
             for row in chunk:
                 page.add_row(row)
