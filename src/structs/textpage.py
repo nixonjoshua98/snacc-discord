@@ -40,6 +40,10 @@ class TextPage:
 	def add_row(self, ls):
 		self.rows.append(ls)
 
+	def add_rows(self, *ls):
+		for row in ls:
+			self.add_row(row)
+
 	def set_headers(self, ls):
 		self.headers = ls
 

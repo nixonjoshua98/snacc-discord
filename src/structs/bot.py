@@ -9,12 +9,11 @@ from src.common import SNACCMAN
 from src.structs.help import Help
 
 # TODO: switch to models.py
-# TODO: _TextPage.py
 
 
 class SnaccBot(commands.Bot):
     EXTENSIONS = [
-        "errorhandler", "arenastats", "empire", "wiki", "hangman", "gambling", "money",
+        "errorhandler", "arenastats", "empire", "hangman", "gambling", "money",
         "darkness", "moderator", "misc", "serverdoor", "settings"
     ]
 

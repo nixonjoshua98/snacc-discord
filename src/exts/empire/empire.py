@@ -2,7 +2,7 @@ import math
 import asyncio
 import random
 
-from discord.ext import commands, tasks
+from discord.ext import tasks, commands
 
 from datetime import datetime
 
@@ -12,10 +12,10 @@ from src.common.models import BankM, EmpireM
 from src.structs.textpage import TextPage
 from src.common.converters import EmpireUnit, Range
 
-from . import empireunits as units
+from . import units
 from . import empireevents as events
 
-from .empireunits import UnitGroupType
+from .units import UnitGroupType
 
 
 class Empire(commands.Cog):
@@ -59,13 +59,18 @@ class Empire(commands.Cog):
 	async def empire_event(self, ctx):
 		""" Trigger an empire event. """
 
-		options = (events.ambush_event, events.treaure_event)
-		weights = (25, 75)
+		options = (events.ambush_event, events.treaure_event, events.stolen_event)
+		weights = (25, 100, 25)
 
 		chosen_events = random.choices(options, weights=weights, k=1)
 
 		for event in chosen_events:
 			await event(ctx)
+
+		if random.randint(0, 9) == 0:
+			self.empire_event.reset_cooldown(ctx)
+
+			await ctx.send("Good news! Your cooldown has been reset.")
 
 	@checks.has_empire()
 	@commands.command(name="empire")
@@ -74,10 +79,7 @@ class Empire(commands.Cog):
 
 		empire = await ctx.bot.pool.fetchrow(EmpireM.SELECT_ROW, ctx.author.id)
 
-		pages = []
-
-		for type_, group in units.UNIT_GROUPS.items():
-			pages.append(group.create_empire_page(empire).get())
+		pages = [group.create_empire_page(empire).get() for group in units.UNIT_GROUPS.values()]
 
 		await inputs.send_pages(ctx, pages)
 
@@ -95,26 +97,9 @@ class Empire(commands.Cog):
 	async def show_units(self, ctx):
 		""" Show all the possible units which you can buy. """
 
-		def create_page(unit_group):
-			page = TextPage(unit_group.name, headers=["ID", "Unit", "Owned", "$/hour", "Cost"])
-
-			for unit in unit_group.units:
-				if empire[unit.db_col] >= unit.max_amount:
-					continue
-
-				page.add_row(unit.create_units_row(empire[unit.db_col]))
-
-			return page
-
 		empire = await ctx.bot.pool.fetchrow(EmpireM.SELECT_ROW, ctx.author.id)
 
-		pages = []
-		for _, group in units.UNIT_GROUPS.items():
-			p = create_page(group)
-
-			p.set_footer("No units available to hire" if len(p.rows) == 0 else None)
-
-			pages.append(p.get())
+		pages = [group.create_units_page(empire).get() for group in units.UNIT_GROUPS.values()]
 
 		await inputs.send_pages(ctx, pages)
 
@@ -137,7 +122,7 @@ class Empire(commands.Cog):
 				await ctx.send(f"You can't afford to hire **{amount}x {unit.display_name}**")
 
 			elif empire[unit.db_col] + amount > unit.max_amount:
-				await ctx.send(f"You may only have a maximum of **{unit.max_amount}** of this unit.")
+				await ctx.send(f"You may only have a maximum of **{unit.max_amount}** of this unit")
 
 			else:
 				await con.execute(BankM.SUB_MONEY, ctx.author.id, price)
@@ -151,21 +136,20 @@ class Empire(commands.Cog):
 		async with self.bot.pool.acquire() as con:
 			rows = await con.fetch(EmpireM.SELECT_ALL)
 
-			for row in rows:
+			for empire in rows:
 				now = datetime.utcnow()
 
-				delta_time = (now - row[EmpireM.LAST_INCOME]).total_seconds() / 3600
+				delta_time = (now - empire[EmpireM.LAST_INCOME]).total_seconds() / 3600
 
-				income = 0
+				money_change = 0
 
-				money_units = {u: row[u.db_col] for u in units.get_group(UnitGroupType.MONEY).units}
+				for _, group in units.UNIT_GROUPS.items():
+					for unit in group.units:
+						money_change += unit.get_delta_money(empire[unit.db_col], delta_time)
 
-				for unit, total in money_units.items():
-					income += (unit.income_hour * total) * delta_time
+				money_change = math.ceil(money_change)
 
-				income = math.ceil(income)
+				if money_change != 0:
+					await con.execute(BankM.ADD_MONEY, empire[EmpireM.USER_ID], money_change)
 
-				if income > 0:
-					await con.execute(BankM.ADD_MONEY, row[EmpireM.USER_ID], income)
-
-				await con.execute(EmpireM.UPDATE_LAST_INCOME, row[EmpireM.USER_ID], now)
+				await con.execute(EmpireM.UPDATE_LAST_INCOME, empire[EmpireM.USER_ID], now)

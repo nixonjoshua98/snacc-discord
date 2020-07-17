@@ -4,7 +4,7 @@ from collections import Counter
 
 from src.common.models import EmpireM, BankM
 
-from . import empireunits as units
+from . import units
 
 
 async def ambush_event(ctx):
@@ -19,6 +19,22 @@ async def ambush_event(ctx):
 	await ctx.send(f"You was ambushed and lost **{', '.join(s) or 'nothing'}**!")
 
 
+async def stolen_event(ctx):
+	async with ctx.bot.pool.acquire() as con:
+		bank = await con.fetchrow(BankM.SELECT_ROW, ctx.author.id)
+
+		money = bank[BankM.MONEY]
+
+		money_stolen = random.randint(max(250, money // 100), max(1_000, money // 50))
+
+		if money_stolen > 0:
+			await ctx.bot.pool.execute(BankM.SUB_MONEY, ctx.author.id, money_stolen)
+
+	s = f"{money_stolen:,}" if money_stolen > 0 else "nothing"
+
+	await ctx.send(f"A thief broke into your empire and stole **${s}**")
+
+
 async def treaure_event(ctx):
 	items = ("tiny ruby", "pink diamond", "small emerald", "holy sword", "demon sword", "iron shield")
 
@@ -27,7 +43,7 @@ async def treaure_event(ctx):
 
 		money = bank[BankM.MONEY]
 
-		money_gained = random.randint(max(1_000, money // 50), max(2_500, money // 25))
+		money_gained = random.randint(max(1_000, money // 100), max(2_500, money // 50))
 
 		await ctx.bot.pool.execute(BankM.ADD_MONEY, ctx.author.id, money_gained)
 
@@ -51,6 +67,6 @@ async def _lose_units_event(ctx):
 
 			temp_units_lost = random.choices(units_owned, weights=weights, k=num_units_lost)
 
-			units_lost = [(unit, amount) for unit, amount in Counter(temp_units_lost).items()]
+			units_lost = [(unit, min(amount, empire[unit.db_col])) for unit, amount in Counter(temp_units_lost).items()]
 
 	return units_lost

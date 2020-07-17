@@ -34,7 +34,7 @@ class Money(commands.Cog):
 	async def steal_coins(self, ctx, target: NormalUser()):
 		""" Attempt to steal from another user. """
 
-		if random.randint(0, 2) != 0:
+		if random.randint(0, 3) != 0:
 			return await ctx.send(f"You failed to steal from **{target.display_name}**")
 
 		async with ctx.bot.pool.acquire() as con:
@@ -49,7 +49,7 @@ class Money(commands.Cog):
 			stolen_amount = min(10_000, max_amount)
 
 			await con.execute(BankM.ADD_MONEY, ctx.author.id, stolen_amount)
-			await con.execute(BankM.SUB_MONEY, target.id, min(stolen_amount, target_money))
+			await con.execute(BankM.SUB_MONEY, target.id, stolen_amount)
 
 		await ctx.send(f"You stole **${stolen_amount:,}** from **{target.display_name}**")
 

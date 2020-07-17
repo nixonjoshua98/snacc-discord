@@ -11,13 +11,13 @@ class BankM:
 	ADD_MONEY = (
 		"INSERT INTO bank (user_id, money) VALUES ($1, $2) "
 		"ON CONFLICT (user_id) DO "
-		"UPDATE SET money = bank.money + $2;"
+		"UPDATE SET money = GREATEST(0, bank.money + $2);"
 	)
 
 	SUB_MONEY = (
 		"INSERT INTO bank (user_id, money) VALUES ($1, $2) "
 		"ON CONFLICT (user_id) DO "
-		"UPDATE SET money = bank.money - $2;"
+		"UPDATE SET money = GREATEST(0, bank.money - $2);"
 	)
 
 	@classmethod
@@ -46,6 +46,8 @@ class EmpireM:
 	USER_ID, NAME, LAST_INCOME = "user_id", "name", "last_income"
 
 	FARMERS, BUTCHERS, COOKS, BAKERS, WINEMAKERS = "farmers", "butchers", "cooks", "bakers", "winemakers"
+
+	PEASANTS = "peasants"
 
 	SELECT_ALL = "SELECT * FROM empire;"
 	SELECT_ROW = "SELECT * FROM empire WHERE user_id = $1 LIMIT 1;"
