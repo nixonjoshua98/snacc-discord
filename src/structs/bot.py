@@ -8,6 +8,8 @@ from src.common import SNACCMAN
 
 from src.structs.help import Help
 
+from src.common.models import ServersM
+
 # TODO: switch to models.py
 
 
@@ -35,7 +37,8 @@ class SnaccBot(commands.Bot):
 
         await self.create_pool()
         await self.setup_database()
-        await self.load_extensions()
+
+        self.load_extensions()
 
         print(f"Bot '{self.user.display_name}' is ready")
 
@@ -94,7 +97,7 @@ class SnaccBot(commands.Bot):
 
         print("OK")
 
-    async def load_extensions(self):
+    def load_extensions(self):
         """ Load all of the extensions for the bot. """
 
         self.exts_loaded = False
@@ -109,15 +112,7 @@ class SnaccBot(commands.Bot):
         self.exts_loaded = True
 
     async def update_server_cache(self, guild):
-        """
-        Update a guild's settings cache.
-
-        :param guild: The discord guild
-        """
-
-        settings = self.get_cog("Settings")
-
-        self.server_cache[guild.id] = await settings.get_server_settings(guild)
+        self.server_cache[guild.id] = await ServersM.get_server(self.pool, guild.id)
 
     async def get_server(self, guild, *, refresh: bool = False):
         """ Get the settings from either the cache or the database for a guild. """

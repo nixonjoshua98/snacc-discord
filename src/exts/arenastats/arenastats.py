@@ -1,19 +1,22 @@
+
+
+# Module imports
 import discord
 import asyncio
 
+import datetime as dt
+
 from discord.ext import commands, tasks
 
-from datetime import datetime
 
+# src imports
 from src import inputs
-
-from src.common import checks, MainServer
-
+from src.common import MainServer, checks
 from src.common.emoji import Emoji
-
-from src.common.queries import ArenaStatsSQL
+from src.common.models import ArenaStatsM
 from src.common.converters import MemberUser, Range
 
+# Local imports
 from .trophyleaderboard import TrophyLeaderboard
 
 
@@ -22,7 +25,13 @@ def chunk_list(ls, n):
 		yield ls[i: i + n]
 
 
+MAX_ROWS_PER_USER = 24
+DAYS_NO_PING = 7
+NO_PING_ROLE = "Free Agent"
+
+
 class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_after_parsing=True))):
+
 	def __init__(self, bot):
 		self.bot = bot
 
@@ -46,20 +55,21 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 		"""
 
 		async with ctx.bot.pool.acquire() as con:
-			async with con.transaction():
-				await con.execute(ArenaStatsSQL.INSERT_ROW, target.id, datetime.utcnow(), level, trophies)
+			await con.execute(ArenaStatsM.INSERT_ROW, target.id, dt.datetime.utcnow(), level, trophies)
 
-				results = await con.fetch(ArenaStatsSQL.SELECT_USER, target.id)
+			results = await con.fetch(ArenaStatsM.SELECT_USER, target.id)
 
-				# Limit the number of user entries in the database
-				if len(results) > 24:
-					for result in results[24:]:
-						await con.execute(ArenaStatsSQL.DELETE_ROW, target.id, result["date_set"])
+			# Delete the oldest set of results if we have too many results stored
+			if len(results) > MAX_ROWS_PER_USER:
+				for result in results[MAX_ROWS_PER_USER:]:
+					await con.execute(ArenaStatsM.DELETE_ROW, target.id, result["date_set"])
 
 	def start_shame_users(self):
+		""" Start the background loop if we fulfull some conditions """
+
 		async def predicate():
 			if not self.bot.debug and await self.bot.is_snacc_owner():
-				print("Starting 'ArenaStats.shame_users' loop.")
+				print("Starting loop: Shame")
 
 				await asyncio.sleep(60 * 60 * 6)
 
@@ -68,33 +78,38 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 		asyncio.create_task(predicate())
 
 	async def create_shame_message(self, destination: discord.TextChannel):
+		""" Create the shame message for the guild (attached to `destination`). """
+
 		conf = await self.bot.get_server(destination.guild)
 		role = destination.guild.get_role(conf["member_role"])
 
 		if role is None:
 			return
 
-		rows = await self.bot.pool.fetch(ArenaStatsSQL.SELECT_ALL_USERS_LATEST)
+		rows = await self.bot.pool.fetch(ArenaStatsM.SELECT_ALL_USERS_LATEST)
+
 		data = {row["user_id"]: row for row in rows}
 
 		lacking, missing = [], []
 
-		# Iterate over every member who has the role
 		for member in role.members:
-			if discord.utils.get(member.roles, name="Free Agent"):
+			no_ping_role = discord.utils.get(member.roles, name=NO_PING_ROLE)
+
+			if no_ping_role is not None:
 				continue
 
 			user_data = data.get(member.id)
 
-			# User has never set their stats before
+			# No data could be found in the database
 			if user_data is None:
 				missing.append(member.mention)
 
 			else:
-				days = (datetime.utcnow() - user_data["date_set"]).days
+				now = dt.datetime.utcnow()
 
-				# User has not set stats recently
-				if days >= 7:
+				days = (now - user_data["date_set"]).days
+
+				if days >= DAYS_NO_PING:
 					lacking.append((member.mention, days))
 
 		message = None
@@ -115,6 +130,8 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 
 	@tasks.loop(hours=12.0)
 	async def shame_users_loop(self):
+		""" background tasks which posts to the main server. """
+
 		channel = self.bot.get_channel(MainServer.ABO_CHANNEL)
 
 		message = await self.create_shame_message(channel)
@@ -155,13 +172,13 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 		""" View your own or another members recorded arena stats. """
 
 		target = ctx.author if target is None else target
-		results = await ctx.bot.pool.fetch(ArenaStatsSQL.SELECT_USER, target.id)
+
+		results = await ctx.bot.pool.fetch(ArenaStatsM.SELECT_USER, target.id)
 
 		if not results:
-			return await ctx.send("I found no stats for you.")
+			return await ctx.send("I found nothing.")
 
-		embeds = []
-		chunks = tuple(chunk_list(results, 6))
+		embeds, chunks = [], tuple(chunk_list(results, 6))
 
 		for i, page in enumerate(chunks):
 			embed = discord.Embed(title=f"{target.display_name}'s Arena Stats", colour=discord.Color.orange())
@@ -170,10 +187,11 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 			embed.set_footer(text=f"{str(ctx.bot.user)} | Page {i + 1}/{len(chunks)}", icon_url=ctx.bot.user.avatar_url)
 
 			for row in page:
-				name = row["date_set"].strftime("%d/%m/%Y")
-				value = f"**{Emoji.XP} {row['level']:02d} :trophy: {row['trophies']:,}**"
+				date_set = row["date_set"].strftime("%d/%m/%Y")
 
-				embed.add_field(name=name, value=value)
+				stats = f"**{Emoji.XP} {row['level']:02d} :trophy: {row['trophies']:,}**"
+
+				embed.add_field(name=date_set, value=stats)
 
 			embeds.append(embed)
 

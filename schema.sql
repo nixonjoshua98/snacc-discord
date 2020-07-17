@@ -14,10 +14,10 @@ wins INTEGER
 
 CREATE table IF NOT EXISTS servers (
 server_id BIGINT PRIMARY KEY,
-default_role BIGINT,
-member_role BIGINT,
-prefix VARCHAR,
-display_joins BOOL
+default_role BIGINT DEFAULT 0,
+member_role BIGINT DEFAULT 0,
+prefix VARCHAR DEFAULT "!",
+display_joins BOOL DEFAULT True
 );
 
 CREATE table IF NOT EXISTS bank (
@@ -34,6 +34,5 @@ farmers SMALLINT DEFAULT 0,
 butchers SMALLINT DEFAULT 0,
 cooks SMALLINT DEFAULT 0,
 bakers SMALLINT DEFAULT 0,
-winemakers SMALLINT DEFAULT 0,
-peasants SMALLINT DEFAULT 0
+winemakers SMALLINT DEFAULT 0
 );

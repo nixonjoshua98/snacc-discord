@@ -9,7 +9,7 @@ class HangmanLeaderboard(TextLeaderboardBase):
         super(HangmanLeaderboard, self).__init__(
             title="Top Hangman Players",
             query=HangmanM.SELECT_MOST_WINS,
-            columns=[HangmanM.WINS],
-            order_col=HangmanM.WINS,
+            columns=["wins"],
+            order_col="wins",
             max_rows=15
         )

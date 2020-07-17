@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-from src.common.queries import ServersSQL
+from src.common.models import ServersM
 
 
 class ServerDoor(commands.Cog, name="Server Door"):
@@ -28,9 +28,9 @@ class ServerDoor(commands.Cog, name="Server Door"):
 
         config = await ctx.bot.get_server(ctx.guild, refresh=True)
 
-        display_joins = config.get("display_joins")
+        display_joins = config.get("display_joins", True)
 
-        await ctx.bot.pool.execute(ServersSQL.UPDATE_DISPLAY_JOINS, ctx.guild.id, not display_joins)
+        await ServersM.update(ctx.bot.pool, ctx.guild.id, display_joins=not display_joins)
 
         await ctx.send(f"Server door: {'`Hidden`' if display_joins else '`Shown`'}")
 

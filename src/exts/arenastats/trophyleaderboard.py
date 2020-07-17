@@ -1,5 +1,5 @@
 
-from src.common.queries import ArenaStatsSQL
+from src.common.models import ArenaStatsM
 
 from src.structs.leaderboard import TextLeaderboardBase
 
@@ -8,7 +8,7 @@ class TrophyLeaderboard(TextLeaderboardBase):
     def __init__(self):
         super(TrophyLeaderboard, self).__init__(
             title="Trophy Leaderboard",
-            query=ArenaStatsSQL.SELECT_LEADERBOARD,
+            query=ArenaStatsM.SELECT_LEADERBOARD,
             columns=["level", "trophies"],
             order_col="trophies"
         )

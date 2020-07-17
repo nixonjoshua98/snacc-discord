@@ -40,7 +40,7 @@ class Gambling(commands.Cog):
 		async with ctx.bot.pool.acquire() as con:
 			bank = await BankM.get_row(con, ctx.author.id)
 
-			money = bank[BankM.MONEY]
+			money = bank["money"]
 
 			if money < bet:
 				raise commands.CommandError("You do not have enough money.")

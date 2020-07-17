@@ -41,8 +41,8 @@ class Money(commands.Cog):
 			author_bank = await BankM.get_row(con, ctx.author.id)
 			target_bank = await BankM.get_row(con, target.id)
 
-			author_money = author_bank[BankM.MONEY]
-			target_money = target_bank[BankM.MONEY]
+			author_money = author_bank["money"]
+			target_money = target_bank["money"]
 
 			max_amount = random.randint(1, int(min(author_money, target_money) * 0.05))
 

@@ -7,7 +7,9 @@ from src.common.models import EmpireM, BankM
 from . import units
 
 
-async def ambush_event(ctx):
+async def attacked_event(ctx):
+	""" Empire was attacked event (-units). """
+
 	units_lost = await _lose_units_event(ctx)
 
 	s = []
@@ -16,17 +18,21 @@ async def ambush_event(ctx):
 
 		await EmpireM.sub_unit(ctx.bot.pool, ctx.author.id, unit, n)
 
-	await ctx.send(f"You was ambushed and lost **{', '.join(s) or 'nothing'}**!")
+	await ctx.send(f"Your empire was attacked and lost **{', '.join(s) or 'nothing'}**!")
 
 
 async def stolen_event(ctx):
+	""" Empire was stolen from event (-money). """
+
 	async with ctx.bot.pool.acquire() as con:
 		bank = await con.fetchrow(BankM.SELECT_ROW, ctx.author.id)
 
-		money = bank[BankM.MONEY]
+		money = bank["money"]
 
+		# min(2_500, 2% money) - min(10_000, 5% money)
 		money_stolen = random.randint(min(2_500, money // 50), min(10_000, money // 20))
 
+		# Only update the database if any money was stolen
 		if money_stolen > 0:
 			await ctx.bot.pool.execute(BankM.SUB_MONEY, ctx.author.id, money_stolen)
 
@@ -35,15 +41,18 @@ async def stolen_event(ctx):
 	await ctx.send(f"A thief broke into your empire and stole **${s}**")
 
 
-async def treaure_event(ctx):
+async def loot_event(ctx):
+	""" Empire finds loot event (+money). """
+
 	items = ("tiny ruby", "pink diamond", "small emerald", "holy sword", "demon sword", "iron shield")
 
 	async with ctx.bot.pool.acquire() as con:
 		bank = await con.fetchrow(BankM.SELECT_ROW, ctx.author.id)
 
-		money = bank[BankM.MONEY]
+		money = bank["money"]
 
-		money_gained = random.randint(max(500, money // 50), max(1_500, money // 100))
+		# max(500, 1% money) - min(1_500, 2% money)
+		money_gained = random.randint(max(500, money // 100), max(1_500, money // 50))
 
 		await ctx.bot.pool.execute(BankM.ADD_MONEY, ctx.author.id, money_gained)
 
@@ -51,22 +60,30 @@ async def treaure_event(ctx):
 
 
 async def _lose_units_event(ctx):
+	""" Generic lose troops function. """
+
 	async with ctx.bot.pool.acquire() as con:
 		empire = await con.fetchrow(EmpireM.SELECT_ROW, ctx.author.id)
 
+		# List of all unit types the empire has
 		units_owned = [unit for unit in units.ALL if empire[unit.db_col] > 0]
 
 		units_lost = []
 
 		if units_owned:
+			# Total number of units
 			total_units_owned = sum(map(lambda u: empire[u.db_col], units_owned))
 
+			# 1 - Clamp(1, 5, units // 15)
 			num_units_lost = random.randint(1, max(1, min(5, total_units_owned // 15)))
 
+			# TODO: Sort by `.power`
 			weights = [i * 25 for i in range(len(units_owned), 0, -1)]
 
+			# List of units (with duplicates) which were killed
 			temp_units_lost = random.choices(units_owned, weights=weights, k=num_units_lost)
 
+			# Final list of units which were killed with amount killed of each type
 			units_lost = [(unit, min(amount, empire[unit.db_col])) for unit, amount in Counter(temp_units_lost).items()]
 
 	return units_lost
