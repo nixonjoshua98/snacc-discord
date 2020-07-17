@@ -3,6 +3,7 @@ import random
 from discord.ext import commands
 
 from src.common.models import BankM
+from src.common.converters import NormalUser
 
 from .moneyleaderboard import MoneyLeaderboard
 
@@ -27,6 +28,30 @@ class Money(commands.Cog):
 		row = await BankM.get_row(ctx.bot.pool, ctx.author.id)
 
 		await ctx.send(f":moneybag: **{ctx.author.display_name}** has **${row['money']:,}**")
+
+	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
+	@commands.command(name="steal")
+	async def steal_coins(self, ctx, target: NormalUser()):
+		""" Attempt to steal from another user. """
+
+		if random.randint(0, 2) != 0:
+			return await ctx.send(f"You failed to steal from **{target.display_name}**")
+
+		async with ctx.bot.pool.acquire() as con:
+			author_bank = await BankM.get_row(con, ctx.author.id)
+			target_bank = await BankM.get_row(con, target.id)
+
+			author_money = author_bank[BankM.MONEY]
+			target_money = target_bank[BankM.MONEY]
+
+			max_amount = random.randint(1, int(min(author_money, target_money) * 0.05))
+
+			stolen_amount = min(10_000, max_amount)
+
+			await con.execute(BankM.ADD_MONEY, ctx.author.id, stolen_amount)
+			await con.execute(BankM.SUB_MONEY, target.id, min(stolen_amount, target_money))
+
+		await ctx.send(f"You stole **${stolen_amount:,}** from **{target.display_name}**")
 
 	@commands.cooldown(1, 60, commands.BucketType.guild)
 	@commands.command(name="richest")

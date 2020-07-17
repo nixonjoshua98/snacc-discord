@@ -1,5 +1,7 @@
 import random
 
+from collections import Counter
+
 from src.common.models import EmpireM, BankM
 
 from . import empireunits as units
@@ -18,7 +20,7 @@ async def ambush_event(ctx):
 
 
 async def treaure_event(ctx):
-	items = ("tiny ruby", "pink diamond", "small emerald", "holy sword", "demon sword", "dead slave")
+	items = ("tiny ruby", "pink diamond", "small emerald", "holy sword", "demon sword", "iron shield")
 
 	async with ctx.bot.pool.acquire() as con:
 		bank = await con.fetchrow(BankM.SELECT_ROW, ctx.author.id)
@@ -41,17 +43,14 @@ async def _lose_units_event(ctx):
 		units_lost = []
 
 		if units_owned:
-			num_units_lost = random.randint(1, max(1, len(units_owned) // 5))
+			total_units_owned = sum(map(lambda u: empire[u.db_col], units_owned))
 
-			target_units = units_owned.copy()
+			num_units_lost = random.randint(1, max(1, min(5, total_units_owned // 15)))
 
-			for i in range(num_units_lost):
-				unit = random.choice(target_units)
+			weights = [i * 25 for i in range(len(units_owned), 0, -1)]
 
-				amount_lost = random.randint(1, max(1, empire[unit.db_col] // 4))
+			temp_units_lost = random.choices(units_owned, weights=weights, k=num_units_lost)
 
-				units_lost.append((unit, amount_lost))
-
-				target_units.remove(unit)
+			units_lost = [(unit, amount) for unit, amount in Counter(temp_units_lost).items()]
 
 	return units_lost

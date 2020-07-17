@@ -2,11 +2,14 @@ import math
 import asyncio
 import random
 
+from collections import namedtuple
+
 from discord.ext import commands, tasks
 
 from datetime import datetime
 
-from src.common import checks
+from src import inputs
+from src.common import MainServer, checks
 from src.common.models import BankM, EmpireM
 from src.structs.textpage import TextPage
 from src.common.converters import EmpireUnit, Range
@@ -21,18 +24,10 @@ class Empire(commands.Cog):
 
 		self.start_income_loop()
 
-	@commands.command(name="test")
-	async def test(self, ctx):
-		from src.structs._textpage import _TextPage
-
-		page = _TextPage("Epic Title", headers=("1", "2", "3"))
-
-		await ctx.send(page.get())
-
 	def start_income_loop(self):
 		async def predicate():
 			if await self.bot.is_snacc_owner():
-				print("Starting 'Empire.start_income_loop' loop.")
+				print("Starting 'Empire.income_loop' loop.")
 
 				self.income_loop.start()
 
@@ -56,7 +51,7 @@ class Empire(commands.Cog):
 	async def battle(self, ctx):
 		""" Attack a rival empire. """
 
-		await ctx.send("Soon^TM")
+		await ctx.send(self.battle.__doc__ or "")
 
 	@checks.has_empire()
 	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
@@ -65,7 +60,7 @@ class Empire(commands.Cog):
 		""" Trigger an empire event. """
 
 		options = (events.ambush_event, events.treaure_event)
-		weights = (50, 100)
+		weights = (25, 75)
 
 		chosen_events = random.choices(options, weights=weights, k=1)
 
@@ -84,9 +79,9 @@ class Empire(commands.Cog):
 		page.set_title(f"The '{empire['name']}' Empire")
 		page.set_headers(["Unit", "Owned", "$/hour"])
 
-		ttoal_income = 0
+		total_income = 0
 		for unit in units.ALL:
-			ttoal_income += unit.income_hour * empire[unit.db_col]
+			total_income += unit.income_hour * empire[unit.db_col]
 
 			page.add_row(
 				[
@@ -96,7 +91,7 @@ class Empire(commands.Cog):
 				]
 			)
 
-		page.set_footer(f"${ttoal_income:,}/hour")
+		page.set_footer(f"${total_income:,}/hour")
 
 		await ctx.send(page.get())
 
@@ -181,7 +176,7 @@ class Empire(commands.Cog):
 
 				income = 0
 
-				for unit, total in {u: row[u.db_col] for u in units.ALL}.items():
+				for unit, total in {u: row[u.db_col] for u in units.MONEY_UNITS}.items():
 					income += (unit.income_hour * total) * delta_time
 
 				income = math.ceil(income)

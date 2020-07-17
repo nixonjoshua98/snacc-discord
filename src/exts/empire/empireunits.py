@@ -4,7 +4,7 @@ from src.common.models import EmpireM
 
 
 class _Unit:
-	exponent: float = 1.1
+	exponent: float = 1.15
 
 	def __init__(self, id_, *, db_col, base_cost, **kwargs):
 		self.display_name = db_col.title().replace("_", " ")
@@ -14,6 +14,9 @@ class _Unit:
 		self.base_price = base_cost
 
 		self.max_amount = kwargs.get("max_amount", 10)
+
+	def __str__(self):
+		return f"_Unit(self.id={self.id}, self.display_name={self.display_name})"
 
 	def get_price(self, total_owned: int, total_buying: int = 1) -> int:
 		price = 0
@@ -29,6 +32,9 @@ class _MoneyUnit(_Unit):
 		super().__init__(unit_id, **kwargs)
 
 		self.income_hour = income_hour
+
+	def __str__(self):
+		return f"_Unit(self.id={self.id}, self.display_name={self.display_name})"
 
 
 MONEY_UNITS = (

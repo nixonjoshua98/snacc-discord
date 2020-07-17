@@ -32,7 +32,7 @@ class ReactionMenuBase(InputBase):
 		self._buttons = self.get_buttons()
 
 	def wait_for(self, react, user):
-		return react.message.id == self.message.id and user.id == self.author.id
+		return react.message.id == self.message.id and (self.author is None or user.id == self.author.id)
 
 	async def on_update(self): ...
 
