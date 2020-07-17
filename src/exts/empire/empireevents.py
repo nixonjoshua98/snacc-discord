@@ -25,7 +25,7 @@ async def stolen_event(ctx):
 
 		money = bank[BankM.MONEY]
 
-		money_stolen = random.randint(min(2_500, money // 20), min(10_000, money // 10))
+		money_stolen = random.randint(min(2_500, money // 50), min(10_000, money // 20))
 
 		if money_stolen > 0:
 			await ctx.bot.pool.execute(BankM.SUB_MONEY, ctx.author.id, money_stolen)
