@@ -34,7 +34,7 @@ class Gambling(commands.Cog):
 
 	@commands.command(name="bet")
 	@commands.cooldown(1, 15, commands.BucketType.user)
-	async def bet(self, ctx, bet: Range(0, 50_000) = 0, sides: Range(6, 100) = 6, side: Range(6, 100) = 6):
+	async def bet(self, ctx, bet: Range(0, 50_000) = 0, sides: Range(6, 100) = 6, side: Range(1, 100) = 6):
 		""" Roll a dice and bet on which side the die lands on. """
 
 		async with ctx.bot.pool.acquire() as con:
