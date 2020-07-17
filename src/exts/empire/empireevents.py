@@ -25,7 +25,7 @@ async def stolen_event(ctx):
 
 		money = bank[BankM.MONEY]
 
-		money_stolen = random.randint(max(250, money // 100), max(1_000, money // 50))
+		money_stolen = random.randint(min(2_500, money // 20), min(10_000, money // 10))
 
 		if money_stolen > 0:
 			await ctx.bot.pool.execute(BankM.SUB_MONEY, ctx.author.id, money_stolen)
@@ -43,7 +43,7 @@ async def treaure_event(ctx):
 
 		money = bank[BankM.MONEY]
 
-		money_gained = random.randint(max(500, money // 100), max(1_500, money // 50))
+		money_gained = random.randint(max(500, money // 50), max(1_500, money // 100))
 
 		await ctx.bot.pool.execute(BankM.ADD_MONEY, ctx.author.id, money_gained)
 
