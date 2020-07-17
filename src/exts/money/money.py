@@ -34,7 +34,7 @@ class Money(commands.Cog):
 	async def steal_coins(self, ctx, target: NormalUser()):
 		""" Attempt to steal from another user. """
 
-		if random.randint(0, 3) != 0:
+		if random.randint(0, 2) != 0:
 			return await ctx.send(f"You failed to steal from **{target.display_name}**")
 
 		async with ctx.bot.pool.acquire() as con:

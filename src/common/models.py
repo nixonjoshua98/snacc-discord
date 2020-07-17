@@ -71,7 +71,7 @@ class BankM:
 
 	SUB_MONEY = """
 	INSERT INTO bank (user_id, money) VALUES ($1, $2)
-	ON CONFLICT (user_id) DO "
+	ON CONFLICT (user_id) DO
 		UPDATE SET money = GREATEST(0, bank.money - $2);
 	"""
 
@@ -98,7 +98,6 @@ class HangmanM:
 class EmpireM:
 	SELECT_ALL = "SELECT * FROM empire;"
 	SELECT_ROW = "SELECT * FROM empire WHERE user_id = $1 LIMIT 1;"
-
 	INSERT_ROW = "INSERT INTO empire (user_id, name) VALUES ($1, $2);"
 
 	UPDATE_NAME = "UPDATE empire SET name = $2 WHERE user_id = $1;"
