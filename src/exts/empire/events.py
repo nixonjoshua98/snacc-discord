@@ -89,7 +89,7 @@ async def loot_event(ctx):
 
 		hourly_income = utils.get_total_money_delta(population, 1.0)
 
-		money_gained = random.randint(max(500, hourly_income // 5), max(1_000, hourly_income // 2))
+		money_gained = random.randint(max(500, hourly_income // 5), max(1_000, hourly_income))
 
 		await ctx.bot.pool.execute(BankM.ADD_MONEY, ctx.author.id, money_gained)
 
