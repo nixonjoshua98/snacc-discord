@@ -83,7 +83,7 @@ class Empire(commands.Cog):
 		for event in chosen_events:
 			await event(ctx)
 
-		if random.randint(0, 9) == 0:
+		if random.randint(0, 4) == 0:
 			self.empire_event.reset_cooldown(ctx)
 
 			await ctx.send("Good news! Your cooldown has been reset.")
@@ -178,16 +178,7 @@ class Empire(commands.Cog):
 				# Hours since the user was last updated
 				delta_time = (now - empire["last_update"]).total_seconds() / 3600
 
-				money_change = 0
-
-				# Iterate over all the unit groups and units
-				for _, group in units.UNIT_GROUPS.items():
-					for unit in group.units:
-						try:
-							money_change += unit.get_delta_money(empire[unit.db_col], delta_time)
-
-						except KeyError as e:
-							print(e)
+				money_change = units.utils.get_total_money_delta(empire, delta_time)
 
 				# We do not want decimals
 				money_change = math.ceil(money_change)

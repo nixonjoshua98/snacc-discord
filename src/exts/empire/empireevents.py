@@ -47,12 +47,11 @@ async def loot_event(ctx):
 	items = ("tiny ruby", "pink diamond", "small emerald", "holy sword", "demon sword", "iron shield")
 
 	async with ctx.bot.pool.acquire() as con:
-		bank = await con.fetchrow(BankM.SELECT_ROW, ctx.author.id)
+		population = await con.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
 
-		money = bank["money"]
+		hourly_income = units.utils.get_total_money_delta(population, 1.0)
 
-		# max(500, 1% money) - min(1_500, 2% money)
-		money_gained = random.randint(max(500, money // 100), max(1_000, money // 50))
+		money_gained = random.randint(max(100, hourly_income // 5), max(250, hourly_income // 2))
 
 		await ctx.bot.pool.execute(BankM.ADD_MONEY, ctx.author.id, money_gained)
 

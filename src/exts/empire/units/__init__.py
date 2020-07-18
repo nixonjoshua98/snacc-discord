@@ -12,6 +12,8 @@ from .units import (
 	_MilitaryUnit
 )
 
+from . import utils
+
 
 """
 We store all the unit types in a dictionary <UnitGroupType, _UnitType> here.
