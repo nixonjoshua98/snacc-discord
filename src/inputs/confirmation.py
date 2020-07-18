@@ -7,7 +7,7 @@ from .reactionmenubase import ReactionMenuBase, button
 
 class Confirmation(ReactionMenuBase):
 	def __init__(self, bot, author, question):
-		super().__init__(bot, author)
+		super().__init__(bot, author, timeout=15.0)
 
 		self.question = question
 
@@ -22,15 +22,14 @@ class Confirmation(ReactionMenuBase):
 		return await destination.send(embed=embed)
 
 	async def on_update(self) -> bool:
-		embed: discord.Embed = self.message.embeds[0]
-
-		txt = "Yes" if self.answer else "Timed out" if self.answer is None else "No"
-
-		embed.description = txt
-
-		await self.message.edit(embed=embed)
+		await super().on_update()
+		await self.delete_message()
 
 		self.is_ended = True
+
+	async def on_timeout(self):
+		await super().on_timeout()
+		await self.delete_message()
 
 	@button(Emoji.TICK, index=0)
 	async def confirm(self):

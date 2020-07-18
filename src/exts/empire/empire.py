@@ -42,11 +42,13 @@ class Empire(commands.Cog):
 	@checks.no_empire()
 	@commands.command(name="create")
 	@commands.max_concurrency(1, commands.BucketType.user)
-	async def create_empire(self, ctx):
+	async def create_empire(self, ctx, empire_name: str):
 		""" Establish an empire under your name. """
 
 		await ctx.bot.pool.execute(EmpireM.INSERT_ROW, ctx.author.id)
 		await ctx.bot.pool.execute(PopulationM.INSERT_ROW, ctx.author.id)
+
+		await EmpireM.set(ctx.bot.pool, ctx.guild.id, name=empire_name)
 
 		await ctx.send(f"Your empire has been established! You can rename your empire using `!rename`")
 
@@ -82,7 +84,7 @@ class Empire(commands.Cog):
 		for event in chosen_events:
 			await event(ctx)
 
-		if random.randint(0, 4) == 0:
+		if random.randint(0, 9) == 0:
 			self.empire_event.reset_cooldown(ctx)
 
 			await ctx.send("Good news! Your cooldown has been reset.")
@@ -122,7 +124,10 @@ class Empire(commands.Cog):
 	@commands.command(name="fire")
 	@commands.max_concurrency(1, commands.BucketType.user)
 	async def fire_unit(self, ctx, unit: EmpireUnit(), amount: Range(1, 100) = 1):
-		""" Fire a new unit. """
+		""" Fire one of your units. """
+
+		if not await inputs.confirm(ctx, f"Fire {amount}x {unit.display_name}?"):
+			return await ctx.send("Fire cancelled.")
 
 		async with ctx.bot.pool.acquire() as con:
 			empire_population = await con.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
@@ -155,7 +160,10 @@ class Empire(commands.Cog):
 				await ctx.send(f"You can't afford to hire **{amount}x {unit.display_name}**")
 
 			elif empire_population[unit.db_col] + amount > unit.max_amount:
-				await ctx.send(f"You may only have a maximum of **{unit.max_amount}** of this unit")
+				await ctx.send("You already own the maximum amount of this unit.")
+
+			elif not await inputs.confirm(ctx, f"Hire {amount}x {unit.display_name} for ${price:,}?"):
+				await ctx.send("Hire cancelled.")
 
 			else:
 				await con.execute(BankM.SUB_MONEY, ctx.author.id, price)

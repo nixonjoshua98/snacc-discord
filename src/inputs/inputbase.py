@@ -40,6 +40,14 @@ class InputBase:
 		except (discord.Forbidden, discord.HTTPException):
 			""" Failed. """
 
+	async def delete_message(self):
+		await self.message.delete()
+		try:
+			await self.message.delete()
+
+		except (discord.Forbidden, discord.HTTPException):
+			""" Failed. """
+
 	async def send_initial_message(self, destination) -> discord.Message: ...
 
 	def wait_for(self, *args, **kwargs): ...

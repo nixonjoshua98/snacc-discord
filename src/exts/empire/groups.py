@@ -89,7 +89,7 @@ class _MilitaryUnitGroup(_UnitGroup):
 		# Total hourly upkeep of all military units
 		total_upkeep = sum(unit.get_delta_money(empire[unit.db_col], 1.0) for unit in self.units)
 
-		page.set_footer(f"Hourly Upkeep: ${total_upkeep:,}")
+		page.set_footer(f"Hourly Upkeep: ${total_upkeep * -1:,}")
 
 		return page
 

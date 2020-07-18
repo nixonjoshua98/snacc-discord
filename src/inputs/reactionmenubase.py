@@ -26,8 +26,8 @@ class Button:
 
 
 class ReactionMenuBase(InputBase):
-	def __init__(self, bot, author):
-		super().__init__(bot, author, timeout=180.0)
+	def __init__(self, bot, author, **kwargs):
+		super().__init__(bot, author, timeout=kwargs.get("timeout", 180.0))
 
 		self._buttons = self.get_buttons()
 
@@ -38,13 +38,6 @@ class ReactionMenuBase(InputBase):
 
 	async def on_timeout(self):
 		await self.clear_reactions()
-
-		if self.message.embeds:
-			embed = self.message.embeds[0]
-
-			embed.description = "Timed out"
-
-			await self.edit_message(embed=embed)
 
 	async def on_exit(self):
 		await self.clear_reactions()
