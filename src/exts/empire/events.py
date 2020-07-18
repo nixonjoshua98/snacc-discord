@@ -4,7 +4,7 @@ from collections import Counter
 
 from src.common.models import BankM, PopulationM
 
-from . import units
+from . import units, utils
 
 
 async def attacked_event(ctx):
@@ -49,7 +49,7 @@ async def loot_event(ctx):
 	async with ctx.bot.pool.acquire() as con:
 		population = await con.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
 
-		hourly_income = src.exts.empire.utils.get_total_money_delta(population, 1.0)
+		hourly_income = utils.get_total_money_delta(population, 1.0)
 
 		money_gained = random.randint(max(100, hourly_income // 5), max(250, hourly_income // 2))
 
