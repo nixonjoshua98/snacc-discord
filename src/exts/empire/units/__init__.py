@@ -1,13 +1,15 @@
 
 
-from .groups import (
+# TODO: bring .units into .empire
+
+from src.exts.empire.units.groups import (
 	UnitGroupType,
 
 	_MoneyUnitGroup,
 	_MilitaryUnitGroup
 )
 
-from .units import (
+from src.exts.empire.units.units import (
 	_MoneyUnit,
 	_MilitaryUnit
 )

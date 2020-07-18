@@ -10,8 +10,6 @@ from src.structs.help import Help
 
 from src.common.models import ServersM
 
-# TODO: switch to models.py
-
 
 class SnaccBot(commands.Bot):
     EXTENSIONS = [
