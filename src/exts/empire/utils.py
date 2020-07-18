@@ -1,8 +1,8 @@
 
+from .units import UNIT_GROUPS
+
 
 def get_total_money_delta(population, delta_time):
-	from .units import UNIT_GROUPS
-
 	money_change = 0
 
 	for _, group in UNIT_GROUPS.items():

@@ -80,12 +80,15 @@ class EmpireUnit(commands.Converter):
 			val = int(argument)
 
 		except ValueError:
-			raise commands.UserInputError(f"Please use the unit IDs.")
+			unit = discord.utils.get(ALL, db_col=argument.lower())
+
+			if unit is None:
+				raise commands.UserInputError(f"A unit with the name `{argument}` could not be found.")
 
 		else:
 			unit = discord.utils.get(ALL, id=val)
 
 			if unit is None:
-				raise commands.UserInputError(f"A unit could not be found with the ID {val}")
+				raise commands.UserInputError(f"A unit with the ID `{val}` could not be found.")
 
 		return unit

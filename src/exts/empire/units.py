@@ -25,14 +25,7 @@ class _Unit:
 		_Unit.__unit_id += 1
 
 	def get_price(self, total_owned: int, total_buying: int = 1) -> int:
-		"""
-		Get the total cost of the units brought.
-
-		Example:
-			get_price(1)		-> 	250		(+1 units)
-			get_price(0, 1) 	-> 	250 	(+1 units)
-			get_price(1, 10) 	-> 1,567	(+9 units)
-		"""
+		""" Get the total cost of the units brought. """
 
 		price = 0
 
@@ -49,13 +42,8 @@ class _MoneyUnit(_Unit):
 		self.income_hour = income_hour
 
 	def get_delta_money(self, total, delta_time):
-		"""
-		Gets the total INCOME this unit has generated for the delta_time.
+		""" Gets the total INCOME this unit has generated for the delta_time. """
 
-		:param total: Number of this unit.
-		:param delta_time: Number of hours to simulate.
-		:return int: Money earned
-		"""
 		return math.ceil((self.income_hour * total) * delta_time)
 
 
@@ -67,13 +55,8 @@ class _MilitaryUnit(_Unit):
 		self.upkeep_hour = upkeep_hour
 
 	def get_delta_money(self, total, delta_time):
-		"""
-		Gets the total UPKEEP this unit has generated for the delta_time.
+		""" Gets the total UPKEEP this unit has generated for the delta_time. """
 
-		:param total: Number of this unit.
-		:param delta_time: Number of hours to simulate.
-		:return int: Money earned
-		"""
 		return math.ceil((self.upkeep_hour * total) * delta_time) * -1
 
 
