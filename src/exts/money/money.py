@@ -10,7 +10,7 @@ from .moneyleaderboard import MoneyLeaderboard
 
 class Money(commands.Cog):
 
-	@commands.cooldown(1, 60 * 90, commands.BucketType.user)
+	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
 	@commands.command(name="free")
 	async def free_money(self, ctx):
 		""" Gain some free money """
@@ -29,13 +29,10 @@ class Money(commands.Cog):
 
 		await ctx.send(f":moneybag: **{ctx.author.display_name}** has **${row['money']:,}**")
 
-	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
+	@commands.cooldown(1, 60 * 75, commands.BucketType.user)
 	@commands.command(name="steal", cooldown_after_parsing=True)
 	async def steal_coins(self, ctx, target: NormalUser()):
 		""" Attempt to steal from another user. """
-
-		if random.randint(0, 2) != 0:
-			return await ctx.send(f"You failed to steal from **{target.display_name}**")
 
 		async with ctx.bot.pool.acquire() as con:
 			author_bank = await BankM.get_row(con, ctx.author.id)
@@ -44,9 +41,7 @@ class Money(commands.Cog):
 			author_money = author_bank["money"]
 			target_money = target_bank["money"]
 
-			max_amount = random.randint(1, int(min(author_money, target_money) * 0.05))
-
-			stolen_amount = min(10_000, max_amount)
+			stolen_amount = min(10_000, random.randint(1, int(max(author_money, target_money) * 0.025)))
 
 			await con.execute(BankM.ADD_MONEY, ctx.author.id, stolen_amount)
 			await con.execute(BankM.SUB_MONEY, target.id, stolen_amount)

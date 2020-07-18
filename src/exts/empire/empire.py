@@ -78,10 +78,10 @@ class Empire(commands.Cog):
 			chance_to_win = max(0.3, min(0.8, ((author_power / target_power) / 2.0)))
 
 			if random.randint(1, 100) <= (chance_to_win * 100):
-				await ctx.send("You win!")
+				""" Author (attacker) won the battle. """
 
 			else:
-				await ctx.send("You lost!")
+				""" Target (defender) won the battle. """
 
 		await ctx.send(f"Your power: {author_power} Target power: {target_power} Win: {int(chance_to_win * 100)}%")
 
@@ -94,7 +94,7 @@ class Empire(commands.Cog):
 		""" Trigger an empire event. """
 
 		options = (events.attacked_event, events.loot_event, events.stolen_event)
-		weights = (20, 70, 30)
+		weights = (15, 65, 20)
 
 		chosen_events = random.choices(options, weights=weights, k=1)
 
