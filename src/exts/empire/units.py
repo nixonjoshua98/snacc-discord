@@ -1,5 +1,12 @@
 import math
 
+from src.exts.empire.groups import (
+	UnitGroupType,
+
+	_MoneyUnitGroup,
+	_MilitaryUnitGroup
+)
+
 
 class _Unit:
 	__unit_id = 1  # PRIVATE
@@ -51,18 +58,6 @@ class _MoneyUnit(_Unit):
 		"""
 		return math.ceil((self.income_hour * total) * delta_time)
 
-	def create_empire_row(self, units_owned: int) -> list:
-		""" Create the row which will be presented on `!empire`. """
-
-		return [self.display_name, f"{units_owned}/{self.max_amount}", f"${self.income_hour * units_owned:,}"]
-
-	def create_units_row(self, units_owned: int) -> list:
-		""" Create the row which will be displayed on `!units`. """
-
-		owned, price = f"{units_owned}/{self.max_amount}", f"${self.get_price(units_owned):,}"
-
-		return [self.id, self.display_name, owned, f"${self.income_hour}", price]
-
 
 class _MilitaryUnit(_Unit):
 	def __init__(self, *, upkeep_hour, power, **kwargs):
@@ -81,16 +76,29 @@ class _MilitaryUnit(_Unit):
 		"""
 		return math.ceil((self.upkeep_hour * total) * delta_time) * -1
 
-	def create_empire_row(self, units_owned: int) -> list:
-		""" Create the row which will be presented on `!empire`. """
 
-		upkeep, power = f"${self.upkeep_hour * units_owned:,}", self.power * units_owned
+"""
+We store all the unit types in a dictionary <UnitGroupType, _UnitType> here.
+This should NEVER be edited during runtime
+"""
+UNIT_GROUPS = {
+	UnitGroupType.MONEY:
+		_MoneyUnitGroup("Money Making Units", [
+			_MoneyUnit(income_hour=10, db_col="farmers",	base_cost=250),
+			_MoneyUnit(income_hour=20, db_col="butchers",	base_cost=500),
+			_MoneyUnit(income_hour=30, db_col="bakers",		base_cost=750),
+			_MoneyUnit(income_hour=40, db_col="cooks",		base_cost=1000),
+			_MoneyUnit(income_hour=50, db_col="winemakers", base_cost=1500),
+		]
+						),
 
-		return [self.display_name, f"{units_owned}/{self.max_amount}", power, upkeep]
+	UnitGroupType.MILITARY:
+		_MilitaryUnitGroup("Military Units", [
+			_MilitaryUnit(upkeep_hour=25, power=5, db_col="peasants", base_cost=1000),
 
-	def create_units_row(self, units_owned: int) -> list:
-		""" Create the row which will be displayed on `!units`. """
+		]
+						),
+}
 
-		owned, price = f"{units_owned}/{self.max_amount}", f"${self.get_price(units_owned):,}"
-
-		return [self.id, self.display_name, owned, self.power, f"${self.upkeep_hour}", price]
+# Flatterned list of all units
+ALL = [unit for _, group in UNIT_GROUPS.items() for unit in group.units]

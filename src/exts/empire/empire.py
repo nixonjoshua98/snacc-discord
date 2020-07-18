@@ -15,11 +15,9 @@ from src.common import checks
 from src.common.models import BankM, EmpireM, PopulationM
 from src.common.converters import EmpireUnit, Range
 
-# Local imports
-from . import units
-from . import empireevents as events
-
-from .units import UnitGroupType
+from src.exts.empire import events
+from src.exts.empire.units import UNIT_GROUPS
+from src.exts.empire.groups import UnitGroupType
 
 
 class Empire(commands.Cog):
@@ -58,7 +56,7 @@ class Empire(commands.Cog):
 	async def battle(self, ctx):
 		""" Attack a rival empire. """
 
-		military_group = units.UNIT_GROUPS[UnitGroupType.MILITARY]
+		military_group = UNIT_GROUPS[UnitGroupType.MILITARY]
 
 		empire = await ctx.bot.pool.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
 
@@ -95,7 +93,7 @@ class Empire(commands.Cog):
 
 		population = await ctx.bot.pool.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
 
-		pages = [group.create_empire_page(population).get() for group in units.UNIT_GROUPS.values()]
+		pages = [group.create_empire_page(population).get() for group in UNIT_GROUPS.values()]
 
 		await inputs.send_pages(ctx, pages)
 
@@ -115,7 +113,7 @@ class Empire(commands.Cog):
 
 		population = await ctx.bot.pool.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
 
-		pages = [group.create_units_page(population).get() for group in units.UNIT_GROUPS.values()]
+		pages = [group.create_units_page(population).get() for group in UNIT_GROUPS.values()]
 
 		await inputs.send_pages(ctx, pages)
 
@@ -178,7 +176,7 @@ class Empire(commands.Cog):
 				# Hours since the user was last updated
 				delta_time = (now - empire["last_update"]).total_seconds() / 3600
 
-				money_change = units.utils.get_total_money_delta(empire, delta_time)
+				money_change = src.exts.empire.utils.get_total_money_delta(empire, delta_time)
 
 				# We do not want decimals
 				money_change = math.ceil(money_change)

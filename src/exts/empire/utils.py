@@ -1,8 +1,7 @@
 
 
 def get_total_money_delta(population, delta_time):
-	# Circular dependancy otherwise
-	from . import UNIT_GROUPS
+	from .units import UNIT_GROUPS
 
 	money_change = 0
 
