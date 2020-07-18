@@ -10,12 +10,12 @@ from .moneyleaderboard import MoneyLeaderboard
 
 class Money(commands.Cog):
 
-	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
+	@commands.cooldown(1, 60 * 90, commands.BucketType.user)
 	@commands.command(name="free")
 	async def free_money(self, ctx):
 		""" Gain some free money """
 
-		money = random.randint(500, 1_000)
+		money = random.randint(500, 750)
 
 		await ctx.bot.pool.execute(BankM.ADD_MONEY, ctx.author.id, money)
 

@@ -17,7 +17,6 @@ from src.common.converters import EmpireUnit, Range
 
 from src.exts.empire import utils, events
 from src.exts.empire.units import UNIT_GROUPS
-from src.exts.empire.groups import UnitGroupType
 
 
 class Empire(commands.Cog):
@@ -60,13 +59,26 @@ class Empire(commands.Cog):
 	async def attack(self, ctx):
 		""" Attack a rival empire. """
 
-		military_group = UNIT_GROUPS[UnitGroupType.MILITARY]
+		await ctx.send("IN DEVELOPMENT")
+
+		target = ctx.author
 
 		async with ctx.bot.pool.acquire() as con:
 			author_population = await con.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
-			author_military_power = sum(unit.power * author_population[unit.db_col] for unit in military_group.units)
+			target_population = await con.fetchrow(PopulationM.SELECT_ROW, target.id)
 
-		await ctx.send(f"Power rating: {author_military_power}")
+			author_power = utils.get_military_power(author_population)
+			target_power = utils.get_military_power(target_population)
+
+			chance_to_win = max(0.3, min(0.8, ((author_power / target_power) / 2.0)))
+
+			if random.randint(1, 100) <= (chance_to_win * 100):
+				await ctx.send("You win!")
+
+			else:
+				await ctx.send("You lost!")
+
+		await ctx.send(f"Your power: {author_power} Target power: {target_power} Win %: {round(chance_to_win, 1)}")
 
 		self.attack.reset_cooldown(ctx)
 
