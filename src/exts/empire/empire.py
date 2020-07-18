@@ -54,8 +54,8 @@ class Empire(commands.Cog):
 
 	@checks.has_empire()
 	@commands.cooldown(1, 60 * 60 * 3, commands.BucketType.user)
-	@commands.command(name="battle")
-	async def battle(self, ctx):
+	@commands.command(name="attack")
+	async def attack(self, ctx):
 		""" Attack a rival empire. """
 
 		military_group = UNIT_GROUPS[UnitGroupType.MILITARY]
@@ -66,7 +66,7 @@ class Empire(commands.Cog):
 
 		await ctx.send(f"Power rating: {author_military_power}")
 
-		self.battle.reset_cooldown(ctx)
+		self.attack.reset_cooldown(ctx)
 
 	@checks.has_empire()
 	@commands.cooldown(1, 60 * 90, commands.BucketType.user)
