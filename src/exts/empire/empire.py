@@ -12,7 +12,7 @@ from discord.ext import tasks, commands
 # Src imports
 from src import inputs
 from src.common import checks
-from src.common.models import BankM, EmpireM
+from src.common.models import BankM, EmpireM, PopulationM
 from src.common.converters import EmpireUnit, Range
 
 # Local imports
@@ -42,12 +42,13 @@ class Empire(commands.Cog):
 	@checks.no_empire()
 	@commands.command(name="create")
 	@commands.max_concurrency(1, commands.BucketType.user)
-	async def create_empire(self, ctx, *, empire_name: str):
+	async def create_empire(self, ctx):
 		""" Establish an empire under your name. """
 
-		await ctx.bot.pool.execute(EmpireM.INSERT_ROW, ctx.author.id, empire_name)
+		await ctx.bot.pool.execute(EmpireM.INSERT_ROW, ctx.author.id)
+		await ctx.bot.pool.execute(PopulationM.INSERT_ROW, ctx.author.id)
 
-		await ctx.send(f"Your empire named `{empire_name}` has been established!")
+		await ctx.send(f"Your empire has been established! You can rename your empire using `!rename`")
 
 		await self.show_empire(ctx)
 
@@ -59,7 +60,7 @@ class Empire(commands.Cog):
 
 		military_group = units.UNIT_GROUPS[UnitGroupType.MILITARY]
 
-		empire = await ctx.bot.pool.fetchrow(EmpireM.SELECT_ROW, ctx.author.id)
+		empire = await ctx.bot.pool.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
 
 		power = 0
 
@@ -75,7 +76,7 @@ class Empire(commands.Cog):
 		""" Trigger an empire event. """
 
 		options = (events.attacked_event, events.loot_event, events.stolen_event)
-		weights = (25, 100, 25)
+		weights = (20, 70, 30)
 
 		chosen_events = random.choices(options, weights=weights, k=1)
 
@@ -92,9 +93,9 @@ class Empire(commands.Cog):
 	async def show_empire(self, ctx):
 		""" View your empire. """
 
-		empire = await ctx.bot.pool.fetchrow(EmpireM.SELECT_ROW, ctx.author.id)
+		population = await ctx.bot.pool.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
 
-		pages = [group.create_empire_page(empire).get() for group in units.UNIT_GROUPS.values()]
+		pages = [group.create_empire_page(population).get() for group in units.UNIT_GROUPS.values()]
 
 		await inputs.send_pages(ctx, pages)
 
@@ -112,9 +113,9 @@ class Empire(commands.Cog):
 	async def show_units(self, ctx):
 		""" Show all the possible units which you can buy. """
 
-		empire = await ctx.bot.pool.fetchrow(EmpireM.SELECT_ROW, ctx.author.id)
+		population = await ctx.bot.pool.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
 
-		pages = [group.create_units_page(empire).get() for group in units.UNIT_GROUPS.values()]
+		pages = [group.create_units_page(population).get() for group in units.UNIT_GROUPS.values()]
 
 		await inputs.send_pages(ctx, pages)
 
@@ -125,25 +126,25 @@ class Empire(commands.Cog):
 		""" Hire a new unit. """
 
 		async with ctx.bot.pool.acquire() as con:
-			empire = await con.fetchrow(EmpireM.SELECT_ROW, ctx.author.id)
+			empire_population = await con.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
 
 			row = await BankM.get_row(con, ctx.author.id)
 
 			# Cost of upgrading from current -> (current + amount)
-			price = unit.get_price(empire[unit.db_col], amount)
+			price = unit.get_price(empire_population[unit.db_col], amount)
 
 			user_money = row["money"]
 
 			if price > user_money:
 				await ctx.send(f"You can't afford to hire **{amount}x {unit.display_name}**")
 
-			elif empire[unit.db_col] + amount > unit.max_amount:
+			elif empire_population[unit.db_col] + amount > unit.max_amount:
 				await ctx.send(f"You may only have a maximum of **{unit.max_amount}** of this unit")
 
 			else:
 				await con.execute(BankM.SUB_MONEY, ctx.author.id, price)
 
-				await EmpireM.add_unit(con, ctx.author.id, unit, amount)
+				await PopulationM.add_unit(con, ctx.author.id, unit, amount)
 
 				await ctx.send(f"Bought **{amount}x {unit.display_name}** for **${price:,}**!")
 
@@ -152,26 +153,29 @@ class Empire(commands.Cog):
 		""" Background income & upkeep loop. """
 
 		async with self.bot.pool.acquire() as con:
-			rows = await con.fetch(EmpireM.SELECT_ALL)
+			rows = await con.fetch(EmpireM.SELECT_ALL_AND_POPULATION)
 
 			for empire in rows:
 				now = dt.datetime.utcnow()
 
 				# Hours since the user was last updated
-				delta_time = (now - empire["last_income"]).total_seconds() / 3600
+				delta_time = (now - empire["last_update"]).total_seconds() / 3600
 
 				money_change = 0
 
 				# Iterate over all the unit groups and units
 				for _, group in units.UNIT_GROUPS.items():
 					for unit in group.units:
-						money_change += unit.get_delta_money(empire[unit.db_col], delta_time)
+						try:
+							money_change += unit.get_delta_money(empire[unit.db_col], delta_time)
+						except KeyError as e:
+							print(e)
 
 				# We do not want decimals
 				money_change = math.ceil(money_change)
 
 				# No need to update the database if the user gained nothing
 				if money_change != 0:
-					await con.execute(BankM.ADD_MONEY, empire["user_id"], money_change)
+					await con.execute(BankM.ADD_MONEY, empire["empire_id"], money_change)
 
-				await EmpireM.set(con, empire["user_id"], last_income=now)
+				await EmpireM.set(con, empire["empire_id"], last_update=now)

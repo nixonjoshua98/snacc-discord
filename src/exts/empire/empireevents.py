@@ -2,7 +2,7 @@ import random
 
 from collections import Counter
 
-from src.common.models import EmpireM, BankM
+from src.common.models import BankM, PopulationM
 
 from . import units
 
@@ -16,7 +16,7 @@ async def attacked_event(ctx):
 	for unit, n in units_lost:
 		s.append(f"{n}x {unit.display_name}")
 
-		await EmpireM.sub_unit(ctx.bot.pool, ctx.author.id, unit, n)
+		await PopulationM.sub_unit(ctx.bot.pool, ctx.author.id, unit, n)
 
 	await ctx.send(f"Your empire was attacked and lost **{', '.join(s) or 'nothing'}**!")
 
@@ -63,16 +63,16 @@ async def _lose_units_event(ctx):
 	""" Generic lose troops function. """
 
 	async with ctx.bot.pool.acquire() as con:
-		empire = await con.fetchrow(EmpireM.SELECT_ROW, ctx.author.id)
+		population = await con.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
 
 		# List of all unit types the empire has
-		units_owned = [unit for unit in units.ALL if empire[unit.db_col] > 0]
+		units_owned = [unit for unit in units.ALL if population[unit.db_col] > 0]
 
 		units_lost = []
 
 		if units_owned:
 			# Total number of units
-			total_units_owned = sum(map(lambda u: empire[u.db_col], units_owned))
+			total_units_owned = sum(map(lambda u: population[u.db_col], units_owned))
 
 			# 1 - Clamp(1, 5, units // 15)
 			num_units_lost = random.randint(1, max(1, min(5, total_units_owned // 15)))
@@ -84,6 +84,7 @@ async def _lose_units_event(ctx):
 			temp_units_lost = random.choices(units_owned, weights=weights, k=num_units_lost)
 
 			# Final list of units which were killed with amount killed of each type
-			units_lost = [(unit, min(amount, empire[unit.db_col])) for unit, amount in Counter(temp_units_lost).items()]
+			for unit, amount in Counter(temp_units_lost).items():
+				units_lost.append((unit, min(amount, population[unit.db_col])))
 
 	return units_lost

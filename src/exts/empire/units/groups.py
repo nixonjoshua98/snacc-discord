@@ -31,7 +31,7 @@ class _UnitGroup:
 	def create_units_page(self, empire):
 		""" [Overridable] ..."""
 
-		page = TextPage(title=f"The '{empire['name']}' Empire")
+		page = TextPage()
 
 		for unit in self.units:
 			# Do not show units which we have the maximum number allowed

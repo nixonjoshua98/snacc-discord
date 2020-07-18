@@ -1,18 +1,18 @@
 
 class TableModel:
-	_TABLE = None
+	_TABLE, _PK = None, None
 
 	@classmethod
-	async def set(cls, con, server, **kwargs):
+	async def set(cls, con, _id, **kwargs):
 		set_values = ", ".join([f"{k}=${i}" for i, k in enumerate(kwargs.keys(), start=2)])
 
-		q = f"UPDATE {cls._TABLE} SET {set_values} WHERE server_id=$1;"
+		q = f"UPDATE {cls._TABLE} SET {set_values} WHERE {cls._PK}=$1;"
 
-		await con.execute(q, server, *list(kwargs.values()))
+		await con.execute(q, _id, *list(kwargs.values()))
 
 
 class ServersM(TableModel):
-	_TABLE = "servers"
+	_TABLE, _PK = "servers", "server_id"
 
 	SELECT_SERVER = "SELECT * FROM servers WHERE server_id=$1 LIMIT 1;"
 
@@ -101,31 +101,27 @@ class HangmanM:
 	"""
 
 
+class PopulationM:
+	SELECT_ROW = "SELECT * FROM population WHERE population_id = $1 LIMIT 1;"
+	INSERT_ROW = "INSERT INTO population (population_id) VALUES ($1);"
+
+	@classmethod
+	async def add_unit(cls, con, user_id: int, unit, amount: int):
+		q = f"UPDATE population SET {unit.db_col} = {unit.db_col} + $2 WHERE population_id = $1;"
+
+		await con.execute(q, user_id, amount)
+
+	@classmethod
+	async def sub_unit(cls, con, user_id: int, unit, amount: int):
+		q = f"UPDATE population SET {unit.db_col} = {unit.db_col} - $2 WHERE population_id = $1;"
+
+		await con.execute(q, user_id, amount)
+
+
 class EmpireM(TableModel):
-	_TABLE = "empire"
+	_TABLE, _PK = "empire", "empire_id"
 
-	SELECT_ALL = "SELECT * FROM empire;"
-	SELECT_ROW = "SELECT * FROM empire WHERE user_id = $1 LIMIT 1;"
-	INSERT_ROW = "INSERT INTO empire (user_id, name) VALUES ($1, $2);"
+	SELECT_ROW = "SELECT * FROM empire WHERE empire_id = $1 LIMIT 1;"
+	INSERT_ROW = "INSERT INTO empire (empire_id) VALUES ($1) RETURNING empire_id;"
 
-	@classmethod
-	async def add_unit(cls, con, user_id: int, unit, amount: int):
-		await con.execute(f"UPDATE empire SET {unit.db_col} = {unit.db_col} + $2 WHERE user_id = $1;", user_id, amount)
-
-	@classmethod
-	async def sub_unit(cls, con, user_id: int, unit, amount: int):
-		await con.execute(f"UPDATE empire SET {unit.db_col} = {unit.db_col} - $2 WHERE user_id = $1;", user_id, amount)
-
-
-class UnitsM:
-	SELECT_ROW = "SELECT * FROM units WHERE units_id = $1 LIMIT 1;"
-
-	@classmethod
-	async def add_unit(cls, con, user_id: int, unit, amount: int):
-		await con.execute(f"UPDATE units SET {unit.db_col} = {unit.db_col} + $2 WHERE units_id = $1;", user_id, amount)
-
-	@classmethod
-	async def sub_unit(cls, con, user_id: int, unit, amount: int):
-		await con.execute(f"UPDATE units SET {unit.db_col} = {unit.db_col} - $2 WHERE units_id = $1;", user_id, amount)
-
-
+	SELECT_ALL_AND_POPULATION = "SELECT * FROM empire, population;"

@@ -10,6 +10,7 @@ from src.common.errors import (
 )
 
 from src.common import SNACCMAN, MainServer
+
 from src.common.models import EmpireM
 
 

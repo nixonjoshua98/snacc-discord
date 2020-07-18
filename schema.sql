@@ -26,31 +26,20 @@ money   BIGINT DEFAULT 1000 CHECK (money >= 0)
 );
 
 
-CREATE TABLE IF NOT EXISTS empire (
-user_id         BIGINT                      PRIMARY KEY,
-name            VARCHAR                     DEFAULT 'My Empire',
-last_income     TIMESTAMP WITHOUT time zone DEFAULT (now() at time zone 'utc'),
-farmers         SMALLINT                    DEFAULT 0,
-butchers        SMALLINT                    DEFAULT 0,
-cooks           SMALLINT                    DEFAULT 0,
-bakers          SMALLINT                    DEFAULT 0,
-winemakers      SMALLINT                    DEFAULT 0
+CREATE TABLE IF NOT EXISTS population (
+population_id 	BIGINT      PRIMARY KEY,
+
+farmers 	    SMALLINT 	DEFAULT 0 CHECK (farmers    >= 0),
+butchers 	    SMALLINT 	DEFAULT 0 CHECK (butchers   >= 0),
+cooks 		    SMALLINT 	DEFAULT 0 CHECK (cooks      >= 0),
+bakers 		    SMALLINT 	DEFAULT 0 CHECK (bakers     >= 0),
+winemakers 	    SMALLINT 	DEFAULT 0 CHECK (winemakers >= 0)
 );
 
 
 CREATE TABLE IF NOT EXISTS new_empire (
 empire_id       BIGINT                      PRIMARY KEY,
+
 name            VARCHAR                     DEFAULT 'My Empire',
-last_income     TIMESTAMP WITHOUT time zone DEFAULT (now() at time zone 'utc')
-);
-
-
-CREATE TABLE IF NOT EXISTS units (
-units_id 	BIGINT 		PRIMARY KEY,
-
-farmers 	SMALLINT 	DEFAULT 0 CHECK (farmers    >= 0),
-butchers 	SMALLINT 	DEFAULT 0 CHECK (butchers   >= 0),
-cooks 		SMALLINT 	DEFAULT 0 CHECK (cooks      >= 0),
-bakers 		SMALLINT 	DEFAULT 0 CHECK (bakers     >= 0),
-winemakers 	SMALLINT 	DEFAULT 0 CHECK (winemakers >= 0)
+last_update     TIMESTAMP WITHOUT time zone DEFAULT (now() at time zone 'utc')
 );
