@@ -20,6 +20,9 @@ class DiscordMember(commands.MemberConverter):
 		if not self.allow_author and ctx.author.id == member.id:
 			raise commands.CommandError("You cannot target yourself here.")
 
+		elif member.bot:
+			raise commands.CommandError("Bot accounts cannot be used.")
+
 		elif self.members_only:
 			svr = await ctx.bot.get_server(ctx.guild)
 
@@ -67,7 +70,7 @@ class CoinSide(commands.Converter):
 		argument = argument.lower()
 
 		if argument not in ["tails", "heads"]:
-			raise commands.CommandError("That is an invalid coin side.")
+			raise commands.CommandError(f"`{argument}` is not a valid coin side.")
 
 		return argument
 

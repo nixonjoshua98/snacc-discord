@@ -15,7 +15,7 @@ from src.common import checks
 from src.common.models import BankM, EmpireM, PopulationM
 from src.common.converters import EmpireUnit, Range
 
-from src.exts.empire import events
+from src.exts.empire import utils, events
 from src.exts.empire.units import UNIT_GROUPS
 from src.exts.empire.groups import UnitGroupType
 
@@ -32,6 +32,8 @@ class Empire(commands.Cog):
 		async def predicate():
 			if await self.bot.is_snacc_owner():
 				print("Starting loop: Income")
+
+				await asyncio.sleep(60 * 30)
 
 				self.income_loop.start()
 
@@ -51,24 +53,23 @@ class Empire(commands.Cog):
 		await self.show_empire(ctx)
 
 	@checks.has_empire()
-	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
+	@commands.cooldown(1, 60 * 60 * 3, commands.BucketType.user)
 	@commands.command(name="battle")
 	async def battle(self, ctx):
 		""" Attack a rival empire. """
 
 		military_group = UNIT_GROUPS[UnitGroupType.MILITARY]
 
-		empire = await ctx.bot.pool.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
+		async with ctx.bot.pool.acquire() as con:
+			author_population = await con.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
+			author_military_power = sum(unit.power * author_population[unit.db_col] for unit in military_group.units)
 
-		power = 0
+		await ctx.send(f"Power rating: {author_military_power}")
 
-		for unit in military_group.units:
-			power += unit.power * empire[unit.db_col]
-
-		await ctx.send(f"Power rating: {power}")
+		self.battle.reset_cooldown(ctx)
 
 	@checks.has_empire()
-	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
+	@commands.cooldown(1, 60 * 90, commands.BucketType.user)
 	@commands.command(name="empireevent", aliases=["ee"])
 	async def empire_event(self, ctx):
 		""" Trigger an empire event. """
@@ -176,7 +177,7 @@ class Empire(commands.Cog):
 				# Hours since the user was last updated
 				delta_time = (now - empire["last_update"]).total_seconds() / 3600
 
-				money_change = src.exts.empire.utils.get_total_money_delta(empire, delta_time)
+				money_change = utils.get_total_money_delta(empire, delta_time)
 
 				# We do not want decimals
 				money_change = math.ceil(money_change)
