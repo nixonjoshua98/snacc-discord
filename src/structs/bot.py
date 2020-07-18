@@ -123,7 +123,7 @@ class SnaccBot(commands.Bot):
     async def get_prefix(self, message):
         """ Get the prefix for the server/guild from the database. """
 
-        svr = await self.get_server(message.guild.id)
+        svr = await self.get_server(message.guild)
 
         prefix = "." if os.getenv("DEBUG") else svr.get("prefix", "!")
 
