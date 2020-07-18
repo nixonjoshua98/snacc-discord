@@ -185,6 +185,7 @@ class Empire(commands.Cog):
 					for unit in group.units:
 						try:
 							money_change += unit.get_delta_money(empire[unit.db_col], delta_time)
+
 						except KeyError as e:
 							print(e)
 
@@ -193,9 +194,6 @@ class Empire(commands.Cog):
 
 				# No need to update the database if the user gained nothing
 				if money_change != 0:
-					if empire["empire_id"] == 281171949298647041:
-						print("Snaccman", delta_time, money_change)
-
 					await con.execute(BankM.ADD_MONEY, empire["empire_id"], money_change)
 
 				await EmpireM.set(con, empire["empire_id"], last_update=now)

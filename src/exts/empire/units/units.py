@@ -79,7 +79,7 @@ class _MilitaryUnit(_Unit):
 		:param delta_time: Number of hours to simulate.
 		:return int: Money earned
 		"""
-		return math.ceil((self.upkeep_hour * total) * delta_time)
+		return math.ceil((self.upkeep_hour * total) * delta_time) * -1
 
 	def create_empire_row(self, units_owned: int) -> list:
 		""" Create the row which will be presented on `!empire`. """
