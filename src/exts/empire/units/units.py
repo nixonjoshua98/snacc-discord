@@ -4,7 +4,7 @@ import math
 class _Unit:
 	__unit_id = 1  # PRIVATE
 
-	def __init__(self, *, db_col, base_cost, exponent, **kwargs):
+	def __init__(self, *, db_col, base_cost, **kwargs):
 		self.display_name = db_col.title().replace("_", " ")
 
 		self.id = _Unit.__unit_id
@@ -12,7 +12,7 @@ class _Unit:
 		self.base_price = base_cost
 
 		self.max_amount = kwargs.get("max_amount", 10)
-		self.exponent = exponent
+		self.exponent = kwargs.get("exponent", 1.25)
 
 		# Increment the internal ID for the next unit
 		_Unit.__unit_id += 1
@@ -37,7 +37,7 @@ class _Unit:
 
 class _MoneyUnit(_Unit):
 	def __init__(self, *, income_hour, **kwargs):
-		super().__init__(exponent=1.25, **kwargs)
+		super().__init__(**kwargs)
 
 		self.income_hour = income_hour
 
@@ -66,7 +66,7 @@ class _MoneyUnit(_Unit):
 
 class _MilitaryUnit(_Unit):
 	def __init__(self, *, upkeep_hour, power, **kwargs):
-		super().__init__(exponent=1.15, **kwargs)
+		super().__init__(**kwargs)
 
 		self.power = power
 		self.upkeep_hour = upkeep_hour

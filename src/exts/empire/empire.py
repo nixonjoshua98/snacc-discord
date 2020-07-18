@@ -120,6 +120,23 @@ class Empire(commands.Cog):
 		await inputs.send_pages(ctx, pages)
 
 	@checks.has_empire()
+	@commands.command(name="fire")
+	@commands.max_concurrency(1, commands.BucketType.user)
+	async def fire_unit(self, ctx, unit: EmpireUnit(), amount: Range(1, 100) = 1):
+		""" Fire a new unit. """
+
+		async with ctx.bot.pool.acquire() as con:
+			empire_population = await con.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
+
+			if amount > empire_population[unit.db_col]:
+				await ctx.send(f"You do not have **{amount}x {unit.display_name}** avilable to fire.")
+
+			else:
+				await PopulationM.sub_unit(con, ctx.author.id, unit, amount)
+
+				await ctx.send(f"You have fired **{amount}x {unit.display_name}**")
+
+	@checks.has_empire()
 	@commands.command(name="hire")
 	@commands.max_concurrency(1, commands.BucketType.user)
 	async def hire_unit(self, ctx, unit: EmpireUnit(), amount: Range(1, 100) = 1):
@@ -176,6 +193,9 @@ class Empire(commands.Cog):
 
 				# No need to update the database if the user gained nothing
 				if money_change != 0:
+					if empire["empire_id"] == 281171949298647041:
+						print("Snaccman", delta_time, money_change)
+
 					await con.execute(BankM.ADD_MONEY, empire["empire_id"], money_change)
 
 				await EmpireM.set(con, empire["empire_id"], last_update=now)

@@ -52,7 +52,7 @@ async def loot_event(ctx):
 		money = bank["money"]
 
 		# max(500, 1% money) - min(1_500, 2% money)
-		money_gained = random.randint(max(500, money // 100), max(1_500, money // 50))
+		money_gained = random.randint(max(500, money // 100), max(1_000, money // 50))
 
 		await ctx.bot.pool.execute(BankM.ADD_MONEY, ctx.author.id, money_gained)
 

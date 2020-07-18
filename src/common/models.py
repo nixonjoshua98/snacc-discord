@@ -124,4 +124,8 @@ class EmpireM(TableModel):
 	SELECT_ROW = "SELECT * FROM empire WHERE empire_id = $1 LIMIT 1;"
 	INSERT_ROW = "INSERT INTO empire (empire_id) VALUES ($1) RETURNING empire_id;"
 
-	SELECT_ALL_AND_POPULATION = "SELECT * FROM empire, population;"
+	SELECT_ALL_AND_POPULATION = """
+	SELECT * FROM empire 
+	INNER JOIN 
+		population ON (empire.empire_id = population.population_id);
+		"""

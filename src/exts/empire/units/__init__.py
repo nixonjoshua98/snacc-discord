@@ -30,6 +30,7 @@ UNIT_GROUPS = {
 
 	UnitGroupType.MILITARY:
 		_MilitaryUnitGroup("Military Units", [
+			_MilitaryUnit(upkeep_hour=25, power=5, db_col="peasants", base_cost=1000),
 
 		]
 						),
