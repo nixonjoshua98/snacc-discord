@@ -19,7 +19,7 @@ class _Unit:
 		self.base_price = base_cost
 
 		self.max_amount = kwargs.get("max_amount", 10)
-		self.exponent = kwargs.get("exponent", 1.25)
+		self.exponent = kwargs.get("exponent", 1.10)
 
 		# Increment the internal ID for the next unit
 		_Unit.__unit_id += 1
@@ -67,17 +67,17 @@ This should NEVER be edited during runtime
 UNIT_GROUPS = {
 	UnitGroupType.MONEY:
 		_MoneyUnitGroup("Money Making Units", [
-			_MoneyUnit(income_hour=10, db_col="farmers",	base_cost=250),
-			_MoneyUnit(income_hour=20, db_col="butchers",	base_cost=500),
-			_MoneyUnit(income_hour=30, db_col="bakers",		base_cost=750),
-			_MoneyUnit(income_hour=40, db_col="cooks",		base_cost=1000),
-			_MoneyUnit(income_hour=50, db_col="winemakers", base_cost=1500),
+			_MoneyUnit(income_hour=25, db_col="farmers",	base_cost=250),
+			_MoneyUnit(income_hour=40, db_col="butchers",	base_cost=500),
+			_MoneyUnit(income_hour=50, db_col="bakers",		base_cost=750),
+			_MoneyUnit(income_hour=60, db_col="cooks",		base_cost=1000),
+			_MoneyUnit(income_hour=75, db_col="winemakers", base_cost=1250),
 		]
 						),
 
 	UnitGroupType.MILITARY:
 		_MilitaryUnitGroup("Military Units", [
-			_MilitaryUnit(upkeep_hour=25, power=5, db_col="peasants", base_cost=1000),
+			_MilitaryUnit(upkeep_hour=0, power=5, db_col="peasants", base_cost=1000),
 
 		]
 						),
@@ -85,3 +85,14 @@ UNIT_GROUPS = {
 
 # Flatterned list of all units
 ALL = [unit for _, group in UNIT_GROUPS.items() for unit in group.units]
+
+
+
+
+
+
+
+
+
+
+
