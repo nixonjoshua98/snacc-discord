@@ -37,17 +37,24 @@ class Darkness(commands.Cog):
 
             "play time": (inputs.options, Arguments(ctx,
                                                     "How long have you been playing?",
-                                                    ("0-3 months", "4-7 months", "8+ months"),
+                                                    ("0-1 months", "2-4 months", "5-6 months", "6+ months"),
                                                     send_dm=True
                                                     )
                           ),
 
             "device": (inputs.options, Arguments(ctx,
                                                  "How do you play?",
-                                                 ("Phone/Tablet", "Emulator", "Spare phone", "Other"),
+                                                 ("Phone/Tablet", "PC/Laptop", "Other"),
                                                  send_dm=True
                                                  )
                        ),
+            "daily playtime": (inputs.options, Arguments(ctx,
+                                                         "How long do you grind for each day?",
+                                                         ("0-6 hours", "7-12 hours", "13-18 hours", "18+ hours"),
+                                                         send_dm=True
+                                                         )
+                               ),
+
         }
 
         answers = dict()
