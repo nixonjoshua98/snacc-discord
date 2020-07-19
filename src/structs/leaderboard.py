@@ -85,6 +85,9 @@ class TextLeaderboardBase:
             # Get some reference to a user (can be None)
             user = self._get_user(ctx, row["user_id"])
 
+            if user is None:
+                continue
+
             # Create the text row for the user
             entry = self._create_row(rank, user, row)
 

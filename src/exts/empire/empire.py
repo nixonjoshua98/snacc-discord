@@ -176,9 +176,6 @@ class Empire(commands.Cog):
 			elif empire_population[unit.db_col] + amount > unit.max_amount:
 				await ctx.send("You already own the maximum amount of this unit.")
 
-			elif not await inputs.confirm(ctx, f"Hire {amount}x {unit.display_name} for ${price:,}?"):
-				await ctx.send("Hire cancelled.")
-
 			else:
 				await con.execute(BankM.SUB_MONEY, ctx.author.id, price)
 

@@ -63,12 +63,11 @@ async def stolen_event(ctx):
 	""" Empire was stolen from event (-money). """
 
 	async with ctx.bot.pool.acquire() as con:
-		bank = await con.fetchrow(BankM.SELECT_ROW, ctx.author.id)
+		population = await con.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
 
-		money = bank["money"]
+		hourly_income = utils.get_total_money_delta(population, 1.0)
 
-		# min(2_500, 2% money) - min(10_000, 4% money)
-		money_stolen = random.randint(min(2_500, money // 50), min(10_000, money // 25))
+		money_stolen = random.randint(min(2_500, hourly_income // 3), min(10_000, max(hourly_income // 2, 1_000)))
 
 		# Only update the database if any money was stolen
 		if money_stolen > 0:
