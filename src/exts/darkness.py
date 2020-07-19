@@ -49,7 +49,7 @@ class Darkness(commands.Cog):
                                                  )
                        ),
             "daily playtime": (inputs.options, Arguments(ctx,
-                                                         "How long do you grind for each day?",
+                                                         "How long do you 'play' the game each day?",
                                                          ("0-6 hours", "7-12 hours", "13-18 hours", "18+ hours"),
                                                          send_dm=True
                                                          )
