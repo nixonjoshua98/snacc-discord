@@ -41,7 +41,7 @@ class Money(commands.Cog):
 			author_money = author_bank["money"]
 			target_money = target_bank["money"]
 
-			stolen_amount = min(10_000, random.randint(1, int(max(author_money, target_money) * 0.025)))
+			stolen_amount = min(10_000, random.randint(1, int(target_money * 0.05)))
 
 			await con.execute(BankM.ADD_MONEY, ctx.author.id, stolen_amount)
 			await con.execute(BankM.SUB_MONEY, target.id, stolen_amount)

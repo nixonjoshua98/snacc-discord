@@ -77,7 +77,7 @@ UNIT_GROUPS = {
 
 	UnitGroupType.MILITARY:
 		_MilitaryUnitGroup("Military Units", [
-			_MilitaryUnit(upkeep_hour=0, power=5, db_col="peasants", base_cost=1000),
+			_MilitaryUnit(upkeep_hour=0, power=5, db_col="peasants", base_cost=750),
 
 		]
 						),

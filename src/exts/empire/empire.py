@@ -66,14 +66,11 @@ class Empire(commands.Cog):
 		target = ctx.author
 
 		async with ctx.bot.pool.acquire() as con:
-			author_population = await con.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
-			target_population = await con.fetchrow(PopulationM.SELECT_ROW, target.id)
+			author_pop = await con.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
+			target_pop = await con.fetchrow(PopulationM.SELECT_ROW, target.id)
 
-			author_military = [unit for unit in military.units if author_population[unit.db_col] > 0]
-			target_military = [unit for unit in military.units if target_population[unit.db_col] > 0]
-
-			author_power = max(1, sum(map(lambda u: u.power, author_military)))
-			target_power = max(1, sum(map(lambda u: u.power, target_military)))
+			author_power = max(1, sum(unit.power for unit in military.units if author_pop[unit.db_col] > 0))
+			target_power = max(1, sum(unit.power for unit in military.units if target_pop[unit.db_col] > 0))
 
 			chance_to_win = max(0.3, min(0.8, ((author_power / target_power) / 2.0)))
 
