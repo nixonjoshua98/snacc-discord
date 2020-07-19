@@ -2,13 +2,16 @@ import discord
 
 from discord.ext import commands
 
+from src.common.models import EmpireM
+
 
 class DiscordMember(commands.MemberConverter):
-	def __init__(self, *, allow_author: bool = True, members_only: bool = False):
+	def __init__(self, *, allow_author: bool = True, members_only: bool = False, needs_empire: bool = False):
 		super(DiscordMember, self).__init__()
 
 		self.allow_author = allow_author
 		self.members_only = members_only
+		self.needs_empire = needs_empire
 
 	async def convert(self, ctx, argument) -> discord.Member:
 		try:
@@ -18,10 +21,14 @@ class DiscordMember(commands.MemberConverter):
 			raise commands.CommandError(f"User '{argument}' could not be found")
 
 		if not self.allow_author and ctx.author.id == member.id:
-			raise commands.CommandError("You cannot target yourself here.")
+			raise commands.CommandError("You can not target yourself.")
 
 		elif member.bot:
 			raise commands.CommandError("Bot accounts cannot be used.")
+
+		elif self.needs_empire:
+			if await ctx.bot.pool.fetchrow(EmpireM.SELECT_ROW, member.id) is None:
+				raise commands.CommandError(f"Target user does not have an empire.")
 
 		elif self.members_only:
 			svr = await ctx.bot.get_server(ctx.guild)
@@ -45,6 +52,11 @@ class MemberUser(DiscordMember):
 class NormalUser(DiscordMember):
 	def __init__(self):
 		super(NormalUser, self).__init__(allow_author=False)
+
+
+class RivalEmpireUser(DiscordMember):
+	def __init__(self):
+		super(RivalEmpireUser, self).__init__(allow_author=True, needs_empire=True)
 
 
 class Range(commands.Converter):

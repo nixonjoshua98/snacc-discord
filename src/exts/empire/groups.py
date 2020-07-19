@@ -35,9 +35,7 @@ class _MoneyUnitGroup(_UnitGroup):
 		super().__init__(UnitGroupType.MONEY, name, units)
 
 	def create_empire_page(self, empire):
-		page = TextPage(title="Your Empire")
-
-		page.set_headers(["Unit", "Owned", "Income"])
+		page = TextPage(title=empire["name"], headers=["Unit", "Owned", "Income"])
 
 		for unit in self.units:
 			units_owned = empire[unit.db_col]
@@ -75,7 +73,7 @@ class _MilitaryUnitGroup(_UnitGroup):
 		super().__init__(UnitGroupType.MILITARY, name, units)
 
 	def create_empire_page(self, empire):
-		page = TextPage(title="Your Empire", headers=["Unit", "Owned", "Power", "Upkeep"])
+		page = TextPage(title=empire["name"], headers=["Unit", "Owned", "Power", "Upkeep"])
 
 		for unit in self.units:
 			units_owned = empire[unit.db_col]

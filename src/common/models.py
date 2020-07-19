@@ -129,3 +129,10 @@ class EmpireM(TableModel):
 	INNER JOIN 
 		population ON (empire.empire_id = population.population_id);
 		"""
+
+	SELECT_ROW_AND_POPULATION = """
+	SELECT * FROM empire 
+	INNER JOIN 
+		population ON (empire.empire_id = population.population_id)
+	WHERE empire_id = $1;
+		"""

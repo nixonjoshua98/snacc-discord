@@ -13,10 +13,13 @@ from discord.ext import tasks, commands
 from src import inputs
 from src.common import checks
 from src.common.models import BankM, EmpireM, PopulationM
-from src.common.converters import EmpireUnit, Range
+from src.common.converters import EmpireUnit, Range, RivalEmpireUser
 
 from src.exts.empire import utils, events
 from src.exts.empire.units import UNIT_GROUPS, UnitGroupType
+
+
+SCOUT_COST = 0
 
 
 class Empire(commands.Cog):
@@ -55,34 +58,33 @@ class Empire(commands.Cog):
 
 	@checks.has_empire()
 	@commands.cooldown(1, 60 * 60 * 3, commands.BucketType.user)
-	@commands.command(name="attack")
-	async def attack(self, ctx):
-		""" Attack a rival empire. """
+	@commands.command(name="scout")
+	async def scout(self, ctx, target: RivalEmpireUser()):
+		""" Pay to scout an empire to recieve valuable information. """
 
 		military = UNIT_GROUPS[UnitGroupType.MILITARY]
 
-		await ctx.send("IN DEVELOPMENT")
-
-		target = ctx.author
-
 		async with ctx.bot.pool.acquire() as con:
-			author_pop = await con.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
-			target_pop = await con.fetchrow(PopulationM.SELECT_ROW, target.id)
+			bank = await ctx.bot.pool.fetchrow(BankM.SELECT_ROW, ctx.author.id)
 
-			author_power = max(1, sum(unit.power for unit in military.units if author_pop[unit.db_col] > 0))
-			target_power = max(1, sum(unit.power for unit in military.units if target_pop[unit.db_col] > 0))
-
-			chance_to_win = max(0.3, min(0.8, ((author_power / target_power) / 2.0)))
-
-			if random.randint(1, 100) <= (chance_to_win * 100):
-				""" Author (attacker) won the battle. """
+			if bank["money"] < SCOUT_COST:
+				await ctx.send(f"Scouting an empire costs ${SCOUT_COST:,}")
 
 			else:
-				""" Target (defender) won the battle. """
+				await ctx.bot.pool.execute(BankM.SUB_MONEY, ctx.author.id, SCOUT_COST)
 
-		await ctx.send(f"Your power: {author_power} Target power: {target_power} Win: {int(chance_to_win * 100)}%")
+				author_pop = await con.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
+				target_pop = await con.fetchrow(PopulationM.SELECT_ROW, target.id)
 
-		self.attack.reset_cooldown(ctx)
+				author_power = max(1, sum(unit.power for unit in military.units if author_pop[unit.db_col] > 0))
+				target_power = max(1, sum(unit.power for unit in military.units if target_pop[unit.db_col] > 0))
+
+				win_chance = int(max(0.25, min(0.85, ((author_power / target_power) / 2.0))) * 100)
+
+				await ctx.send(
+					f"You hired a scout for **${SCOUT_COST:,}** and was told that you "
+					f"have a **{win_chance}%** chance of winning against **{target.display_name}**"
+				)
 
 	@checks.has_empire()
 	@commands.cooldown(1, 60 * 90, commands.BucketType.user)
@@ -98,17 +100,18 @@ class Empire(commands.Cog):
 		for event in chosen_events:
 			await event(ctx)
 
-		if random.randint(0, 9) == 0:
+		# 12.5% chance for cooldown to be reset
+		if random.randint(0, 7) == 0:
 			self.empire_event.reset_cooldown(ctx)
 
-			await ctx.send("Good news! Your cooldown has been reset.")
+			await ctx.send("Good news! Your empire is ready for another event!")
 
 	@checks.has_empire()
 	@commands.command(name="empire")
 	async def show_empire(self, ctx):
 		""" View your empire. """
 
-		population = await ctx.bot.pool.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
+		population = await ctx.bot.pool.fetchrow(EmpireM.SELECT_ROW_AND_POPULATION, ctx.author.id)
 
 		pages = [group.create_empire_page(population).get() for group in UNIT_GROUPS.values()]
 

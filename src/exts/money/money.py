@@ -46,6 +46,12 @@ class Money(commands.Cog):
 
 		await ctx.send(f"You stole **${stolen_amount:,}** from **{target.display_name}**")
 
+		# 12.5% chance for cooldown to be reset
+		if random.randint(0, 7) == 0:
+			self.steal_coins.reset_cooldown(ctx)
+
+			await ctx.send("Good news! Your thief returned unharmed and is ready to steal again!")
+
 	@commands.cooldown(1, 60, commands.BucketType.guild)
 	@commands.command(name="richest")
 	async def show_richest_leaderboard(self, ctx):
