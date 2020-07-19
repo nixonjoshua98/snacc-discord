@@ -29,16 +29,14 @@ class Money(commands.Cog):
 
 		await ctx.send(f":moneybag: **{ctx.author.display_name}** has **${row['money']:,}**")
 
-	@commands.cooldown(1, 60 * 75, commands.BucketType.user)
+	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
 	@commands.command(name="steal", cooldown_after_parsing=True)
 	async def steal_coins(self, ctx, target: NormalUser()):
 		""" Attempt to steal from another user. """
 
 		async with ctx.bot.pool.acquire() as con:
-			author_bank = await BankM.get_row(con, ctx.author.id)
 			target_bank = await BankM.get_row(con, target.id)
 
-			author_money = author_bank["money"]
 			target_money = target_bank["money"]
 
 			stolen_amount = min(10_000, random.randint(1, int(target_money * 0.05)))

@@ -20,7 +20,7 @@ async def attacked_event(ctx):
 		if units_owned:
 			total_units_owned = sum(map(lambda u: population[u.db_col], units_owned))
 
-			num_units_lost = random.randint(1, max(1, min(5, total_units_owned // 15)))
+			num_units_lost = random.randint(1, max(3, min(5, total_units_owned // 25)))
 
 			weights = [i ** 2 for i in range(len(units_owned), 0, -1)]
 
@@ -53,7 +53,7 @@ async def assassinated_event(ctx):
 
 			await PopulationM.sub_unit(ctx.bot.pool, ctx.author.id, unit_killed, 1)
 
-			await ctx.send(f"One of your {unit_killed.display_name} was assassinated.")
+			await ctx.send(f"One of your **{unit_killed.display_name}** was assassinated.")
 
 		else:
 			await ctx.send("An assassin from a rival empire was found dead in your empire")
@@ -67,8 +67,8 @@ async def stolen_event(ctx):
 
 		money = bank["money"]
 
-		# min(2_500, 2% money) - min(10_000, 5% money)
-		money_stolen = random.randint(min(2_500, money // 50), min(10_000, money // 20))
+		# min(2_500, 2% money) - min(10_000, 4% money)
+		money_stolen = random.randint(min(2_500, money // 50), min(10_000, money // 25))
 
 		# Only update the database if any money was stolen
 		if money_stolen > 0:
