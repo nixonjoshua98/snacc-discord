@@ -68,7 +68,7 @@ class Empire(commands.Cog):
 			bank = await ctx.bot.pool.fetchrow(BankM.SELECT_ROW, ctx.author.id)
 
 			if bank["money"] < SCOUT_COST:
-				await ctx.send(f"Scouting an empire costs ${SCOUT_COST:,}")
+				await ctx.send(f"Scouting an empire costs **${SCOUT_COST:,}**.")
 
 			else:
 				await ctx.bot.pool.execute(BankM.SUB_MONEY, ctx.author.id, SCOUT_COST)
@@ -79,11 +79,11 @@ class Empire(commands.Cog):
 				author_power = max(1, sum(unit.power for unit in military.units if author_pop[unit.db_col] > 0))
 				target_power = max(1, sum(unit.power for unit in military.units if target_pop[unit.db_col] > 0))
 
-				win_chance = int(max(0.25, min(0.85, ((author_power / target_power) / 2.0))) * 100)
+				win_chance = int(max(0.15, min(0.85, ((author_power / target_power) / 2.0))) * 100)
 
 				await ctx.send(
-					f"You hired a scout for **${SCOUT_COST:,}** and was told that you "
-					f"have a **{win_chance}%** chance of winning against **{target.display_name}**"
+					f"You hired a scout for **${SCOUT_COST:,}**. "
+					f"You have a **{win_chance}%** chance of winning against **{target.display_name}**."
 				)
 
 	@checks.has_empire()
@@ -93,7 +93,7 @@ class Empire(commands.Cog):
 		""" Trigger an empire event. """
 
 		options = (events.attacked_event, events.loot_event, events.stolen_event, events.assassinated_event)
-		weights = (2, 75, 20, 3)
+		weights = (5, 80, 20, 10)
 
 		chosen_events = random.choices(options, weights=weights, k=1)
 

@@ -39,18 +39,25 @@ class Money(commands.Cog):
 
 			target_money = target_bank["money"]
 
-			stolen_amount = min(10_000, random.randint(1, int(target_money * 0.05)))
+			stolen_amount = random.randint(max(1, int(target_money * 0.025)), max(1, int(target_money * 0.075)))
 
-			await con.execute(BankM.ADD_MONEY, ctx.author.id, stolen_amount)
+			thief_tax = stolen_amount // random.randint(10, 20) if stolen_amount >= 1_000 else 0
+
+			await con.execute(BankM.ADD_MONEY, ctx.author.id, stolen_amount - thief_tax)
 			await con.execute(BankM.SUB_MONEY, target.id, stolen_amount)
 
-		await ctx.send(f"You stole **${stolen_amount:,}** from **{target.display_name}**")
+		s = f"You stole **${stolen_amount:,}** from **{target.display_name}**."
+
+		if thief_tax > 0:
+			s = s[0:-1] + f" but the thief you hired took a cut of **${thief_tax:,}**."
+
+		await ctx.send(s)
 
 		# 12.5% chance for cooldown to be reset
 		if random.randint(0, 7) == 0:
 			self.steal_coins.reset_cooldown(ctx)
 
-			await ctx.send("Good news! Your thief returned unharmed and is ready to steal again!")
+			await ctx.send("Good news! Your cooldown has been reset and you are ready to steal again.")
 
 	@commands.cooldown(1, 60, commands.BucketType.guild)
 	@commands.command(name="richest")
