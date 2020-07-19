@@ -41,7 +41,7 @@ class Money(commands.Cog):
 
 			stolen_amount = random.randint(max(1, int(target_money * 0.025)), max(1, int(target_money * 0.075)))
 
-			thief_tax = stolen_amount // random.randint(10, 20) if stolen_amount >= 1_000 else 0
+			thief_tax = stolen_amount // random.randint(5, 10) if stolen_amount >= 1_000 else 0
 
 			await con.execute(BankM.ADD_MONEY, ctx.author.id, stolen_amount - thief_tax)
 			await con.execute(BankM.SUB_MONEY, target.id, stolen_amount)
