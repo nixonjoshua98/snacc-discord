@@ -134,7 +134,7 @@ class Hangman(commands.Cog):
         else:
             await ctx.send("I have DM'ed you the hidden word.")
 
-    @commands.cooldown(1, 60, commands.BucketType.guild)
+    @commands.cooldown(1, 15, commands.BucketType.guild)
     @commands.command(name="hlb")
     async def show_leaderboard(self, ctx):
         """ Shows the top hangman players. """
