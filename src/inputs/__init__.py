@@ -15,12 +15,12 @@ async def confirm(ctx, question, *, send_dm: bool = False):
 	return menu.get()
 
 
-async def get_input(ctx, question, *, send_dm: bool = False):
+async def get_input(ctx, question, *, send_dm: bool = False, validation=None):
 	from .textinput import TextInputChannel, TextInputDM
 
 	cls = TextInputDM if send_dm else TextInputChannel
 
-	menu = cls(ctx.bot, ctx.author, question)
+	menu = cls(ctx.bot, ctx.author, question, validation=validation)
 
 	await menu.send(ctx.author if send_dm else ctx.channel)
 

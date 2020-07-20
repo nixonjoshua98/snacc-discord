@@ -26,9 +26,20 @@ class Darkness(commands.Cog):
         await ctx.send("Check your DM.")
 
         questions = {
-            "username": (inputs.get_input, Arguments(ctx, "What is your in-game-name?", send_dm=True)),
+            "username": (inputs.get_input, Arguments(
+                ctx,
+                "What is your in-game-name?",
+                send_dm=True
+            )
+                         ),
 
-            "trophies": (inputs.get_input, Arguments(ctx, "What is your trophy count?", send_dm=True)),
+            "trophies": (inputs.get_input, Arguments(
+                ctx,
+                "What is your trophy count?",
+                send_dm=True,
+                validation=lambda s: s.isdigit()
+            )
+                         ),
 
             "play time": (inputs.options, Arguments(ctx,
                                                     "How long have you been playing?",

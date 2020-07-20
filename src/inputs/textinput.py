@@ -5,10 +5,11 @@ from .inputbase import InputBase
 
 
 class TextInputBase(InputBase):
-    def __init__(self, bot, author, question):
+    def __init__(self, bot, author, question, *, validation=None):
         super().__init__(bot, author, timeout=300.0)
 
         self._question = question
+        self._validation_func = validation
 
         self._response = None
 
@@ -38,15 +39,21 @@ class TextInputBase(InputBase):
                 return await self.on_exit()
 
             else:
-                self._response = message.clean_content
+                response = message.clean_content
 
                 embed = self.message.embeds[0]
 
-                embed.description = self._response
+                if self._validation_func is None or self._validation_func(response):
+                    embed.description = self._response = response
 
-                await self.edit_message(embed=embed)
+                    await self.edit_message(embed=embed)
 
-                break
+                    break
+
+                else:
+                    embed.description = f"`{response[0:50]}` is not a valid answer."
+
+                    await self.edit_message(embed=embed)
 
 
 class TextInputDM(TextInputBase):
