@@ -4,7 +4,7 @@ from discord.ext import commands
 
 from src import inputs
 from src.common.models import BankM
-from src.common.converters import NormalUser
+from src.common.converters import DiscordUser
 
 
 class Money(commands.Cog):
@@ -30,7 +30,7 @@ class Money(commands.Cog):
 
 	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
 	@commands.command(name="steal", cooldown_after_parsing=True)
-	async def steal_coins(self, ctx, target: NormalUser()):
+	async def steal_coins(self, ctx, target: DiscordUser()):
 		""" Attempt to steal from another user. """
 
 		async with ctx.bot.pool.acquire() as con:

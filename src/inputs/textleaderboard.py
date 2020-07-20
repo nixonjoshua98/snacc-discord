@@ -1,3 +1,4 @@
+import discord
 
 from src import inputs
 
@@ -92,7 +93,7 @@ class TextLeaderboard:
         return entries, author_row
 
     def _create_row(self, rank, user, row):
-        username = "" if user is None else user.display_name
+        username = "" if user is None else str(user) if isinstance(user, discord.User) else user.display_name
 
         entry = [f"#{rank:02d}", username]
 

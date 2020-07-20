@@ -14,7 +14,7 @@ from src import inputs
 from src.common import MainServer, checks
 from src.common.emoji import Emoji
 from src.common.models import ArenaStatsM
-from src.common.converters import MemberUser, Range
+from src.common.converters import Range
 
 
 def chunk_list(ls, n):
@@ -157,7 +157,7 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 	@commands.cooldown(1, 60, commands.BucketType.user)
 	@commands.has_permissions(administrator=True)
 	@commands.command(name="setuser", aliases=["su"])
-	async def set_user_stats_command(self, ctx, target: MemberUser(), level: int, trophies: int):
+	async def set_user_stats_command(self, ctx, target: discord.Member, level: int, trophies: int):
 		""" [Admin] Set another users ABO stats. """
 
 		await self.set_users_stats(ctx, target, level, trophies)

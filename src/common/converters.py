@@ -5,13 +5,37 @@ from discord.ext import commands
 from src.common.models import EmpireM
 
 
-class DiscordMember(commands.MemberConverter):
-	def __init__(self, *, allow_author: bool = True, members_only: bool = False, needs_empire: bool = False):
-		super(DiscordMember, self).__init__()
+class DiscordUser(commands.Converter):
+	async def _convert(self, ctx, argument):
+		try:
+			user = await commands.MemberConverter().convert(ctx, argument)
 
-		self.allow_author = allow_author
-		self.members_only = members_only
-		self.needs_empire = needs_empire
+		except commands.BadArgument:
+			try:
+				user = await commands.UserConverter().convert(ctx, argument)
+
+			except commands.BadArgument:
+				raise commands.CommandError(f"User '{argument}' could not be found")
+
+		return user
+
+	async def convert(self, ctx, argument) -> discord.Member:
+		try:
+			member = await self._convert(ctx, argument)
+
+		except commands.BadArgument:
+			raise commands.CommandError(f"User '{argument}' could not be found")
+
+		if ctx.author.id == member.id:
+			raise commands.CommandError("You can not target yourself.")
+
+		elif member.bot:
+			raise commands.CommandError("Bot accounts cannot be used.")
+
+		return member
+
+
+class RivalEmpireUser(commands.MemberConverter):
 
 	async def convert(self, ctx, argument) -> discord.Member:
 		try:
@@ -20,43 +44,16 @@ class DiscordMember(commands.MemberConverter):
 		except commands.BadArgument:
 			raise commands.CommandError(f"User '{argument}' could not be found")
 
-		if not self.allow_author and ctx.author.id == member.id:
+		if ctx.author.id == member.id:
 			raise commands.CommandError("You can not target yourself.")
 
 		elif member.bot:
 			raise commands.CommandError("Bot accounts cannot be used.")
 
-		elif self.needs_empire:
-			if await ctx.bot.pool.fetchrow(EmpireM.SELECT_ROW, member.id) is None:
-				raise commands.CommandError(f"Target user does not have an empire.")
-
-		elif self.members_only:
-			svr = await ctx.bot.get_server(ctx.guild)
-
-			role = discord.utils.get(member.roles, id=svr["member_role"])
-
-			if role is None:
-				raise commands.CommandError(f"User does not have the member role.")
-
-			elif svr.get("member_role") is None:
-				raise commands.CommandError("A server member role needs to be set.")
+		elif await ctx.bot.pool.fetchrow(EmpireM.SELECT_ROW, member.id) is None:
+			raise commands.CommandError(f"Target user does not have an empire.")
 
 		return member
-
-
-class MemberUser(DiscordMember):
-	def __init__(self):
-		super(MemberUser, self).__init__(members_only=True)
-
-
-class NormalUser(DiscordMember):
-	def __init__(self):
-		super(NormalUser, self).__init__(allow_author=False)
-
-
-class RivalEmpireUser(DiscordMember):
-	def __init__(self):
-		super(RivalEmpireUser, self).__init__(allow_author=True, needs_empire=True)
 
 
 class Range(commands.Converter):
