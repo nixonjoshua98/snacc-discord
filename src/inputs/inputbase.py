@@ -28,7 +28,14 @@ class InputBase:
 
 	async def clear_reactions(self):
 		try:
-			await self.message.clear_reactions()
+			if self.message.guild is not None:
+				await self.message.clear_reactions()
+
+			else:
+				self.message = await self.message.channel.fetch_message(self.message.id)
+
+				for react in self.message.reactions:
+					await self.remove_reaction(react, self.message.author)
 
 		except (discord.Forbidden, discord.HTTPException):
 			""" Failed. """
@@ -41,7 +48,6 @@ class InputBase:
 			""" Failed. """
 
 	async def delete_message(self):
-		await self.message.delete()
 		try:
 			await self.message.delete()
 

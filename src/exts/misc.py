@@ -62,10 +62,10 @@ class Miscellaneous(commands.Cog):
 
 	@commands.command(name="whois")
 	@checks.snaccman_only()
-	async def whois(self, ctx, id_: int):
-		""" [Snacc] Find the user who has the same ID. """
+	async def who_is_this(self, ctx, user_id: int):
+		""" [Snacc] Find the user who has the ID provided. """
 
-		user = ctx.bot.get_user(id_)
+		user = ctx.bot.get_user(user_id)
 
 		if user is None:
 			await ctx.send("I found noone with that ID")

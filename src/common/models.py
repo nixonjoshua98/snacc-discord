@@ -51,7 +51,7 @@ class ArenaStatsM:
 		SELECT DISTINCT ON (user_id) user_id, date_set, level, trophies
 		FROM arena_stats
 		WHERE user_id = ANY ($1)
-		ORDER BY user_id, date_set DESC
+		ORDER BY user_id, date_set, trophies DESC
 		) q
 	ORDER BY trophies DESC;
 	"""

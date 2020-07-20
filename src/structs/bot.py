@@ -60,12 +60,7 @@ class SnaccBot(commands.Bot):
             await self.pool.execute(fh.read())
 
     async def on_message_check(self, message) -> bool:
-        """
-        A check which should be called on every 'on_message' listener.
-
-        :param message: The discord message which was received.
-        :return bool: Determine if we should listen to the message or not.
-        """
+        """ A check which should be called on every 'on_message' listener. """
 
         if (not self.exts_loaded) or (message.guild is None) or message.author.bot:
             return False
@@ -100,7 +95,7 @@ class SnaccBot(commands.Bot):
 
         self.exts_loaded = False
 
-        for ext in self.EXTENSIONS:
+        for i, ext in enumerate(self.EXTENSIONS):
             try:
                 self.load_extension(f"src.exts.{ext}")
 

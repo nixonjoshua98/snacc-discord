@@ -28,12 +28,7 @@ class Darkness(commands.Cog):
         questions = {
             "username": (inputs.get_input, Arguments(ctx, "What is your in-game-name?", send_dm=True)),
 
-            "trophies": (inputs.options, Arguments(ctx,
-                                                   "What is your trophy count?",
-                                                   ("0-3000", "3001-4000", "4001-5000", "5001-6000", "6000+"),
-                                                   send_dm=True
-                                                   )
-                         ),
+            "trophies": (inputs.get_input, Arguments(ctx, "What is your trophy count?", send_dm=True)),
 
             "play time": (inputs.options, Arguments(ctx,
                                                     "How long have you been playing?",
@@ -49,8 +44,13 @@ class Darkness(commands.Cog):
                                                  )
                        ),
             "daily playtime": (inputs.options, Arguments(ctx,
-                                                         "How long do you 'play' the game each day?",
-                                                         ("0-6 hours", "7-12 hours", "13-18 hours", "18+ hours"),
+                                                         "How long do you play the game each day?",
+                                                         (
+                                                             "0-6 hours",
+                                                             "7-12 hours",
+                                                             "13-18 hours",
+                                                             "19-24 hours",
+                                                         ),
                                                          send_dm=True
                                                          )
                                ),

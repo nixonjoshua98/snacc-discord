@@ -41,7 +41,7 @@ class RivalEmpireUser(DiscordUser):
 		user = await super().convert(ctx, argument)
 
 		if await ctx.bot.pool.fetchrow(EmpireM.SELECT_ROW, user.id) is None:
-			raise commands.CommandError(f"Target user does not have an empire.")
+			raise commands.CommandError(f"Target does not have an empire.")
 
 		return user
 
