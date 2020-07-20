@@ -35,25 +35,15 @@ class DiscordUser(commands.Converter):
 		return member
 
 
-class RivalEmpireUser(commands.MemberConverter):
+class RivalEmpireUser(DiscordUser):
 
 	async def convert(self, ctx, argument) -> discord.Member:
-		try:
-			member = await super().convert(ctx, argument)
+		user = await super().convert(ctx, argument)
 
-		except commands.BadArgument:
-			raise commands.CommandError(f"User '{argument}' could not be found")
-
-		if ctx.author.id == member.id:
-			raise commands.CommandError("You can not target yourself.")
-
-		elif member.bot:
-			raise commands.CommandError("Bot accounts cannot be used.")
-
-		elif await ctx.bot.pool.fetchrow(EmpireM.SELECT_ROW, member.id) is None:
+		if await ctx.bot.pool.fetchrow(EmpireM.SELECT_ROW, user.id) is None:
 			raise commands.CommandError(f"Target user does not have an empire.")
 
-		return member
+		return user
 
 
 class Range(commands.Converter):

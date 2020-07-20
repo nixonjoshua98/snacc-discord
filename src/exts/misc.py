@@ -6,6 +6,7 @@ from discord.ext import commands
 import datetime as dt
 from bs4 import BeautifulSoup
 
+from src.common import checks
 from src.structs.textpage import TextPage
 
 
@@ -58,6 +59,19 @@ class Miscellaneous(commands.Cog):
 			"Full Length Link\n"
 			"https://discord.com/oauth2/authorize?client_id=666616515436478473&scope=bot&permissions=8"
 		)
+
+	@commands.command(name="whois")
+	@checks.snaccman_only()
+	async def whois(self, ctx, id_: int):
+		""" [Snacc] Find the user who has the same ID. """
+
+		user = ctx.bot.get_user(id_)
+
+		if user is None:
+			await ctx.send("I found noone with that ID")
+
+		else:
+			await ctx.send(f"That ID belongs to **{str(user)}**.")
 
 	@commands.command(name="ping")
 	async def ping(self, ctx):

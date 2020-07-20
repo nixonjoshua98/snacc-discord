@@ -17,7 +17,7 @@ from src.common.models import EmpireM
 def snaccman_only():
 	async def predicate(ctx):
 		if ctx.author.id != SNACCMAN:
-			raise SnaccmanOnly("This command can only be used by Snaccman.")
+			raise SnaccmanOnly("You do not have access to this command.")
 
 		return ctx.author.id == SNACCMAN
 
