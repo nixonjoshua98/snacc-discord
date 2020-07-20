@@ -57,7 +57,7 @@ class Empire(commands.Cog):
 		await self.show_empire(ctx)
 
 	@checks.has_empire()
-	@commands.cooldown(1, 60 * 60 * 3, commands.BucketType.user)
+	@commands.cooldown(1, 30, commands.BucketType.user)
 	@commands.command(name="scout")
 	async def scout(self, ctx, target: RivalEmpireUser()):
 		""" Pay to scout an empire to recieve valuable information. """

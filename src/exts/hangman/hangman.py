@@ -3,12 +3,11 @@ import math
 import discord
 from discord.ext import commands
 
+from src import inputs
 from src.common import checks
 from src.common.emoji import Emoji
-
 from src.common.models import HangmanM
 
-from .hangmanleaderboard import HangmanLeaderboard
 from .hangmangame import HangmanGame, HangmanGuess
 
 
@@ -140,4 +139,7 @@ class Hangman(commands.Cog):
     async def show_leaderboard(self, ctx):
         """ Shows the top hangman players. """
 
-        await HangmanLeaderboard().send(ctx)
+        async def query():
+            return await ctx.bot.pool.fetch(HangmanM.SELECT_MOST_WINS)
+
+        await inputs.show_leaderboard(ctx, "Top Hangman Players", columns=["wins"], order_by="wins", query_func=query)

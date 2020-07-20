@@ -16,9 +16,6 @@ from src.common.emoji import Emoji
 from src.common.models import ArenaStatsM
 from src.common.converters import MemberUser, Range
 
-# Local imports
-from .trophyleaderboard import TrophyLeaderboard
-
 
 def chunk_list(ls, n):
 	for i in range(0, len(ls), n):
@@ -202,4 +199,21 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 	async def show_leaderboard(self, ctx: commands.Context):
 		""" Show the server trophy leaderboard. """
 
-		await TrophyLeaderboard().send(ctx)
+		async def query():
+			svr_config = await ctx.bot.get_server(ctx.guild)
+
+			role = ctx.guild.get_role(svr_config["member_role"])
+
+			return await ctx.bot.pool.fetch(ArenaStatsM.SELECT_LEADERBOARD, tuple(member.id for member in role.members))
+
+		await inputs.show_leaderboard(
+			ctx,
+			"Trophy Leaderboard",
+			columns=["level", "trophies"],
+			order_by="trophies",
+			query_func=query
+		)
+
+
+def setup(bot):
+	bot.add_cog(ArenaStats(bot))

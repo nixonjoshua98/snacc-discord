@@ -1,6 +1,7 @@
+
 from src import inputs
 
-from .textpage import TextPage
+from src.structs.textpage import TextPage
 
 
 def chunk_list(ls, n):
@@ -8,19 +9,18 @@ def chunk_list(ls, n):
         yield ls[i: i + n]
 
 
-class TextLeaderboardBase:
-    def __init__(self, *, title: str, query: str, columns: list, order_col: str, **options):
-        headers = options.get("headers", [ele.title() for ele in columns])
-
+class TextLeaderboard:
+    def __init__(self, *, title: str, columns: list, query_func, order_by: str, **options):
         self.title = title
         self.columns = columns
-        self.query = query
-        self.order_col = order_col
+        self.order_col = order_by
 
-        self.headers = ["#", "User"] + headers
+        self.query_func = query_func
 
-        self.max_rows = options.get("max_rows", None)
-        self.page_size = options.get("page_size", 15)
+        self.headers = ["#", "User"] + options.get("headers", [ele.title() for ele in columns])
+
+        self.max_rows = 15
+        self.page_size = 15
 
     async def send(self, ctx):
         pages = await self._create_pages(ctx)
@@ -30,12 +30,6 @@ class TextLeaderboardBase:
 
         else:
             await ctx.send("No records yet.")
-
-    async def filter_results(self, ctx, results: list):
-        return results
-
-    async def execute_query(self, ctx) -> list:
-        return await ctx.bot.pool.fetch(self.query)
 
     async def _create_pages(self, ctx):
         entries, author_entry = await self._get_data(ctx)
@@ -61,37 +55,36 @@ class TextLeaderboardBase:
 
         return tuple(map(lambda ele: ele.get(), pages))
 
-    async def _get_data(self, ctx) -> tuple:
-        bot, author = ctx.bot, ctx.author
-
-        entries = []
-
-        author_row, prev_val, rank = None, None, 0
-
-        results = await self.execute_query(ctx)
-        results = await self.filter_results(ctx, results)
+    async def _filter_results(self, ctx, results):
+        prev_row, rank = None, 0
 
         for row in results:
-            rank = (rank + 1) if prev_val is None or row[self.order_col] < prev_val else rank
+            user_id_key = tuple(row.keys())[0]
 
-            prev_val = row[self.order_col]
+            user = self._get_user(ctx, row[user_id_key])
 
+            if user is not None:
+                if prev_row is None or prev_row[self.order_col] > row[self.order_col]:
+                    prev_row, rank = row, rank + 1
+
+                yield rank, user, row
+
+    async def _get_data(self, ctx) -> tuple:
+        entries = []
+
+        author_row = None
+
+        results = await self.query_func()
+
+        async for rank, user, row in self._filter_results(ctx, results):
             num_entries = len(entries)
 
-            # We have everything we need so just end the loop
             if (self.max_rows is not None and num_entries >= self.max_rows) and author_row is not None:
                 break
 
-            # Get some reference to a user (can be None)
-            user = self._get_user(ctx, row["user_id"])
-
-            if user is None:
-                continue
-
-            # Create the text row for the user
             entry = self._create_row(rank, user, row)
 
-            author_row = entry if row["user_id"] == author.id else author_row
+            author_row = entry if user.id == ctx.author.id else author_row
 
             if self.max_rows is None or num_entries < self.max_rows:
                 entries.append(entry)

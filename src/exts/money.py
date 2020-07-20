@@ -2,10 +2,9 @@ import random
 
 from discord.ext import commands
 
+from src import inputs
 from src.common.models import BankM
 from src.common.converters import NormalUser
-
-from .moneyleaderboard import MoneyLeaderboard
 
 
 class Money(commands.Cog):
@@ -39,7 +38,7 @@ class Money(commands.Cog):
 
 			target_money = target_bank["money"]
 
-			stolen_amount = random.randint(max(1, int(target_money * 0.025)), max(1, int(target_money * 0.075)))
+			stolen_amount = random.randint(max(1, int(target_money * 0.025)), max(1, int(target_money * 0.05)))
 
 			thief_tax = stolen_amount // random.randint(5, 10) if stolen_amount >= 1_000 else 0
 
@@ -64,4 +63,11 @@ class Money(commands.Cog):
 	async def show_richest_leaderboard(self, ctx):
 		""" Display the richest players. """
 
-		await MoneyLeaderboard().send(ctx)
+		async def query():
+			return await ctx.bot.pool.fetch(BankM.SELECT_RICHEST)
+
+		await inputs.show_leaderboard(ctx, "Richest Players", columns=["money"], order_by="money", query_func=query)
+
+
+def setup(bot):
+	bot.add_cog(Money())
