@@ -104,6 +104,7 @@ class HangmanM:
 class PopulationM:
 	SELECT_ROW = "SELECT * FROM population WHERE population_id = $1 LIMIT 1;"
 	INSERT_ROW = "INSERT INTO population (population_id) VALUES ($1);"
+	SELECT_ALL = "SELECT * FROM population;"
 
 	@classmethod
 	async def add_unit(cls, con, user_id: int, unit, amount: int):

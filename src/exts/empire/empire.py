@@ -63,27 +63,31 @@ class Empire(commands.Cog):
 
 	@staticmethod
 	async def simulate_attack(con, defender):
-		military = UNIT_GROUPS[UnitGroupType.MILITARY]
+		def get_units_lost(unit_group):
+			units_lost_, units_lost_cost = dict(), 0
+
+			for unit in sorted(
+					list(itertools.filterfalse(lambda u: population[u.db_col] == 0, unit_group.units)),
+					key=lambda u: u.get_price(population[u.db_col]),
+					reverse=False
+			):
+				for i in range(1, population[unit.db_col] + 1):
+					price = unit.get_price(population[unit.db_col] - i, i)
+
+					if (price + units_lost_cost) <= hourly_income * 3.0:
+						units_lost_[unit] = i
+
+					units_lost_cost = sum([u.get_price(population[unit.db_col] - n, n) for u, n in units_lost_.items()])
+
+			return units_lost_
+
+		bank = await con.fetchrow(BankM.SELECT_ROW, defender.id)
 
 		population = await con.fetchrow(PopulationM.SELECT_ROW, defender.id)
-		bank = await con.fetchrow(BankM.SELECT_ROW, defender.id)
 
 		hourly_income = max(500, utils.get_total_money_delta(population, 1.0))
 
-		units_lost, units_lost_cost = dict(), 0
-
-		for unit in sorted(
-				list(itertools.filterfalse(lambda u: population[u.db_col] == 0, military.units)),
-				key=lambda u: u.get_price(population[u.db_col],),
-				reverse=False
-		):
-			for i in range(1, population[unit.db_col] + 1):
-				price = unit.get_price(population[unit.db_col] - i, i)
-
-				if (price + units_lost_cost) <= hourly_income * 3.0:
-					units_lost[unit] = i
-
-				units_lost_cost = sum([u.get_price(population[unit.db_col] - n, n) for u, n in units_lost.items()])
+		units_lost = get_units_lost(UNIT_GROUPS[UnitGroupType.MILITARY])
 
 		money_lost = min(bank["money"], int(hourly_income * random.uniform(1.0, 2.0)))
 
@@ -189,7 +193,7 @@ class Empire(commands.Cog):
 			await ctx.send("Good news! Your empire is ready for another event!")
 
 	@checks.has_empire()
-	@commands.command(name="empire")
+	@commands.command(name="empire", aliases=["e"])
 	async def show_empire(self, ctx):
 		""" View your empire. """
 
@@ -262,6 +266,30 @@ class Empire(commands.Cog):
 				await PopulationM.add_unit(con, ctx.author.id, unit, amount)
 
 				await ctx.send(f"Bought **{amount}x {unit.display_name}** for **${price:,}**!")
+
+	@commands.cooldown(1, 15, commands.BucketType.user)
+	@commands.command(name="power", aliases=["empires"])
+	async def power_leaderboard(self, ctx):
+		""" Display the most powerful empires. """
+
+		async def query():
+			rows = await ctx.bot.pool.fetch(PopulationM.SELECT_ALL)
+
+			for i, row in enumerate(rows):
+				rows[i] = dict(**row, __power__=utils.get_total_power(row))
+
+			rows.sort(key=lambda ele: ele["__power__"], reverse=True)
+
+			return rows
+
+		await inputs.show_leaderboard(
+			ctx,
+			"Most Powerful Empires",
+			columns=["__power__"],
+			order_by="__power__",
+			query_func=query,
+			headers=["Power"]
+		)
 
 	@tasks.loop(hours=1.0)
 	async def income_loop(self):

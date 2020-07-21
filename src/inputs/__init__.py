@@ -37,7 +37,7 @@ async def options(ctx, title, ops, *, send_dm: bool = False):
 	return menu.get()
 
 
-async def show_leaderboard(ctx, title, columns, order_by, query_func):
+async def show_leaderboard(ctx, title, columns, order_by, query_func, **kwargs):
 	from .textleaderboard import TextLeaderboard
 
-	await TextLeaderboard(title=title, columns=columns, order_by=order_by, query_func=query_func).send(ctx)
+	await TextLeaderboard(title=title, columns=columns, order_by=order_by, query_func=query_func, **kwargs).send(ctx)
