@@ -73,9 +73,9 @@ class Empire(commands.Cog):
 
 		for unit in itertools.filterfalse(lambda u: population[u.db_col] == 0, military.units):
 			for num_units_lost in range(population[unit.db_col] - 1, 0, -1):
-				if num_units_lost > 0 and (units_lost_cost <= hourly_income * 3.0):
-					price = unit.get_price(population[unit.db_col] - num_units_lost, num_units_lost)
+				price = unit.get_price(population[unit.db_col] - num_units_lost, num_units_lost)
 
+				if (price + units_lost_cost) <= hourly_income * 3.0:
 					units_lost.append((unit, num_units_lost))
 
 					units_lost_cost += price
@@ -122,6 +122,7 @@ class Empire(commands.Cog):
 				)
 
 	@checks.has_empire()
+	@commands.cooldown(1, 60 * 90, commands.BucketType.user)
 	@commands.command(name="attack", cooldown_after_parsing=True)
 	async def attack(self, ctx, target: EmpireTargetUser()):
 		""" Attack a rival empire. """
