@@ -78,7 +78,7 @@ class BankM:
 	SUB_MONEY = """
 	INSERT INTO bank (user_id, money) VALUES ($1, $2)
 	ON CONFLICT (user_id) DO
-		UPDATE SET money = GREATEST(0, bank.money - $2);
+		UPDATE SET money = GREATEST(0, bank.money - $2) ;
 	"""
 
 	@classmethod

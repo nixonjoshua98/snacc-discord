@@ -20,9 +20,9 @@ from src.exts.empire import utils, events
 from src.exts.empire.units import UNIT_GROUPS, UnitGroupType
 
 
-@dataclass(frozen=True)
+@dataclass()
 class BattleResults:
-	units_lost: list
+	units_lost: dict
 	money_lost: int
 
 
@@ -66,24 +66,25 @@ class Empire(commands.Cog):
 		military = UNIT_GROUPS[UnitGroupType.MILITARY]
 
 		population = await con.fetchrow(PopulationM.SELECT_ROW, defender.id)
+		bank = await con.fetchrow(BankM.SELECT_ROW, defender.id)
 
 		hourly_income = max(500, utils.get_total_money_delta(population, 1.0))
 
-		units_lost, units_lost_cost = [], 0
+		units_lost, units_lost_cost = dict(), 0
 
 		for unit in sorted(
 				list(itertools.filterfalse(lambda u: population[u.db_col] == 0, military.units)),
 				key=lambda u: u.get_price(population[u.db_col])
 		):
-			for num_units_lost in range(population[unit.db_col] - 1, 0, -1):
-				price = unit.get_price(population[unit.db_col] - num_units_lost, num_units_lost)
+			for i in range(1, population[unit.db_col] + 1):
+				price = unit.get_price(population[unit.db_col] - i, i)
 
 				if (price + units_lost_cost) <= hourly_income * 3.0:
-					units_lost.append((unit, num_units_lost))
+					units_lost[unit] = i
 
-					units_lost_cost += price
+				units_lost_cost = sum([u.get_price(population[unit.db_col] - n, n) for u, n in units_lost.items()])
 
-		money_lost = max(2_500, int(hourly_income * random.uniform(1, 3)))
+		money_lost = min(bank["money"], int(hourly_income * random.uniform(1, 3)))
 
 		return BattleResults(units_lost=units_lost, money_lost=money_lost)
 
@@ -139,29 +140,29 @@ class Empire(commands.Cog):
 			results = await self.simulate_attack(con, target if attack_won else ctx.author)
 
 			# String of the units lost
-			units_text = ", ".join(map(lambda e: f"{e[1]}x {e[0].display_name}", results.units_lost))
+			units_text = ", ".join(map(lambda kv: f"{kv[1]}x {kv[0].display_name}", results.units_lost.items()))
 
 			if attack_won:
-				await con.execute(BankM.ADD_MONEY, ctx.author.id, results.money_lost)
+				if results.money_lost > 0:
+					await con.fetchrow(BankM.SUB_MONEY, target.id, results.money_lost)
+					await con.execute(BankM.ADD_MONEY, ctx.author.id, results.money_lost)
 
-				for unit, amount in results.units_lost:
+				for unit, amount in results.units_lost.items():
 					await PopulationM.sub_unit(con, target.id, unit, amount)
 
-				await ctx.send(
-					f"You won against **{target.display_name}**! You stole **${results.money_lost:,}**"
-					f"{f' and killed **{units_text}**.' if units_text else '.'}"
-				)
+				s = f"You won against **{target.display_name}**"
+				s = s + (f", stole **${results.money_lost :,}**" if results.money_lost > 0 else "")
+				s = s + f" and killed **{units_text if units_text else 'none of their units.'}**"
+
+				await ctx.send(s)
 
 			else:
-				await con.execute(BankM.SUB_MONEY, ctx.author.id, results.money_lost)
-
-				for unit, amount in results.units_lost:
+				for unit, amount in results.units_lost.items():
 					await PopulationM.sub_unit(con, ctx.author.id, unit, amount)
 
 				await ctx.send(
-					f"You lost against **{target.display_name}** "
-					f"{f'and **{units_text}** were killed' if units_text else ''} "
-					f"but you stole **${results.money_lost:,}.**"
+					f"You lost against **{target.display_name}**"
+					f"{f' and **{units_text}** were killed.' if units_text else '.'}"
 				)
 
 			await EmpireM.set(con, target.id, last_attack=dt.datetime.utcnow())
@@ -249,7 +250,7 @@ class Empire(commands.Cog):
 			price = unit.get_price(empire_population[unit.db_col], amount)
 
 			if empire_population[unit.db_col] + amount > unit.max_amount:
-				await ctx.send("You already own the maximum amount of this unit.")
+				await ctx.send(f"**{unit.display_name}** have a limit of **{unit.max_amount}** units.")
 
 			elif price > row["money"]:
 				await ctx.send(f"You can't afford to hire **{amount}x {unit.display_name}**")
