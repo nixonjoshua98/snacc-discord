@@ -10,7 +10,6 @@ import datetime as dt
 from discord.ext import tasks, commands
 from dataclasses import dataclass
 
-# Src imports
 from src import inputs
 from src.common import checks
 from src.common.models import BankM, EmpireM, PopulationM
@@ -159,6 +158,8 @@ class Empire(commands.Cog):
 				s = s + (f", stole **${results.money_lost :,}**" if results.money_lost > 0 else "")
 				s = s + f" and killed **{units_text if units_text else 'none of their units'}**."
 
+				await EmpireM.set(con, target.id, last_attack=dt.datetime.utcnow())
+
 				await ctx.send(s)
 
 			else:
@@ -169,8 +170,6 @@ class Empire(commands.Cog):
 					f"You lost against **{target.display_name}**"
 					f"{f' and **{units_text}** were killed.' if units_text else '.'}"
 				)
-
-			await EmpireM.set(con, target.id, last_attack=dt.datetime.utcnow())
 
 	@checks.has_empire()
 	@commands.cooldown(1, 60 * 90, commands.BucketType.user)
@@ -227,7 +226,7 @@ class Empire(commands.Cog):
 	@commands.command(name="fire")
 	@commands.max_concurrency(1, commands.BucketType.user)
 	async def fire_unit(self, ctx, unit: EmpireUnit(), amount: Range(1, 100) = 1):
-		""" Fire one of your units. """
+		""" Fire units from your empire. """
 
 		async with ctx.bot.pool.acquire() as con:
 			empire_population = await con.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
@@ -244,7 +243,7 @@ class Empire(commands.Cog):
 	@commands.command(name="hire")
 	@commands.max_concurrency(1, commands.BucketType.user)
 	async def hire_unit(self, ctx, unit: EmpireUnit(), amount: Range(1, 100) = 1):
-		""" Hire a new unit. """
+		""" Hire a new unit to serve your empire. """
 
 		async with ctx.bot.pool.acquire() as con:
 			empire_population = await con.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
@@ -267,7 +266,7 @@ class Empire(commands.Cog):
 
 				await ctx.send(f"Bought **{amount}x {unit.display_name}** for **${price:,}**!")
 
-	@commands.cooldown(1, 15, commands.BucketType.user)
+	@commands.cooldown(1, 15, commands.BucketType.guild)
 	@commands.command(name="power", aliases=["empires"])
 	async def power_leaderboard(self, ctx):
 		""" Display the most powerful empires. """
