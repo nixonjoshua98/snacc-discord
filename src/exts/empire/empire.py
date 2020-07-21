@@ -84,7 +84,7 @@ class Empire(commands.Cog):
 
 				units_lost_cost = sum([u.get_price(population[unit.db_col] - n, n) for u, n in units_lost.items()])
 
-		money_lost = min(bank["money"], int(hourly_income * random.uniform(1, 3)))
+		money_lost = min(bank["money"], int(hourly_income * random.uniform(0.5, 2)))
 
 		return BattleResults(units_lost=units_lost, money_lost=money_lost)
 
