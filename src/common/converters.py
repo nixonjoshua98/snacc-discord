@@ -45,12 +45,12 @@ class EmpireTargetUser(DiscordUser):
 
 		row = await ctx.bot.pool.fetchrow(EmpireM.SELECT_ROW, user.id)
 
-		time_since_attack = (dt.datetime.utcnow() - row['last_attack']).total_seconds()
-
 		if row is None:
 			raise commands.CommandError(f"Target does not have an empire.")
 
-		elif time_since_attack < self.ATTACK_COOLDOWN:
+		time_since_attack = (dt.datetime.utcnow() - row['last_attack']).total_seconds()
+
+		if time_since_attack < self.ATTACK_COOLDOWN:
 			delta = dt.timedelta(seconds=int(self.ATTACK_COOLDOWN - time_since_attack))
 
 			raise commands.CommandError(f"Target is still recovering from another attack. Try again in `{delta}`")

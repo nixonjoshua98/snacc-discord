@@ -59,7 +59,7 @@ class Empire(commands.Cog):
 		attacker_power = max(1, sum(unit.power * attacker_pop[unit.db_col] for unit in military.units))
 		defender_power = max(1, sum(unit.power * defender_pop[unit.db_col] for unit in military.units))
 
-		return max(0.1, min(0.9, ((attacker_power / defender_power) / 2.0)))
+		return max(0.15, min(0.85, ((attacker_power / defender_power) / 2.0)))
 
 	@staticmethod
 	async def simulate_attack(con, defender):
@@ -74,7 +74,8 @@ class Empire(commands.Cog):
 
 		for unit in sorted(
 				list(itertools.filterfalse(lambda u: population[u.db_col] == 0, military.units)),
-				key=lambda u: u.get_price(population[u.db_col])
+				key=lambda u: u.get_price(population[u.db_col],),
+				reverse=False
 		):
 			for i in range(1, population[unit.db_col] + 1):
 				price = unit.get_price(population[unit.db_col] - i, i)
@@ -152,7 +153,7 @@ class Empire(commands.Cog):
 
 				s = f"You won against **{target.display_name}**"
 				s = s + (f", stole **${results.money_lost :,}**" if results.money_lost > 0 else "")
-				s = s + f" and killed **{units_text if units_text else 'none of their units.'}**"
+				s = s + f" and killed **{units_text if units_text else 'none of their units.'}**."
 
 				await ctx.send(s)
 
