@@ -71,7 +71,10 @@ class Empire(commands.Cog):
 
 		units_lost, units_lost_cost = [], 0
 
-		for unit in itertools.filterfalse(lambda u: population[u.db_col] == 0, military.units):
+		for unit in sorted(
+				list(itertools.filterfalse(lambda u: population[u.db_col] == 0, military.units)),
+				key=lambda u: unit.get_price(population[u.db_col])
+		):
 			for num_units_lost in range(population[unit.db_col] - 1, 0, -1):
 				price = unit.get_price(population[unit.db_col] - num_units_lost, num_units_lost)
 
@@ -102,7 +105,7 @@ class Empire(commands.Cog):
 	@checks.has_empire()
 	@commands.cooldown(1, 30, commands.BucketType.user)
 	@commands.command(name="scout", cooldown_after_parsing=True)
-	async def scout(self, ctx, target: EmpireTargetUser()):
+	async def scout(self, ctx, *, target: EmpireTargetUser()):
 		""" Pay to scout an empire to recieve valuable information. """
 
 		async with ctx.bot.pool.acquire() as con:
@@ -124,7 +127,7 @@ class Empire(commands.Cog):
 	@checks.has_empire()
 	@commands.cooldown(1, 60 * 90, commands.BucketType.user)
 	@commands.command(name="attack", cooldown_after_parsing=True)
-	async def attack(self, ctx, target: EmpireTargetUser()):
+	async def attack(self, ctx, *, target: EmpireTargetUser()):
 		""" Attack a rival empire. """
 
 		async with ctx.bot.pool.acquire() as con:

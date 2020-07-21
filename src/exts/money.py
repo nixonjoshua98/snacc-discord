@@ -30,7 +30,7 @@ class Money(commands.Cog):
 
 	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
 	@commands.command(name="steal", cooldown_after_parsing=True)
-	async def steal_coins(self, ctx, target: DiscordUser()):
+	async def steal_coins(self, ctx, *, target: DiscordUser()):
 		""" Attempt to steal from another user. """
 
 		async with ctx.bot.pool.acquire() as con:

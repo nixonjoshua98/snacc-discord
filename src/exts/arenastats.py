@@ -165,7 +165,7 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 		await ctx.send(f"**{target.display_name}** :thumbsup:")
 
 	@commands.command(name="stats")
-	async def get_stats(self, ctx, target: discord.Member = None):
+	async def get_stats(self, ctx, *, target: discord.Member = None):
 		""" View your own or another members recorded arena stats. """
 
 		target = ctx.author if target is None else target
