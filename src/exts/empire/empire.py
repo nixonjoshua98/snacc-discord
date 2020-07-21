@@ -1,22 +1,29 @@
 
 
-# Module imports
 import math
 import asyncio
 import random
+import itertools
 
 import datetime as dt
 
 from discord.ext import tasks, commands
+from dataclasses import dataclass
 
 # Src imports
 from src import inputs
 from src.common import checks
 from src.common.models import BankM, EmpireM, PopulationM
-from src.common.converters import EmpireUnit, Range, RivalEmpireUser
+from src.common.converters import EmpireUnit, Range, RivalEmpireUser, EmpireAttackTarget
 
 from src.exts.empire import utils, events
 from src.exts.empire.units import UNIT_GROUPS, UnitGroupType
+
+
+@dataclass(frozen=True)
+class BattleResults:
+	units_lost: list
+	money_lost: int
 
 
 SCOUT_COST = 0
@@ -41,6 +48,44 @@ class Empire(commands.Cog):
 
 		asyncio.create_task(predicate())
 
+	@staticmethod
+	async def get_win_chance(ctx, attacker, defender):
+		military = UNIT_GROUPS[UnitGroupType.MILITARY]
+
+		async with ctx.bot.pool.acquire() as con:
+			attacker_pop = await con.fetchrow(PopulationM.SELECT_ROW, attacker.id)
+			defender_pop = await con.fetchrow(PopulationM.SELECT_ROW, defender.id)
+
+		attacker_power = max(1, sum(unit.power for unit in military.units if attacker_pop[unit.db_col] > 0))
+		defender_power = max(1, sum(unit.power for unit in military.units if defender_pop[unit.db_col] > 0))
+
+		return max(0.15, min(0.85, ((attacker_power / defender_power) / 2.0)))
+
+	@staticmethod
+	async def simulate_attack(con, defender):
+		military = UNIT_GROUPS[UnitGroupType.MILITARY]
+
+		population = await con.fetchrow(PopulationM.SELECT_ROW, defender.id)
+
+		hourly_income = max(500, utils.get_total_money_delta(population, 1.0))
+
+		units_lost, units_lost_cost = [], 0
+
+		for unit in itertools.filterfalse(lambda u: population[u.db_col] == 0, military.units):
+			for num_units_lost in range(population[unit.db_col] - 1, 0, -1):
+				if num_units_lost > 0 and (units_lost_cost <= hourly_income * 3.0):
+					price = unit.get_price(population[unit.db_col] - num_units_lost, num_units_lost)
+
+					units_lost.append((unit, num_units_lost))
+
+					units_lost_cost += price
+
+					break
+
+		money_lost = max(2_500, int(hourly_income * random.uniform(1, 3)))
+
+		return BattleResults(units_lost=units_lost, money_lost=money_lost)
+
 	@checks.no_empire()
 	@commands.command(name="create")
 	@commands.max_concurrency(1, commands.BucketType.user)
@@ -58,33 +103,67 @@ class Empire(commands.Cog):
 
 	@checks.has_empire()
 	@commands.cooldown(1, 30, commands.BucketType.user)
-	@commands.command(name="scout")
+	@commands.command(name="scout", cooldown_after_parsing=True)
 	async def scout(self, ctx, target: RivalEmpireUser()):
 		""" Pay to scout an empire to recieve valuable information. """
 
-		military = UNIT_GROUPS[UnitGroupType.MILITARY]
-
 		async with ctx.bot.pool.acquire() as con:
-			bank = await ctx.bot.pool.fetchrow(BankM.SELECT_ROW, ctx.author.id)
+			bank = await con.fetchrow(BankM.SELECT_ROW, ctx.author.id)
 
 			if bank["money"] < SCOUT_COST:
 				await ctx.send(f"Scouting an empire costs **${SCOUT_COST:,}**.")
 
 			else:
-				await ctx.bot.pool.execute(BankM.SUB_MONEY, ctx.author.id, SCOUT_COST)
+				await con.execute(BankM.SUB_MONEY, ctx.author.id, SCOUT_COST)
 
-				author_pop = await con.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
-				target_pop = await con.fetchrow(PopulationM.SELECT_ROW, target.id)
-
-				author_power = max(1, sum(unit.power for unit in military.units if author_pop[unit.db_col] > 0))
-				target_power = max(1, sum(unit.power for unit in military.units if target_pop[unit.db_col] > 0))
-
-				win_chance = int(max(0.15, min(0.85, ((author_power / target_power) / 2.0))) * 100)
+				win_chance = await self.get_win_chance(ctx, ctx.author, target)
 
 				await ctx.send(
 					f"You hired a scout for **${SCOUT_COST:,}**. "
-					f"You have a **{win_chance}%** chance of winning against **{target.display_name}**."
+					f"You have a **{int(win_chance * 100)}%** chance of winning against **{target.display_name}**."
 				)
+
+	@checks.has_empire()
+	@commands.cooldown(1, 60 * 60 * 2, commands.BucketType.user)
+	@commands.command(name="attack", cooldown_after_parsing=True)
+	async def attack(self, ctx, target: EmpireAttackTarget()):
+		""" Attack a rival empire. """
+
+		async with ctx.bot.pool.acquire() as con:
+			await EmpireM.set(con, ctx.author.id, last_attack=dt.datetime.utcnow() - dt.timedelta(hours=3))
+
+			attack_won = random.uniform(0, 1) <= await self.get_win_chance(ctx, ctx.author, target)
+
+			# Battle results
+			results = await self.simulate_attack(con, target if attack_won else ctx.author)
+
+			# String of the units lost
+			units_text = ", ".join(map(lambda e: f"{e[1]}x {e[0].display_name}", results.units_lost))
+
+			if attack_won:
+				await con.execute(BankM.ADD_MONEY, ctx.author.id, results.money_lost)
+
+				for unit, amount in results.units_lost:
+					await PopulationM.sub_unit(con, target.id, unit, amount)
+
+				await ctx.send(
+					f"You won against **{target.display_name}**! You stole **${results.money_lost:,}**"
+					f"{f' and killed **{units_text}**.' if units_text else '.'}"
+				)
+
+			else:
+				for unit, amount in results.units_lost:
+					await PopulationM.sub_unit(con, ctx.author.id, unit, amount)
+
+				await con.execute(BankM.SUB_MONEY, ctx.author.id, results.money_lost)
+
+				await ctx.send(
+					f"You lost against **{target.display_name}** "
+					f"{f'and **{units_text}** were killed' if units_text else ''} "
+					f"but you stole **${results.money_lost:,}.**"
+				)
+
+			await EmpireM.set(con, target.id, last_attack=dt.datetime.utcnow())
 
 	@checks.has_empire()
 	@commands.cooldown(1, 60 * 90, commands.BucketType.user)
@@ -142,9 +221,6 @@ class Empire(commands.Cog):
 	@commands.max_concurrency(1, commands.BucketType.user)
 	async def fire_unit(self, ctx, unit: EmpireUnit(), amount: Range(1, 100) = 1):
 		""" Fire one of your units. """
-
-		if not await inputs.confirm(ctx, f"Fire {amount}x {unit.display_name}?"):
-			return await ctx.send("Fire cancelled.")
 
 		async with ctx.bot.pool.acquire() as con:
 			empire_population = await con.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)

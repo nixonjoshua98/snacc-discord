@@ -44,5 +44,6 @@ peasants        SMALLINT    DEFAULT 0 CHECK (peasants >= 0)
 CREATE TABLE IF NOT EXISTS empire (
 empire_id       BIGINT                      PRIMARY KEY,
 name            VARCHAR                     DEFAULT 'My Empire',
-last_update     TIMESTAMP WITHOUT time zone DEFAULT (now() at time zone 'utc')
+last_update     TIMESTAMP WITHOUT time zone DEFAULT (now() at time zone 'utc'),
+last_attack     TIMESTAMP WITHOUT time zone DEFAULT (now() at time zone 'utc')
 );

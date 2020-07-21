@@ -18,8 +18,8 @@ class _Unit:
 		self.db_col = db_col
 		self.base_price = base_cost
 
-		self.max_amount = kwargs.get("max_amount", 10)
-		self.exponent = kwargs.get("exponent", 1.10)
+		self.max_amount = kwargs.get("max_amount", 15)
+		self.exponent = kwargs.get("exponent", 1.25)
 
 		# Increment the internal ID for the next unit
 		_Unit.__unit_id += 1
