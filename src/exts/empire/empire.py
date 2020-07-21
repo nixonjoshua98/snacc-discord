@@ -59,7 +59,7 @@ class Empire(commands.Cog):
 		attacker_power = max(1, sum(unit.power * attacker_pop[unit.db_col] for unit in military.units))
 		defender_power = max(1, sum(unit.power * defender_pop[unit.db_col] for unit in military.units))
 
-		return max(0.15, min(0.85, ((attacker_power / defender_power) / 5.0)))
+		return max(0.1, min(0.9, ((attacker_power / defender_power) / 2.0)))
 
 	@staticmethod
 	async def simulate_attack(con, defender):
