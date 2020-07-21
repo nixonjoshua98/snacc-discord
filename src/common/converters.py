@@ -37,29 +37,20 @@ class DiscordUser(commands.Converter):
 		return member
 
 
-class RivalEmpireUser(DiscordUser):
-	empire_row = None
-
-	async def convert(self, ctx, argument):
-		user = await super().convert(ctx, argument)
-
-		self.empire_row = await ctx.bot.pool.fetchrow(EmpireM.SELECT_ROW, user.id)
-
-		if self.empire_row is None:
-			raise commands.CommandError(f"Target does not have an empire.")
-
-		return user
-
-
-class EmpireAttackTarget(RivalEmpireUser):
+class EmpireTargetUser(DiscordUser):
 	ATTACK_COOLDOWN = 3 * 3_600
 
 	async def convert(self, ctx, argument):
 		user = await super().convert(ctx, argument)
 
-		time_since_attack = (dt.datetime.utcnow() - self.empire_row['last_attack']).total_seconds()
+		row = await ctx.bot.pool.fetchrow(EmpireM.SELECT_ROW, user.id)
 
-		if time_since_attack < self.ATTACK_COOLDOWN:
+		time_since_attack = (dt.datetime.utcnow() - row['last_attack']).total_seconds()
+
+		if row is None:
+			raise commands.CommandError(f"Target does not have an empire.")
+
+		elif time_since_attack < self.ATTACK_COOLDOWN:
 			delta = dt.timedelta(seconds=int(self.ATTACK_COOLDOWN - time_since_attack))
 
 			raise commands.CommandError(f"Target is still recovering from another attack. Try again in `{delta}`")

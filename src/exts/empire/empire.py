@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from src import inputs
 from src.common import checks
 from src.common.models import BankM, EmpireM, PopulationM
-from src.common.converters import EmpireUnit, Range, RivalEmpireUser, EmpireAttackTarget
+from src.common.converters import EmpireUnit, Range, EmpireTargetUser
 
 from src.exts.empire import utils, events
 from src.exts.empire.units import UNIT_GROUPS, UnitGroupType
@@ -26,7 +26,7 @@ class BattleResults:
 	money_lost: int
 
 
-SCOUT_COST = 0
+SCOUT_COST = 1_000
 
 
 class Empire(commands.Cog):
@@ -104,7 +104,7 @@ class Empire(commands.Cog):
 	@checks.has_empire()
 	@commands.cooldown(1, 30, commands.BucketType.user)
 	@commands.command(name="scout", cooldown_after_parsing=True)
-	async def scout(self, ctx, target: RivalEmpireUser()):
+	async def scout(self, ctx, target: EmpireTargetUser()):
 		""" Pay to scout an empire to recieve valuable information. """
 
 		async with ctx.bot.pool.acquire() as con:
@@ -126,7 +126,7 @@ class Empire(commands.Cog):
 	@checks.has_empire()
 	@commands.cooldown(1, 60 * 60 * 2, commands.BucketType.user)
 	@commands.command(name="attack", cooldown_after_parsing=True)
-	async def attack(self, ctx, target: EmpireAttackTarget()):
+	async def attack(self, ctx, target: EmpireTargetUser()):
 		""" Attack a rival empire. """
 
 		async with ctx.bot.pool.acquire() as con:
