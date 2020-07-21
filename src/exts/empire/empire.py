@@ -85,7 +85,7 @@ class Empire(commands.Cog):
 
 				units_lost_cost = sum([u.get_price(population[unit.db_col] - n, n) for u, n in units_lost.items()])
 
-		money_lost = min(bank["money"], int(hourly_income * random.uniform(0.5, 2)))
+		money_lost = min(bank["money"], int(hourly_income * random.uniform(1.0, 2.0)))
 
 		return BattleResults(units_lost=units_lost, money_lost=money_lost)
 
@@ -105,7 +105,7 @@ class Empire(commands.Cog):
 		await self.show_empire(ctx)
 
 	@checks.has_empire()
-	@commands.cooldown(1, 30, commands.BucketType.user)
+	@commands.cooldown(1, 15, commands.BucketType.user)
 	@commands.command(name="scout", cooldown_after_parsing=True)
 	async def scout(self, ctx, *, target: EmpireTargetUser()):
 		""" Pay to scout an empire to recieve valuable information. """
@@ -127,7 +127,7 @@ class Empire(commands.Cog):
 				)
 
 	@checks.has_empire()
-	@commands.cooldown(1, 60 * 90, commands.BucketType.user)
+	@commands.cooldown(1, 60 * 120, commands.BucketType.user)
 	@commands.command(name="attack", cooldown_after_parsing=True)
 	async def attack(self, ctx, *, target: EmpireTargetUser()):
 		""" Attack a rival empire. """
@@ -153,7 +153,7 @@ class Empire(commands.Cog):
 
 				s = f"You won against **{target.display_name}**"
 				s = s + (f", stole **${results.money_lost :,}**" if results.money_lost > 0 else "")
-				s = s + f" and killed **{units_text if units_text else 'none of their units.'}**."
+				s = s + f" and killed **{units_text if units_text else 'none of their units'}**."
 
 				await ctx.send(s)
 

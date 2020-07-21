@@ -53,7 +53,7 @@ class EmpireTargetUser(DiscordUser):
 		if time_since_attack < self.ATTACK_COOLDOWN:
 			delta = dt.timedelta(seconds=int(self.ATTACK_COOLDOWN - time_since_attack))
 
-			raise commands.CommandError(f"Target is still recovering from another attack. Try again in `{delta}`")
+			raise commands.CommandError(f"Target is still recovering from a previous attack. Try again in `{delta}`")
 
 		return user
 

@@ -38,7 +38,7 @@ class Money(commands.Cog):
 
 			target_money = target_bank["money"]
 
-			stolen_amount = random.randint(max(1, int(target_money * 0.025)), max(1, int(target_money * 0.075)))
+			stolen_amount = random.randint(max(1, int(target_money * 0.025)), max(1, int(target_money * 0.05)))
 
 			thief_tax = stolen_amount // random.randint(2, 10) if stolen_amount >= 2_500 else 0
 
