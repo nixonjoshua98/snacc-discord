@@ -80,8 +80,6 @@ class Empire(commands.Cog):
 
 					units_lost_cost += price
 
-					break
-
 		money_lost = max(2_500, int(hourly_income * random.uniform(1, 3)))
 
 		return BattleResults(units_lost=units_lost, money_lost=money_lost)
@@ -124,7 +122,6 @@ class Empire(commands.Cog):
 				)
 
 	@checks.has_empire()
-	@commands.cooldown(1, 60 * 60 * 2, commands.BucketType.user)
 	@commands.command(name="attack", cooldown_after_parsing=True)
 	async def attack(self, ctx, target: EmpireTargetUser()):
 		""" Attack a rival empire. """
