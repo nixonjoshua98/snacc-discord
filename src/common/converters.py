@@ -88,19 +88,19 @@ class CoinSide(commands.Converter):
 
 class EmpireUnit(commands.Converter):
 	async def convert(self, ctx, argument):
-		from src.exts.empire.units import ALL
+		from src.exts.empire.units import ALL_UNITS
 
 		try:
 			val = int(argument)
 
 		except ValueError:
-			unit = discord.utils.get(ALL, db_col=argument.lower())
+			unit = discord.utils.get(ALL_UNITS, db_col=argument.lower())
 
 			if unit is None:
 				raise commands.UserInputError(f"A unit with the name `{argument}` could not be found.")
 
 		else:
-			unit = discord.utils.get(ALL, id=val)
+			unit = discord.utils.get(ALL_UNITS, id=val)
 
 			if unit is None:
 				raise commands.UserInputError(f"A unit with the ID `{val}` could not be found.")

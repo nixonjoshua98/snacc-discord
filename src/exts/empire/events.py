@@ -4,7 +4,9 @@ from collections import Counter
 
 from src.common.models import BankM, PopulationM
 
-from . import units, utils
+from . import utils
+
+from .units import UNIT_GROUPS, UnitGroupType
 
 
 async def attacked_event(ctx):
@@ -15,7 +17,7 @@ async def attacked_event(ctx):
 	async with ctx.bot.pool.acquire() as con:
 		population = await con.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
 
-		units_owned = [unit for unit in units.ALL if population[unit.db_col] > 0]
+		units_owned = [unit for unit in UNIT_GROUPS[UnitGroupType.MILITARY].units if population[unit.db_col] > 0]
 
 		if units_owned:
 			total_units_owned = sum(map(lambda u: population[u.db_col], units_owned))
@@ -44,7 +46,7 @@ async def assassinated_event(ctx):
 	async with ctx.bot.pool.acquire() as con:
 		population = await con.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
 
-		units_owned = [unit for unit in units.ALL if population[unit.db_col] > 0]
+		units_owned = [unit for unit in UNIT_GROUPS[UnitGroupType.MONEY].units if population[unit.db_col] > 0]
 
 		if units_owned:
 			weights = [i ** 2 for i in range(len(units_owned), 0, -1)]

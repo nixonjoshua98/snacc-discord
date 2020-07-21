@@ -85,7 +85,7 @@ UNIT_GROUPS = {
 }
 
 # Flatterned list of all units
-ALL = [unit for _, group in UNIT_GROUPS.items() for unit in group.units]
+ALL_UNITS = [unit for _, group in UNIT_GROUPS.items() for unit in group.units]
 
 
 
