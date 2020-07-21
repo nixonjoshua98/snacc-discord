@@ -73,7 +73,7 @@ class Empire(commands.Cog):
 
 		for unit in sorted(
 				list(itertools.filterfalse(lambda u: population[u.db_col] == 0, military.units)),
-				key=lambda u: unit.get_price(population[u.db_col])
+				key=lambda u: u.get_price(population[u.db_col])
 		):
 			for num_units_lost in range(population[unit.db_col] - 1, 0, -1):
 				price = unit.get_price(population[unit.db_col] - num_units_lost, num_units_lost)
@@ -153,10 +153,10 @@ class Empire(commands.Cog):
 				)
 
 			else:
+				await con.execute(BankM.SUB_MONEY, ctx.author.id, results.money_lost)
+
 				for unit, amount in results.units_lost:
 					await PopulationM.sub_unit(con, ctx.author.id, unit, amount)
-
-				await con.execute(BankM.SUB_MONEY, ctx.author.id, results.money_lost)
 
 				await ctx.send(
 					f"You lost against **{target.display_name}** "
@@ -248,13 +248,11 @@ class Empire(commands.Cog):
 			# Cost of upgrading from current -> (current + amount)
 			price = unit.get_price(empire_population[unit.db_col], amount)
 
-			user_money = row["money"]
-
-			if price > user_money:
-				await ctx.send(f"You can't afford to hire **{amount}x {unit.display_name}**")
-
-			elif empire_population[unit.db_col] + amount > unit.max_amount:
+			if empire_population[unit.db_col] + amount > unit.max_amount:
 				await ctx.send("You already own the maximum amount of this unit.")
+
+			elif price > row["money"]:
+				await ctx.send(f"You can't afford to hire **{amount}x {unit.display_name}**")
 
 			else:
 				await con.execute(BankM.SUB_MONEY, ctx.author.id, price)
