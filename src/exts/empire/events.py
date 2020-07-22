@@ -22,7 +22,7 @@ async def attacked_event(ctx):
 		if units_owned:
 			total_units_owned = sum(map(lambda u: population[u.db_col], units_owned))
 
-			num_units_lost = random.randint(1, min(5, total_units_owned // 25))
+			num_units_lost = random.randint(1, max(1, min(5, total_units_owned // 25)))
 
 			weights = [i ** 2 for i in range(len(units_owned), 0, -1)]
 
