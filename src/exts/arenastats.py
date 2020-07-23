@@ -157,7 +157,7 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 	@commands.cooldown(1, 60, commands.BucketType.user)
 	@commands.has_permissions(administrator=True)
 	@commands.command(name="setuser", aliases=["su"])
-	async def set_user_stats_command(self, ctx, target: discord.Member, level: int, trophies: int):
+	async def set_user_stats_command(self, ctx, level: int, trophies: int, *, target: discord.Member):
 		""" [Admin] Set another users ABO stats. """
 
 		await self.set_users_stats(ctx, target, level, trophies)
