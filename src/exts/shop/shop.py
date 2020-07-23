@@ -20,7 +20,7 @@ class Shop(commands.Cog):
 
 		upgrades = await UserUpgradesM.get_row(ctx.bot.pool, ctx.author.id)
 
-		page = TextPage(title="Shop", headers=["ID", "Name", "Owned", "Cost"])
+		page = TextPage(title="Upgrades Shop", headers=["ID", "Name", "Owned", "Cost"])
 
 		for upgrade in ALL_UPGRADES:
 			if upgrades[upgrade.db_col] < upgrade.max_amount:
