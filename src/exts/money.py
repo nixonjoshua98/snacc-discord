@@ -38,9 +38,9 @@ class Money(commands.Cog):
 
 			target_money = target_bank["money"]
 
-			stolen_amount = random.randint(max(1, int(target_money * 0.025)), max(1, int(target_money * 0.05)))
+			stolen_amount = random.randint(max(1, int(target_money * 0.025)), max(1, int(target_money * 0.075)))
 
-			thief_tax = stolen_amount // random.randint(2, 10) if stolen_amount >= 2_500 else 0
+			thief_tax = stolen_amount // random.uniform(2.0, 8.0) if stolen_amount >= 2_500 else 0
 
 			await con.execute(BankM.ADD_MONEY, ctx.author.id, stolen_amount - thief_tax)
 			await con.execute(BankM.SUB_MONEY, target.id, stolen_amount)

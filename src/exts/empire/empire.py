@@ -88,7 +88,7 @@ class Empire(commands.Cog):
 
 		units_lost = get_units_lost(UNIT_GROUPS[UnitGroupType.MILITARY])
 
-		money_lost = min(bank["money"], int(hourly_income * random.uniform(1.0, 2.0)))
+		money_lost = min(bank["money"], int(hourly_income * random.uniform(2.0, 4.0)))
 
 		return BattleResults(units_lost=units_lost, money_lost=money_lost)
 

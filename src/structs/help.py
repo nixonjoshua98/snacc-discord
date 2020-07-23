@@ -1,11 +1,11 @@
 import discord
 
-from discord.ext.commands import HelpCommand
+from discord.ext import commands
 
 from src import inputs
 
 
-class Help(HelpCommand):
+class Help(commands.HelpCommand):
 	def __init__(self):
 		super(Help, self).__init__(verify_checks=True)
 
@@ -16,6 +16,12 @@ class Help(HelpCommand):
 		return {k: v for k, v in mapping.items() if k is not None and v}
 
 	async def create_embeds(self, mapping):
+		def get_cmd_title(cmd_):
+			s_ = cmd_.usage or cmd_.signature.replace("[", "<").replace("]", ">")
+			n_ = f"[{'|'.join([cmd_.name] + cmd_.aliases)}] {s_}"
+
+			return n_
+
 		bot = self.context.bot
 
 		embeds = []
@@ -36,10 +42,16 @@ class Help(HelpCommand):
 				embed.set_footer(text=f"{bot.user.name} | Page {i + 1}/{len(mapping)}", icon_url=bot.user.avatar_url)
 
 				for ii, cmd in enumerate(chunk):
-					signature = cmd.usage or cmd.signature.replace("[", "<").replace("]", ">")
-					name = f"[{'|'.join([cmd.name] + cmd.aliases)}] {signature}"
+					if isinstance(cmd, commands.Group):
+						for sub in cmd.commands:
+							parent = get_cmd_title(sub.parent)
 
-					embed.add_field(name=name, value=str(cmd.callback.__doc__), inline=False)
+							name = get_cmd_title(sub)
+
+							embed.add_field(name=f"{parent} {name}", value=str(sub.callback.__doc__), inline=False)
+
+					else:
+						embed.add_field(name=get_cmd_title(cmd), value=str(cmd.callback.__doc__), inline=False)
 
 				embeds.append(embed)
 
