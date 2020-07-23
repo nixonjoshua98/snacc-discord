@@ -26,7 +26,7 @@ class ServerDoor(commands.Cog, name="Server Door"):
     async def toggle_door(self, ctx):
         """ [Admin] Toggle the messages posted when a member joins or leaves the server. """
 
-        config = await ctx.bot.get_server(ctx.guild, refresh=True)
+        config = await ctx.bot.get_server_config(ctx.guild, refresh=True)
 
         display_joins = config.get("display_joins", True)
 
@@ -53,7 +53,7 @@ class ServerDoor(commands.Cog, name="Server Door"):
     async def on_member_join(self, member):
         """ Called when a member joins a server. """
 
-        svr = await self.bot.get_server(member.guild)
+        svr = await self.bot.get_server_config(member.guild)
 
         try:
             role = member.guild.get_role(svr["default_role"])
@@ -71,7 +71,7 @@ class ServerDoor(commands.Cog, name="Server Door"):
     async def on_member_remove(self, member):
         """ Called when a member leaves a server. """
 
-        svr = await self.bot.get_server(member.guild)
+        svr = await self.bot.get_server_config(member.guild)
 
         if svr.get("display_joins"):
             msg = f"**{str(member)}** " + (f"({member.nick}) " if member.nick else "") + "has left the server"

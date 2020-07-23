@@ -33,6 +33,25 @@ class ServersM(TableModel):
 
 		return row
 
+	@classmethod
+	async def bl_chnl(cls, con, svr: int, chnl: int):
+		row = await con.fetchrow("SELECT blacklisted_channels FROM servers WHERE server_id=$1 LIMIT 1;", svr)
+
+		blacklisted = row["blacklisted_channels"]
+		blacklisted = list(set(blacklisted + [chnl]))
+
+		await cls.set(con, svr, blacklisted_channels=blacklisted)
+
+	@classmethod
+	async def wl_chnl(cls, con, svr: int, chnl: int):
+		row = await con.fetchrow("SELECT blacklisted_channels FROM servers WHERE server_id=$1 LIMIT 1;", svr)
+
+		blacklisted: list = row["blacklisted_channels"]
+
+		blacklisted.remove(chnl)
+
+		await cls.set(con, svr, blacklisted_channels=blacklisted)
+
 
 class ArenaStatsM:
 	SELECT_USER = "SELECT * FROM arena_stats WHERE user_id = $1 ORDER BY date_set DESC;"

@@ -19,29 +19,31 @@ class Hangman(commands.Cog):
 
     @commands.Cog.listener(name="on_message")
     async def on_message(self, message: discord.Message):
-        if await self.bot.on_message_check(message):
-            inst = self.games.get(message.channel.id, None)
+        if message.author.bot:
+            return
 
-            if inst is not None:
-                result = inst.on_message(message)
+        inst = self.games.get(message.channel.id, None)
 
-                if result == HangmanGuess.CORRECT_GUESS:
-                    await inst.show_game(message.channel)
+        if inst is not None:
+            result = inst.on_message(message)
 
-                elif result == HangmanGuess.USER_ON_COOLDOWN:
-                    await message.add_reaction(Emoji.ALARM_CLOCK)
+            if result == HangmanGuess.CORRECT_GUESS:
+                await inst.show_game(message.channel)
 
-                elif result == HangmanGuess.GAME_WON:
-                    self.games[message.channel.id] = None
+            elif result == HangmanGuess.USER_ON_COOLDOWN:
+                await message.add_reaction(Emoji.ALARM_CLOCK)
 
-                    await self.bot.pool.execute(HangmanM.ADD_WIN, message.author.id)
+            elif result == HangmanGuess.GAME_WON:
+                self.games[message.channel.id] = None
 
-                    await message.channel.send(f"{message.author.mention} won! The word was `{inst.hidden_word}`")
+                await self.bot.pool.execute(HangmanM.ADD_WIN, message.author.id)
 
-                elif result == HangmanGuess.GAME_OVER:
-                    self.games[message.channel.id] = None
+                await message.channel.send(f"{message.author.mention} won! The word was `{inst.hidden_word}`")
 
-                    await message.channel.send(f"You have run out of lives. The word was `{inst.hidden_word}`")
+            elif result == HangmanGuess.GAME_OVER:
+                self.games[message.channel.id] = None
+
+                await message.channel.send(f"You have run out of lives. The word was `{inst.hidden_word}`")
 
     @commands.command(name="hangman", aliases=["h"])
     async def start_hangman(self, ctx, category: str = None):

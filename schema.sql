@@ -12,13 +12,16 @@ user_id     BIGINT  PRIMARY KEY,
 wins        INTEGER DEFAULT 0
 );
 
+
 CREATE table IF NOT EXISTS servers (
-server_id       BIGINT  PRIMARY KEY,
-default_role    BIGINT  DEFAULT 0,
-member_role     BIGINT  DEFAULT 0,
-prefix          VARCHAR DEFAULT "!",
-display_joins   BOOL    DEFAULT True
+server_id               BIGINT      PRIMARY KEY,
+default_role            BIGINT      DEFAULT 0,
+member_role             BIGINT      DEFAULT 0,
+prefix                  VARCHAR     DEFAULT "!",
+display_joins           BOOL        DEFAULT True,
+blacklisted_channels    BIGINT[]    DEFAULT array[]::bigint[]
 );
+
 
 CREATE table IF NOT EXISTS bank (
 user_id BIGINT PRIMARY KEY,

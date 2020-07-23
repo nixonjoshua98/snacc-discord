@@ -7,6 +7,7 @@ import asyncio
 import datetime as dt
 
 from discord.ext import commands, tasks
+from collections import defaultdict
 
 
 # src imports
@@ -32,14 +33,11 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 	def __init__(self, bot):
 		self.bot = bot
 
+		self.channel_cache = defaultdict(set)
+
 		self.start_shame_users()
 
 	async def cog_check(self, ctx):
-		if ctx.guild.id == MainServer.ID and ctx.channel.id != MainServer.ABO_CHANNEL:
-			channel = ctx.guild.get_channel(MainServer.ABO_CHANNEL)
-
-			raise commands.CommandError(f"This command can only be accessed in {channel.mention}")
-
 		return await checks.server_has_member_role(ctx) and (
 				await checks.user_has_role(ctx, key="member_role") or
 				await checks.user_has_role(ctx, name="VIP")
@@ -82,7 +80,7 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 	async def create_shame_message(self, destination: discord.TextChannel):
 		""" Create the shame message for the guild (attached to `destination`). """
 
-		conf = await self.bot.get_server(destination.guild)
+		conf = await self.bot.get_server_config(destination.guild)
 		role = destination.guild.get_role(conf["member_role"])
 
 		if role is None:
@@ -205,7 +203,7 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 		""" Show the server trophy leaderboard. """
 
 		async def query():
-			svr_config = await ctx.bot.get_server(ctx.guild)
+			svr_config = await ctx.bot.get_server_config(ctx.guild)
 
 			role = ctx.guild.get_role(svr_config["member_role"])
 

@@ -22,9 +22,10 @@ class SnaccBot(commands.Bot):
 
         self.pool = None
         self.exts_loaded = False
+
         self.server_cache = dict()
 
-        self.add_check(self.on_message_check)
+        self.add_check(self.bot_check)
 
     @property
     def debug(self):
@@ -59,17 +60,26 @@ class SnaccBot(commands.Bot):
         with open(os.path.join(os.getcwd(), "schema.sql")) as fh:
             await self.pool.execute(fh.read())
 
-    async def on_message_check(self, message) -> bool:
-        """ A check which should be called on every 'on_message' listener. """
-
-        if (not self.exts_loaded) or (message.guild is None) or message.author.bot:
+    async def bot_check(self, ctx) -> bool:
+        if (not self.exts_loaded) or (ctx.guild is None) or ctx.author.bot:
             return False
+
+        svr = await self.get_server_config(ctx.guild)
+
+        blacklisted_channels = svr["blacklisted_channels"]
+
+        if ctx.command.cog is not None and ctx.command.cog.qualified_name in {"Settings", "Moderator"}:
+            return True
+
+        elif ctx.channel.id in blacklisted_channels:
+            raise commands.CommandError("That command is disabled in this channel.")
 
         return True
 
-    async def on_message(self, message):
-        if await self.on_message_check(message):
-            await self.process_commands(message)
+    async def blacklisted_check(self, ctx) -> bool:
+        print(ctx)
+
+        return False
 
     async def create_pool(self):
         print("Creating connection pool", end="...")
@@ -107,7 +117,7 @@ class SnaccBot(commands.Bot):
     async def update_server_cache(self, guild):
         self.server_cache[guild.id] = await ServersM.get_server(self.pool, guild.id)
 
-    async def get_server(self, guild, *, refresh: bool = False):
+    async def get_server_config(self, guild, *, refresh: bool = False):
         """ Get the settings from either the cache or the database for a guild. """
 
         if refresh or self.server_cache.get(guild.id, None) is None:
@@ -118,7 +128,7 @@ class SnaccBot(commands.Bot):
     async def get_prefix(self, message):
         """ Get the prefix for the server/guild from the database. """
 
-        svr = await self.get_server(message.guild)
+        svr = await self.get_server_config(message.guild)
 
         prefix = "." if os.getenv("DEBUG") else svr.get("prefix", "!")
 

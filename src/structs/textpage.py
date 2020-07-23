@@ -20,7 +20,7 @@ class TextPage:
 			s.append("-")
 			s.append(self._pad_row(self.footer, widths) if isinstance(self.footer, (list, tuple)) else self.footer)
 
-		return "```c++\n" + '\n'.join(s) + "```"
+		return "```" + '\n'.join(s) + "```"
 
 	def _get_max_widths(self):
 		widths = [0 for _ in range(max(map(len, [self.headers] + self.rows)))]
