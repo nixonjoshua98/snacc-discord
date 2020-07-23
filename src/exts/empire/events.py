@@ -17,12 +17,12 @@ async def attacked_event(ctx):
 	async with ctx.bot.pool.acquire() as con:
 		population = await con.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
 
-		units_owned = [unit for unit in UNIT_GROUPS[UnitGroupType.MILITARY].units if population[unit.db_col] > 0]
+		units_owned = [unit for unit in UNIT_GROUPS[UnitGroupType.MONEY].units if population[unit.db_col] > 0]
 
 		if units_owned:
 			total_units_owned = sum(map(lambda u: population[u.db_col], units_owned))
 
-			num_units_lost = random.randint(1, max(1, min(5, total_units_owned // 25)))
+			num_units_lost = random.randint(1, max(1, total_units_owned // 25))
 
 			weights = [i ** 2 for i in range(len(units_owned), 0, -1)]
 
@@ -69,7 +69,7 @@ async def stolen_event(ctx):
 
 		hourly_income = utils.get_total_money_delta(population, 1.0)
 
-		money_stolen = random.randint(min(2_500, hourly_income // 3), min(10_000, max(hourly_income // 2, 1_000)))
+		money_stolen = random.randint(max(250, hourly_income // 2), max(1_000, hourly_income * 2))
 
 		# Only update the database if any money was stolen
 		if money_stolen > 0:
@@ -83,7 +83,7 @@ async def stolen_event(ctx):
 async def loot_event(ctx):
 	""" Empire finds loot event (+money). """
 
-	items = ("tiny ruby", "pink diamond", "small emerald", "holy sword", "demon sword", "iron shield")
+	items = ("tiny ruby", "pink diamond", "small emerald", "holy sword", "demon sword", "iron shield", "wooden sword")
 
 	async with ctx.bot.pool.acquire() as con:
 		population = await con.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)

@@ -12,7 +12,7 @@ from dataclasses import dataclass
 
 from src import inputs
 from src.common import checks
-from src.common.models import BankM, EmpireM, PopulationM
+from src.common.models import BankM, EmpireM, PopulationM, UserUpgradesM
 from src.common.converters import EmpireUnit, Range, EmpireTargetUser
 
 from src.exts.empire import utils, events
@@ -196,9 +196,12 @@ class Empire(commands.Cog):
 	async def show_empire(self, ctx):
 		""" View your empire. """
 
-		population = await ctx.bot.pool.fetchrow(EmpireM.SELECT_ROW_AND_POPULATION, ctx.author.id)
+		async with ctx.bot.pool.acquire() as con:
+			empire = await con.fetchrow(EmpireM.SELECT_ROW_AND_POPULATION, ctx.author.id)
 
-		pages = [group.create_empire_page(population).get() for group in UNIT_GROUPS.values()]
+			upgrades = await UserUpgradesM.get_row(con, ctx.author.id)
+
+		pages = [group.create_empire_page(empire, upgrades).get() for group in UNIT_GROUPS.values()]
 
 		await inputs.send_pages(ctx, pages)
 
@@ -216,9 +219,11 @@ class Empire(commands.Cog):
 	async def show_units(self, ctx):
 		""" Show all the possible units which you can buy. """
 
-		population = await ctx.bot.pool.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
+		async with ctx.bot.pool.acquire() as con:
+			population = await con.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
+			upgrades = await UserUpgradesM.get_row(con, ctx.author.id)
 
-		pages = [group.create_units_page(population).get() for group in UNIT_GROUPS.values()]
+		pages = [group.create_units_page(population, upgrades).get() for group in UNIT_GROUPS.values()]
 
 		await inputs.send_pages(ctx, pages)
 
@@ -246,15 +251,18 @@ class Empire(commands.Cog):
 		""" Hire a new unit to serve your empire. """
 
 		async with ctx.bot.pool.acquire() as con:
-			empire_population = await con.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
+			population = await con.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
+			upgrades = await UserUpgradesM.get_row(con, ctx.author.id)
 
 			row = await BankM.get_row(con, ctx.author.id)
 
 			# Cost of upgrading from current -> (current + amount)
-			price = unit.get_price(empire_population[unit.db_col], amount)
+			price = unit.get_price(population[unit.db_col], amount)
 
-			if empire_population[unit.db_col] + amount > unit.max_amount:
-				await ctx.send(f"**{unit.display_name}** have a limit of **{unit.max_amount}** units.")
+			max_units = unit.max_amount + upgrades["extra_units"]
+
+			if population[unit.db_col] + amount > max_units:
+				await ctx.send(f"**{unit.display_name}** have a limit of **{max_units}** units.")
 
 			elif price > row["money"]:
 				await ctx.send(f"You can't afford to hire **{amount}x {unit.display_name}**")

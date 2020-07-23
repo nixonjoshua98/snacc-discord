@@ -19,8 +19,8 @@ class ServersM(TableModel):
 	INSERT_SERVER = """
 	INSERT INTO servers (server_id)
 	VALUES ($1)
-	ON CONFLICT
-		DO NOTHING;
+	ON CONFLICT (server_id)
+		DO NOTHING
 	RETURNING *
 	"""
 
@@ -29,7 +29,7 @@ class ServersM(TableModel):
 		row = await con.fetchrow(cls.SELECT_SERVER, svr)
 
 		if row is None:
-			row = await con.execute(cls.INSERT_SERVER, svr)
+			row = await con.fetchrow(cls.INSERT_SERVER, svr)
 
 		return row
 
@@ -137,3 +137,30 @@ class EmpireM(TableModel):
 		population ON (empire.empire_id = population.population_id)
 	WHERE empire_id = $1;
 		"""
+
+
+class UserUpgradesM:
+	SELECT_ROW = "SELECT * FROM user_upgrades WHERE user_upgrades_id=$1 LIMIT 1;"
+
+	INSERT_ROW = """
+	INSERT INTO user_upgrades (user_upgrades_id)  
+	VALUES ($1) 
+	ON CONFLICT (user_upgrades_id) 
+		DO NOTHING
+	RETURNING * 
+	"""
+
+	@classmethod
+	async def get_row(cls, con, id_: int):
+		row = await con.fetchrow(cls.SELECT_ROW, id_)
+
+		if row is None:
+			row = await con.fetchrow(cls.INSERT_ROW, id_)
+
+		return row
+
+	@classmethod
+	async def add_upgrade(cls, con, user_id: int, unit, amount: int):
+		q = f"UPDATE user_upgrades SET {unit.db_col} = {unit.db_col} + $2 WHERE user_upgrades_id = $1;"
+
+		await con.execute(q, user_id, amount)

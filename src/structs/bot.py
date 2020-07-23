@@ -13,8 +13,8 @@ from src.common.models import ServersM
 
 class SnaccBot(commands.Bot):
     EXTENSIONS = [
-        "errorhandler", "arenastats", "empire", "tags", "hangman", "gambling",
-        "money", "darkness", "moderator", "misc", "serverdoor", "settings"
+        "errorhandler", "arenastats", "empire", "shop", "tags", "hangman",
+        "gambling", "money", "darkness", "moderator", "misc", "serverdoor", "settings"
     ]
 
     def __init__(self):

@@ -38,7 +38,8 @@ winemakers 	    SMALLINT 	DEFAULT 0 CHECK (winemakers >= 0),
 
 -- Military Units
 peasants        SMALLINT    DEFAULT 0 CHECK (peasants >= 0),
-soldiers        SMALLINT    DEFAULT 0 CHECK (soldiers >= 0)
+soldiers        SMALLINT    DEFAULT 0 CHECK (soldiers >= 0),
+warriors        SMALLINT    DEFAULT 0 CHECK (warriors >= 0)
 );
 
 
@@ -47,4 +48,10 @@ empire_id       BIGINT                      PRIMARY KEY,
 name            VARCHAR                     DEFAULT 'My Empire',
 last_update     TIMESTAMP WITHOUT time zone DEFAULT (now() at time zone 'utc'),
 last_attack     TIMESTAMP WITHOUT time zone DEFAULT (now() at time zone 'utc')
+);
+
+
+CREATE TABLE IF NOT EXISTS user_upgrades (
+user_upgrades_id    BIGINT      PRIMARY KEY,
+extra_units         SMALLINT    DEFAULT 0 CHECK (extra_units >= 0)
 );

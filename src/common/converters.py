@@ -106,3 +106,23 @@ class EmpireUnit(commands.Converter):
 				raise commands.UserInputError(f"A unit with the ID `{val}` could not be found.")
 
 		return unit
+
+
+class ShopItem(commands.Converter):
+	async def convert(self, ctx, argument):
+		from src.exts.shop.upgrades import ALL_UPGRADES
+
+		try:
+			val = int(argument)
+
+		except ValueError:
+			raise commands.UserInputError(f"An item with the name `{argument}` could not be found.")
+
+		else:
+			item = discord.utils.get(ALL_UPGRADES, id=val)
+
+			if item is None:
+				raise commands.UserInputError(f"A item with the ID `{val}` could not be found.")
+
+		return item
+

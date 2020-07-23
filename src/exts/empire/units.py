@@ -12,14 +12,17 @@ class _Unit:
 	__unit_id = 1  # PRIVATE
 
 	def __init__(self, *, db_col, base_cost, **kwargs):
-		self.display_name = db_col.title().replace("_", " ")
+		self.display_name = kwargs.get("display_name", db_col.title().replace("_", " "))
 
 		self.id = _Unit.__unit_id
 		self.db_col = db_col
 		self.base_price = base_cost
 
-		self.max_amount = kwargs.get("max_amount", 15)
+		self.power = kwargs.get("power", 0)
 		self.exponent = kwargs.get("exponent", 1.15)
+		self.income_hour = kwargs.get("income_hour", 0)
+		self.upkeep_hour = kwargs.get("upkeep_hour", 0)
+		self.max_amount = kwargs.get("max_amount", 15)
 
 		# Increment the internal ID for the next unit
 		_Unit.__unit_id += 1
@@ -34,51 +37,29 @@ class _Unit:
 
 		return math.ceil(price)
 
-
-class _MoneyUnit(_Unit):
-	def __init__(self, *, income_hour, **kwargs):
-		super().__init__(**kwargs)
-
-		self.income_hour = income_hour
-
 	def get_delta_money(self, total, delta_time):
-		""" Gets the total INCOME this unit has generated for the delta_time. """
+		income = math.ceil((self.income_hour * total) * delta_time)
+		upkeep = math.ceil((self.upkeep_hour * total) * delta_time) * -1
 
-		return math.ceil((self.income_hour * total) * delta_time)
-
-
-class _MilitaryUnit(_Unit):
-	def __init__(self, *, upkeep_hour, power, **kwargs):
-		super().__init__(**kwargs)
-
-		self.power = power
-		self.upkeep_hour = upkeep_hour
-
-	def get_delta_money(self, total, delta_time):
-		""" Gets the total UPKEEP this unit has generated for the delta_time. """
-
-		return math.ceil((self.upkeep_hour * total) * delta_time) * -1
+		return income + upkeep
 
 
-"""
-We store all the unit types in a dictionary <UnitGroupType, _UnitType> here.
-This should NEVER be edited during runtime
-"""
 UNIT_GROUPS = {
 	UnitGroupType.MONEY:
 		_MoneyUnitGroup("Money Making Units", [
-			_MoneyUnit(income_hour=25, db_col="farmers",	base_cost=250),
-			_MoneyUnit(income_hour=40, db_col="butchers",	base_cost=500),
-			_MoneyUnit(income_hour=50, db_col="bakers",		base_cost=750),
-			_MoneyUnit(income_hour=60, db_col="cooks",		base_cost=1000),
-			_MoneyUnit(income_hour=75, db_col="winemakers", base_cost=1250),
+			_Unit(income_hour=25, db_col="farmers",		base_cost=250),
+			_Unit(income_hour=40, db_col="butchers",	base_cost=500),
+			_Unit(income_hour=50, db_col="bakers",		base_cost=750),
+			_Unit(income_hour=60, db_col="cooks",		base_cost=1000),
+			_Unit(income_hour=75, db_col="winemakers", 	base_cost=1250),
 		]
 						),
 
 	UnitGroupType.MILITARY:
 		_MilitaryUnitGroup("Military Units", [
-			_MilitaryUnit(upkeep_hour=25, power=1, db_col="peasants", base_cost=250),
-			_MilitaryUnit(upkeep_hour=50, power=3, db_col="soldiers", base_cost=750),
+			_Unit(upkeep_hour=25, power=1, db_col="peasants", base_cost=250),
+			_Unit(upkeep_hour=50, power=3, db_col="soldiers", base_cost=750),
+			_Unit(upkeep_hour=75, power=5, db_col="warriors", base_cost=1500),
 
 		]
 						),

@@ -60,7 +60,7 @@ class Tags(commands.Cog):
 
 		return output
 
-	@commands.group(name="tag", aliases=["t"], invoke_without_command=True)
+	@commands.group(name="tag", aliases=["t"], hidden=True)
 	async def group(self, ctx):
 		""" Parent Command. """
 

@@ -7,7 +7,7 @@ from src import inputs
 
 class Help(commands.HelpCommand):
 	def __init__(self):
-		super(Help, self).__init__(verify_checks=True)
+		super(Help, self).__init__(verify_checks=True, show_hidden=True)
 
 	async def update_bot_mapping(self, mapping):
 		for k, v in mapping.items():
@@ -42,6 +42,9 @@ class Help(commands.HelpCommand):
 				embed.set_footer(text=f"{bot.user.name} | Page {i + 1}/{len(mapping)}", icon_url=bot.user.avatar_url)
 
 				for ii, cmd in enumerate(chunk):
+					if not cmd.hidden:
+						embed.add_field(name=get_cmd_title(cmd), value=str(cmd.callback.__doc__), inline=False)
+
 					if isinstance(cmd, commands.Group):
 						for sub in cmd.commands:
 							parent = get_cmd_title(sub.parent)
@@ -49,9 +52,6 @@ class Help(commands.HelpCommand):
 							name = get_cmd_title(sub)
 
 							embed.add_field(name=f"{parent} {name}", value=str(sub.callback.__doc__), inline=False)
-
-					else:
-						embed.add_field(name=get_cmd_title(cmd), value=str(cmd.callback.__doc__), inline=False)
 
 				embeds.append(embed)
 

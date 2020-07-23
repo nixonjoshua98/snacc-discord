@@ -18,13 +18,13 @@ class _UnitGroup:
 		self.units = units
 		self.unit_type = unit_type
 
-	def filter_units(self, population):
+	def filter_units(self, population, upgrades):
 		units = []
 
 		for unit in self.units:
 			units_owned = population[unit.db_col]
 
-			if units_owned < unit.max_amount:
+			if units_owned < (upgrades['extra_units'] + unit.max_amount):
 				units.append(unit)
 
 		return units
@@ -34,13 +34,15 @@ class _MoneyUnitGroup(_UnitGroup):
 	def __init__(self, name, units):
 		super().__init__(UnitGroupType.MONEY, name, units)
 
-	def create_empire_page(self, empire):
+	def create_empire_page(self, empire, upgrades):
 		page = TextPage(title=empire["name"], headers=["Unit", "Owned", "Income"])
 
 		for unit in self.units:
 			units_owned = empire[unit.db_col]
 
-			row = [unit.display_name, f"{units_owned}/{unit.max_amount}", f"${unit.income_hour * units_owned:,}"]
+			owned = f"{units_owned}/{upgrades['extra_units'] + unit.max_amount}"
+
+			row = [unit.display_name, owned, f"${unit.income_hour * units_owned:,}"]
 
 			page.add_row(row)
 
@@ -51,13 +53,14 @@ class _MoneyUnitGroup(_UnitGroup):
 
 		return page
 
-	def create_units_page(self, empire):
+	def create_units_page(self, empire, upgrades):
 		page = TextPage(title=self.name, headers=["ID", "Unit", "Owned", "Income", "Cost"])
 
-		for unit in self.filter_units(empire):
+		for unit in self.filter_units(empire, upgrades):
 			units_owned = empire[unit.db_col]
 
-			owned, price = f"{units_owned}/{unit.max_amount}", f"${unit.get_price(units_owned):,}"
+			owned = f"{units_owned}/{upgrades['extra_units'] + unit.max_amount}"
+			price = f"${unit.get_price(units_owned):,}"
 
 			row = [unit.id, unit.display_name, owned, f"${unit.income_hour}", price]
 
@@ -72,7 +75,7 @@ class _MilitaryUnitGroup(_UnitGroup):
 	def __init__(self, name, units):
 		super().__init__(UnitGroupType.MILITARY, name, units)
 
-	def create_empire_page(self, empire):
+	def create_empire_page(self, empire, upgrades):
 		page = TextPage(title=empire["name"], headers=["Unit", "Owned", "Power", "Upkeep"])
 
 		for unit in self.units:
@@ -80,7 +83,7 @@ class _MilitaryUnitGroup(_UnitGroup):
 
 			upkeep, power = f"${unit.upkeep_hour * units_owned:,}", unit.power * units_owned
 
-			row = [unit.display_name, f"{units_owned}/{unit.max_amount}", power, upkeep]
+			row = [unit.display_name, f"{units_owned}/{upgrades['extra_units'] + unit.max_amount}", power, upkeep]
 
 			page.add_row(row)
 
@@ -91,13 +94,14 @@ class _MilitaryUnitGroup(_UnitGroup):
 
 		return page
 
-	def create_units_page(self, empire):
+	def create_units_page(self, empire, upgrades):
 		page = TextPage(title=self.name, headers=["ID", "Unit", "Owned", "Power", "Upkeep", "Cost"])
 
-		for unit in self.filter_units(empire):
+		for unit in self.filter_units(empire, upgrades):
 			units_owned = empire[unit.db_col]
 
-			owned, price = f"{units_owned}/{unit.max_amount}", f"${unit.get_price(units_owned):,}"
+			owned = f"{units_owned}/{upgrades['extra_units'] + unit.max_amount}"
+			price = f"${unit.get_price(units_owned):,}"
 
 			row = [unit.id, unit.display_name, owned, unit.power, f"${unit.upkeep_hour}", price]
 
