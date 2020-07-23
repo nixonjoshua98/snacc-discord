@@ -38,7 +38,7 @@ class DiscordUser(commands.Converter):
 
 
 class EmpireTargetUser(DiscordUser):
-	ATTACK_COOLDOWN = 3 * 3_600
+	ATTACK_COOLDOWN = 1.5 * 3_600
 
 	async def convert(self, ctx, argument):
 		user = await super().convert(ctx, argument)

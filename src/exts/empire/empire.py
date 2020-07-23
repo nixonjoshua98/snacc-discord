@@ -136,7 +136,7 @@ class Empire(commands.Cog):
 		""" Attack a rival empire. """
 
 		async with ctx.bot.pool.acquire() as con:
-			await EmpireM.set(con, ctx.author.id, last_attack=dt.datetime.utcnow() - dt.timedelta(hours=3))
+			await EmpireM.set(con, ctx.author.id, last_attack=dt.datetime.utcnow() - dt.timedelta(hours=1.5))
 
 			attack_won = random.uniform(0, 1) <= await self.get_win_chance(ctx, ctx.author, target)
 
