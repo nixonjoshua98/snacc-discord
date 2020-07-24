@@ -69,7 +69,7 @@ async def stolen_event(ctx):
 
 		hourly_income = utils.get_total_money_delta(population, 1.0)
 
-		money_stolen = random.randint(max(250, hourly_income // 2), max(1_000, hourly_income * 2))
+		money_stolen = random.randint(max(250, hourly_income // 2), max(1_000, hourly_income))
 
 		# Only update the database if any money was stolen
 		if money_stolen > 0:

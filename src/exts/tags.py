@@ -7,6 +7,7 @@ import xml.etree.ElementTree as ET
 
 EXAMPLE_XML = """
 <embed title="Mercenaries" color="15105570" description="A **brief** description of the page">
+
 	<field name="Mage">			
 		Mages can **heal**!		
 	</field>
@@ -18,11 +19,6 @@ EXAMPLE_XML = """
 	<field name="Archer">			
 		Archers are *very* strong!
 	</field>
-	
-	<footer>
-		<icon_url>https://cdn.discordapp.com/avatars/281171949298647041/6ae331be885b043d80e22db97932083a.webp?size=1024</icon_url>
-		<text>Made by Snaccman</text>		
-	</footer>
 		
 </embed>
 """
@@ -34,7 +30,7 @@ class Tags(commands.Cog):
 		def parse_root():
 			title = root.attrib["title"]
 			desc = root.attrib.get("description", None)
-			color = root.attrib.get("color", 0)
+			color = root.attrib.get("color", "0")
 
 			if not color.isdigit():
 				raise commands.UserInputError(f"Color '{color}' cannot be converted to an integer.")
@@ -49,14 +45,6 @@ class Tags(commands.Cog):
 
 		for field in root.findall("field"):
 			output["fields"].append({"name": field.attrib["name"], "value": field.text})
-
-		footer = root.find("footer")
-
-		if footer:
-			output["footer"] = dict(
-				text=getattr(footer.find("text"), "text", None),
-				icon_url=getattr(footer.find("icon_url"), "text", None)
-			)
 
 		return output
 

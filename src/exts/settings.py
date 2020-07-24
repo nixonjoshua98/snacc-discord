@@ -75,6 +75,8 @@ class Settings(commands.Cog):
 
 	@commands.command(name="bl")
 	async def blacklist_channel(self, ctx, *, channel: discord.TextChannel = None):
+		""" Blacklist a single channel. """
+
 		channel = ctx.channel if channel is None else channel
 
 		await ServersM.bl_chnl(ctx.bot.pool, ctx.guild.id, channel.id)
@@ -83,6 +85,7 @@ class Settings(commands.Cog):
 
 	@commands.command(name="blall")
 	async def blacklist_all_channels(self, ctx):
+		""" Blacklist all currently created channels. """
 
 		async with ctx.bot.pool.acquire():
 			for channel in ctx.guild.text_channels:
@@ -92,6 +95,8 @@ class Settings(commands.Cog):
 
 	@commands.command(name="wl")
 	async def whitelist_channel(self, ctx, *, channel: discord.TextChannel = None):
+		""" Whitelist a single channel. """
+
 		channel = ctx.channel if channel is None else channel
 
 		await ServersM.wl_chnl(ctx.bot.pool, ctx.guild.id, channel.id)
@@ -100,6 +105,7 @@ class Settings(commands.Cog):
 
 	@commands.command(name="wlall")
 	async def whitelist_all_channels(self, ctx):
+		""" Whitelist all currently created channels. """
 
 		async with ctx.bot.pool.acquire():
 			for channel in ctx.guild.text_channels:
