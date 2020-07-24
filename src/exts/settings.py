@@ -58,6 +58,8 @@ class Settings(commands.Cog):
 
 	@commands.command(name="access")
 	async def show_channel_permissions(self, ctx):
+		""" Display which channels I accept commands from. """
+
 		svr = await ctx.bot.get_server_config(ctx.guild)
 
 		page = TextPage(
