@@ -34,16 +34,19 @@ CREATE TABLE IF NOT EXISTS population (
 population_id 	BIGINT      PRIMARY KEY,
 
 -- Money Making Units
-farmers 	    SMALLINT 	DEFAULT 0 CHECK (farmers    >= 0),
-butchers 	    SMALLINT 	DEFAULT 0 CHECK (butchers   >= 0),
-cooks 		    SMALLINT 	DEFAULT 0 CHECK (cooks      >= 0),
-bakers 		    SMALLINT 	DEFAULT 0 CHECK (bakers     >= 0),
-winemakers 	    SMALLINT 	DEFAULT 0 CHECK (winemakers >= 0),
+farmers 	    SMALLINT 	DEFAULT 0 CHECK (farmers        >= 0),
+butchers 	    SMALLINT 	DEFAULT 0 CHECK (butchers       >= 0),
+cooks 		    SMALLINT 	DEFAULT 0 CHECK (cooks          >= 0),
+bakers 		    SMALLINT 	DEFAULT 0 CHECK (bakers         >= 0),
+winemakers 	    SMALLINT 	DEFAULT 0 CHECK (winemakers     >= 0),
+blacksmiths     SMALLINT 	DEFAULT 0 CHECK (blacksmiths    >= 0),
+taylors 	    SMALLINT 	DEFAULT 0 CHECK (taylors        >= 0),
 
 -- Military Units
 peasants        SMALLINT    DEFAULT 0 CHECK (peasants >= 0),
 soldiers        SMALLINT    DEFAULT 0 CHECK (soldiers >= 0),
-warriors        SMALLINT    DEFAULT 0 CHECK (warriors >= 0)
+warriors        SMALLINT    DEFAULT 0 CHECK (warriors >= 0),
+spearmen        SMALLINT    DEFAULT 0 CHECK (spearmen >= 0)
 );
 
 
