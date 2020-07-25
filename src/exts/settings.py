@@ -10,6 +10,11 @@ from src.structs.textpage import TextPage
 
 
 class Settings(commands.Cog):
+	"""
+Modules and non-mentioned channels such as `Arena Stats`
+will need to be wrapped in speech marks. e.g `!blm "Arena Stats" Empire ...`
+"""
+
 	__blacklistable__ = False
 
 	def cog_check(self, ctx):
@@ -101,8 +106,7 @@ class Settings(commands.Cog):
 	async def blacklist_module(self, ctx, *modules: BotModule()):
 		""" Blacklist a list of command modules server-wide """
 
-		if len(modules) == 0:
-			return await ctx.send("Please provide at least one module.")
+		modules = list(ctx.cogs.values()) if len(modules) == 0 else modules
 
 		await ServersM.blacklist_modules(ctx.bot.pool, ctx.guild.id, [m.qualified_name for m in modules])
 
@@ -112,8 +116,7 @@ class Settings(commands.Cog):
 	async def whitelist_module(self, ctx, *modules: BotModule()):
 		""" Whitelist a list of command modules server-wide. e.g !wlm m1 m2 m3. """
 
-		if len(modules) == 0:
-			return await ctx.send("Please provide at least one module.")
+		modules = list(ctx.cogs.values()) if len(modules) == 0 else modules
 
 		await ServersM.whitelist_modules(ctx.bot.pool, ctx.guild.id, [m.qualified_name for m in modules])
 

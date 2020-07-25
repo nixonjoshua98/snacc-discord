@@ -8,6 +8,8 @@ class _Upgrade(Purchasable):
 	def __init__(self, *, db_col, base_cost, **kwargs):
 		super(_Upgrade, self).__init__(db_col=db_col, base_cost=base_cost, **kwargs)
 
+		self.max_amount = kwargs.get("max_amount", 10)
+
 		self.id = _Upgrade.__id
 
 		_Upgrade.__id += 1

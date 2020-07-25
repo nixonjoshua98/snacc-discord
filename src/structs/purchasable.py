@@ -6,7 +6,7 @@ class Purchasable:
 		self.db_col = db_col
 		self.base_price = base_cost
 
-		self.max_amount = kwargs.get("max_amount", 10)
+		self.max_amount = kwargs.get("max_amount", 15)
 		self.exponent = kwargs.get("exponent", 1.15)
 		self.display_name = kwargs.get("display_name", db_col.title().replace("_", " "))
 
