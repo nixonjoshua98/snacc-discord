@@ -80,7 +80,9 @@ will need to be wrapped in speech marks. e.g `!blm "Arena Stats" Empire ...`
 
 			page.add_row([chnl, module])
 
-		await ctx.send(page.get())
+		await ctx.author.send(page.get())
+
+		await ctx.send("I have DM'ed you.")
 
 	@commands.command(name="blc")
 	async def blacklist_channel(self, ctx, *channels: discord.TextChannel):

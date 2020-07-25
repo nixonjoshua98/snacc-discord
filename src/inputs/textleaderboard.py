@@ -20,7 +20,7 @@ class TextLeaderboard:
 
         self.headers = ["#", "User"] + options.get("headers", [ele.title() for ele in columns])
 
-        self.max_rows = 15
+        self.max_rows = options.get("max_rows", 15)
         self.page_size = 15
 
     async def send(self, ctx):

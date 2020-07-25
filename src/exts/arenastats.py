@@ -216,7 +216,8 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 			"Trophy Leaderboard",
 			columns=["level", "trophies"],
 			order_by="trophies",
-			query_func=query
+			query_func=query,
+			max_rows=60
 		)
 
 
