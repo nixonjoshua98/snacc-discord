@@ -10,6 +10,7 @@ from typing import Optional
 
 
 class Moderator(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
+	__blacklistable__ = False
 
 	@commands.has_role("Mod")
 	@commands.max_concurrency(1, BucketType.guild)

@@ -34,23 +34,48 @@ class ServersM(TableModel):
 		return row
 
 	@classmethod
-	async def bl_chnl(cls, con, svr: int, chnl: int):
+	async def blacklist_channels(cls, con, svr: int, channels):
+		""" Blacklist a list of channels. """
+
 		row = await con.fetchrow("SELECT blacklisted_channels FROM servers WHERE server_id=$1 LIMIT 1;", svr)
 
 		blacklisted = row["blacklisted_channels"]
-		blacklisted = list(set(blacklisted + [chnl]))
+		blacklisted = list(set(blacklisted + channels))
 
 		await cls.set(con, svr, blacklisted_channels=blacklisted)
 
 	@classmethod
-	async def wl_chnl(cls, con, svr: int, chnl: int):
+	async def whitelist_channels(cls, con, svr: int, channels):
+		""" Remove an list of channels from the blacklist list. """
+
 		row = await con.fetchrow("SELECT blacklisted_channels FROM servers WHERE server_id=$1 LIMIT 1;", svr)
 
-		blacklisted: list = row["blacklisted_channels"]
-
-		blacklisted.remove(chnl)
+		blacklisted = row["blacklisted_channels"]
+		blacklisted = list(set(blacklisted) - set(channels))
 
 		await cls.set(con, svr, blacklisted_channels=blacklisted)
+
+	@classmethod
+	async def blacklist_modules(cls, con, svr: int, channels):
+		""" Blacklist a list of modules. """
+
+		row = await con.fetchrow("SELECT blacklisted_cogs FROM servers WHERE server_id=$1 LIMIT 1;", svr)
+
+		blacklisted = row["blacklisted_cogs"]
+		blacklisted = list(set(blacklisted + channels))
+
+		await cls.set(con, svr, blacklisted_cogs=blacklisted)
+
+	@classmethod
+	async def whitelist_modules(cls, con, svr: int, channels):
+		""" Remove an list of modules from the blacklist list. """
+
+		row = await con.fetchrow("SELECT blacklisted_cogs FROM servers WHERE server_id=$1 LIMIT 1;", svr)
+
+		blacklisted = row["blacklisted_cogs"]
+		blacklisted = list(set(blacklisted) - set(channels))
+
+		await cls.set(con, svr, blacklisted_cogs=blacklisted)
 
 
 class ArenaStatsM:

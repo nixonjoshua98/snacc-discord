@@ -7,35 +7,24 @@ from src.exts.empire.groups import (
 	_MilitaryUnitGroup
 )
 
+from src.structs.purchasable import Purchasable
 
-class _Unit:
+
+class _Unit(Purchasable):
 	__unit_id = 1  # PRIVATE
 
 	def __init__(self, *, db_col, base_cost, **kwargs):
-		self.display_name = kwargs.get("display_name", db_col.title().replace("_", " "))
+		super(_Unit, self).__init__(db_col=db_col, base_cost=base_cost, **kwargs)
 
 		self.id = _Unit.__unit_id
-		self.db_col = db_col
-		self.base_price = base_cost
 
 		self.power = kwargs.get("power", 0)
-		self.exponent = kwargs.get("exponent", 1.15)
+
 		self.income_hour = kwargs.get("income_hour", 0)
 		self.upkeep_hour = kwargs.get("upkeep_hour", 0)
-		self.max_amount = kwargs.get("max_amount", 15)
 
 		# Increment the internal ID for the next unit
 		_Unit.__unit_id += 1
-
-	def get_price(self, total_owned: int, total_buying: int = 1) -> int:
-		""" Get the total cost of the units brought. """
-
-		price = 0
-
-		for i in range(total_owned, total_owned + total_buying):
-			price += self.base_price * pow(self.exponent, i)
-
-		return math.ceil(price)
 
 	def get_delta_money(self, total, delta_time):
 		income = math.ceil((self.income_hour * total) * delta_time)

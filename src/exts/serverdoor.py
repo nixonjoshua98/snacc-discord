@@ -5,6 +5,8 @@ from src.common.models import ServersM
 
 
 class ServerDoor(commands.Cog, name="Server Door"):
+    __blacklistable__ = False
+
     def __init__(self, bot):
         self.bot = bot
 
@@ -80,5 +82,5 @@ class ServerDoor(commands.Cog, name="Server Door"):
 
 
 def setup(bot):
-    if not bot.debug:
-        bot.add_cog(ServerDoor(bot))
+    #if not bot.debug:
+    bot.add_cog(ServerDoor(bot))

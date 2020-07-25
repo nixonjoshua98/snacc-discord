@@ -13,8 +13,11 @@ from src.common.models import ServersM
 
 class SnaccBot(commands.Bot):
     EXTENSIONS = [
-        "errorhandler", "arenastats", "empire", "shop", "tags", "hangman",
-        "gambling", "money", "darkness", "moderator", "misc", "serverdoor", "settings"
+        "errorhandler", "arenastats", "empire",
+        "shop", "tags", "hangman",
+        "gambling", "money", "darkness",
+        "moderator", "misc", "serverdoor",
+        "settings"
     ]
 
     def __init__(self):
@@ -67,19 +70,18 @@ class SnaccBot(commands.Bot):
         svr = await self.get_server_config(ctx.guild)
 
         blacklisted_channels = svr["blacklisted_channels"]
+        blacklisted_modules = svr["blacklisted_cogs"]
 
-        if ctx.command.cog is not None and ctx.command.cog.qualified_name in {"Settings", "Moderator"}:
+        if ctx.command.cog is not None and not getattr(ctx.command.cog, "__blacklistable__", True):
             return True
 
         elif ctx.channel.id in blacklisted_channels:
             raise commands.CommandError("That command is disabled in this channel.")
 
+        elif ctx.command.cog and ctx.command.cog.qualified_name in blacklisted_modules:
+            raise commands.CommandError("That command is disabled in this server.")
+
         return True
-
-    async def blacklisted_check(self, ctx) -> bool:
-        print(ctx)
-
-        return False
 
     async def create_pool(self):
         print("Creating connection pool", end="...")
@@ -133,6 +135,10 @@ class SnaccBot(commands.Bot):
         prefix = "." if os.getenv("DEBUG") else svr.get("prefix", "!")
 
         return commands.when_mentioned_or(prefix)(self, message)
+
+    async def on_message(self, message):
+        if self.exts_loaded and message.guild is not None and not message.author.bot:
+            await self.process_commands(message)
 
     def run(self):
         super(SnaccBot, self).run(os.getenv("BOT_TOKEN"))

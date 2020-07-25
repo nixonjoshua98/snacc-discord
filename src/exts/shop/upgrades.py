@@ -3,8 +3,14 @@ from src.structs.purchasable import Purchasable
 
 
 class _Upgrade(Purchasable):
+	__id = 1  # PRIVATE
+
 	def __init__(self, *, db_col, base_cost, **kwargs):
 		super(_Upgrade, self).__init__(db_col=db_col, base_cost=base_cost, **kwargs)
+
+		self.id = _Upgrade.__id
+
+		_Upgrade.__id += 1
 
 
 ALL_UPGRADES = [

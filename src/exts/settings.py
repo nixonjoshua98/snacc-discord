@@ -1,29 +1,29 @@
 import discord
+import itertools
+
 from discord.ext import commands
 
 from src.common.models import ServersM
+from src.common.converters import BotModule
 
 from src.structs.textpage import TextPage
 
 
 class Settings(commands.Cog):
+	__blacklistable__ = False
+
 	def cog_check(self, ctx):
 		if not ctx.author.guild_permissions.administrator:
 			raise commands.MissingPermissions("You do not have access to this command.")
 
 		return True
 
-	async def cog_before_invoke(self, ctx: commands.Context):
-		""" Ensure that we have an entry for the guild in the database. """
-
-		_ = await ctx.bot.get_server_config(ctx.guild)
-
 	async def cog_after_invoke(self, ctx):
 		await ctx.bot.update_server_cache(ctx.message.guild)
 
 	@commands.command(name="prefix")
 	async def set_prefix(self, ctx: commands.Context, prefix: str):
-		""" [Admin] Set the prefix for this server. """
+		""" Set the server-wide prefix. """
 
 		await ServersM.set(ctx.bot.pool, ctx.guild.id, prefix=prefix)
 
@@ -31,7 +31,7 @@ class Settings(commands.Cog):
 
 	@commands.command(name="setdefaultrole")
 	async def set_default_role(self, ctx: commands.Context, role: discord.Role = None):
-		""" [Admin] Set (or remove) the default role which gets added to each member when they join the server. """
+		""" Set (or remove) the default role which gets added to each member when they join the server. """
 
 		if role is not None and role > ctx.guild.me.top_role:
 			return await ctx.send(f"I cannot use the role `{role.name}` since the role is higher than me.")
@@ -46,7 +46,7 @@ class Settings(commands.Cog):
 
 	@commands.command(name="setmemberrole")
 	async def set_member_role(self, ctx: commands.Context, role: discord.Role = None):
-		""" [Admin] Set (or remove) the member role which can open up server-specific commands for server regulars. """
+		""" Set (or remove) the member role which can open up server-specific commands for server regulars. """
 
 		await ServersM.set(ctx.bot.pool, ctx.guild.id, member_role=getattr(role, "id", 0))
 
@@ -57,63 +57,67 @@ class Settings(commands.Cog):
 			await ctx.send(f"The member role has been set to `{role.name}`")
 
 	@commands.command(name="access")
-	async def show_channel_permissions(self, ctx):
+	async def show_channel_access(self, ctx):
 		""" Display which channels I accept commands from. """
 
 		svr = await ctx.bot.get_server_config(ctx.guild)
 
 		page = TextPage(
-			title="Bot Server Access",
-			headers=("Channel", "Access"),
-			footer="Moderator and Settings commands are excluded from blacklisting."
+			title="Blacklisted Channels & Modules",
+			headers=("Channels", "Modules"),
+			footer="Moderator and Settings modules are excluded from blacklisting."
 		)
 
-		for channel in ctx.guild.text_channels:
-			access = "Blacklisted" if channel.id in svr["blacklisted_channels"] else "Available"
+		for chnl, module in itertools.zip_longest(svr["blacklisted_channels"], svr["blacklisted_cogs"], fillvalue=""):
+			if chnl:
+				chnl = discord.utils.get(ctx.guild.text_channels, id=chnl)
+				chnl = f"#{chnl.name}" if chnl is not None else " "
 
-			page.add_row([channel.name, access])
+			page.add_row([chnl, module])
 
 		await ctx.send(page.get())
 
-	@commands.command(name="bl")
-	async def blacklist_channel(self, ctx, *, channel: discord.TextChannel = None):
-		""" Blacklist a single channel. """
+	@commands.command(name="blc")
+	async def blacklist_channel(self, ctx, *channels: discord.TextChannel):
+		""" Blacklist the current channel or specify a channel. """
 
-		channel = ctx.channel if channel is None else channel
+		channels = (ctx.channel,) if len(channels) == 0 else channels
 
-		await ServersM.bl_chnl(ctx.bot.pool, ctx.guild.id, channel.id)
+		await ServersM.blacklist_channels(ctx.bot.pool, ctx.guild.id, [c.id for c in channels])
 
-		await ctx.send(f"Channel {channel.mention} has been blacklisted.")
+		await ctx.send(f"Channels blacklisted: {', '.join((c.mention for c in channels))}")
 
-	@commands.command(name="blall")
-	async def blacklist_all_channels(self, ctx):
-		""" Blacklist all currently created channels. """
+	@commands.command(name="wlc")
+	async def whitelist_channel(self, ctx, *channels: discord.TextChannel):
+		""" Whitelist a list of channels. e.g !wlc c1 c2 c3. """
 
-		async with ctx.bot.pool.acquire():
-			for channel in ctx.guild.text_channels:
-				await ServersM.bl_chnl(ctx.bot.pool, ctx.guild.id, channel.id)
+		channels = (ctx.channel,) if len(channels) == 0 else channels
 
-		await ctx.send(f"All **currently created** text channels have been blacklisted.")
+		await ServersM.whitelist_channels(ctx.bot.pool, ctx.guild.id, [c.id for c in channels])
 
-	@commands.command(name="wl")
-	async def whitelist_channel(self, ctx, *, channel: discord.TextChannel = None):
-		""" Whitelist a single channel. """
+		await ctx.send(f"Channels removed from blacklist: {', '.join((c.mention for c in channels))}")
 
-		channel = ctx.channel if channel is None else channel
+	@commands.command(name="blm")
+	async def blacklist_module(self, ctx, *modules: BotModule()):
+		""" Blacklist a list of command modules server-wide """
 
-		await ServersM.wl_chnl(ctx.bot.pool, ctx.guild.id, channel.id)
+		if len(modules) == 0:
+			return await ctx.send("Please provide at least one module.")
 
-		await ctx.send(f"Channel {channel.mention} is no longer blacklisted.")
+		await ServersM.blacklist_modules(ctx.bot.pool, ctx.guild.id, [m.qualified_name for m in modules])
 
-	@commands.command(name="wlall")
-	async def whitelist_all_channels(self, ctx):
-		""" Whitelist all currently created channels. """
+		await ctx.send(f"Modules blacklisted: {', '.join((m.qualified_name for m in modules))}")
 
-		async with ctx.bot.pool.acquire():
-			for channel in ctx.guild.text_channels:
-				await ServersM.wl_chnl(ctx.bot.pool, ctx.guild.id, channel.id)
+	@commands.command(name="wlm")
+	async def whitelist_module(self, ctx, *modules: BotModule()):
+		""" Whitelist a list of command modules server-wide. e.g !wlm m1 m2 m3. """
 
-		await ctx.send(f"All **currently created** text channels are no longer blacklisted.")
+		if len(modules) == 0:
+			return await ctx.send("Please provide at least one module.")
+
+		await ServersM.whitelist_modules(ctx.bot.pool, ctx.guild.id, [m.qualified_name for m in modules])
+
+		await ctx.send(f"Modules removed from server blacklist: {', '.join((m.qualified_name for m in modules))}")
 
 
 def setup(bot):

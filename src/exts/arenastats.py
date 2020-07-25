@@ -38,10 +38,12 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 		self.start_shame_users()
 
 	async def cog_check(self, ctx):
-		return await checks.server_has_member_role(ctx) and (
-				await checks.user_has_role(ctx, key="member_role") or
-				await checks.user_has_role(ctx, name="VIP")
-		)
+		config = await ctx.bot.get_server_config(ctx.guild)
+
+		if ctx.guild.get_role(config["member_role"]) is None:
+			raise commands.CommandError("The server `Member` role needs to be assigned through my settings")
+
+		return await checks.user_has_role(ctx, key="member_role") or await checks.user_has_role(ctx, name="VIP")
 
 	@staticmethod
 	async def set_users_stats(ctx, target: discord.Member, level: Range(1, 125), trophies: Range(1, 7_500)):
