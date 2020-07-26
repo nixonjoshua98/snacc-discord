@@ -66,13 +66,13 @@ class EmpireTargetUser(DiscordUser):
 		atk_pow = utils.get_total_power(attacker_pop)
 		def_pow = utils.get_total_power(defender_pop)
 
-		if atk_pow < 25:
-			raise commands.CommandError("You need at least **25** power to do that.")
+		if atk_pow < 15:
+			raise commands.CommandError("You need at least **15** power to do that.")
 
-		elif def_pow < (atk_pow // 2):
+		elif def_pow <= (atk_pow // 2):
 			raise commands.CommandError("You are too strong for your target.")
 
-		elif atk_pow > (def_pow * 1.5):
+		elif atk_pow >= (def_pow * 2.0):
 			raise commands.CommandError("You are too weak for your target.")
 
 		# Custom Context data
