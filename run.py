@@ -15,9 +15,6 @@ def set_env():
     # Postgres
     os.environ["CON_STR"] = config.get("postgres", "CON_STR")
 
-    # Keys
-    os.environ["CMC_PRO_API_KEY"] = config.get("keys", "CMC_PRO_API_KEY")
-
 
 def setup_loop():
     import sys

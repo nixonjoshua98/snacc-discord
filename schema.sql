@@ -62,10 +62,3 @@ CREATE TABLE IF NOT EXISTS user_upgrades (
 user_upgrades_id    BIGINT      PRIMARY KEY,
 extra_units         SMALLINT    DEFAULT 0 CHECK (extra_units >= 0)
 );
-
-
-CREATE TABLE IF NOT EXISTS snacc_coin (
-snacccoin_id    SERIAL,
-price           INTEGER,
-date_updated    TIMESTAMP WITHOUT time zone DEFAULT (now() at time zone 'utc')
-);

@@ -76,7 +76,7 @@ will need to be wrapped in speech marks. e.g `!blm "Arena Stats" Empire ...`
 		for chnl, module in itertools.zip_longest(svr["blacklisted_channels"], svr["blacklisted_cogs"], fillvalue=""):
 			if chnl:
 				chnl = discord.utils.get(ctx.guild.text_channels, id=chnl)
-				chnl = f"#{chnl.name}" if chnl is not None else " "
+				chnl = f"#{chnl.name}" if chnl is not None else "[DELETED]"
 
 			page.add_row([chnl, module])
 
