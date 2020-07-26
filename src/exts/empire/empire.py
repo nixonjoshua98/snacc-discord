@@ -25,7 +25,7 @@ class BattleResults:
 	money_lost: int
 
 
-SCOUT_COST = 1_000
+SCOUT_COST = 500
 
 
 class Empire(commands.Cog):
@@ -48,7 +48,7 @@ class Empire(commands.Cog):
 		asyncio.create_task(predicate())
 
 	@staticmethod
-	async def get_win_chance(atk_power, def_power):
+	def get_win_chance(atk_power, def_power):
 		return max(0.15, min(0.85, 0.25 + ((atk_power / def_power) / 2.0)))
 
 	@staticmethod
@@ -56,11 +56,11 @@ class Empire(commands.Cog):
 		def get_units_lost(unit_group):
 			units_lost_, units_lost_cost = dict(), 0
 
-			for unit in sorted(
-					list(itertools.filterfalse(lambda u: population[u.db_col] == 0, unit_group.units)),
-					key=lambda u: u.get_price(population[u.db_col]),
-					reverse=False
-			):
+			# Units available to lose (owned > 0)
+			available_units = list(itertools.filterfalse(lambda u: population[u.db_col] == 0, unit_group.units))
+
+			# Get a very roughly x amount of hours lose.
+			for unit in sorted(available_units, key=lambda u: u.get_price(population[u.db_col]), reverse=False):
 				for i in range(1, population[unit.db_col] + 1):
 					price = unit.get_price(population[unit.db_col] - i, i)
 
@@ -75,11 +75,10 @@ class Empire(commands.Cog):
 
 		population = await con.fetchrow(PopulationM.SELECT_ROW, defender.id)
 
-		hourly_income = max(500, utils.get_total_money_delta(population, 1.0))
+		hourly_income = max(0, utils.get_total_money_delta(population, 1.0))
 
 		units_lost = get_units_lost(UNIT_GROUPS[UnitGroupType.MILITARY])
-
-		money_lost = min(bank["money"], int(hourly_income * random.uniform(1.5, 1.5)))
+		money_lost = min(bank["money"], int(hourly_income * random.uniform(0.5, 1.5)))
 
 		return BattleResults(units_lost=units_lost, money_lost=money_lost)
 
@@ -113,13 +112,7 @@ class Empire(commands.Cog):
 			else:
 				await con.execute(BankM.SUB_MONEY, ctx.author.id, SCOUT_COST)
 
-				attacker_pop = await con.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
-				defender_pop = await con.fetchrow(PopulationM.SELECT_ROW, target.id)
-
-				atk_power = utils.get_total_power(attacker_pop)
-				def_power = utils.get_total_power(defender_pop)
-
-				win_chance = await self.get_win_chance(atk_power, def_power)
+				win_chance = self.get_win_chance(ctx.empire_data["atk_pow"], ctx.empire_data["def_pow"])
 
 				await ctx.send(
 					f"You hired a scout for **${SCOUT_COST:,}**. "
@@ -132,15 +125,17 @@ class Empire(commands.Cog):
 	async def attack(self, ctx, *, target: EmpireTargetUser()):
 		""" Attack a rival empire. """
 
-		async def attack_():
+		win_chance = self.get_win_chance(ctx.empire_data["atk_pow"], ctx.empire_data["def_pow"])
+		attack_won = win_chance <= random.uniform(0.0, 1.0)
+
+		async with ctx.bot.pool.acquire() as con:
 			results = await self.simulate_attack(con, target if attack_won else ctx.author)
 
 			units_text = ", ".join(map(lambda kv: f"{kv[1]}x {kv[0].display_name}", results.units_lost.items()))
 
 			if attack_won:
-				if results.money_lost > 0:
-					await con.execute(BankM.SUB_MONEY, target.id, results.money_lost)
-					await con.execute(BankM.ADD_MONEY, ctx.author.id, results.money_lost)
+				await con.execute(BankM.SUB_MONEY, target.id, results.money_lost)
+				await con.execute(BankM.ADD_MONEY, ctx.author.id, results.money_lost)
 
 				for unit, amount in results.units_lost.items():
 					await PopulationM.sub_unit(con, target.id, unit, amount)
@@ -162,32 +157,6 @@ class Empire(commands.Cog):
 				)
 
 			await EmpireM.set(con, ctx.author.id, last_attack=dt.datetime.utcnow() - dt.timedelta(hours=1.5))
-
-		async with ctx.bot.pool.acquire() as con:
-			attacker_pop = await con.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
-			defender_pop = await con.fetchrow(PopulationM.SELECT_ROW, target.id)
-
-			atk_power = utils.get_total_power(attacker_pop)
-			def_power = utils.get_total_power(defender_pop)
-
-			win_chance = await self.get_win_chance(atk_power, def_power)
-
-			attack_won = win_chance <= random.uniform(0.0, 1.0)
-
-			if atk_power < 25:
-				self.attack.reset_cooldown(ctx)
-				await ctx.send("You need at least **25** power to attack another empire.")
-
-			elif def_power < (atk_power // 2):
-				self.attack.reset_cooldown(ctx)
-				await ctx.send("You are too strong to attack this target.")
-
-			elif atk_power > (def_power * 1.5):
-				self.attack.reset_cooldown(ctx)
-				await ctx.send("You are too weak to attack your target.")
-
-			else:
-				await attack_()
 
 	@checks.has_empire()
 	@commands.cooldown(1, 60 * 90, commands.BucketType.user)

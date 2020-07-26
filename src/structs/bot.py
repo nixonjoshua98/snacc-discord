@@ -7,7 +7,7 @@ from discord.ext import commands
 from src.common import SNACCMAN
 
 from src.structs.help import Help
-
+from src.structs.context import CustomContext
 from src.common.models import ServersM
 
 
@@ -69,16 +69,15 @@ class SnaccBot(commands.Bot):
 
         svr = await self.get_server_config(ctx.guild)
 
-        blacklisted_channels = svr["blacklisted_channels"]
-        blacklisted_modules = svr["blacklisted_cogs"]
+        bl_chnls, bl_modules = svr["blacklisted_channels"], svr["blacklisted_cogs"]
 
         if ctx.command.cog is not None and not getattr(ctx.command.cog, "__blacklistable__", True):
             return True
 
-        elif ctx.channel.id in blacklisted_channels:
+        elif ctx.channel.id in bl_chnls:
             raise commands.CommandError("That command is disabled in this channel.")
 
-        elif ctx.command.cog and ctx.command.cog.qualified_name in blacklisted_modules:
+        elif ctx.command.cog and ctx.command.cog.qualified_name in bl_modules:
             raise commands.CommandError("That command is disabled in this server.")
 
         return True
@@ -138,7 +137,9 @@ class SnaccBot(commands.Bot):
 
     async def on_message(self, message):
         if self.exts_loaded and message.guild is not None and not message.author.bot:
-            await self.process_commands(message)
+            ctx = await self.get_context(message, cls=CustomContext)
+
+            await self.invoke(ctx)
 
     def run(self):
         super(SnaccBot, self).run(os.getenv("BOT_TOKEN"))

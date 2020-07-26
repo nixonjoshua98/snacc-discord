@@ -3,8 +3,9 @@ import discord
 import datetime as dt
 
 from discord.ext import commands
+from src.common.models import EmpireM, PopulationM
 
-from src.common.models import EmpireM
+from src.structs.context import CustomContext
 
 
 class DiscordUser(commands.Converter):
@@ -40,7 +41,9 @@ class DiscordUser(commands.Converter):
 class EmpireTargetUser(DiscordUser):
 	ATTACK_COOLDOWN = 1.5 * 3_600
 
-	async def convert(self, ctx, argument):
+	async def convert(self, ctx: CustomContext, argument):
+		from src.exts.empire import utils
+
 		user = await super().convert(ctx, argument)
 
 		row = await ctx.bot.pool.fetchrow(EmpireM.SELECT_ROW, user.id)
@@ -50,10 +53,30 @@ class EmpireTargetUser(DiscordUser):
 
 		time_since_attack = (dt.datetime.utcnow() - row['last_attack']).total_seconds()
 
+		# Target is in cooldown period
 		if time_since_attack < self.ATTACK_COOLDOWN:
 			delta = dt.timedelta(seconds=int(self.ATTACK_COOLDOWN - time_since_attack))
 
 			raise commands.CommandError(f"Target is still recovering from a previous attack. Try again in `{delta}`")
+
+		# Populations of both the attacker and defender
+		attacker_pop = await ctx.bot.pool.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
+		defender_pop = await ctx.bot.pool.fetchrow(PopulationM.SELECT_ROW, user.id)
+
+		atk_pow = utils.get_total_power(attacker_pop)
+		def_pow = utils.get_total_power(defender_pop)
+
+		if atk_pow < 25:
+			raise commands.CommandError("You need at least **25** power to do that.")
+
+		elif def_pow < (atk_pow // 2):
+			raise commands.CommandError("You are too strong for your target.")
+
+		elif atk_pow > (def_pow * 1.5):
+			raise commands.CommandError("You are too weak for your target.")
+
+		# Custom Context data
+		ctx.empire_data = {"atk_pow": atk_pow, "def_pow": def_pow}
 
 		return user
 
