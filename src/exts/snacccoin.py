@@ -40,21 +40,23 @@ class SnaccCoin(commands.Cog, name="Snacc Coin"):
 
 	@snacc_coin_group.command(name="buy")
 	async def buy_coin(self, ctx, amount: Range(1, 100)):
-		""" Buy some Snacc Coins. """
+		""" Buy some Snacc Coins. Purchases have a 1% purchase tax. """
 
 		async with ctx.bot.pool.acquire() as con:
 			row = await BankM.get_row(con, ctx.author.id)
 
 			price = self._price_cache["current"] * amount
+			tax = int(price * 0.01)
+			price_with_tax = price + tax
 
-			if price > row["money"]:
+			if price_with_tax > row["money"]:
 				await ctx.send(f"You can't afford to buy **{amount}** Snacc Coin(s).")
 
 			else:
-				await con.execute(BankM.SUB_MONEY, ctx.author.id, price)
+				await con.execute(BankM.SUB_MONEY, ctx.author.id, price_with_tax)
 				await con.execute(BankM.ADD_SNACC_COINS, ctx.author.id, amount)
 
-				await ctx.send(f"You bought **{amount}** Snacc Coin(s) for **${price:,}**!")
+				await ctx.send(f"You bought **{amount}** Snacc Coin(s) for **${price:,}(+1% {tax})**!")
 
 	@snacc_coin_group.command(name="sell")
 	async def sell_coin(self, ctx, amount: Range(1, 100)):
