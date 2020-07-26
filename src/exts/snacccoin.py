@@ -22,7 +22,7 @@ class SnaccCoin(commands.Cog):
 
 	@commands.group(name="sc", invoke_without_command=True)
 	async def snacc_coin_group(self, ctx):
-		""" Show the Snacc Coin history and current price. """
+		""" Show the coin history and current price. """
 
 		file_name = self.create_graph(self._price_cache["history"])
 
@@ -33,6 +33,7 @@ class SnaccCoin(commands.Cog):
 		file = discord.File(file_name, filename=file_name)
 
 		embed.set_image(url=f"attachment://{file_name}")
+		embed.set_footer(text="Powered by CoinDesk")
 
 		await ctx.send(file=file, embed=embed)
 
