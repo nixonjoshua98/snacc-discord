@@ -148,12 +148,11 @@ class Empire(commands.Cog):
 				await ctx.send(s)
 
 			else:
-				for unit, amount in results.units_lost.items():
-					await PopulationM.sub_unit(con, ctx.author.id, unit, amount)
+				await con.execute(BankM.SUB_MONEY, target.id, results.money_lost)
 
 				await ctx.send(
-					f"You lost against **{target.display_name}**"
-					f"{f' and **{units_text}** were killed.' if units_text else '.'}"
+					f"You lost against **{target.display_name}** "
+					f"and used **${results.money_lost :,}** to heal your army."
 				)
 
 			await EmpireM.set(con, ctx.author.id, last_attack=dt.datetime.utcnow() - dt.timedelta(hours=1.5))
