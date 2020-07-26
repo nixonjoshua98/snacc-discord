@@ -7,6 +7,9 @@ from discord.ext import commands, tasks
 import matplotlib.pyplot as plt
 import datetime as dt
 
+from src.common.models import BankM
+from src.common.converters import Range
+
 
 class SnaccCoin(commands.Cog, name="Snacc Coin"):
 	def __init__(self, bot):
@@ -36,12 +39,40 @@ class SnaccCoin(commands.Cog, name="Snacc Coin"):
 		await ctx.send(file=file, embed=embed)
 
 	@snacc_coin_group.command(name="buy")
-	async def buy_coin(self, ctx):
-		""" Buy a Snacc Coin. """
+	async def buy_coin(self, ctx, amount: Range(1, 100)):
+		""" Buy some Snacc Coins. """
+
+		async with ctx.bot.pool.acquire() as con:
+			row = await BankM.get_row(con, ctx.author.id)
+
+			price = self._price_cache["current"] * amount
+
+			if price > row["money"]:
+				await ctx.send(f"You can't afford to buy **{amount}** Snacc Coin(s).")
+
+			else:
+				await con.execute(BankM.SUB_MONEY, ctx.author.id, price)
+				await con.execute(BankM.ADD_SNACC_COINS, ctx.author.id, amount)
+
+				await ctx.send(f"You bought **{amount}** Snacc Coin(s) for **${price:,}**!")
 
 	@snacc_coin_group.command(name="sell")
-	async def sell_coin(self, ctx):
-		""" Sell a Snacc Coin. """
+	async def sell_coin(self, ctx, amount: Range(1, 100)):
+		""" Sell some Snacc Coins """
+
+		async with ctx.bot.pool.acquire() as con:
+			row = await BankM.get_row(con, ctx.author.id)
+
+			price = self._price_cache["current"] * amount
+
+			if amount > row["snacc_coins"]:
+				await ctx.send(f"You are trying to sell more Snacc Coin(s) than you current own.")
+
+			else:
+				await con.execute(BankM.ADD_MONEY, ctx.author.id, price)
+				await con.execute(BankM.SUB_SNACC_COINS, ctx.author.id, amount)
+
+				await ctx.send(f"You sold **{amount}** Snacc Coin(s) for **${price:,}**!")
 
 	@staticmethod
 	async def get_history():
@@ -80,8 +111,6 @@ class SnaccCoin(commands.Cog, name="Snacc Coin"):
 		plt.grid(True)
 
 		plt.savefig('graph.png', facecolor=fig.get_facecolor(), transparent=True)
-
-		return "graph.png"
 
 	def start_price_update_loop(self):
 		async def predicate():

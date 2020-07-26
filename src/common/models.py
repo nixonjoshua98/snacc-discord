@@ -125,6 +125,18 @@ class BankM:
 		UPDATE SET money = GREATEST(0, bank.money - $2) ;
 	"""
 
+	ADD_SNACC_COINS = """
+	INSERT INTO bank (user_id, snacc_coins) VALUES ($1, $2)
+	ON CONFLICT (user_id) DO
+		UPDATE SET snacc_coins = GREATEST(0, bank.snacc_coins + $2);
+	"""
+
+	SUB_SNACC_COINS = """
+	INSERT INTO bank (user_id, snacc_coins) VALUES ($1, $2)
+	ON CONFLICT (user_id) DO
+		UPDATE SET snacc_coins = GREATEST(0, bank.snacc_coins - $2) ;
+	"""
+
 	@classmethod
 	async def get_row(cls, con, user_id: int):
 		row = await con.fetchrow(cls.SELECT_ROW, user_id)
