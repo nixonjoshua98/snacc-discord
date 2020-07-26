@@ -1,43 +1,10 @@
 import random
 
-from collections import Counter
-
 from src.common.models import BankM, PopulationM
 
 from . import utils
 
 from .units import UNIT_GROUPS, UnitGroupType
-
-
-async def attacked_event(ctx):
-	""" Empire was attacked event (-units). """
-
-	units_lost = []
-
-	async with ctx.bot.pool.acquire() as con:
-		population = await con.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
-
-		units_owned = [unit for unit in UNIT_GROUPS[UnitGroupType.MONEY].units if population[unit.db_col] > 0]
-
-		if units_owned:
-			total_units_owned = sum(map(lambda u: population[u.db_col], units_owned))
-
-			num_units_lost = random.randint(1, max(1, total_units_owned // 25))
-
-			weights = [i ** 2 for i in range(len(units_owned), 0, -1)]
-
-			temp_units_lost = random.choices(units_owned, weights=weights, k=num_units_lost)
-
-			for unit, amount in Counter(temp_units_lost).items():
-				units_lost.append((unit, min(amount, population[unit.db_col])))
-
-		s = []
-		for unit, n in units_lost:
-			s.append(f"{n}x {unit.display_name}")
-
-			await PopulationM.sub_unit(ctx.bot.pool, ctx.author.id, unit, n)
-
-	await ctx.send(f"Your empire was attacked and lost **{', '.join(s) or 'nothing'}**!")
 
 
 async def assassinated_event(ctx):

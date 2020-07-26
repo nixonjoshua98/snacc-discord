@@ -177,8 +177,8 @@ class Empire(commands.Cog):
 	async def empire_event(self, ctx):
 		""" Trigger an empire event. """
 
-		options = (events.attacked_event, events.loot_event, events.stolen_event, events.assassinated_event)
-		weights = (5, 85, 10, 15)
+		options = (events.loot_event, events.stolen_event, events.assassinated_event)
+		weights = (85, 10, 15)
 
 		chosen_events = random.choices(options, weights=weights, k=1)
 

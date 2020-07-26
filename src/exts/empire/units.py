@@ -26,6 +26,9 @@ class _Unit(Purchasable):
 		# Increment the internal ID for the next unit
 		_Unit.__unit_id += 1
 
+	def __str__(self):
+		return self.display_name
+
 	def get_delta_money(self, total, delta_time):
 		income = math.ceil((self.income_hour * total) * delta_time)
 		upkeep = math.ceil((self.upkeep_hour * total) * delta_time) * -1
