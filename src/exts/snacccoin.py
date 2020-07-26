@@ -24,19 +24,16 @@ class SnaccCoin(commands.Cog, name="Snacc Coin"):
 	async def snacc_coin_group(self, ctx):
 		""" Show the coin history and current price. """
 
-		file_name = self.create_graph(self._price_cache["history"])
-
-		embed = discord.Embed(title="Snacc Coin History", color=discord.Color.orange())
+		embed = discord.Embed(title="Snacc Coin", color=discord.Color.orange())
 
 		embed.description = f":moneybag: **Current Price: ${self._price_cache['current']:,}**"
 
-		file = discord.File(file_name, filename=file_name)
+		file = discord.File("graph.png", filename="graph.png")
 
-		embed.set_image(url=f"attachment://{file_name}")
+		embed.set_image(url="attachment://graph.png")
 		embed.set_footer(text="Powered by CoinDesk")
 
 		await ctx.send(file=file, embed=embed)
-
 
 	@staticmethod
 	async def get_history():
@@ -95,6 +92,8 @@ class SnaccCoin(commands.Cog, name="Snacc Coin"):
 		self._price_cache["history"] = await self.get_history()
 
 		self._price_cache["history"]["current"] = self._price_cache["current"]
+
+		self.create_graph(self._price_cache["history"])
 
 
 def setup(bot):
