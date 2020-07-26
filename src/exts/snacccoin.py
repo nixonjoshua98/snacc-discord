@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import datetime as dt
 
 
-class SnaccCoin(commands.Cog):
+class SnaccCoin(commands.Cog, name="Snacc Coin"):
 	def __init__(self, bot):
 		self.bot = bot
 
