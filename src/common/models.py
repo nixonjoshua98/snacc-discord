@@ -208,13 +208,3 @@ class UserUpgradesM:
 		q = f"UPDATE user_upgrades SET {unit.db_col} = {unit.db_col} + $2 WHERE user_upgrades_id = $1;"
 
 		await con.execute(q, user_id, amount)
-
-
-class SnaccCoinM:
-	INSERT_ROW = """
-	INSERT INTO snacc_coin (price, date_updated)  
-	VALUES ($1, $1) 
-	ON CONFLICT (date_updated) 
-		DO NOTHING
-	RETURNING * 
-	"""

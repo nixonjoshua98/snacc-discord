@@ -1,12 +1,6 @@
-import os
-import httpx
 import asyncio
 
-import datetime as dt
-
 from discord.ext import commands, tasks
-
-from src.common.models import SnaccCoinM
 
 
 class SnaccCoin(commands.Cog):
@@ -17,35 +11,11 @@ class SnaccCoin(commands.Cog):
 
 	@commands.group(name="sc", invoke_without_command=True)
 	async def snacc_coin_group(self, ctx):
-		coin = {"price": 5678, "date_updated": dt.datetime.utcnow()}
+		""" Show the current price of the Snacc Coin. """
 
 	@staticmethod
 	async def get_new_snacc_coin():
-		def get(d, **kwargs):
-			for row in d:
-				if all(row.get(k, "__None__") == v for k, v in kwargs.items()):
-					return row
-			return None
-
-		url = f"https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest"
-
-		async with httpx.AsyncClient() as client:
-			r = await client.get(url, headers={"X-CMC_PRO_API_KEY": os.getenv("CMC_PRO_API_KEY")})
-
-		if r.status_code != httpx.codes.OK:
-			return None
-
-		data = r.json()
-
-		btc, eth = get(data["data"], symbol="BTC"), get(data["data"], symbol="ETH")
-
-		btc_price, eth_price = btc["quote"]["USD"]["price"], eth["quote"]["USD"]["price"]
-
-		sc_price = (btc_price + eth_price) // 2
-
-		sc_last_updated = dt.datetime.strptime(btc["last_updated"].replace("Z", ""), '%Y-%m-%dT%H:%M:%S.%f')
-
-		return {"price": sc_price, "date_updated": sc_last_updated}
+		return {"price": 0, "date_updated": 0}
 
 	def start_snacc_coin_loop(self):
 		async def predicate():
@@ -62,15 +32,8 @@ class SnaccCoin(commands.Cog):
 	async def snacc_coin_loop(self):
 		coin = await self.get_new_snacc_coin()
 
-		if coin is None:
-			return None
-
-		await self.bot.pool.execute(SnaccCoinM.INSERT_ROW, coin["price"], coin["date_updated"])
+		print(coin)
 
 
 def setup(bot):
-	if os.getenv("CMC_PRO_API_KEY") is not None:
-		bot.add_cog(SnaccCoin(bot))
-
-	else:
-		print(f"Missing env key: CMC_PRO_API_KEY")
+	bot.add_cog(SnaccCoin(bot))
