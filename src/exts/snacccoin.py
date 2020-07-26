@@ -30,9 +30,8 @@ class SnaccCoin(commands.Cog, name="Snacc Coin"):
 		embed = discord.Embed(title="Snacc Coin", color=discord.Color.orange())
 
 		price = self._price_cache['current']
-		tax = int(price * 0.01)
 
-		embed.description = f":moneybag: **Current Price: ${price:,}** (+1% {tax:,})"
+		embed.description = f":moneybag: **Current Price: ${price:,}**"
 
 		file = discord.File("graph.png", filename="graph.png")
 
@@ -43,23 +42,21 @@ class SnaccCoin(commands.Cog, name="Snacc Coin"):
 
 	@snacc_coin_group.command(name="buy")
 	async def buy_coin(self, ctx, amount: Range(1, 100)):
-		""" Buy some Snacc Coins. Purchases have a 1% purchase tax. """
+		""" Buy some Snacc Coins. """
 
 		async with ctx.bot.pool.acquire() as con:
 			row = await BankM.get_row(con, ctx.author.id)
 
 			price = self._price_cache["current"] * amount
-			tax = int(price * 0.01)
-			price_with_tax = price + tax
 
-			if price_with_tax > row["money"]:
+			if price > row["money"]:
 				await ctx.send(f"You can't afford to buy **{amount}** Snacc Coin(s).")
 
 			else:
-				await con.execute(BankM.SUB_MONEY, ctx.author.id, price_with_tax)
+				await con.execute(BankM.SUB_MONEY, ctx.author.id, price)
 				await con.execute(BankM.ADD_SNACC_COINS, ctx.author.id, amount)
 
-				await ctx.send(f"You bought **{amount}** Snacc Coin(s) for **${price:,}** (+1% {tax:,})!")
+				await ctx.send(f"You bought **{amount}** Snacc Coin(s) for **${price:,}**!")
 
 	@snacc_coin_group.command(name="sell")
 	async def sell_coin(self, ctx, amount: Range(1, 100)):
@@ -71,7 +68,7 @@ class SnaccCoin(commands.Cog, name="Snacc Coin"):
 			price = self._price_cache["current"] * amount
 
 			if amount > row["snacc_coins"]:
-				await ctx.send(f"You are trying to sell more Snacc Coin(s) than you current own.")
+				await ctx.send(f"You are trying to sell more Snacc Coin(s) than you currently own.")
 
 			else:
 				await con.execute(BankM.ADD_MONEY, ctx.author.id, price)
@@ -92,7 +89,7 @@ class SnaccCoin(commands.Cog, name="Snacc Coin"):
 
 			data = r.json()
 
-		return {k: int(v) for k, v in data["bpi"].items()}
+		return {k: int(v // 5) for k, v in data["bpi"].items()}
 
 	@staticmethod
 	async def get_current():
@@ -101,7 +98,7 @@ class SnaccCoin(commands.Cog, name="Snacc Coin"):
 
 			data = r.json()
 
-		return int(data["bpi"]["USD"]["rate_float"])
+		return int(data["bpi"]["USD"]["rate_float"]) // 5
 
 	@staticmethod
 	def create_graph(data):
