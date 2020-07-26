@@ -24,7 +24,7 @@ class _UnitGroup:
 		for unit in self.units:
 			units_owned = population[unit.db_col]
 
-			if units_owned < (upgrades['extra_units'] + unit.max_amount):
+			if units_owned < unit.get_max_amount(upgrades):
 				units.append(unit)
 
 		return units
@@ -40,7 +40,7 @@ class _MoneyUnitGroup(_UnitGroup):
 		for unit in self.units:
 			units_owned = empire[unit.db_col]
 
-			owned = f"{units_owned}/{upgrades['extra_units'] + unit.max_amount}"
+			owned = f"{units_owned}/{unit.get_max_amount(upgrades)}"
 
 			row = [unit.display_name, owned, f"${unit.income_hour * units_owned:,}"]
 
@@ -59,7 +59,7 @@ class _MoneyUnitGroup(_UnitGroup):
 		for unit in self.filter_units(empire, upgrades):
 			units_owned = empire[unit.db_col]
 
-			owned = f"{units_owned}/{upgrades['extra_units'] + unit.max_amount}"
+			owned = f"{units_owned}/{unit.get_max_amount(upgrades)}"
 			price = f"${unit.get_price(units_owned):,}"
 
 			row = [unit.id, unit.display_name, owned, f"${unit.income_hour}", price]
@@ -83,7 +83,7 @@ class _MilitaryUnitGroup(_UnitGroup):
 
 			upkeep, power = f"${unit.upkeep_hour * units_owned:,}", unit.power * units_owned
 
-			row = [unit.display_name, f"{units_owned}/{upgrades['extra_units'] + unit.max_amount}", power, upkeep]
+			row = [unit.display_name, f"{units_owned}/{unit.get_max_amount(upgrades)}", power, upkeep]
 
 			page.add_row(row)
 
@@ -100,7 +100,7 @@ class _MilitaryUnitGroup(_UnitGroup):
 		for unit in self.filter_units(empire, upgrades):
 			units_owned = empire[unit.db_col]
 
-			owned = f"{units_owned}/{upgrades['extra_units'] + unit.max_amount}"
+			owned = f"{units_owned}/{unit.get_max_amount(upgrades)}"
 			price = f"${unit.get_price(units_owned):,}"
 
 			row = [unit.id, unit.display_name, owned, unit.power, f"${unit.upkeep_hour}", price]

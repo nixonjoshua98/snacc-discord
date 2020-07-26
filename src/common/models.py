@@ -106,7 +106,7 @@ class BankM:
 
 	INSERT_ROW = """
 	INSERT INTO bank (user_id) VALUES ($1) 
-	ON CONFLICT 
+	ON CONFLICT (user_id)
 		DO NOTHING 
 	RETURNING *;
 	"""
@@ -147,7 +147,14 @@ class HangmanM:
 
 class PopulationM:
 	SELECT_ROW = "SELECT * FROM population WHERE population_id = $1 LIMIT 1;"
-	INSERT_ROW = "INSERT INTO population (population_id) VALUES ($1);"
+	INSERT_ROW = """
+	INSERT INTO population (population_id)
+	VALUES ($1)
+	ON CONFLICT (population_id)
+		DO NOTHING
+	RETURNING *;
+	"""
+
 	SELECT_ALL = "SELECT * FROM population;"
 
 	@classmethod
@@ -161,6 +168,15 @@ class PopulationM:
 		q = f"UPDATE population SET {unit.db_col} = {unit.db_col} - $2 WHERE population_id = $1;"
 
 		await con.execute(q, user_id, amount)
+
+	@classmethod
+	async def get_row(cls, con, user_id: int):
+		row = await con.fetchrow(cls.SELECT_ROW, user_id)
+
+		if row is None:
+			row = await con.fetchrow(cls.INSERT_ROW, user_id)
+
+		return row
 
 
 class EmpireM(TableModel):

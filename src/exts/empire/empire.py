@@ -73,7 +73,7 @@ class Empire(commands.Cog):
 				for i in range(1, population[unit.db_col] + 1):
 					price = unit.get_price(population[unit.db_col] - i, i)
 
-					if (price + units_lost_cost) <= hourly_income * 3.0:
+					if (price + units_lost_cost) < hourly_income * 3.0:
 						units_lost_[unit] = i
 
 					units_lost_cost = sum([u.get_price(population[unit.db_col] - n, n) for u, n in units_lost_.items()])
@@ -178,7 +178,7 @@ class Empire(commands.Cog):
 		""" Trigger an empire event. """
 
 		options = (events.loot_event, events.stolen_event, events.assassinated_event)
-		weights = (85, 10, 15)
+		weights = (110, 10, 10)
 
 		chosen_events = random.choices(options, weights=weights, k=1)
 
@@ -259,7 +259,7 @@ class Empire(commands.Cog):
 			# Cost of upgrading from current -> (current + amount)
 			price = unit.get_price(population[unit.db_col], amount)
 
-			max_units = unit.max_amount + upgrades["extra_units"]
+			max_units = unit.get_max_amount(upgrades)
 
 			if population[unit.db_col] + amount > max_units:
 				await ctx.send(f"**{unit.display_name}** have a limit of **{max_units}** units.")

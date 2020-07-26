@@ -16,5 +16,5 @@ class _Upgrade(Purchasable):
 
 
 ALL_UPGRADES = [
-	_Upgrade(db_col="extra_units", display_name="Extra Unit Slots", base_cost=10_000, exponent=1.25)
+	_Upgrade(db_col="extra_units", display_name="Extra Unit Slots", base_cost=10_000, exponent=1.25),
 ]
