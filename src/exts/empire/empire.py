@@ -185,7 +185,6 @@ class Empire(commands.Cog):
 		for event in chosen_events:
 			await event(ctx)
 
-		# 12.5% chance for cooldown to be reset
 		if random.randint(0, 7) == 0:
 			self.empire_event.reset_cooldown(ctx)
 

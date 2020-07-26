@@ -17,7 +17,7 @@ class SnaccBot(commands.Bot):
         "shop", "tags", "hangman",
         "gambling", "money", "snacccoin",
         "darkness", "moderator", "misc",
-        "serverdoor", "settings"
+        "serverdoor", "extra", "settings"
     ]
 
     def __init__(self):

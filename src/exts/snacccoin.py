@@ -7,8 +7,6 @@ from discord.ext import commands, tasks
 import matplotlib.pyplot as plt
 import datetime as dt
 
-from src.common.models import BankM
-
 
 class SnaccCoin(commands.Cog, name="Snacc Coin"):
 	def __init__(self, bot):
