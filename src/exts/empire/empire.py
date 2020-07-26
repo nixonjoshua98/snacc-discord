@@ -73,7 +73,7 @@ class Empire(commands.Cog):
 				for i in range(1, population[unit.db_col] + 1):
 					price = unit.get_price(population[unit.db_col] - i, i)
 
-					if (price + units_lost_cost) < hourly_income * 3.0:
+					if (price + units_lost_cost) < hourly_income * 2.0:
 						units_lost_[unit] = i
 
 					units_lost_cost = sum([u.get_price(population[unit.db_col] - n, n) for u, n in units_lost_.items()])
