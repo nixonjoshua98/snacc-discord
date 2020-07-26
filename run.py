@@ -7,9 +7,16 @@ def set_env():
 
     config.read("config.ini")
 
-    os.environ["BOT_TOKEN"] = config.get("bot", "TOKEN")
-    os.environ["CON_STR"] = config.get("postgres", "CON_STR")
     os.environ["DEBUG"] = "1"
+
+    # Bot
+    os.environ["BOT_TOKEN"] = config.get("bot", "TOKEN")
+
+    # Postgres
+    os.environ["CON_STR"] = config.get("postgres", "CON_STR")
+
+    # Keys
+    os.environ["CMC_PRO_API_KEY"] = config.get("keys", "CMC_PRO_API_KEY")
 
 
 def setup_loop():

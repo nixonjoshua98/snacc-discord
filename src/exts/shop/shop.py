@@ -12,15 +12,9 @@ from src.structs.textpage import TextPage
 
 
 class Shop(commands.Cog):
-
-	@checks.has_empire()
-	@commands.group(name="shop", invoke_without_command=True)
-	async def shop_group(self, ctx):
-		""" Display your shop. """
-
-		upgrades = await UserUpgradesM.get_row(ctx.bot.pool, ctx.author.id)
-
-		page = TextPage(title="Upgrades Shop", headers=["ID", "Name", "Owned", "Cost"])
+	@staticmethod
+	def create_upgrades_shop_page(upgrades):
+		page = TextPage(title="Empire Upgrades", headers=["ID", "Name", "Owned", "Cost"])
 
 		for upgrade in ALL_UPGRADES:
 			if upgrades[upgrade.db_col] < upgrade.max_amount:
@@ -30,6 +24,17 @@ class Shop(commands.Cog):
 				page.add_row([upgrade.id, upgrade.display_name, owned, price])
 
 		page.set_footer("No upgrades available to buy" if len(page.rows) == 0 else None)
+
+		return page
+
+	@checks.has_empire()
+	@commands.group(name="shop", invoke_without_command=True)
+	async def shop_group(self, ctx):
+		""" Display your shop. """
+
+		upgrades = await UserUpgradesM.get_row(ctx.bot.pool, ctx.author.id)
+
+		page = self.create_upgrades_shop_page(upgrades)
 
 		await inputs.send_pages(ctx, [page.get()])
 
