@@ -49,9 +49,7 @@ async def assassinated_event(ctx):
 		units_owned = [unit for unit in UNIT_GROUPS[UnitGroupType.MONEY].units if population[unit.db_col] > 0]
 
 		if units_owned:
-			weights = [i ** 2 for i in range(len(units_owned), 0, -1)]
-
-			unit_killed = random.choices(units_owned, weights=weights, k=1)[0]
+			unit_killed = min(units_owned, key=lambda u: u.get_price(population[u.db_col]))
 
 			await PopulationM.sub_unit(ctx.bot.pool, ctx.author.id, unit_killed, 1)
 
