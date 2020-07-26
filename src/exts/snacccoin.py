@@ -15,6 +15,10 @@ class SnaccCoin(commands.Cog):
 
 		self.start_snacc_coin_loop()
 
+	@commands.group(name="sc", invoke_without_command=True)
+	async def snacc_coin_group(self, ctx):
+		coin = {"price": 5678, "date_updated": dt.datetime.utcnow()}
+
 	@staticmethod
 	async def get_new_snacc_coin():
 		def get(d, **kwargs):
@@ -61,7 +65,7 @@ class SnaccCoin(commands.Cog):
 		if coin is None:
 			return None
 
-		await self.bot.execute(SnaccCoinM.INSERT_ROW, coin["price"], coin["date_updated"])
+		await self.bot.pool.execute(SnaccCoinM.INSERT_ROW, coin["price"], coin["date_updated"])
 
 
 def setup(bot):
