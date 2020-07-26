@@ -29,7 +29,10 @@ class SnaccCoin(commands.Cog, name="Snacc Coin"):
 
 		embed = discord.Embed(title="Snacc Coin", color=discord.Color.orange())
 
-		embed.description = f":moneybag: **Current Price: ${self._price_cache['current']:,}**"
+		price = self._price_cache['current']
+		tax = int(price * 0.01)
+
+		embed.description = f":moneybag: **Current Price: ${price:,}** (+1% {tax:,})"
 
 		file = discord.File("graph.png", filename="graph.png")
 
@@ -56,11 +59,11 @@ class SnaccCoin(commands.Cog, name="Snacc Coin"):
 				await con.execute(BankM.SUB_MONEY, ctx.author.id, price_with_tax)
 				await con.execute(BankM.ADD_SNACC_COINS, ctx.author.id, amount)
 
-				await ctx.send(f"You bought **{amount}** Snacc Coin(s) for **${price:,}(+1% {tax})**!")
+				await ctx.send(f"You bought **{amount}** Snacc Coin(s) for **${price:,}** (+1% {tax:,})!")
 
 	@snacc_coin_group.command(name="sell")
 	async def sell_coin(self, ctx, amount: Range(1, 100)):
-		""" Sell some Snacc Coins """
+		""" Sell some Snacc Coins. """
 
 		async with ctx.bot.pool.acquire() as con:
 			row = await BankM.get_row(con, ctx.author.id)
