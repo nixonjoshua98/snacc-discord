@@ -26,7 +26,7 @@ class _Unit(Purchasable):
 		# Increment the internal ID for the next unit
 		_Unit.__unit_id += 1
 
-	def get_max_amount(self, upgrades: dict): return self.max_amount + upgrades["extra_slots"]
+	def get_max_amount(self, upgrades: dict): return self.max_amount + upgrades["extra_units"]
 
 	def get_delta_money(self, total, delta_time):
 		income = math.ceil((self.income_hour * total) * delta_time)

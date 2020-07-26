@@ -19,7 +19,7 @@ will need to be wrapped in speech marks. e.g `!blm "Arena Stats" Empire ...`
 
 	def cog_check(self, ctx):
 		if not ctx.author.guild_permissions.administrator:
-			raise commands.MissingPermissions("You do not have access to this command.")
+			raise commands.MissingPermissions(("Administrator",))
 
 		return True
 

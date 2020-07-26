@@ -30,10 +30,10 @@ class Money(commands.Cog, name="Bank"):
 
 		embed = discord.Embed(title=f"{ctx.author.display_name}'s Bank", colour=discord.Color.orange())
 
-		embed.description = f"""
-		{Emoji.TOKEN} **{row['snacc_coins']}**
-		:moneybag: **${row['money']:,}**
-		"""
+		embed.description = (
+			f"{Emoji.TOKEN} **{row['snacc_coins']}**"
+			f":moneybag: **${row['money']:,}**"
+		)
 
 		await ctx.send(embed=embed)
 
