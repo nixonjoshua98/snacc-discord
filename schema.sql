@@ -25,8 +25,9 @@ blacklisted_cogs        VARCHAR[]   DEFAULT array[]::varchar[]
 
 
 CREATE table IF NOT EXISTS bank (
-user_id BIGINT PRIMARY KEY,
-money   BIGINT DEFAULT 1000 CHECK (money >= 0)
+user_id         BIGINT PRIMARY KEY,
+money           BIGINT DEFAULT 1000 CHECK (money >= 0),
+snacc_coins     BIGINT DEFAULT 0    CHECK (snacc_coins >= 0)
 );
 
 

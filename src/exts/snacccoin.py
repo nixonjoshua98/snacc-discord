@@ -7,6 +7,8 @@ from discord.ext import commands, tasks
 import matplotlib.pyplot as plt
 import datetime as dt
 
+from src.common.models import BankM
+
 
 class SnaccCoin(commands.Cog, name="Snacc Coin"):
 	def __init__(self, bot):
@@ -34,6 +36,14 @@ class SnaccCoin(commands.Cog, name="Snacc Coin"):
 		embed.set_footer(text="Powered by CoinDesk")
 
 		await ctx.send(file=file, embed=embed)
+
+	@snacc_coin_group.command(name="buy")
+	async def buy_coin(self, ctx):
+		""" Buy a Snacc Coin. """
+
+	@snacc_coin_group.command(name="sell")
+	async def sell_coin(self, ctx):
+		""" Sell a Snacc Coin. """
 
 	@staticmethod
 	async def get_history():

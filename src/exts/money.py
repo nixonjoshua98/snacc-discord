@@ -1,13 +1,15 @@
 import random
+import discord
 
 from discord.ext import commands
 
 from src import inputs
 from src.common.models import BankM
+from src.common.emoji import Emoji
 from src.common.converters import DiscordUser
 
 
-class Money(commands.Cog):
+class Money(commands.Cog, name="Bank"):
 
 	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
 	@commands.command(name="free")
@@ -22,11 +24,18 @@ class Money(commands.Cog):
 
 	@commands.command(name="balance", aliases=["bal"])
 	async def balance(self, ctx):
-		""" Show your bank balance. """
+		""" Show your bank balance(s). """
 
 		row = await BankM.get_row(ctx.bot.pool, ctx.author.id)
 
-		await ctx.send(f":moneybag: **{ctx.author.display_name}** has **${row['money']:,}**")
+		embed = discord.Embed(title=f"{ctx.author.display_name}'s Bank", colour=discord.Color.orange())
+
+		embed.description = f"""
+		{Emoji.TOKEN} **{row['snacc_coins']}**
+		:moneybag: **${row['money']:,}**
+		"""
+
+		await ctx.send(embed=embed)
 
 	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
 	@commands.command(name="steal", cooldown_after_parsing=True)
