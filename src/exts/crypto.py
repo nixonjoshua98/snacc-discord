@@ -67,7 +67,7 @@ class Crypto(commands.Cog):
 
 			price = self._price_cache["current"] * amount
 
-			if amount > row["BTC"]:
+			if amount > row["btc"]:
 				await ctx.send(f"You are trying to sell more Bitcoin than you currently own.")
 
 			else:
