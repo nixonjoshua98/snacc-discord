@@ -23,7 +23,7 @@ class Crypto(commands.Cog):
 		if self._price_cache.get("history", None) is None:
 			await self.update_prices()
 
-	@commands.group(name="sc", invoke_without_command=True)
+	@commands.group(name="crpto", aliases=["c", "cry"], invoke_without_command=True)
 	async def snacc_coin_group(self, ctx):
 		""" Show the history of the avilable coins. """
 
