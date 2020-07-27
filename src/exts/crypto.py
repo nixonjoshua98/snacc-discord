@@ -25,7 +25,7 @@ class Crypto(commands.Cog):
 
 	@commands.group(name="crpto", aliases=["c", "cry"], invoke_without_command=True)
 	async def snacc_coin_group(self, ctx):
-		""" Show the history of the avilable coins. """
+		""" Show the history of the avilable coins. BTC costs are divided by 5. """
 
 		embed = discord.Embed(title="Cryptocurrency", color=discord.Color.orange())
 
@@ -42,7 +42,7 @@ class Crypto(commands.Cog):
 
 	@snacc_coin_group.command(name="buy")
 	async def buy_coin(self, ctx, amount: Range(1, 100)):
-		""" Buy Crpyto coins """
+		""" Buy Bitcoin(s). """
 
 		async with ctx.bot.pool.acquire() as con:
 			row = await BankM.get_row(con, ctx.author.id)

@@ -127,7 +127,7 @@ class Empire(commands.Cog):
 
 		win_chance = self.get_win_chance(ctx.empire_data["atk_pow"], ctx.empire_data["def_pow"])
 
-		attack_won = win_chance <= random.uniform(0.0, 1.0)
+		attack_won = win_chance >= random.uniform(0.0, 1.0)
 
 		async with ctx.bot.pool.acquire() as con:
 			results = await self.simulate_attack(con, target if attack_won else ctx.author)
@@ -158,7 +158,9 @@ class Empire(commands.Cog):
 
 			await EmpireM.set(con, ctx.author.id, last_attack=dt.datetime.utcnow() - dt.timedelta(hours=1.5))
 
-		await ctx.send(f"LOG: {ctx.empire_data['atk_pow']} {ctx.empire_data['def_pow']} {win_chance} {attack_won}")
+		s = f"LOG: {ctx.empire_data['atk_pow']} {ctx.empire_data['def_pow']} {round(win_chance, 1)} {attack_won}"
+
+		await ctx.send(s)
 
 	@checks.has_empire()
 	@commands.cooldown(1, 60 * 90, commands.BucketType.user)
