@@ -125,16 +125,16 @@ class BankM:
 		UPDATE SET money = GREATEST(0, bank.money - $2) ;
 	"""
 
-	ADD_SNACC_COINS = """
-	INSERT INTO bank (user_id, snacc_coins) VALUES ($1, $2)
+	ADD_BTC = """
+	INSERT INTO bank (user_id, BTC) VALUES ($1, $2)
 	ON CONFLICT (user_id) DO
-		UPDATE SET snacc_coins = GREATEST(0, bank.snacc_coins + $2);
+		UPDATE SET snacc_coins = GREATEST(0, bank.BTC + $2);
 	"""
 
-	SUB_SNACC_COINS = """
-	INSERT INTO bank (user_id, snacc_coins) VALUES ($1, $2)
+	SUB_BTC = """
+	INSERT INTO bank (user_id, BTC) VALUES ($1, $2)
 	ON CONFLICT (user_id) DO
-		UPDATE SET snacc_coins = GREATEST(0, bank.snacc_coins - $2) ;
+		UPDATE SET snacc_coins = GREATEST(0, bank.BTC - $2) ;
 	"""
 
 	@classmethod

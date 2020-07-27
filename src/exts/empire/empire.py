@@ -158,6 +158,8 @@ class Empire(commands.Cog):
 
 			await EmpireM.set(con, ctx.author.id, last_attack=dt.datetime.utcnow() - dt.timedelta(hours=1.5))
 
+		await ctx.send(f"LOG: {ctx.empire_data['atk_pow']} {ctx.empire_data['def_pow']} {win_chance} {attack_won}")
+
 	@checks.has_empire()
 	@commands.cooldown(1, 60 * 90, commands.BucketType.user)
 	@commands.command(name="empireevent", aliases=["ee"])

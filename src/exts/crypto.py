@@ -54,7 +54,7 @@ class Crypto(commands.Cog):
 
 			else:
 				await con.execute(BankM.SUB_MONEY, ctx.author.id, price)
-				await con.execute(BankM.ADD_SNACC_COINS, ctx.author.id, amount)
+				await con.execute(BankM.ADD_BTC, ctx.author.id, amount)
 
 				await ctx.send(f"You bought **{amount}** Bitcoin(s) for **${price:,}**!")
 
@@ -72,7 +72,7 @@ class Crypto(commands.Cog):
 
 			else:
 				await con.execute(BankM.ADD_MONEY, ctx.author.id, price)
-				await con.execute(BankM.SUB_SNACC_COINS, ctx.author.id, amount)
+				await con.execute(BankM.SUB_BTC, ctx.author.id, amount)
 
 				await ctx.send(f"You sold **{amount}** Bitcoin(s) for **${price:,}**!")
 
