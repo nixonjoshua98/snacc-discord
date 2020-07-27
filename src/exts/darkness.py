@@ -93,9 +93,9 @@ class Darkness(commands.Cog):
         for k, v in answers.items():
             embed.add_field(name=k.title(), value=v, inline=False)
 
-        today = datetime.utcnow().strftime('%d/%m/%Y %X')
+        embed.timestamp = datetime.utcnow()
 
-        embed.set_footer(text=f"{str(ctx.author)} | UTC: {today}", icon_url=ctx.author.avatar_url)
+        embed.set_footer(text=f"{str(ctx.author)}", icon_url=ctx.author.avatar_url)
 
         await channel.send(embed=embed)
 
