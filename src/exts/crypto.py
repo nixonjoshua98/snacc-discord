@@ -60,7 +60,7 @@ class Crypto(commands.Cog):
 
 	@snacc_coin_group.command(name="sell")
 	async def sell_coin(self, ctx, amount: Range(1, 100)):
-		""" Sell some Crypto coins. """
+		""" Sell Bitcoin(s). """
 
 		async with ctx.bot.pool.acquire() as con:
 			row = await BankM.get_row(con, ctx.author.id)
