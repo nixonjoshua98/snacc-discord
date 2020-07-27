@@ -15,7 +15,7 @@ class SnaccBot(commands.Bot):
     EXTENSIONS = [
         "errorhandler", "arenastats", "empire",
         "shop", "tags", "hangman",
-        "gambling", "money", "snacccoin",
+        "gambling", "money", "crypto",
         "darkness", "moderator", "misc",
         "serverdoor", "extra", "settings"
     ]

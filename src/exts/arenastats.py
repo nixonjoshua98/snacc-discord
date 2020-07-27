@@ -132,7 +132,7 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 
 	@tasks.loop(hours=12.0)
 	async def shame_users_loop(self):
-		""" background tasks which posts to the main server. """
+		""" Background tasks which posts to the main server. """
 
 		channel = self.bot.get_channel(MainServer.ABO_CHANNEL)
 
@@ -144,7 +144,7 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 	@checks.main_server_only()
 	@commands.command(name="shame")
 	async def shame(self, ctx):
-		""" [Snacc] Posts the shame message. """
+		""" Posts the shame message. """
 
 		message = await self.create_shame_message(ctx.channel)
 
@@ -163,7 +163,7 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 	@commands.has_permissions(administrator=True)
 	@commands.command(name="setuser", aliases=["su"])
 	async def set_user_stats_command(self, ctx, level: int, trophies: int, *, target: discord.Member):
-		""" [Admin] Set another users ABO stats. """
+		""" Set another users ABO stats. """
 
 		await self.set_users_stats(ctx, target, level, trophies)
 

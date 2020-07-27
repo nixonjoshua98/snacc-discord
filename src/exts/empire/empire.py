@@ -11,7 +11,7 @@ from discord.ext import tasks, commands
 from dataclasses import dataclass
 
 from src import inputs
-from src.common import checks
+from src.common import MainServer, checks
 from src.common.models import BankM, EmpireM, PopulationM, UserUpgradesM
 from src.common.converters import EmpireUnit, Range, EmpireTargetUser
 
@@ -126,6 +126,7 @@ class Empire(commands.Cog):
 		""" Attack a rival empire. """
 
 		win_chance = self.get_win_chance(ctx.empire_data["atk_pow"], ctx.empire_data["def_pow"])
+
 		attack_won = win_chance <= random.uniform(0.0, 1.0)
 
 		async with ctx.bot.pool.acquire() as con:

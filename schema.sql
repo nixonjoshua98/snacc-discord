@@ -26,8 +26,12 @@ blacklisted_cogs        VARCHAR[]   DEFAULT array[]::varchar[]
 
 CREATE table IF NOT EXISTS bank (
 user_id         BIGINT PRIMARY KEY,
+
+-- USD
 money           BIGINT DEFAULT 1000 CHECK (money >= 0),
-snacc_coins     BIGINT DEFAULT 0    CHECK (snacc_coins >= 0)
+
+-- Crpyto(s)
+BTC             BIGINT DEFAULT 0    CHECK (BTC >= 0)
 );
 
 

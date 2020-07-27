@@ -17,7 +17,7 @@ class Moderator(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True)))
 	@commands.cooldown(1, 30, BucketType.member)
 	@commands.command(name="purge", usage="<target=None> <limit=0>")
 	async def purge(self, ctx, target: Optional[discord.Member] = None, limit: Range(0, 100) = 0):
-		""" [Mod] Clear a channel of messages. """
+		""" Clear a channel of messages. """
 
 		def check(m):
 			return target is None or m.author == target

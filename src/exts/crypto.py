@@ -11,7 +11,7 @@ from src.common.models import BankM
 from src.common.converters import Range
 
 
-class SnaccCoin(commands.Cog, name="Snacc Coin"):
+class Crypto(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
@@ -25,9 +25,9 @@ class SnaccCoin(commands.Cog, name="Snacc Coin"):
 
 	@commands.group(name="sc", invoke_without_command=True)
 	async def snacc_coin_group(self, ctx):
-		""" Show the coin history and current price. """
+		""" Show the history of the avilable coins. """
 
-		embed = discord.Embed(title="Snacc Coin", color=discord.Color.orange())
+		embed = discord.Embed(title="Cryptocurrency", color=discord.Color.orange())
 
 		price = self._price_cache['current']
 
@@ -42,7 +42,7 @@ class SnaccCoin(commands.Cog, name="Snacc Coin"):
 
 	@snacc_coin_group.command(name="buy")
 	async def buy_coin(self, ctx, amount: Range(1, 100)):
-		""" Buy some Snacc Coins. """
+		""" Buy Crpyto coins """
 
 		async with ctx.bot.pool.acquire() as con:
 			row = await BankM.get_row(con, ctx.author.id)
@@ -50,31 +50,31 @@ class SnaccCoin(commands.Cog, name="Snacc Coin"):
 			price = self._price_cache["current"] * amount
 
 			if price > row["money"]:
-				await ctx.send(f"You can't afford to buy **{amount}** Snacc Coin(s).")
+				await ctx.send(f"You can't afford to buy **{amount}** Bitcoin(s).")
 
 			else:
 				await con.execute(BankM.SUB_MONEY, ctx.author.id, price)
 				await con.execute(BankM.ADD_SNACC_COINS, ctx.author.id, amount)
 
-				await ctx.send(f"You bought **{amount}** Snacc Coin(s) for **${price:,}**!")
+				await ctx.send(f"You bought **{amount}** Bitcoin(s) for **${price:,}**!")
 
 	@snacc_coin_group.command(name="sell")
 	async def sell_coin(self, ctx, amount: Range(1, 100)):
-		""" Sell some Snacc Coins. """
+		""" Sell some Crypto coins. """
 
 		async with ctx.bot.pool.acquire() as con:
 			row = await BankM.get_row(con, ctx.author.id)
 
 			price = self._price_cache["current"] * amount
 
-			if amount > row["snacc_coins"]:
-				await ctx.send(f"You are trying to sell more Snacc Coin(s) than you currently own.")
+			if amount > row["BTC"]:
+				await ctx.send(f"You are trying to sell more Bitcoin than you currently own.")
 
 			else:
 				await con.execute(BankM.ADD_MONEY, ctx.author.id, price)
 				await con.execute(BankM.SUB_SNACC_COINS, ctx.author.id, amount)
 
-				await ctx.send(f"You sold **{amount}** Snacc Coin(s) for **${price:,}**!")
+				await ctx.send(f"You sold **{amount}** Bitcoin(s) for **${price:,}**!")
 
 	@staticmethod
 	async def get_history():
@@ -116,7 +116,7 @@ class SnaccCoin(commands.Cog, name="Snacc Coin"):
 
 	def start_price_update_loop(self):
 		async def predicate():
-			print("Starting loop: Snacc Coin")
+			print("Starting loop: Crpyto")
 
 			self.update_prices_loop.start()
 
@@ -136,4 +136,4 @@ class SnaccCoin(commands.Cog, name="Snacc Coin"):
 
 
 def setup(bot):
-	bot.add_cog(SnaccCoin(bot))
+	bot.add_cog(Crypto(bot))

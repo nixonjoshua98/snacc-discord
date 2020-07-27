@@ -13,7 +13,7 @@ class Settings(commands.Cog):
 	"""
 Modules and non-mentioned channels such as `Arena Stats`
 will need to be wrapped in speech marks. e.g `!blm "Arena Stats" Empire ...`
-"""
+	"""
 
 	__blacklistable__ = False
 

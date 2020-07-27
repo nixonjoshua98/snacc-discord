@@ -75,7 +75,7 @@ class Hangman(commands.Cog):
     @commands.has_permissions(administrator=True)
     @commands.command(name="giveup")
     async def giveup(self, ctx):
-        """ [Admin] Give up the current hangman game. """
+        """ Give up the current hangman game. """
 
         inst = self.games.get(ctx.channel.id, None)
 
@@ -120,7 +120,7 @@ class Hangman(commands.Cog):
     @checks.snaccman_only()
     @commands.command(name="cheat")
     async def cheat(self, ctx):
-        """ [Snacc] Recieve a DM with the hidden word. """
+        """ Recieve a DM with the hidden word. """
 
         inst = self.games.get(ctx.channel.id)
 
