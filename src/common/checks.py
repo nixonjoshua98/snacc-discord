@@ -56,17 +56,3 @@ def main_server_only():
 		return ctx.guild.id == MainServer.ID
 
 	return commands.check(predicate)
-
-
-async def user_has_role(ctx, *, name: str = None, key: str = None):
-	role = None
-
-	if name is not None:
-		role = discord.utils.get(ctx.guild.roles, name=name)
-
-	elif key is not None:
-		svr = await ctx.bot.get_server_config(ctx.guild)
-
-		role = ctx.guild.get_role(svr[key])
-
-	return role is not None and role in ctx.author.roles
