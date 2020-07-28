@@ -41,7 +41,7 @@ class Empire(commands.Cog):
 			if await self.bot.is_snacc_owner():
 				print("Starting loop: Income")
 
-				await asyncio.sleep(60 * 30)
+				#await asyncio.sleep(60 * 30)
 
 				self.income_loop.start()
 
@@ -303,10 +303,7 @@ class Empire(commands.Cog):
 				# Hours since the user was last updated
 				delta_time = (now - empire["last_update"]).total_seconds() / 3600
 
-				money_change = utils.get_total_money_delta(empire, delta_time)
-
-				# We do not want decimals
-				money_change = math.ceil(money_change)
+				money_change = int(utils.get_total_money_delta(empire, delta_time))
 
 				# No need to update the database if the user gained nothing
 				if money_change != 0:
