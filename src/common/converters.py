@@ -72,9 +72,6 @@ class EmpireTargetUser(DiscordUser):
 		elif def_pow <= (atk_pow // 2):
 			raise commands.CommandError("You are too strong for your target.")
 
-		elif atk_pow >= (def_pow * 2.0):
-			raise commands.CommandError("You are too weak for your target.")
-
 		# Custom Context data
 		ctx.empire_data = {"atk_pow": atk_pow, "def_pow": def_pow}
 
