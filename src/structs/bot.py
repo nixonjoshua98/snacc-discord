@@ -43,6 +43,12 @@ class SnaccBot(commands.Bot):
         await self.create_pool()
         await self.setup_database()
 
+        async with self.pool.acquire() as con:
+            users = await con.fetch("SELECT * FROM empire;")
+
+            for user in users:
+                await con.execute(PlayerM.SET_LAST_LOGIN, user["empire_id"], dt.datetime.utcnow())
+
         self.load_extensions()
 
         print(f"Bot '{self.user.display_name}' is ready")
