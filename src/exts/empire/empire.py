@@ -149,7 +149,7 @@ class Empire(commands.Cog):
 				await ctx.send(s)
 
 			else:
-				await con.execute(BankM.SUB_MONEY, target.id, results.money_lost)
+				await con.execute(BankM.SUB_MONEY, ctx.author.id, results.money_lost)
 
 				await ctx.send(
 					f"You lost against **{target.display_name}** "
