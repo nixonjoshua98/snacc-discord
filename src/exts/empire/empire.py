@@ -296,8 +296,8 @@ class Empire(commands.Cog):
 
 				now = dt.datetime.utcnow()
 
-				# Stop passive income after the user has not interacted with the bot in 3 days
-				if player_row is None or (now - player_row["last_login"]).days >= 3:
+				# Stop passive income after the user has not interacted with the bot in the past day
+				if player_row is None or (now - player_row["last_login"]).days >= 1:
 					continue
 
 				# Hours since the user was last updated
