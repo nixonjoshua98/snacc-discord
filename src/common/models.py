@@ -11,6 +11,12 @@ class TableModel:
 		await con.execute(q, _id, *list(kwargs.values()))
 
 
+class PlayerM(TableModel):
+	_TABLE, _PK = "player", "player_id"
+
+	SELECT_ROW = f"SELECT * FROM {_TABLE} WHERE {_PK} = $1 LIMIT 1;"
+
+
 class ServersM(TableModel):
 	_TABLE, _PK = "servers", "server_id"
 

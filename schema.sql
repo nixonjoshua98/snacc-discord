@@ -1,4 +1,12 @@
 
+
+
+CREATE TABLE IF NOT EXISTS player (
+player_id       BIGINT  PRIMARY KEY,
+last_login      TIMESTAMP WITHOUT time zone DEFAULT (now() at time zone 'utc')
+);
+
+
 CREATE TABLE IF NOT EXISTS arena_stats (
 arena_stat_id   SERIAL,
 user_id         BIGINT,

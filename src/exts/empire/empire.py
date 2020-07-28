@@ -11,8 +11,8 @@ from discord.ext import tasks, commands
 from dataclasses import dataclass
 
 from src import inputs
-from src.common import MainServer, checks
-from src.common.models import BankM, EmpireM, PopulationM, UserUpgradesM
+from src.common import checks
+from src.common.models import BankM, EmpireM, PopulationM, UserUpgradesM, PlayerM
 from src.common.converters import EmpireUnit, Range, EmpireTargetUser
 
 from src.exts.empire import utils, events
@@ -292,7 +292,13 @@ class Empire(commands.Cog):
 			rows = await con.fetch(EmpireM.SELECT_ALL_AND_POPULATION)
 
 			for empire in rows:
+				player_row = await con.fetchrow(PlayerM.SELECT_ROW, empire["empire_id"])
+
 				now = dt.datetime.utcnow()
+
+				# Stop passive income after the user has not interacted with the bot in 3 days
+				if (now - player_row["last_login"]).days >= 3:
+					continue
 
 				# Hours since the user was last updated
 				delta_time = (now - empire["last_update"]).total_seconds() / 3600
