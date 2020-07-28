@@ -11,10 +11,17 @@ class TableModel:
 		await con.execute(q, _id, *list(kwargs.values()))
 
 
-class PlayerM(TableModel):
+class PlayerM:
 	_TABLE, _PK = "player", "player_id"
 
 	SELECT_ROW = f"SELECT * FROM {_TABLE} WHERE {_PK} = $1 LIMIT 1;"
+
+	SET_LAST_LOGIN = """
+	INSERT INTO player (player_id, last_login)
+	VALUES ($1, $2)
+	ON CONFLICT (player_id) DO
+		UPDATE SET last_login = $2 WHERE player.player_id = $1;	
+	"""
 
 
 class ServersM(TableModel):

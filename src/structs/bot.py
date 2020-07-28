@@ -139,7 +139,7 @@ class SnaccBot(commands.Bot):
         return commands.when_mentioned_or(prefix)(self, message)
 
     async def on_before_invoke(self, ctx):
-        await PlayerM.set(self.pool, ctx.author.id, last_login=dt.datetime.utcnow())
+        await self.pool.execute(PlayerM.SET_LAST_LOGIN, ctx.author.id, dt.datetime.utcnow())
 
     async def on_message(self, message):
         if self.exts_loaded and message.guild is not None and not message.author.bot:
