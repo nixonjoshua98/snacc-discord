@@ -41,8 +41,6 @@ class Empire(commands.Cog):
 			if await self.bot.is_snacc_owner():
 				print("Starting loop: Income")
 
-				#await asyncio.sleep(60 * 30)
-
 				self.income_loop.start()
 
 		asyncio.create_task(predicate())
@@ -296,17 +294,14 @@ class Empire(commands.Cog):
 
 				now = dt.datetime.utcnow()
 
+				await EmpireM.set(con, empire["empire_id"], last_update=now)
+
 				# Stop passive income after the user has not interacted with the bot in the past day
 				if player_row is None or (now - player_row["last_login"]).days >= 1:
 					continue
 
-				# Hours since the user was last updated
-				delta_time = (now - empire["last_update"]).total_seconds() / 3600
+				hourse_since_last_pay = (now - empire["last_update"]).total_seconds() / 3600
 
-				money_change = int(utils.get_total_money_delta(empire, delta_time))
+				money_change = int(utils.get_total_money_delta(empire, hourse_since_last_pay))
 
-				# No need to update the database if the user gained nothing
-				if money_change != 0:
-					await con.execute(BankM.ADD_MONEY, empire["empire_id"], money_change)
-
-				await EmpireM.set(con, empire["empire_id"], last_update=now)
+				await con.execute(BankM.ADD_MONEY, empire["empire_id"], money_change)

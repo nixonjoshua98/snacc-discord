@@ -18,7 +18,7 @@ class Darkness(commands.Cog):
 
     @checks.main_server_only()
     @commands.command(name="join")
-    @commands.cooldown(1, 60 * 60 * 12, commands.BucketType.member)
+    @commands.cooldown(1, 60 * 60 * 12, commands.BucketType.user)
     @commands.max_concurrency(1, commands.BucketType.member)
     async def application(self, ctx):
         """ Apply to the guild! """

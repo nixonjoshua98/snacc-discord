@@ -23,9 +23,9 @@ class Crypto(commands.Cog):
 		if self._price_cache.get("history", None) is None:
 			await self.update_prices()
 
-	@commands.group(name="crpto", aliases=["c", "cry"], invoke_without_command=True)
-	async def snacc_coin_group(self, ctx):
-		""" Show the history of the avilable coins. BTC costs are divided by 5. """
+	@commands.group(name="crpto", aliases=["c"], invoke_without_command=True)
+	async def crypto_group(self, ctx):
+		""" Show the current price of Bitcoin. *Bitcoin prices are divided by 5*. """
 
 		embed = discord.Embed(title="Cryptocurrency", color=discord.Color.orange())
 
@@ -40,7 +40,7 @@ class Crypto(commands.Cog):
 
 		await ctx.send(file=file, embed=embed)
 
-	@snacc_coin_group.command(name="buy")
+	@crypto_group.command(name="buy")
 	async def buy_coin(self, ctx, amount: Range(1, 100)):
 		""" Buy Bitcoin(s). """
 
@@ -58,7 +58,7 @@ class Crypto(commands.Cog):
 
 				await ctx.send(f"You bought **{amount}** Bitcoin(s) for **${price:,}**!")
 
-	@snacc_coin_group.command(name="sell")
+	@crypto_group.command(name="sell")
 	async def sell_coin(self, ctx, amount: Range(1, 100)):
 		""" Sell Bitcoin(s). """
 

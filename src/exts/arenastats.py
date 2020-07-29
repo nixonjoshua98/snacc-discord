@@ -10,7 +10,6 @@ from discord.ext import commands, tasks
 from collections import defaultdict
 
 
-# src imports
 from src import inputs
 from src.common import MainServer, checks
 from src.common.emoji import Emoji
@@ -24,7 +23,7 @@ def chunk_list(ls, n):
 
 
 MAX_ROWS_PER_USER = 24
-DAYS_NO_PING = 7
+PING_COOLDOWN = 7
 NO_PING_ROLE = "Free Agent"
 
 
@@ -113,7 +112,7 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 
 				days = (now - user_data["date_set"]).days
 
-				if days >= DAYS_NO_PING:
+				if days >= PING_COOLDOWN:
 					lacking.append((member.mention, days))
 
 		message = None
