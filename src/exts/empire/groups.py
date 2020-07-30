@@ -36,7 +36,7 @@ class _UnitGroup:
 		return sum(map(lambda u: u.get_hourly_upkeep(empire[u.db_col], upgrades), self.units))
 
 	def get_total_power(self, empire):
-		return sum(map(lambda u: u.power * empire[u.db_col], self.units), self.units)
+		return sum(map(lambda u: u.power * empire[u.db_col], self.units))
 
 
 class _MoneyUnitGroup(_UnitGroup):
