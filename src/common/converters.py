@@ -42,7 +42,7 @@ class EmpireTargetUser(DiscordUser):
 	ATTACK_COOLDOWN = 1.5 * 3_600
 
 	async def convert(self, ctx: CustomContext, argument):
-		from src.exts.empire import utils
+		from src.exts.empire.units import MilitaryGroup
 
 		user = await super().convert(ctx, argument)
 
@@ -63,11 +63,11 @@ class EmpireTargetUser(DiscordUser):
 		attacker_pop = await ctx.bot.pool.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
 		defender_pop = await ctx.bot.pool.fetchrow(PopulationM.SELECT_ROW, user.id)
 
-		atk_pow = utils.get_total_power(attacker_pop)
-		def_pow = utils.get_total_power(defender_pop)
+		atk_pow = MilitaryGroup.get_total_power(attacker_pop)
+		def_pow = MilitaryGroup.get_total_power(defender_pop)
 
-		if atk_pow < 15:
-			raise commands.CommandError("You need at least **15** power to do that.")
+		if atk_pow < 25:
+			raise commands.CommandError("You need at least **25** power to do that.")
 
 		elif def_pow <= (atk_pow // 2):
 			raise commands.CommandError("You are too strong for your target.")

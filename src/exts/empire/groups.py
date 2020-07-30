@@ -29,6 +29,15 @@ class _UnitGroup:
 
 		return units
 
+	def get_total_hourly_income(self, empire, upgrades):
+		return sum(map(lambda u: u.get_hourly_income(empire[u.db_col], upgrades), self.units))
+
+	def get_total_hourly_upkeep(self, empire, upgrades):
+		return sum(map(lambda u: u.get_hourly_upkeep(empire[u.db_col], upgrades), self.units))
+
+	def get_total_power(self, empire, upgrades):
+		return sum(map(lambda u: u.power * empire[u.db_col], upgrades), self.units)
+
 
 class _MoneyUnitGroup(_UnitGroup):
 	def __init__(self, name, units):
@@ -37,19 +46,22 @@ class _MoneyUnitGroup(_UnitGroup):
 	def create_empire_page(self, empire, upgrades):
 		page = TextPage(title=empire["name"], headers=["Unit", "Owned", "Income"])
 
+		total_hourly_income = 0
+
 		for unit in self.units:
 			units_owned = empire[unit.db_col]
 
+			unit_hourly_income = unit.get_hourly_income(units_owned, upgrades)
+
+			total_hourly_income += unit_hourly_income
+
 			owned = f"{units_owned}/{unit.get_max_amount(upgrades)}"
 
-			row = [unit.display_name, owned, f"${unit.income_hour * units_owned:,}"]
+			row = [unit.display_name, owned, f"${unit_hourly_income:,}"]
 
 			page.add_row(row)
 
-		# Total income the user would get after 1 hour
-		total_income = sum(unit.get_delta_money(empire[unit.db_col], 1.0) for unit in self.units)
-
-		page.set_footer(f"Hourly Income: ${total_income:,}")
+		page.set_footer(f"Hourly Income: ${total_hourly_income:,}")
 
 		return page
 
@@ -59,10 +71,12 @@ class _MoneyUnitGroup(_UnitGroup):
 		for unit in self.filter_units(empire, upgrades):
 			units_owned = empire[unit.db_col]
 
+			unit_hourly_income = unit.get_hourly_income(1, upgrades)
+
 			owned = f"{units_owned}/{unit.get_max_amount(upgrades)}"
 			price = f"${unit.get_price(units_owned):,}"
 
-			row = [unit.id, unit.display_name, owned, f"${unit.income_hour}", price]
+			row = [unit.id, unit.display_name, owned, f"${unit_hourly_income}", price]
 
 			page.add_row(row)
 
@@ -78,19 +92,22 @@ class _MilitaryUnitGroup(_UnitGroup):
 	def create_empire_page(self, empire, upgrades):
 		page = TextPage(title=empire["name"], headers=["Unit", "Owned", "Power", "Upkeep"])
 
+		total_upkeep = 0
+
 		for unit in self.units:
 			units_owned = empire[unit.db_col]
 
-			upkeep, power = f"${unit.upkeep_hour * units_owned:,}", unit.power * units_owned
+			hourly_upkeep = unit.get_hourly_upkeep(units_owned, upgrades)
+
+			total_upkeep += hourly_upkeep
+
+			upkeep, power = f"${hourly_upkeep:,}", unit.power * units_owned
 
 			row = [unit.display_name, f"{units_owned}/{unit.get_max_amount(upgrades)}", power, upkeep]
 
 			page.add_row(row)
 
-		# Total hourly upkeep of all military units
-		total_upkeep = sum(unit.get_delta_money(empire[unit.db_col], 1.0) for unit in self.units)
-
-		page.set_footer(f"Hourly Upkeep: ${total_upkeep * -1:,}")
+		page.set_footer(f"Hourly Upkeep: ${total_upkeep:,}")
 
 		return page
 
@@ -100,10 +117,12 @@ class _MilitaryUnitGroup(_UnitGroup):
 		for unit in self.filter_units(empire, upgrades):
 			units_owned = empire[unit.db_col]
 
+			hourly_upkeep = unit.get_hourly_upkeep(1, upgrades)
+
 			owned = f"{units_owned}/{unit.get_max_amount(upgrades)}"
 			price = f"${unit.get_price(units_owned):,}"
 
-			row = [unit.id, unit.display_name, owned, unit.power, f"${unit.upkeep_hour}", price]
+			row = [unit.id, unit.display_name, owned, unit.power, f"${hourly_upkeep}", price]
 
 			page.add_row(row)
 

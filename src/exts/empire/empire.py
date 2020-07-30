@@ -16,7 +16,7 @@ from src.common.models import BankM, EmpireM, PopulationM, UserUpgradesM, Player
 from src.common.converters import EmpireUnit, Range, EmpireTargetUser
 
 from src.exts.empire import utils, events
-from src.exts.empire.units import UNIT_GROUPS, UnitGroupType
+from src.exts.empire.units import MilitaryGroup, MoneyGroup
 
 
 @dataclass()
@@ -70,12 +70,12 @@ class Empire(commands.Cog):
 			return units_lost_
 
 		bank = await con.fetchrow(BankM.SELECT_ROW, defender.id)
-
+		upgrades = await con.fetchrow(UserUpgradesM.SELECT_ROW, defender.id)
 		population = await con.fetchrow(PopulationM.SELECT_ROW, defender.id)
 
-		hourly_income = max(0, utils.get_total_money_delta(population, 1.0))
+		hourly_income = max(0, utils.get_hourly_money_change(population, upgrades))
 
-		units_lost = get_units_lost(UNIT_GROUPS[UnitGroupType.MILITARY])
+		units_lost = get_units_lost(MilitaryGroup)
 		money_lost = min(bank["money"], int(hourly_income * random.uniform(0.5, 1.5)))
 
 		return BattleResults(units_lost=units_lost, money_lost=money_lost)
@@ -185,7 +185,7 @@ class Empire(commands.Cog):
 
 			upgrades = await UserUpgradesM.get_row(con, ctx.author.id)
 
-		pages = [group.create_empire_page(empire, upgrades).get() for group in UNIT_GROUPS.values()]
+		pages = [group.create_empire_page(empire, upgrades).get() for group in [MoneyGroup, MilitaryGroup]]
 
 		await inputs.send_pages(ctx, pages)
 
@@ -207,7 +207,7 @@ class Empire(commands.Cog):
 			population = await con.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
 			upgrades = await UserUpgradesM.get_row(con, ctx.author.id)
 
-		pages = [group.create_units_page(population, upgrades).get() for group in UNIT_GROUPS.values()]
+		pages = [group.create_units_page(population, upgrades).get() for group in [MoneyGroup, MilitaryGroup]]
 
 		await inputs.send_pages(ctx, pages)
 
@@ -267,7 +267,7 @@ class Empire(commands.Cog):
 			rows = await ctx.bot.pool.fetch(PopulationM.SELECT_ALL)
 
 			for i, row in enumerate(rows):
-				rows[i] = dict(**row, __power__=utils.get_total_power(row))
+				rows[i] = dict(**row, __power__=MilitaryGroup.get_total_power(row))
 
 			rows.sort(key=lambda ele: ele["__power__"], reverse=True)
 
@@ -300,8 +300,10 @@ class Empire(commands.Cog):
 				if player_row is None or (now - player_row["last_login"]).days >= 1:
 					continue
 
+				upgrades = await con.fetchrow(UserUpgradesM.SELECT_ROW, player_row["player_id"])
+
 				hourse_since_last_pay = (now - empire["last_update"]).total_seconds() / 3600
 
-				money_change = int(utils.get_total_money_delta(empire, hourse_since_last_pay))
+				money_change = math.ceil(utils.get_hourly_money_change(empire, upgrades) * hourse_since_last_pay)
 
 				await con.execute(BankM.ADD_MONEY, empire["empire_id"], money_change)

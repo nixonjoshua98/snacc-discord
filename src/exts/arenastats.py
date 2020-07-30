@@ -153,7 +153,7 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 
 	@commands.cooldown(1, 60 * 60 * 3, commands.BucketType.user)
 	@commands.command(name="set", aliases=["s"])
-	async def set_stats(self, ctx, level: Range(1, 125), trophies: Range(1, 8_000)):
+	async def set_stats(self, ctx, level: Range(1, 125), trophies: Range(1, 10_000)):
 		""" Update your arena stats. Stats are used to track activity and are displayed on the trophy leaderboard. """
 
 		await self.set_users_stats(ctx, ctx.author, level, trophies)
