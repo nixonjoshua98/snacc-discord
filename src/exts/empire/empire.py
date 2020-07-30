@@ -88,6 +88,7 @@ class Empire(commands.Cog):
 
 		await ctx.bot.pool.execute(EmpireM.INSERT_ROW, ctx.author.id)
 		await ctx.bot.pool.execute(PopulationM.INSERT_ROW, ctx.author.id)
+		await ctx.bot.pool.execute(UserUpgradesM.INSERT_ROW, ctx.author.id)
 
 		await EmpireM.set(ctx.bot.pool, ctx.guild.id, name=empire_name)
 
@@ -264,14 +265,15 @@ class Empire(commands.Cog):
 		""" Display the most powerful empires. """
 
 		async def query():
-			rows = await ctx.bot.pool.fetch(PopulationM.SELECT_ALL)
+			async with ctx.bot.pool.acquire() as con:
+				empires = await con.fetch(PopulationM.SELECT_ALL)
 
-			for i, row in enumerate(rows):
-				rows[i] = dict(**row, __power__=MilitaryGroup.get_total_power(row))
+			for i, row in enumerate(empires):
+				empires[i] = dict(**row, __power__=MilitaryGroup.get_total_power(row))
 
-			rows.sort(key=lambda ele: ele["__power__"], reverse=True)
+			empires.sort(key=lambda ele: ele["__power__"], reverse=True)
 
-			return rows
+			return empires
 
 		await inputs.show_leaderboard(
 			ctx,

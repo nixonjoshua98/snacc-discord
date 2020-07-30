@@ -227,6 +227,8 @@ class EmpireM(TableModel):
 class UserUpgradesM:
 	SELECT_ROW = "SELECT * FROM user_upgrades WHERE user_upgrades_id=$1 LIMIT 1;"
 
+	SELECT_ALL = "SELECT * FROM user_upgrades;"
+
 	INSERT_ROW = """
 	INSERT INTO user_upgrades (user_upgrades_id)  
 	VALUES ($1) 
