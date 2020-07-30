@@ -11,19 +11,6 @@ class TableModel:
 		await con.execute(q, _id, *list(kwargs.values()))
 
 
-class PlayerM:
-	_TABLE, _PK = "player", "player_id"
-
-	SELECT_ROW = f"SELECT * FROM {_TABLE} WHERE {_PK} = $1 LIMIT 1;"
-
-	SET_LAST_LOGIN = """
-	INSERT INTO player (player_id, last_login)
-	VALUES ($1, $2)
-	ON CONFLICT (player_id) DO
-		UPDATE SET last_login = $2 WHERE player.player_id = $1;	
-	"""
-
-
 class ServersM(TableModel):
 	_TABLE, _PK = "servers", "server_id"
 
@@ -210,6 +197,8 @@ class EmpireM(TableModel):
 	SELECT_ROW = "SELECT * FROM empire WHERE empire_id = $1 LIMIT 1;"
 	INSERT_ROW = "INSERT INTO empire (empire_id) VALUES ($1) RETURNING empire_id;"
 
+	SET_LAST_LOGIN = "UPDATE empire SET last_login = $2 WHERE empire_id = $1;"
+
 	SELECT_ALL_AND_POPULATION = """
 	SELECT * FROM empire 
 	INNER JOIN 
@@ -226,8 +215,6 @@ class EmpireM(TableModel):
 
 class UserUpgradesM:
 	SELECT_ROW = "SELECT * FROM user_upgrades WHERE user_upgrades_id=$1 LIMIT 1;"
-
-	SELECT_ALL = "SELECT * FROM user_upgrades;"
 
 	INSERT_ROW = """
 	INSERT INTO user_upgrades (user_upgrades_id)  

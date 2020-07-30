@@ -1,12 +1,6 @@
 
 
 
-CREATE TABLE IF NOT EXISTS player (
-player_id       BIGINT  PRIMARY KEY,
-last_login      TIMESTAMP WITHOUT time zone DEFAULT (now() at time zone 'utc')
-);
-
-
 CREATE TABLE IF NOT EXISTS arena_stats (
 arena_stat_id   SERIAL,
 user_id         BIGINT,
@@ -34,12 +28,8 @@ blacklisted_cogs        VARCHAR[]   DEFAULT array[]::varchar[]
 
 CREATE table IF NOT EXISTS bank (
 user_id         BIGINT PRIMARY KEY,
-
--- USD
-money           BIGINT DEFAULT 1000 CHECK (money >= 0),
-
--- Crpyto(s)
-BTC             BIGINT DEFAULT 0    CHECK (BTC >= 0)
+money           BIGINT DEFAULT 1000 CHECK (money    >= 0),
+BTC             BIGINT DEFAULT 0    CHECK (BTC      >= 0)
 );
 
 
@@ -70,6 +60,9 @@ knights         SMALLINT    DEFAULT 0 CHECK (knights    >= 0)
 CREATE TABLE IF NOT EXISTS empire (
 empire_id       BIGINT                      PRIMARY KEY,
 name            VARCHAR                     DEFAULT 'My Empire',
+
+-- Timestamps
+last_login      TIMESTAMP WITHOUT time zone DEFAULT (now() at time zone 'utc'),
 last_update     TIMESTAMP WITHOUT time zone DEFAULT (now() at time zone 'utc'),
 last_attack     TIMESTAMP WITHOUT time zone DEFAULT (now() at time zone 'utc')
 );

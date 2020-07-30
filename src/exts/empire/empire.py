@@ -12,7 +12,7 @@ from dataclasses import dataclass
 
 from src import inputs
 from src.common import checks
-from src.common.models import BankM, EmpireM, PopulationM, UserUpgradesM, PlayerM
+from src.common.models import BankM, EmpireM, PopulationM, UserUpgradesM
 from src.common.converters import EmpireUnit, Range, EmpireTargetUser
 
 from src.exts.empire import utils, events
@@ -34,6 +34,9 @@ class Empire(commands.Cog):
 
 		self.start_income_loop()
 
+	async def cog_before_invoke(self, ctx):
+		await ctx.bot.pool.execute(EmpireM.SET_LAST_LOGIN, ctx.author.id, dt.datetime.utcnow())
+
 	def start_income_loop(self):
 		""" Start the background loop assuming that Snaccman is the owner. """
 
@@ -51,11 +54,11 @@ class Empire(commands.Cog):
 
 	@staticmethod
 	async def simulate_attack(con, defender):
-		def get_units_lost(unit_group):
+		def get_units_lost():
 			units_lost_, units_lost_cost = dict(), 0
 
 			# Units available to lose (owned > 0)
-			available_units = list(itertools.filterfalse(lambda u: population[u.db_col] == 0, unit_group.units))
+			available_units = list(itertools.filterfalse(lambda u: population[u.db_col] == 0, MilitaryGroup.units))
 
 			# Get a very roughly x amount of hours lose.
 			for unit in sorted(available_units, key=lambda u: u.get_price(population[u.db_col]), reverse=False):
@@ -75,8 +78,8 @@ class Empire(commands.Cog):
 
 		hourly_income = max(0, utils.get_hourly_money_change(population, upgrades))
 
-		units_lost = get_units_lost(MilitaryGroup)
-		money_lost = min(bank["money"], int(hourly_income * random.uniform(0.5, 1.5)))
+		units_lost = get_units_lost()
+		money_lost = max(5_000, min(bank["money"], int(hourly_income * random.uniform(0.5, 1.5))))
 
 		return BattleResults(units_lost=units_lost, money_lost=money_lost)
 
@@ -289,20 +292,18 @@ class Empire(commands.Cog):
 		""" Background income & upkeep loop. """
 
 		async with self.bot.pool.acquire() as con:
-			rows = await con.fetch(EmpireM.SELECT_ALL_AND_POPULATION)
+			empires = await con.fetch(EmpireM.SELECT_ALL_AND_POPULATION)
 
-			for empire in rows:
-				player_row = await con.fetchrow(PlayerM.SELECT_ROW, empire["empire_id"])
-
+			for empire in empires:
 				now = dt.datetime.utcnow()
 
 				await EmpireM.set(con, empire["empire_id"], last_update=now)
 
 				# Stop passive income after the user has not interacted with the bot in the past day
-				if player_row is None or (now - player_row["last_login"]).days >= 1:
+				if (now - empire["last_login"]).days >= 1:
 					continue
 
-				upgrades = await con.fetchrow(UserUpgradesM.SELECT_ROW, player_row["player_id"])
+				upgrades = await con.fetchrow(UserUpgradesM.SELECT_ROW, empire["empire_id"])
 
 				hourse_since_last_pay = (now - empire["last_update"]).total_seconds() / 3600
 

@@ -2,15 +2,15 @@ import os
 import ssl
 import asyncpg
 
-import datetime as dt
-
 from discord.ext import commands
 
 from src.common import SNACCMAN
 
 from src.structs.help import Help
 from src.structs.context import CustomContext
-from src.common.models import ServersM, PlayerM
+from src.common.models import ServersM
+
+# TODO: Database! Foreign Keys!
 
 
 class SnaccBot(commands.Bot):
@@ -31,7 +31,6 @@ class SnaccBot(commands.Bot):
         self.server_cache = dict()
 
         self.add_check(self.bot_check)
-        self.before_invoke(self.on_before_invoke)
 
     @property
     def debug(self):
@@ -137,9 +136,6 @@ class SnaccBot(commands.Bot):
         prefix = "." if os.getenv("DEBUG") else svr.get("prefix", "!")
 
         return commands.when_mentioned_or(prefix)(self, message)
-
-    async def on_before_invoke(self, ctx):
-        await self.pool.execute(PlayerM.SET_LAST_LOGIN, ctx.author.id, dt.datetime.utcnow())
 
     async def on_message(self, message):
         if self.exts_loaded and message.guild is not None and not message.author.bot:
