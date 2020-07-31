@@ -10,7 +10,7 @@ from .units import MilitaryGroup
 async def assassinated_event(ctx):
 	""" Single unit is killed. """
 
-	population = await ctx.bot.pool.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
+	population, upgrades = ctx.population_["author"], ctx.upgrades_["author"]
 
 	units_owned = [unit for unit in MilitaryGroup.units if population[unit.db_col] > 0]
 
@@ -28,8 +28,7 @@ async def assassinated_event(ctx):
 async def stolen_event(ctx):
 	""" Empire was stolen from event (-money). """
 
-	population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
-	upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
+	population, upgrades = ctx.population_["author"], ctx.upgrades_["author"]
 
 	hourly_money_change = utils.get_hourly_money_change(population, upgrades)
 
@@ -47,8 +46,7 @@ async def loot_event(ctx):
 
 	items = ("tiny ruby", "pink diamond", "small emerald", "holy sword", "demon sword", "iron shield", "wooden sword")
 
-	population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
-	upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
+	population, upgrades = ctx.population_["author"], ctx.upgrades_["author"]
 
 	hourly_income = utils.get_hourly_money_change(population, upgrades)
 

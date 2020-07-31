@@ -37,6 +37,9 @@ class Empire(commands.Cog):
 	async def cog_before_invoke(self, ctx):
 		ctx.bank_data["author_bank"] = await BankM.fetchrow(ctx.bot.pool, ctx.author.id)
 
+		ctx.population_["author"] = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
+		ctx.upgrades_["author"] = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
+
 	def start_income_loop(self):
 		""" Start the background loop assuming that Snaccman is the owner. """
 
@@ -263,7 +266,7 @@ class Empire(commands.Cog):
 		""" Display the most powerful empires. """
 
 		async def query():
-			empires = await ctx.bot.fetch.fetch(PopulationM.SELECT_ALL)
+			empires = await ctx.bot.pool.fetch(PopulationM.SELECT_ALL)
 
 			for i, row in enumerate(empires):
 				empires[i] = dict(**row, __power__=MilitaryGroup.get_total_power(row))
