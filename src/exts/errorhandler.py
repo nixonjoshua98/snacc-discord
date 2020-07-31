@@ -23,7 +23,7 @@ class ErrorHandler(commands.Cog):
         elif isinstance(esc, CommandOnCooldown):
             seconds = float(esc.args[0].split(" ")[-1][0:-1])
 
-            cd = dt.timedelta(seconds=seconds)
+            cd = dt.timedelta(seconds=int(seconds))
 
             await ctx.send(f"You are on cooldown. Try again in `{cd}`")
 

@@ -183,10 +183,9 @@ class Empire(commands.Cog):
 	async def show_empire(self, ctx):
 		""" View your empire. """
 
-		async with ctx.bot.pool.acquire() as con:
-			empire = await con.fetchrow(EmpireM.SELECT_ROW_AND_POPULATION, ctx.author.id)
+		empire = await ctx.bot.pool.fetchrow(EmpireM.SELECT_ROW_AND_POPULATION, ctx.author.id)
 
-			upgrades = await UserUpgradesM.fetchrow(con, ctx.author.id)
+		upgrades = ctx.upgrades_["author"]
 
 		pages = [group.create_empire_page(empire, upgrades).get() for group in [MoneyGroup, MilitaryGroup]]
 
@@ -206,30 +205,11 @@ class Empire(commands.Cog):
 	async def show_units(self, ctx):
 		""" Show all the possible units which you can buy. """
 
-		async with ctx.bot.pool.acquire() as con:
-			population = await con.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
-			upgrades = await UserUpgradesM.fetchrow(con, ctx.author.id)
+		population, upgrades = ctx.population_["author"], ctx.upgrades_["author"]
 
 		pages = [group.create_units_page(population, upgrades).get() for group in [MoneyGroup, MilitaryGroup]]
 
 		await inputs.send_pages(ctx, pages)
-
-	@checks.has_empire()
-	@commands.command(name="fire")
-	@commands.max_concurrency(1, commands.BucketType.user)
-	async def fire_unit(self, ctx, unit: EmpireUnit(), amount: Range(1, 100) = 1):
-		""" Fire units from your empire. """
-
-		async with ctx.bot.pool.acquire() as con:
-			empire_population = await con.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
-
-			if amount > empire_population[unit.db_col]:
-				await ctx.send(f"You do not have **{amount}x {unit.display_name}** avilable to fire.")
-
-			else:
-				await PopulationM.decrement(con, ctx.author.id, field=unit.db_col, amount=amount)
-
-				await ctx.send(f"You have fired **{amount}x {unit.display_name}**")
 
 	@checks.has_empire()
 	@commands.command(name="hire")
@@ -237,8 +217,7 @@ class Empire(commands.Cog):
 	async def hire_unit(self, ctx, unit: EmpireUnit(), amount: Range(1, 100) = 1):
 		""" Hire a new unit to serve your empire. """
 
-		population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
-		upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
+		population, upgrades = ctx.population_["author"], ctx.upgrades_["author"]
 
 		row = await BankM.fetchrow(ctx.bot.pool, ctx.author.id)
 

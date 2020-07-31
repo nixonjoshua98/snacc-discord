@@ -6,30 +6,30 @@ class TableModel:
 	INSERT_ROW = None
 
 	@classmethod
-	async def set(cls, con, _id, **kwargs):
+	async def set(cls, con, id_, **kwargs):
 		set_values = ", ".join([f"{k}=${i}" for i, k in enumerate(kwargs.keys(), start=2)])
 
 		q = f"UPDATE {cls._TABLE} SET {set_values} WHERE {cls._PK}=$1;"
 
-		await con.execute(q, _id, *list(kwargs.values()))
+		await con.execute(q, id_, *list(kwargs.values()))
 
 	@classmethod
-	async def increment(cls, con, _id, *, field, amount):
+	async def increment(cls, con, id_, *, field, amount):
 		q = f"UPDATE {cls._TABLE} SET {field} = GREATEST(0, {field} + $2) WHERE {cls._PK} = $1;"
 
-		await con.execute(q, _id, amount)
+		await con.execute(q, id_, amount)
 
 	@classmethod
-	async def decrement(cls, con, _id, *, field, amount):
+	async def decrement(cls, con, id_, *, field, amount):
 		q = f"UPDATE {cls._TABLE} SET {field} = GREATEST(0, {field} - $2) WHERE {cls._PK} = $1;"
 
-		await con.execute(q, _id, amount)
+		await con.execute(q, id_, amount)
 
 	@classmethod
-	async def fetchrow(cls, con, id_: int):
+	async def fetchrow(cls, con, id_: int, *, insert: bool = True):
 		row = await con.fetchrow(cls.SELECT_ROW, id_)
 
-		if row is None:
+		if insert and row is None:
 			row = await con.fetchrow(cls.INSERT_ROW, id_)
 
 		return row
@@ -158,8 +158,6 @@ class EmpireM(TableModel):
 		DO NOTHING		
 	RETURNING *;
 	"""
-
-	SET_LAST_LOGIN = "UPDATE empire SET last_login = $2 WHERE empire_id = $1;"
 
 	SELECT_ALL_AND_POPULATION = """
 	SELECT * FROM empire 

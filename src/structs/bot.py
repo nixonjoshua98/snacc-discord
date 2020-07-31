@@ -14,7 +14,7 @@ from src.structs.context import CustomContext
 from src.common.models import ServersM, EmpireM
 
 
-class SnaccBot(commands.Bot):
+class SnaccBot(commands.AutoShardedBot):
     EXTENSIONS = [
         "errorhandler", "arenastats", "empire",
         "shop", "tags", "hangman",
@@ -125,10 +125,10 @@ class SnaccBot(commands.Bot):
     async def get_server_config(self, guild, *, refresh: bool = False):
         """ Get the settings from either the cache or the database for a guild. """
 
-        if refresh or self.server_cache.get(guild.id, None) is None:
+        if refresh or self.server_cache.get(guild.id) is None:
             await self.update_server_cache(guild)
 
-        return self.server_cache.get(guild.id, None)
+        return self.server_cache[guild.id]
 
     async def get_prefix(self, message):
         """ Get the prefix for the server/guild from the database/cache. """
@@ -140,7 +140,7 @@ class SnaccBot(commands.Bot):
         return commands.when_mentioned_or(prefix)(self, message)
 
     async def before_invoke_func(self, ctx):
-        await ctx.bot.pool.execute(EmpireM.SET_LAST_LOGIN, ctx.author.id, dt.datetime.utcnow())
+        await EmpireM.set(ctx.bot.pool, ctx.author.id, last_login=dt.datetime.utcnow())
 
     async def on_message(self, message):
         if self.exts_loaded and message.guild is not None and not message.author.bot:
