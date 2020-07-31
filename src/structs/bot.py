@@ -18,7 +18,7 @@ class SnaccBot(commands.AutoShardedBot):
     EXTENSIONS = [
         "errorhandler", "arenastats", "empire",
         "shop", "tags", "hangman",
-        "gambling", "money", "crypto",
+        "gambling", "bank", "crypto",
         "darkness", "moderator", "misc",
         "serverdoor", "settings"
     ]
@@ -89,7 +89,7 @@ class SnaccBot(commands.AutoShardedBot):
     async def create_pool(self):
         print("Creating connection pool", end="...")
 
-        if os.getenv("DEBUG"):
+        if self.debug:
             print("local", end="...")
 
             self.pool = await asyncpg.create_pool(os.getenv("CON_STR"), max_size=15)

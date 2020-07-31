@@ -9,9 +9,9 @@ from src.common.emoji import Emoji
 from src.common.converters import DiscordUser
 
 
-class Money(commands.Cog, name="Bank"):
+class Bank(commands.Cog):
 	async def cog_before_invoke(self, ctx):
-		ctx.bank_data["author_bank"] = await BankM.fetchrow(ctx.bot.pool, ctx.author.id)
+		ctx.bank_["author"] = await BankM.fetchrow(ctx.bot.pool, ctx.author.id)
 
 	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
 	@commands.command(name="free")
@@ -30,10 +30,12 @@ class Money(commands.Cog, name="Bank"):
 
 		embed = discord.Embed(title=f"{ctx.author.display_name}'s Bank", colour=discord.Color.orange())
 
+		author_bank = ctx.bank_['author']
+
 		embed.description = (
-			f"{Emoji.BTC} **{ctx.bank_data['author_bank']['btc']}**"
+			f"{Emoji.BTC} **{author_bank['btc']}**"
 			"\n"
-			f":moneybag: **${ctx.bank_data['author_bank']['money']:,}**"
+			f":moneybag: **${author_bank['money']:,}**"
 		)
 
 		await ctx.send(embed=embed)
@@ -45,9 +47,9 @@ class Money(commands.Cog, name="Bank"):
 
 		target_bank = await BankM.fetchrow(ctx.bot.pool, target.id)
 
-		min_stolen, max_stolen = max(1, int(target_bank["money"] * 0.025)), max(1, int(target_bank["money"] * 0.075))
+		min_stolen, max_stolen = int(target_bank["money"] * 0.025), int(target_bank["money"] * 0.075)
 
-		stolen_amount = random.randint(min_stolen, max_stolen)
+		stolen_amount = random.randint(max(1, min_stolen), max(1, max_stolen))
 
 		thief_tax = int(stolen_amount // random.uniform(2.0, 8.0)) if stolen_amount >= 2_500 else 0
 
@@ -73,4 +75,4 @@ class Money(commands.Cog, name="Bank"):
 
 
 def setup(bot):
-	bot.add_cog(Money())
+	bot.add_cog(Bank())

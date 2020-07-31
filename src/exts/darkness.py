@@ -23,7 +23,7 @@ class Darkness(commands.Cog):
     async def application(self, ctx):
         """ Apply to the guild! """
 
-        await ctx.send("Check your DM.")
+        await ctx.send("I have DM'ed you")
 
         questions = {
             "username": (inputs.get_input, Arguments(ctx, "What is your in-game-name?", send_dm=True)),

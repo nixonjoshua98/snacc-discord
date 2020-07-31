@@ -39,6 +39,7 @@ class Empire(commands.Cog):
 
 		ctx.population_["author"] = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
 		ctx.upgrades_["author"] = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
+		ctx.bank_["author"] = await BankM.fetchrow(ctx.bot.pool, ctx.author.id)
 
 	def start_income_loop(self):
 		""" Start the background loop assuming that Snaccman is the owner. """
@@ -275,7 +276,7 @@ class Empire(commands.Cog):
 
 				await EmpireM.set(con, empire["empire_id"], last_update=now)
 
-				if (now - empire["last_login"]).days >= 1:
+				if (now - empire["last_login"]).hours >= 12:
 					continue
 
 				upgrades = await con.fetchrow(UserUpgradesM.SELECT_ROW, empire["empire_id"])
