@@ -45,7 +45,7 @@ class Crypto(commands.Cog):
 		""" Buy Bitcoin(s). """
 
 		async with ctx.bot.pool.acquire() as con:
-			row = await BankM.get_row(con, ctx.author.id)
+			row = await BankM.fetchrow(con, ctx.author.id)
 
 			price = self._price_cache["current"] * amount
 
@@ -63,7 +63,7 @@ class Crypto(commands.Cog):
 		""" Sell Bitcoin(s). """
 
 		async with ctx.bot.pool.acquire() as con:
-			row = await BankM.get_row(con, ctx.author.id)
+			row = await BankM.fetchrow(con, ctx.author.id)
 
 			price = self._price_cache["current"] * amount
 

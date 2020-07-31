@@ -99,6 +99,21 @@ class Empire(commands.Cog):
 
 		await self.show_empire(ctx)
 
+	@checks.snaccman_only()
+	@commands.command(name="temp")
+	async def delta_income(self, ctx, delta: Range(1, 100)):
+		async with self.bot.pool.acquire() as con:
+			empires = await con.fetch(EmpireM.SELECT_ALL_AND_POPULATION)
+
+			for empire in empires:
+				upgrades = await UserUpgradesM.fetchrow(con, empire["empire_id"])
+
+				money_change = math.ceil(utils.get_hourly_money_change(empire, upgrades) * delta)
+
+				await con.execute(BankM.ADD_MONEY, empire["empire_id"], money_change)
+
+		await ctx.send(f"Added {delta} hours to every player.")
+
 	@checks.has_empire()
 	@commands.cooldown(1, 15, commands.BucketType.user)
 	@commands.command(name="scout", cooldown_after_parsing=True)
@@ -187,7 +202,7 @@ class Empire(commands.Cog):
 		async with ctx.bot.pool.acquire() as con:
 			empire = await con.fetchrow(EmpireM.SELECT_ROW_AND_POPULATION, ctx.author.id)
 
-			upgrades = await UserUpgradesM.get_row(con, ctx.author.id)
+			upgrades = await UserUpgradesM.fetchrow(con, ctx.author.id)
 
 		pages = [group.create_empire_page(empire, upgrades).get() for group in [MoneyGroup, MilitaryGroup]]
 
@@ -209,7 +224,7 @@ class Empire(commands.Cog):
 
 		async with ctx.bot.pool.acquire() as con:
 			population = await con.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
-			upgrades = await UserUpgradesM.get_row(con, ctx.author.id)
+			upgrades = await UserUpgradesM.fetchrow(con, ctx.author.id)
 
 		pages = [group.create_units_page(population, upgrades).get() for group in [MoneyGroup, MilitaryGroup]]
 
@@ -240,9 +255,9 @@ class Empire(commands.Cog):
 
 		async with ctx.bot.pool.acquire() as con:
 			population = await con.fetchrow(PopulationM.SELECT_ROW, ctx.author.id)
-			upgrades = await UserUpgradesM.get_row(con, ctx.author.id)
+			upgrades = await UserUpgradesM.fetchrow(con, ctx.author.id)
 
-			row = await BankM.get_row(con, ctx.author.id)
+			row = await BankM.fetchrow(con, ctx.author.id)
 
 			# Cost of upgrading from current -> (current + amount)
 			price = unit.get_price(population[unit.db_col], amount)
@@ -258,7 +273,7 @@ class Empire(commands.Cog):
 			else:
 				await con.execute(BankM.SUB_MONEY, ctx.author.id, price)
 
-				await PopulationM.add_unit(con, ctx.author.id, unit, amount)
+				await PopulationM.increment(con, ctx.author.id, unit.db_col, amount=amount)
 
 				await ctx.send(f"Bought **{amount}x {unit.display_name}** for **${price:,}**!")
 
@@ -286,6 +301,7 @@ class Empire(commands.Cog):
 			query_func=query,
 			headers=["Power"]
 		)
+
 
 	@tasks.loop(hours=1.0)
 	async def income_loop(self):

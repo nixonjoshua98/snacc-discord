@@ -144,7 +144,7 @@ class EmpireUnit(commands.Converter):
 		return unit
 
 
-class ShopItem(commands.Converter):
+class EmpireUpgrade(commands.Converter):
 	async def convert(self, ctx, argument):
 		from src.exts.shop.upgrades import ALL_UPGRADES
 

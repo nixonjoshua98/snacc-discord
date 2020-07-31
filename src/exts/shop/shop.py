@@ -4,7 +4,7 @@ from discord.ext import commands
 from src import inputs
 from src.common import checks
 from src.common.models import BankM, UserUpgradesM
-from src.common.converters import ShopItem
+from src.common.converters import EmpireUpgrade
 
 from src.exts.shop.upgrades import ALL_UPGRADES
 
@@ -32,7 +32,7 @@ class Shop(commands.Cog):
 	async def shop_group(self, ctx):
 		""" Display your shop. """
 
-		upgrades = await UserUpgradesM.get_row(ctx.bot.pool, ctx.author.id)
+		upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
 
 		page = self.create_upgrades_shop_page(upgrades)
 
@@ -41,28 +41,28 @@ class Shop(commands.Cog):
 	@checks.has_empire()
 	@commands.max_concurrency(1, commands.BucketType.user)
 	@shop_group.command(name="buy")
-	async def buy_item(self, ctx, item: ShopItem()):
+	async def buy_upgrade(self, ctx, upgrade: EmpireUpgrade()):
 		""" Buy a new upgrade. """
 
 		async with ctx.bot.pool.acquire() as con:
-			upgrades = await UserUpgradesM.get_row(con, ctx.author.id)
+			upgrades = await UserUpgradesM.fetchrow(con, ctx.author.id)
 
-			bank = await BankM.get_row(con, ctx.author.id)
+			bank = await BankM.fetchrow(con, ctx.author.id)
 
-			price = item.get_price(upgrades[item.db_col])
+			price = upgrade.get_price(upgrades[upgrade.db_col])
 
-			max_units = item.max_amount + upgrades["extra_units"]
+			max_units = upgrade.max_amount + upgrades["extra_units"]
 
-			if upgrades[item.db_col] > max_units:
-				await ctx.send(f"**{item.display_name}** have an owned limit of **{max_units}**.")
+			if upgrades[upgrade.db_col] > max_units:
+				await ctx.send(f"**{upgrade.display_name}** have an owned limit of **{max_units}**.")
 
 			elif price > bank["money"]:
-				await ctx.send(f"You can't afford to hire **1x {item.display_name}**")
+				await ctx.send(f"You can't afford to hire **1x {upgrade.display_name}**")
 
 			else:
 				await con.execute(BankM.SUB_MONEY, ctx.author.id, price)
 
-				await UserUpgradesM.add_upgrade(con, ctx.author.id, item, 1)
+				await UserUpgradesM.increment(con, ctx.author.id, upgrade.db_col, amount=1, limit=1)
 
-				await ctx.send(f"Bought **{item.display_name}** for **${price:,}**!")
+				await ctx.send(f"Bought **{upgrade.display_name}** for **${price:,}**!")
 

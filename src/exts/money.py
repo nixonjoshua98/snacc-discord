@@ -26,7 +26,7 @@ class Money(commands.Cog, name="Bank"):
 	async def balance(self, ctx):
 		""" Show your bank balance(s). """
 
-		row = await BankM.get_row(ctx.bot.pool, ctx.author.id)
+		row = await BankM.fetchrow(ctx.bot.pool, ctx.author.id)
 
 		embed = discord.Embed(title=f"{ctx.author.display_name}'s Bank", colour=discord.Color.orange())
 
@@ -40,7 +40,7 @@ class Money(commands.Cog, name="Bank"):
 		""" Attempt to steal from another user. """
 
 		async with ctx.bot.pool.acquire() as con:
-			target_bank = await BankM.get_row(con, target.id)
+			target_bank = await BankM.fetchrow(con, target.id)
 
 			target_money = target_bank["money"]
 

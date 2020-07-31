@@ -118,7 +118,7 @@ class SnaccBot(commands.Bot):
         self.exts_loaded = True
 
     async def update_server_cache(self, guild):
-        self.server_cache[guild.id] = await ServersM.get_server(self.pool, guild.id)
+        self.server_cache[guild.id] = await ServersM.fetchrow(self.pool, guild.id)
 
     async def get_server_config(self, guild, *, refresh: bool = False):
         """ Get the settings from either the cache or the database for a guild. """
@@ -138,9 +138,9 @@ class SnaccBot(commands.Bot):
         return commands.when_mentioned_or(prefix)(self, message)
 
     async def on_message(self, message):
-        if self.exts_loaded and message.guild is not None and not message.author.bot:
-            ctx = await self.get_context(message, cls=CustomContext)
+        ctx = await self.get_context(message, cls=CustomContext)
 
+        async with self.pool.acquire() as con:
             await self.invoke(ctx)
 
     def run(self):

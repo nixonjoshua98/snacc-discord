@@ -2,6 +2,9 @@
 class TableModel:
 	_TABLE, _PK = None, None
 
+	SELECT_ROW = None
+	INSERT_ROW = None
+
 	@classmethod
 	async def set(cls, con, _id, **kwargs):
 		set_values = ", ".join([f"{k}=${i}" for i, k in enumerate(kwargs.keys(), start=2)])
@@ -10,28 +13,34 @@ class TableModel:
 
 		await con.execute(q, _id, *list(kwargs.values()))
 
+	@classmethod
+	async def increment(cls, con, _id, field, *, amount):
+		q = f"UPDATE {cls._TABLE} SET {field} = {field} + $2 WHERE {cls._PK} = $1;"
+
+		await con.execute(q, _id, amount)
+
+	@classmethod
+	async def fetchrow(cls, con, id_: int):
+		row = await con.fetchrow(cls.SELECT_ROW, id_)
+
+		if row is None:
+			row = await con.fetchrow(cls.INSERT_ROW, id_)
+
+		return row
+
 
 class ServersM(TableModel):
 	_TABLE, _PK = "servers", "server_id"
 
-	SELECT_SERVER = "SELECT * FROM servers WHERE server_id=$1 LIMIT 1;"
+	SELECT_ROW = "SELECT * FROM servers WHERE server_id=$1 LIMIT 1;"
 
-	INSERT_SERVER = """
+	INSERT_ROW = """
 	INSERT INTO servers (server_id)
 	VALUES ($1)
 	ON CONFLICT (server_id)
 		DO NOTHING
 	RETURNING *
 	"""
-
-	@classmethod
-	async def get_server(cls, con, svr: int):
-		row = await con.fetchrow(cls.SELECT_SERVER, svr)
-
-		if row is None:
-			row = await con.fetchrow(cls.INSERT_SERVER, svr)
-
-		return row
 
 	@classmethod
 	async def blacklist_channels(cls, con, svr: int, channels):
@@ -101,9 +110,10 @@ class ArenaStatsM:
 	"""
 
 
-class BankM:
-	SELECT_RICHEST = "SELECT * FROM bank ORDER BY money DESC;"
+class BankM(TableModel):
+	_TABLE, _PK = "bank", "user_id"
 
+	SELECT_ROW = "SELECT * FROM bank WHERE user_id = $1 LIMIT 1;"
 	INSERT_ROW = """
 	INSERT INTO bank (user_id) VALUES ($1) 
 	ON CONFLICT (user_id)
@@ -111,7 +121,7 @@ class BankM:
 	RETURNING *;
 	"""
 
-	SELECT_ROW = "SELECT * FROM bank WHERE user_id = $1 LIMIT 1;"
+	SELECT_RICHEST = "SELECT * FROM bank ORDER BY money DESC;"
 
 	ADD_MONEY = """
 	INSERT INTO bank (user_id, money) VALUES ($1, $2)
@@ -137,15 +147,6 @@ class BankM:
 		UPDATE SET BTC = GREATEST(0, bank.BTC - $2) ;
 	"""
 
-	@classmethod
-	async def get_row(cls, con, user_id: int):
-		row = await con.fetchrow(cls.SELECT_ROW, user_id)
-
-		if row is None:
-			row = await con.fetchrow(cls.INSERT_ROW, user_id)
-
-		return row
-
 
 class HangmanM:
 	SELECT_MOST_WINS = "SELECT user_id, wins FROM hangman ORDER BY wins DESC LIMIT 15;"
@@ -157,7 +158,9 @@ class HangmanM:
 	"""
 
 
-class PopulationM:
+class PopulationM(TableModel):
+	_TABLE, _PK = "population", "population_id"
+
 	SELECT_ROW = "SELECT * FROM population WHERE population_id = $1 LIMIT 1;"
 	INSERT_ROW = """
 	INSERT INTO population (population_id)
@@ -170,32 +173,22 @@ class PopulationM:
 	SELECT_ALL = "SELECT * FROM population;"
 
 	@classmethod
-	async def add_unit(cls, con, user_id: int, unit, amount: int):
-		q = f"UPDATE population SET {unit.db_col} = {unit.db_col} + $2 WHERE population_id = $1;"
-
-		await con.execute(q, user_id, amount)
-
-	@classmethod
 	async def sub_unit(cls, con, user_id: int, unit, amount: int):
 		q = f"UPDATE population SET {unit.db_col} = {unit.db_col} - $2 WHERE population_id = $1;"
 
 		await con.execute(q, user_id, amount)
-
-	@classmethod
-	async def get_row(cls, con, user_id: int):
-		row = await con.fetchrow(cls.SELECT_ROW, user_id)
-
-		if row is None:
-			row = await con.fetchrow(cls.INSERT_ROW, user_id)
-
-		return row
 
 
 class EmpireM(TableModel):
 	_TABLE, _PK = "empire", "empire_id"
 
 	SELECT_ROW = "SELECT * FROM empire WHERE empire_id = $1 LIMIT 1;"
-	INSERT_ROW = "INSERT INTO empire (empire_id) VALUES ($1) RETURNING empire_id;"
+	INSERT_ROW = """
+	INSERT INTO empire (empire_id) VALUES ($1)
+	ON CONFLICT (empire_id)
+		DO NOTHING		
+	RETURNING *;
+	"""
 
 	SET_LAST_LOGIN = "UPDATE empire SET last_login = $2 WHERE empire_id = $1;"
 
@@ -213,9 +206,10 @@ class EmpireM(TableModel):
 		"""
 
 
-class UserUpgradesM:
-	SELECT_ROW = "SELECT * FROM user_upgrades WHERE user_upgrades_id=$1 LIMIT 1;"
+class UserUpgradesM(TableModel):
+	_TABLE, _PK = "user_upgrades", "user_upgrades_id"
 
+	SELECT_ROW = "SELECT * FROM user_upgrades WHERE user_upgrades_id=$1 LIMIT 1;"
 	INSERT_ROW = """
 	INSERT INTO user_upgrades (user_upgrades_id)  
 	VALUES ($1) 
@@ -223,18 +217,3 @@ class UserUpgradesM:
 		DO NOTHING
 	RETURNING * 
 	"""
-
-	@classmethod
-	async def get_row(cls, con, id_: int):
-		row = await con.fetchrow(cls.SELECT_ROW, id_)
-
-		if row is None:
-			row = await con.fetchrow(cls.INSERT_ROW, id_)
-
-		return row
-
-	@classmethod
-	async def add_upgrade(cls, con, user_id: int, unit, amount: int):
-		q = f"UPDATE user_upgrades SET {unit.db_col} = {unit.db_col} + $2 WHERE user_upgrades_id = $1;"
-
-		await con.execute(q, user_id, amount)

@@ -16,7 +16,7 @@ class Gambling(commands.Cog):
 		""" Flip a coin and bet on which side it lands on. """
 
 		async with ctx.bot.pool.acquire() as con:
-			row = await BankM.get_row(con, ctx.author.id)
+			row = await BankM.fetchrow(con, ctx.author.id)
 
 			if row["money"] < bet:
 				raise commands.CommandError("You do not have enough money.")
@@ -38,7 +38,7 @@ class Gambling(commands.Cog):
 		""" Roll a dice and bet on which side the die lands on. """
 
 		async with ctx.bot.pool.acquire() as con:
-			bank = await BankM.get_row(con, ctx.author.id)
+			bank = await BankM.fetchrow(con, ctx.author.id)
 
 			money = bank["money"]
 
