@@ -26,24 +26,17 @@ class _Unit(Purchasable):
 		# Increment the internal ID for the next unit
 		_Unit.__unit_id += 1
 
-	def get_max_amount(self, upgrades: dict): return self.max_amount + upgrades["extra_units"]
-
-	def get_delta_money(self, total, upgrades, delta_time):
-		income = math.ceil((self.income_hour * total) * delta_time)
-		upkeep = math.ceil((self.upkeep_hour * total) * delta_time) * -1
-
-		return int(income + upkeep)
+	def get_max_amount(self, upgrades: dict):
+		return self.max_amount + upgrades["extra_units"]
 
 	def get_hourly_upkeep(self, total, upgrades):
 		upkeep = self.upkeep_hour * total
 		upkeep = upkeep * (1.0 - (upgrades["less_upkeep"] * 0.05))
 
-		return math.ceil(upkeep)
+		return math.floor(upkeep)
 
 	def get_hourly_income(self, total, upgrades):
-		income = math.ceil(self.income_hour * total)
-
-		return income
+		return math.floor(self.income_hour * total)
 
 
 _UNIT_GROUPS = {
@@ -78,7 +71,6 @@ ALL_UNITS = [unit for _, group in _UNIT_GROUPS.items() for unit in group.units]
 
 MilitaryGroup = _UNIT_GROUPS[UnitGroupType.MILITARY]
 MoneyGroup = _UNIT_GROUPS[UnitGroupType.MONEY]
-
 
 
 

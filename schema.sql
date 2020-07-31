@@ -63,7 +63,7 @@ name            VARCHAR                     DEFAULT 'My Empire',
 
 -- Timestamps
 last_login      TIMESTAMP WITHOUT time zone DEFAULT (now() at time zone 'utc'),
-last_update     TIMESTAMP WITHOUT time zone DEFAULT (now() at time zone 'utc'),
+last_income     TIMESTAMP WITHOUT time zone DEFAULT (now() at time zone 'utc'),
 last_attack     TIMESTAMP WITHOUT time zone DEFAULT (now() at time zone 'utc')
 );
 

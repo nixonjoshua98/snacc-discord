@@ -83,7 +83,7 @@ class Empire(commands.Cog):
 		hourly_income = max(0, utils.get_hourly_money_change(population, upgrades))
 
 		units_lost = get_units_lost()
-		money_lost = max(5_000, min(bank["money"], int(hourly_income * random.uniform(0.5, 1.5))))
+		money_lost = min(5_000, min(bank["money"], int(hourly_income * random.uniform(0.5, 1.5))))
 
 		return BattleResults(units_lost=units_lost, money_lost=money_lost)
 
@@ -274,15 +274,17 @@ class Empire(commands.Cog):
 			for empire in empires:
 				now = dt.datetime.utcnow()
 
-				await EmpireM.set(con, empire["empire_id"], last_update=now)
+				await EmpireM.set(con, empire["empire_id"], last_income=now)
 
-				if (now - empire["last_login"]).hours >= 12:
+				hours_since_login = (now - empire["last_login"]).total_seconds() / 3600
+
+				if hours_since_login >= 12:
 					continue
 
 				upgrades = await con.fetchrow(UserUpgradesM.SELECT_ROW, empire["empire_id"])
 
-				hourse_since_last_pay = (now - empire["last_update"]).total_seconds() / 3600
+				hours_since_income = (now - empire["last_income"]).total_seconds() / 3600
 
-				money_change = math.ceil(utils.get_hourly_money_change(empire, upgrades) * hourse_since_last_pay)
+				money_change = math.ceil(utils.get_hourly_money_change(empire, upgrades) * hours_since_income)
 
 				await BankM.increment(con, empire["empire_id"], field="money", amount=money_change)
