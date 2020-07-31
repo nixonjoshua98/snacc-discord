@@ -19,19 +19,14 @@ class Darkness(commands.Cog):
     @checks.main_server_only()
     @commands.command(name="join")
     @commands.cooldown(1, 60 * 60 * 12, commands.BucketType.user)
-    @commands.max_concurrency(1, commands.BucketType.member)
+    @commands.max_concurrency(1, commands.BucketType.user)
     async def application(self, ctx):
         """ Apply to the guild! """
 
         await ctx.send("Check your DM.")
 
         questions = {
-            "username": (inputs.get_input, Arguments(
-                ctx,
-                "What is your in-game-name?",
-                send_dm=True
-            )
-                         ),
+            "username": (inputs.get_input, Arguments(ctx, "What is your in-game-name?", send_dm=True)),
 
             "trophies": (inputs.get_input, Arguments(
                 ctx,

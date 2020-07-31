@@ -3,4 +3,6 @@ from discord.ext import commands
 
 
 class CustomContext(commands.Context):
-	empire_data = dict()  # atk_pow, def_pow
+	empire_data = dict()
+	bank_data = dict()
+	upgrade_data = dict()

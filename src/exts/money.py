@@ -10,15 +10,17 @@ from src.common.converters import DiscordUser
 
 
 class Money(commands.Cog, name="Bank"):
+	async def cog_before_invoke(self, ctx):
+		ctx.bank_data["author_bank"] = await BankM.fetchrow(ctx.bot.pool, ctx.author.id)
 
 	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
 	@commands.command(name="free")
 	async def free_money(self, ctx):
 		""" Gain some free money """
 
-		money = random.randint(500, 750)
+		money = random.randint(500, 1_500)
 
-		await ctx.bot.pool.execute(BankM.ADD_MONEY, ctx.author.id, money)
+		await BankM.increment(ctx.bot.pool, ctx.author.id, field="money", amount=money)
 
 		await ctx.send(f"You gained **${money:,}**!")
 
@@ -26,11 +28,13 @@ class Money(commands.Cog, name="Bank"):
 	async def balance(self, ctx):
 		""" Show your bank balance(s). """
 
-		row = await BankM.fetchrow(ctx.bot.pool, ctx.author.id)
-
 		embed = discord.Embed(title=f"{ctx.author.display_name}'s Bank", colour=discord.Color.orange())
 
-		embed.description = f"{Emoji.BTC} **{row['btc']}**\n:moneybag: **${row['money']:,}**"
+		embed.description = (
+			f"{Emoji.BTC} **{ctx.bank_data['author_bank']['btc']}**"
+			"\n"
+			f":moneybag: **${ctx.bank_data['author_bank']['money']:,}**"
+		)
 
 		await ctx.send(embed=embed)
 
@@ -39,17 +43,16 @@ class Money(commands.Cog, name="Bank"):
 	async def steal_coins(self, ctx, *, target: DiscordUser()):
 		""" Attempt to steal from another user. """
 
-		async with ctx.bot.pool.acquire() as con:
-			target_bank = await BankM.fetchrow(con, target.id)
+		target_bank = await BankM.fetchrow(ctx.bot.pool, target.id)
 
-			target_money = target_bank["money"]
+		min_stolen, max_stolen = max(1, int(target_bank["money"] * 0.025)), max(1, int(target_bank["money"] * 0.075))
 
-			stolen_amount = random.randint(max(1, int(target_money * 0.025)), max(1, int(target_money * 0.075)))
+		stolen_amount = random.randint(min_stolen, max_stolen)
 
-			thief_tax = int(stolen_amount // random.uniform(2.0, 8.0)) if stolen_amount >= 2_500 else 0
+		thief_tax = int(stolen_amount // random.uniform(2.0, 8.0)) if stolen_amount >= 2_500 else 0
 
-			await con.execute(BankM.ADD_MONEY, ctx.author.id, stolen_amount - thief_tax)
-			await con.execute(BankM.SUB_MONEY, target.id, stolen_amount)
+		await BankM.increment(ctx.bot.pool, ctx.author.id, field="money", amount=stolen_amount-thief_tax)
+		await BankM.decrement(ctx.bot.pool, target.id, field="money", amount=stolen_amount)
 
 		s = f"You stole **${stolen_amount:,}** from **{target.display_name}**."
 

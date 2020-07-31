@@ -26,7 +26,7 @@ class ServerDoor(commands.Cog, name="Server Door"):
     @commands.has_permissions(administrator=True)
     @commands.command(name="toggledoor")
     async def toggle_door(self, ctx):
-        """ [Admin] Toggle the messages posted when a member joins or leaves the server. """
+        """ Toggle the messages posted when a member joins or leaves the server. """
 
         config = await ctx.bot.get_server_config(ctx.guild, refresh=True)
 
@@ -43,10 +43,7 @@ class ServerDoor(commands.Cog, name="Server Door"):
         msg = (
             f"The infamous **{self.bot.user.name}** has graced your ~~lowly~~ server! [{guild.owner.mention}]"
             f"\n"
-            f"Commands can be found at `!help`"
-            f"\n"
-            f"Some commands will need a role to be set. For example, the ArenaStats commands need a `member` role."
-            f"Find out how to assign roles by looking at settings (last page of `!help` or `!help Settings`)"
+            f"Please look at my help `!help`"
         )
 
         await self.send_message(guild, msg)
@@ -82,5 +79,5 @@ class ServerDoor(commands.Cog, name="Server Door"):
 
 
 def setup(bot):
-    #if not bot.debug:
-    bot.add_cog(ServerDoor(bot))
+    if not bot.debug:
+        bot.add_cog(ServerDoor(bot))

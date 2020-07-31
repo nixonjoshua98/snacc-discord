@@ -1,14 +1,11 @@
 
 
-# Module imports
 import discord
 import asyncio
 
 import datetime as dt
 
 from discord.ext import commands, tasks
-from collections import defaultdict
-
 
 from src import inputs
 from src.common import MainServer, checks
@@ -28,11 +25,8 @@ NO_PING_ROLE = "Free Agent"
 
 
 class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_after_parsing=True))):
-
 	def __init__(self, bot):
 		self.bot = bot
-
-		self.channel_cache = defaultdict(set)
 
 		self.start_shame_users()
 
@@ -41,34 +35,42 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 
 		role = ctx.guild.get_role(config["member_role"])
 
-		if role is None:
-			raise commands.CommandError("The server `Member` role needs to be assigned through my settings")
+		if config["member_role"] == 0:
+			raise commands.CommandError("Your server has not assigned a `Member` role. Look at my Settings.")
 
-		return role in ctx.author.roles or discord.utils.get(ctx.author.roles, name="VIP") is not None
+		elif role is None:
+			raise commands.CommandError("Your server `Member` role has either not been set or deleted.")
+
+		elif role not in ctx.author.roles:
+			raise commands.MissingRole(role)
+
+		return True
 
 	@staticmethod
-	async def set_users_stats(ctx, target: discord.Member, level: Range(1, 125), trophies: Range(1, 7_500)):
+	async def set_users_stats(ctx, user: discord.Member, level, trophies):
 		"""
 		Add a new stat entry for the user and limit the number of stat entries for the user in the database.
 
 		:param ctx: Discord context, we get the bot from it.
-		:param target: The user whose stats we are updating
+		:param user: The user whose stats we are updating
 		:param level: The level of the user
 		:param trophies: The amount of trophies they have
 		"""
 
 		async with ctx.bot.pool.acquire() as con:
-			await con.execute(ArenaStatsM.INSERT_ROW, target.id, dt.datetime.utcnow(), level, trophies)
+			await con.execute(ArenaStatsM.INSERT_ROW, user.id, dt.datetime.utcnow(), level, trophies)
 
-			results = await con.fetch(ArenaStatsM.SELECT_USER, target.id)
+			results = await con.fetch(ArenaStatsM.SELECT_USER, user.id)
 
-			# Delete the oldest set of results if we have too many results stored
 			if len(results) > MAX_ROWS_PER_USER:
 				for result in results[MAX_ROWS_PER_USER:]:
-					await con.execute(ArenaStatsM.DELETE_ROW, target.id, result["date_set"])
+					await con.execute(ArenaStatsM.DELETE_ROW, user.id, result["date_set"])
 
 	def start_shame_users(self):
-		""" Start the background loop if we fulfull some conditions """
+		"""
+		Start the `shame_users_loop` asyncio task loop assuming that the bot is not in DEBUG mode and that Snaccman
+		is the owner of the bot.
+		"""
 
 		async def predicate():
 			if not self.bot.debug and await self.bot.is_snacc_owner():
@@ -80,20 +82,23 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 
 		asyncio.create_task(predicate())
 
-	async def create_shame_message(self, destination: discord.TextChannel):
+	async def create_shame_message(self, channel: discord.TextChannel):
 		""" Create the shame message for the guild (attached to `destination`). """
 
-		conf = await self.bot.get_server_config(destination.guild)
-		role = destination.guild.get_role(conf["member_role"])
+		conf = await self.bot.get_server_config(channel.guild)
+
+		role = channel.guild.get_role(conf["member_role"])
 
 		if role is None:
 			return
 
-		rows = await self.bot.pool.fetch(ArenaStatsM.SELECT_ALL_USERS_LATEST)
+		rows = await self.bot.pool.fetch(ArenaStatsM.SELECT_LATEST_MEMBERS, tuple(m.id for m in role.members))
 
 		data = {row["user_id"]: row for row in rows}
 
 		lacking, missing = [], []
+
+		now = dt.datetime.utcnow()
 
 		for member in role.members:
 			no_ping_role = discord.utils.get(member.roles, name=NO_PING_ROLE)
@@ -108,8 +113,6 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 				missing.append(member.mention)
 
 			else:
-				now = dt.datetime.utcnow()
-
 				days = (now - user_data["date_set"]).days
 
 				if days >= PING_COOLDOWN:
@@ -179,7 +182,7 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 		results = await ctx.bot.pool.fetch(ArenaStatsM.SELECT_USER, target.id)
 
 		if not results:
-			return await ctx.send("I found nothing.")
+			return await ctx.send(f"I found nothing for {target.display_name}.")
 
 		embeds, chunks = [], tuple(chunk_list(results, 6))
 
@@ -192,7 +195,7 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 			for row in page:
 				date_set = row["date_set"].strftime("%d/%m/%Y")
 
-				stats = f"**{Emoji.XP} {row['level']:02d} :trophy: {row['trophies']:,}**"
+				stats = f"{Emoji.XP} **{row['level']:02d}** :trophy: **{row['trophies']:,}**"
 
 				embed.add_field(name=date_set, value=stats)
 

@@ -14,8 +14,14 @@ class TableModel:
 		await con.execute(q, _id, *list(kwargs.values()))
 
 	@classmethod
-	async def increment(cls, con, _id, field, *, amount):
-		q = f"UPDATE {cls._TABLE} SET {field} = {field} + $2 WHERE {cls._PK} = $1;"
+	async def increment(cls, con, _id, *, field, amount):
+		q = f"UPDATE {cls._TABLE} SET {field} = GREATEST(0, {field} + $2) WHERE {cls._PK} = $1;"
+
+		await con.execute(q, _id, amount)
+
+	@classmethod
+	async def decrement(cls, con, _id, *, field, amount):
+		q = f"UPDATE {cls._TABLE} SET {field} = GREATEST(0, {field} - $2) WHERE {cls._PK} = $1;"
 
 		await con.execute(q, _id, amount)
 
@@ -88,26 +94,19 @@ class ServersM(TableModel):
 
 
 class ArenaStatsM:
-	SELECT_USER = "SELECT * FROM arena_stats WHERE user_id = $1 ORDER BY date_set DESC;"
-
 	INSERT_ROW = "INSERT INTO arena_stats (user_id, date_set, level, trophies) VALUES ($1, $2, $3, $4);"
 	DELETE_ROW = "DELETE FROM arena_stats WHERE user_id = $1 AND date_set = $2;"
 
-	SELECT_ALL_USERS_LATEST = """
+	SELECT_USER = "SELECT * FROM arena_stats WHERE user_id = $1 ORDER BY date_set DESC;"
+
+	SELECT_LATEST_MEMBERS = """
 	SELECT DISTINCT ON (user_id) user_id, date_set, level, trophies
 	FROM arena_stats
-	ORDER BY user_id, date_set DESC;
+	WHERE user_id = ANY ($1)
+	ORDER BY user_id, date_set DESC
 	"""
 
-	SELECT_LEADERBOARD = """
-	SELECT * FROM (
-		SELECT DISTINCT ON (user_id) user_id, date_set, level, trophies
-		FROM arena_stats
-		WHERE user_id = ANY ($1)
-		ORDER BY user_id, date_set DESC
-		) q
-	ORDER BY trophies DESC;
-	"""
+	SELECT_LEADERBOARD = f"SELECT * FROM ({SELECT_LATEST_MEMBERS}) q ORDER BY trophies DESC;"
 
 
 class BankM(TableModel):
@@ -122,30 +121,6 @@ class BankM(TableModel):
 	"""
 
 	SELECT_RICHEST = "SELECT * FROM bank ORDER BY money DESC;"
-
-	ADD_MONEY = """
-	INSERT INTO bank (user_id, money) VALUES ($1, $2)
-	ON CONFLICT (user_id) DO
-		UPDATE SET money = GREATEST(0, bank.money + $2);
-	"""
-
-	SUB_MONEY = """
-	INSERT INTO bank (user_id, money) VALUES ($1, $2)
-	ON CONFLICT (user_id) DO
-		UPDATE SET money = GREATEST(0, bank.money - $2) ;
-	"""
-
-	ADD_BTC = """
-	INSERT INTO bank (user_id, BTC) VALUES ($1, $2)
-	ON CONFLICT (user_id) DO
-		UPDATE SET BTC = GREATEST(0, bank.BTC + $2);
-	"""
-
-	SUB_BTC = """
-	INSERT INTO bank (user_id, BTC) VALUES ($1, $2)
-	ON CONFLICT (user_id) DO
-		UPDATE SET BTC = GREATEST(0, bank.BTC - $2) ;
-	"""
 
 
 class HangmanM:
@@ -171,12 +146,6 @@ class PopulationM(TableModel):
 	"""
 
 	SELECT_ALL = "SELECT * FROM population;"
-
-	@classmethod
-	async def sub_unit(cls, con, user_id: int, unit, amount: int):
-		q = f"UPDATE population SET {unit.db_col} = {unit.db_col} - $2 WHERE population_id = $1;"
-
-		await con.execute(q, user_id, amount)
 
 
 class EmpireM(TableModel):

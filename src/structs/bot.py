@@ -4,13 +4,14 @@ import asyncpg
 
 from discord.ext import commands
 
+import datetime as dt
+
 from src.common import SNACCMAN
 
 from src.structs.help import Help
 from src.structs.context import CustomContext
-from src.common.models import ServersM
 
-# TODO: Database! Foreign Keys!
+from src.common.models import ServersM, EmpireM
 
 
 class SnaccBot(commands.Bot):
@@ -19,7 +20,7 @@ class SnaccBot(commands.Bot):
         "shop", "tags", "hangman",
         "gambling", "money", "crypto",
         "darkness", "moderator", "misc",
-        "serverdoor", "extra", "settings"
+        "serverdoor", "settings"
     ]
 
     def __init__(self):
@@ -31,6 +32,7 @@ class SnaccBot(commands.Bot):
         self.server_cache = dict()
 
         self.add_check(self.bot_check)
+        self.before_invoke(self.before_invoke_func)
 
     @property
     def debug(self):
@@ -137,10 +139,13 @@ class SnaccBot(commands.Bot):
 
         return commands.when_mentioned_or(prefix)(self, message)
 
-    async def on_message(self, message):
-        ctx = await self.get_context(message, cls=CustomContext)
+    async def before_invoke_func(self, ctx):
+        await ctx.bot.pool.execute(EmpireM.SET_LAST_LOGIN, ctx.author.id, dt.datetime.utcnow())
 
-        async with self.pool.acquire() as con:
+    async def on_message(self, message):
+        if self.exts_loaded and message.guild is not None and not message.author.bot:
+            ctx = await self.get_context(message, cls=CustomContext)
+
             await self.invoke(ctx)
 
     def run(self):

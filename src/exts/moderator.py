@@ -2,20 +2,18 @@ import discord
 
 from discord.ext import commands
 
-from discord.ext.commands import BucketType
-
 from src.common.converters import Range
 
 from typing import Optional
 
 
-class Moderator(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
+class Moderator(commands.Cog):
 	__blacklistable__ = False
 
 	@commands.has_role("Mod")
-	@commands.max_concurrency(1, BucketType.guild)
-	@commands.cooldown(1, 30, BucketType.member)
-	@commands.command(name="purge", usage="<target=None> <limit=0>")
+	@commands.max_concurrency(1, commands.BucketType.guild)
+	@commands.cooldown(1, 15, commands.BucketType.member)
+	@commands.command(name="purge", usage="<target=None> <limit=0>", cooldown_after_parsing=True)
 	async def purge(self, ctx, target: Optional[discord.Member] = None, limit: Range(0, 100) = 0):
 		""" Clear a channel of messages. """
 

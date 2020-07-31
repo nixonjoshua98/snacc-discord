@@ -23,9 +23,11 @@ class Crypto(commands.Cog):
 		if self._price_cache.get("history", None) is None:
 			await self.update_prices()
 
+		ctx.bank_data["author_bank"] = await BankM.fetchrow(ctx.bot.pool, ctx.author.id)
+
 	@commands.group(name="crpto", aliases=["c"], invoke_without_command=True)
 	async def crypto_group(self, ctx):
-		""" Show the current price of Bitcoin. *Bitcoin prices are divided by 5*. """
+		""" Show the current price of Bitcoin. Bitcoin prices are divided by 5. """
 
 		embed = discord.Embed(title="Cryptocurrency", color=discord.Color.orange())
 
@@ -44,37 +46,31 @@ class Crypto(commands.Cog):
 	async def buy_coin(self, ctx, amount: Range(1, 100)):
 		""" Buy Bitcoin(s). """
 
-		async with ctx.bot.pool.acquire() as con:
-			row = await BankM.fetchrow(con, ctx.author.id)
+		price = self._price_cache["current"] * amount
 
-			price = self._price_cache["current"] * amount
+		if price > ctx.bank_data["author_bank"]["money"]:
+			await ctx.send(f"You can't afford to buy **{amount}** Bitcoin(s).")
 
-			if price > row["money"]:
-				await ctx.send(f"You can't afford to buy **{amount}** Bitcoin(s).")
+		else:
+			await BankM.increment(ctx.bot.pool, ctx.author.id, field="BTC", amount=amount)
+			await BankM.decrement(ctx.bot.pool, ctx.author.id, field="money", amount=price)
 
-			else:
-				await con.execute(BankM.SUB_MONEY, ctx.author.id, price)
-				await con.execute(BankM.ADD_BTC, ctx.author.id, amount)
-
-				await ctx.send(f"You bought **{amount}** Bitcoin(s) for **${price:,}**!")
+			await ctx.send(f"You bought **{amount}** Bitcoin(s) for **${price:,}**!")
 
 	@crypto_group.command(name="sell")
 	async def sell_coin(self, ctx, amount: Range(1, 100)):
 		""" Sell Bitcoin(s). """
 
-		async with ctx.bot.pool.acquire() as con:
-			row = await BankM.fetchrow(con, ctx.author.id)
+		price = self._price_cache["current"] * amount
 
-			price = self._price_cache["current"] * amount
+		if amount > ctx.bank_data["author_bank"]["btc"]:
+			await ctx.send(f"You are trying to sell more Bitcoin than you currently own.")
 
-			if amount > row["btc"]:
-				await ctx.send(f"You are trying to sell more Bitcoin than you currently own.")
+		else:
+			await BankM.increment(ctx.bot.pool, ctx.author.id, field="money", amount=price)
+			await BankM.decrement(ctx.bot.pool, ctx.author.id, field="BTC", amount=amount)
 
-			else:
-				await con.execute(BankM.ADD_MONEY, ctx.author.id, price)
-				await con.execute(BankM.SUB_BTC, ctx.author.id, amount)
-
-				await ctx.send(f"You sold **{amount}** Bitcoin(s) for **${price:,}**!")
+			await ctx.send(f"You sold **{amount}** Bitcoin(s) for **${price:,}**!")
 
 	@staticmethod
 	async def get_history():

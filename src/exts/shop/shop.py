@@ -12,6 +12,11 @@ from src.structs.textpage import TextPage
 
 
 class Shop(commands.Cog):
+
+	async def cog_before_invoke(self, ctx):
+		ctx.upgrade_data["author_upgrades"] = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
+		ctx.upgrade_data["author_bank"] = await BankM.fetchrow(ctx.bot.pool, ctx.author.id)
+
 	@staticmethod
 	def create_upgrades_shop_page(upgrades):
 		page = TextPage(title="Empire Upgrades", headers=["ID", "Name", "Owned", "Cost"])
@@ -32,9 +37,7 @@ class Shop(commands.Cog):
 	async def shop_group(self, ctx):
 		""" Display your shop. """
 
-		upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
-
-		page = self.create_upgrades_shop_page(upgrades)
+		page = self.create_upgrades_shop_page(ctx.upgrade_data["author_upgrades"])
 
 		await inputs.send_pages(ctx, [page.get()])
 
@@ -44,25 +47,20 @@ class Shop(commands.Cog):
 	async def buy_upgrade(self, ctx, upgrade: EmpireUpgrade()):
 		""" Buy a new upgrade. """
 
-		async with ctx.bot.pool.acquire() as con:
-			upgrades = await UserUpgradesM.fetchrow(con, ctx.author.id)
+		price = upgrade.get_price(ctx.upgrade_data["author_upgrades"][upgrade.db_col])
 
-			bank = await BankM.fetchrow(con, ctx.author.id)
+		max_units = upgrade.max_amount + ctx.upgrade_data["author_upgrades"]["extra_units"]
 
-			price = upgrade.get_price(upgrades[upgrade.db_col])
+		if ctx.upgrade_data["author_upgrades"][upgrade.db_col] > max_units:
+			await ctx.send(f"**{upgrade.display_name}** have an owned limit of **{max_units}**.")
 
-			max_units = upgrade.max_amount + upgrades["extra_units"]
+		elif price > ctx.upgrade_data["author_bank"]["money"]:
+			await ctx.send(f"You can't afford to hire **1x {upgrade.display_name}**")
 
-			if upgrades[upgrade.db_col] > max_units:
-				await ctx.send(f"**{upgrade.display_name}** have an owned limit of **{max_units}**.")
+		else:
+			await BankM.decrement(ctx.bot.pool, ctx.author.id, field="money", amount=price)
 
-			elif price > bank["money"]:
-				await ctx.send(f"You can't afford to hire **1x {upgrade.display_name}**")
+			await UserUpgradesM.increment(ctx.bot.pool, ctx.author.id, field=upgrade.db_col, amount=1)
 
-			else:
-				await con.execute(BankM.SUB_MONEY, ctx.author.id, price)
-
-				await UserUpgradesM.increment(con, ctx.author.id, upgrade.db_col, amount=1, limit=1)
-
-				await ctx.send(f"Bought **{upgrade.display_name}** for **${price:,}**!")
+			await ctx.send(f"Bought **{upgrade.display_name}** for **${price:,}**!")
 

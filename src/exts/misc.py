@@ -22,7 +22,7 @@ class Miscellaneous(commands.Cog):
 			r = await client.get(f"http://dictionary.reference.com/browse/{word}?s=t")
 
 		if r.status_code != httpx.codes.OK:
-			return await ctx.send("I failed to query the dictionary.")
+			return await ctx.send(f"I failed to lookup your query. Status Code: {r.status_code}")
 
 		# Soup extracting
 		soup = BeautifulSoup(r.content, "html.parser")
@@ -33,17 +33,16 @@ class Miscellaneous(commands.Cog):
 		definitions = [f"{i}. {d}" for i, d in enumerate(definitions, start=1)]
 
 		if len(definitions) > 0:
-			# Character limit: 1024
 			value = "\n".join(definitions)
 			value = value[:1021] + "..." if len(value) > 1024 else value
+
 			embed = discord.Embed(title=word, colour=discord.Color.orange(), url=str(r.url))
+
+			embed.timestamp = dt.datetime.utcnow()
 
 			embed.add_field(name="Definition(s)", value=value)
 
-			embed.set_footer(
-				text=f"{ctx.bot.user.name} | {dt.datetime.utcnow().strftime('%d/%m/%Y %X')}",
-				icon_url=ctx.bot.user.avatar_url
-			)
+			embed.set_footer(text=ctx.bot.user.name, icon_url=ctx.bot.user.avatar_url)
 
 			return await ctx.send(embed=embed)
 
@@ -60,18 +59,17 @@ class Miscellaneous(commands.Cog):
 			"https://discord.com/oauth2/authorize?client_id=666616515436478473&scope=bot&permissions=8"
 		)
 
-	@commands.command(name="whois")
 	@checks.snaccman_only()
+	@commands.command(name="whois")
 	async def who_is_this(self, ctx, user_id: int):
-		""" [Snacc] Find the user who has the ID provided. """
+		""" Find the user who has the ID provided. """
 
 		user = ctx.bot.get_user(user_id)
 
 		if user is None:
-			await ctx.send("I found noone with that ID")
+			return await ctx.send("I found no user with that ID in my search.")
 
-		else:
-			await ctx.send(f"That ID belongs to **{str(user)}**.")
+		await ctx.send(f"That ID belongs to **{str(user)}**.")
 
 	@commands.command(name="ping")
 	async def ping(self, ctx):
@@ -90,11 +88,9 @@ class Miscellaneous(commands.Cog):
 
 				if cmd._buckets._cooldown:
 					try:
-						can_run = await cmd.can_run(ctx)
+						if not await cmd.can_run(ctx):
+							continue
 					except commands.CommandError:
-						continue
-
-					if not can_run:
 						continue
 
 					current = ctx.message.created_at.replace(tzinfo=dt.timezone.utc).timestamp()
@@ -102,7 +98,6 @@ class Miscellaneous(commands.Cog):
 
 					if bucket._tokens == 0:
 						retry_after = bucket.per - (current - bucket._window)
-
 
 						page.add_row((cmd.name, dt.timedelta(seconds=int(retry_after))))
 
