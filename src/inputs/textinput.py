@@ -51,7 +51,7 @@ class TextInputBase(InputBase):
                     break
 
                 else:
-                    embed.description = f"`{response[0:50]}` is not a valid answer."
+                    embed.description = f"`{response[0:50]}` is not a valid response."
 
                     await self.edit_message(embed=embed)
 
