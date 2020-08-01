@@ -4,6 +4,7 @@ import math
 import asyncio
 import random
 import itertools
+import discord
 
 import datetime as dt
 
@@ -33,13 +34,6 @@ class Empire(commands.Cog):
 		self.bot = bot
 
 		self.start_income_loop()
-
-	async def cog_before_invoke(self, ctx):
-		ctx.bank_data["author_bank"] = await BankM.fetchrow(ctx.bot.pool, ctx.author.id)
-
-		ctx.population_["author"] = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
-		ctx.upgrades_["author"] = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
-		ctx.bank_["author"] = await BankM.fetchrow(ctx.bot.pool, ctx.author.id)
 
 	def start_income_loop(self):
 		""" Start the background loop assuming that Snaccman is the owner. """
@@ -83,7 +77,7 @@ class Empire(commands.Cog):
 		hourly_income = max(0, utils.get_hourly_money_change(population, upgrades))
 
 		units_lost = get_units_lost()
-		money_lost = min(5_000, min(bank["money"], int(hourly_income * random.uniform(0.5, 1.5))))
+		money_lost = min(random.randint(2_500, 7_500), bank["money"], int(hourly_income * random.uniform(0.5, 1.5)))
 
 		return BattleResults(units_lost=units_lost, money_lost=money_lost)
 
@@ -109,13 +103,22 @@ class Empire(commands.Cog):
 	async def scout(self, ctx, *, target: EmpireTargetUser()):
 		""" Pay to scout an empire to recieve valuable information. """
 
-		if ctx.bank_data["author_bank"]["money"] < SCOUT_COST:
+		async with ctx.bot.pool.acquire() as con:
+			author_population = await PopulationM.fetchrow(con, ctx.author.id)
+			target_population = await PopulationM.fetchrow(con, target.id)
+
+			author_bank = await BankM.fetchrow(con, ctx.author.id)
+
+		author_power = MilitaryGroup.get_total_power(author_population)
+		target_power = MilitaryGroup.get_total_power(target_population)
+
+		if author_bank["money"] < SCOUT_COST:
 			await ctx.send(f"Scouting an empire costs **${SCOUT_COST:,}**.")
 
 		else:
 			await BankM.decrement(ctx.bot.pool, ctx.author.id, field="money", amount=SCOUT_COST)
 
-			win_chance = self.get_win_chance(ctx.empire_data["atk_pow"], ctx.empire_data["def_pow"])
+			win_chance = self.get_win_chance(author_power, target_power)
 
 			await ctx.send(
 				f"You hired a scout for **${SCOUT_COST:,}**. "
@@ -128,37 +131,43 @@ class Empire(commands.Cog):
 	async def attack(self, ctx, *, target: EmpireTargetUser()):
 		""" Attack a rival empire. """
 
-		win_chance = self.get_win_chance(ctx.empire_data["atk_pow"], ctx.empire_data["def_pow"])
+		# - Load the populations of each empire
+		author_population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
+		target_population = await PopulationM.fetchrow(ctx.bot.pool, target.id)
 
-		attack_won = win_chance >= random.uniform(0.0, 1.0)
+		# - Power ratings of each empire which is used to calculate the win chance for the author (attacker)
+		author_power = MilitaryGroup.get_total_power(author_population)
+		target_power = MilitaryGroup.get_total_power(target_population)
 
-		results = await self.simulate_attack(ctx.bot.pool, target if attack_won else ctx.author)
+		# Did the author's attack succeed?
+		if self.get_win_chance(author_power, target_power) >= random.uniform(0.0, 1.0):
+			# - Simulate the attack on the target
+			results = await self.simulate_attack(ctx.bot.pool, target)
 
-		units_text = ", ".join(map(lambda kv: f"{kv[1]}x {kv[0].display_name}", results.units_lost.items()))
-
-		if attack_won:
+			# - Perform the money pillaging - Transfer money from one account to the other
 			await BankM.increment(ctx.bot.pool, ctx.author.id, field="money", amount=results.money_lost)
 			await BankM.decrement(ctx.bot.pool, target.id, field="money", amount=results.money_lost)
 
+			# - Remove the units from the target which died from the attack
 			for unit, amount in results.units_lost.items():
 				await PopulationM.decrement(ctx.bot.pool, target.id, field=unit.db_col, amount=amount)
+
+			# - Put the target empire into a 'cooldown' so they cannot get attacked for a period of time
+			await EmpireM.set(ctx.bot.pool, target.id, last_attack=dt.datetime.utcnow())
+
+			# - Create the message to return to Discord
+			units_text = ", ".join(map(lambda kv: f"{kv[1]}x {kv[0].display_name}", results.units_lost.items()))
 
 			s = f"You won against **{target.display_name}**, pillaged **${results.money_lost :,}**"
 			s = s + f" and killed **{units_text if units_text else 'none of their units'}**."
 
-			await EmpireM.set(ctx.bot.pool, target.id, last_attack=dt.datetime.utcnow())
-
 			await ctx.send(s)
 
 		else:
-			await BankM.decrement(ctx.bot.pool, ctx.author.id, field="money", amount=results.money_lost)
+			await ctx.send(f"You lost against **{target.display_name}**")
 
-			await ctx.send(
-				f"You lost against **{target.display_name}** "
-				f"and used **${results.money_lost :,}** to heal your army."
-			)
-
-		await EmpireM.set(ctx.bot.pool, ctx.author.id, last_attack=dt.datetime.utcnow() - dt.timedelta(hours=1.5))
+		# - Take the author out of their cooldown so they can be attacked
+		await EmpireM.set(ctx.bot.pool, ctx.author.id, last_attack=dt.datetime.utcnow() - dt.timedelta(hours=24.0))
 
 	@checks.has_empire()
 	@commands.cooldown(1, 60 * 90, commands.BucketType.user)
@@ -174,30 +183,37 @@ class Empire(commands.Cog):
 		for event in chosen_events:
 			await event(ctx)
 
-		if random.randint(0, 7) == 0:
-			self.empire_event.reset_cooldown(ctx)
-
-			await ctx.send("Good news! Your empire is ready for another event!")
-
 	@checks.has_empire()
 	@commands.command(name="empire", aliases=["e"])
 	async def show_empire(self, ctx):
 		""" View your empire. """
 
-		empire = await ctx.bot.pool.fetchrow(EmpireM.SELECT_ROW_AND_POPULATION, ctx.author.id)
+		# - Load the data from the database
+		author_empire = await EmpireM.fetchrow(ctx.bot.pool, ctx.author.id)
+		author_upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
+		author_population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
 
-		upgrades = ctx.upgrades_["author"]
+		# - Calculate the values used in the Embed message
+		hourly_income = MoneyGroup.get_total_hourly_income(author_population, author_upgrades)
+		hourly_upkeep = MilitaryGroup.get_total_hourly_upkeep(author_population, author_upgrades)
+		empire_power = MilitaryGroup.get_total_power(author_population)
 
-		pages = [group.create_empire_page(empire, upgrades).get() for group in [MoneyGroup, MilitaryGroup]]
+		# - Create the Embed message which will be sent back to Discord
+		embed = ctx.bot.embed(title=author_empire["name"], thumbnail=ctx.author.avatar_url)
 
-		await inputs.send_pages(ctx, pages)
+		embed.add_field(name="Power Rating", value=empire_power)
+
+		embed.add_field(name="Hourly Income", value=f"${hourly_income:,}")
+		embed.add_field(name="Hourly Upkeep", value=f"${hourly_upkeep:,}")
+
+		await ctx.send(embed=embed)
 
 	@checks.has_empire()
 	@commands.command(name="rename")
 	async def rename_empire(self, ctx, *, new_name):
 		""" Rename your established empire. """
 
-		await EmpireM.set(ctx.bot.pool, ctx.guild.id, name=new_name)
+		await EmpireM.set(ctx.bot.pool, ctx.author.id, name=new_name)
 
 		await ctx.send(f"Your empire has been renamed to `{new_name}`")
 
@@ -206,11 +222,15 @@ class Empire(commands.Cog):
 	async def show_units(self, ctx):
 		""" Show all the possible units which you can buy. """
 
-		population, upgrades = ctx.population_["author"], ctx.upgrades_["author"]
+		# - Load the data from the database
+		author_upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
+		author_population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
 
-		pages = [group.create_units_page(population, upgrades).get() for group in [MoneyGroup, MilitaryGroup]]
+		# - Unit pages
+		money_units_page = MoneyGroup.create_units_page(author_population, author_upgrades).get()
+		military_units_page = MilitaryGroup.create_units_page(author_population, author_upgrades).get()
 
-		await inputs.send_pages(ctx, pages)
+		await inputs.send_pages(ctx, [money_units_page, military_units_page])
 
 	@checks.has_empire()
 	@commands.command(name="hire")
@@ -218,24 +238,29 @@ class Empire(commands.Cog):
 	async def hire_unit(self, ctx, unit: EmpireUnit(), amount: Range(1, 100) = 1):
 		""" Hire a new unit to serve your empire. """
 
-		population, upgrades = ctx.population_["author"], ctx.upgrades_["author"]
+		# - Load the data
+		author_upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
+		author_population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
+		author_bank = await BankM.fetchrow(ctx.bot.pool, ctx.author.id)
 
-		row = await BankM.fetchrow(ctx.bot.pool, ctx.author.id)
+		# - Cost of upgrading from current -> (current + amount)
+		price = unit.get_price(author_population[unit.db_col], amount)
 
-		# Cost of upgrading from current -> (current + amount)
-		price = unit.get_price(population[unit.db_col], amount)
+		max_units = unit.get_max_amount(author_upgrades)
 
-		max_units = unit.get_max_amount(upgrades)
-
-		if population[unit.db_col] + amount > max_units:
+		# - Buying the unit will surpass the owned limit of that particular unit
+		if author_population[unit.db_col] + amount > max_units:
 			await ctx.send(f"**{unit.display_name}** have a limit of **{max_units}** units.")
 
-		elif price > row["money"]:
+		# - Author cannot afford to buy the unit
+		elif price > author_bank["money"]:
 			await ctx.send(f"You can't afford to hire **{amount}x {unit.display_name}**")
 
 		else:
+			# - Deduct the money from the authors bank
 			await BankM.decrement(ctx.bot.pool, ctx.author.id, field="money", amount=price)
 
+			# - Add the unit to the author's empire
 			await PopulationM.increment(ctx.bot.pool, ctx.author.id, field=unit.db_col, amount=amount)
 
 			await ctx.send(f"Bought **{amount}x {unit.display_name}** for **${price:,}**!")
@@ -269,22 +294,28 @@ class Empire(commands.Cog):
 		""" Background income & upkeep loop. """
 
 		async with self.bot.pool.acquire() as con:
+			# - Fetch all existing empires in the database
 			empires = await con.fetch(EmpireM.SELECT_ALL_AND_POPULATION)
 
 			for empire in empires:
 				now = dt.datetime.utcnow()
 
+				# - Set the last_income field which is used to calculate the income rate from the delta time
 				await EmpireM.set(con, empire["empire_id"], last_income=now)
 
 				hours_since_login = (now - empire["last_login"]).total_seconds() / 3600
 
+				# - User must have logged in the past 12 hours in order to get passive income
 				if hours_since_login >= 12:
 					continue
 
-				upgrades = await con.fetchrow(UserUpgradesM.SELECT_ROW, empire["empire_id"])
+				upgrades = await UserUpgradesM.fetchrow(con, empire["empire_id"])
 
+				# - Total number of hours we need to credit the empire's bank
 				hours_since_income = (now - empire["last_income"]).total_seconds() / 3600
 
+				# - How much the user has earned (or lost) since their last income
 				money_change = math.ceil(utils.get_hourly_money_change(empire, upgrades) * hours_since_income)
 
+				# - Increment the bank. Note: It can also be a negative
 				await BankM.increment(con, empire["empire_id"], field="money", amount=money_change)

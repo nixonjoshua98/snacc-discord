@@ -42,8 +42,6 @@ class EmpireTargetUser(DiscordUser):
 	ATTACK_COOLDOWN = 1.5 * 3_600
 
 	async def convert(self, ctx: CustomContext, argument):
-		from src.exts.empire.units import MilitaryGroup
-
 		user = await super().convert(ctx, argument)
 
 		row = await EmpireM.fetchrow(ctx.bot.pool, user.id, insert=False)
@@ -58,22 +56,6 @@ class EmpireTargetUser(DiscordUser):
 			delta = dt.timedelta(seconds=int(self.ATTACK_COOLDOWN - time_since_attack))
 
 			raise commands.CommandError(f"Target is still recovering from a previous attack. Try again in `{delta}`")
-
-		# Populations of both the attacker and defender
-		attacker_pop = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
-		defender_pop = await PopulationM.fetchrow(ctx.bot.pool, user.id)
-
-		atk_pow = MilitaryGroup.get_total_power(attacker_pop)
-		def_pow = MilitaryGroup.get_total_power(defender_pop)
-
-		if atk_pow < 25:
-			raise commands.CommandError("You need at least **25** power to do that.")
-
-		elif def_pow <= (atk_pow // 2):
-			raise commands.CommandError("You are too strong for your target.")
-
-		# Custom Context data
-		ctx.empire_data = {"atk_pow": atk_pow, "def_pow": def_pow}
 
 		return user
 

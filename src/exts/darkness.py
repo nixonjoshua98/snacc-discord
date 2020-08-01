@@ -60,7 +60,6 @@ class Darkness(commands.Cog):
                                                          send_dm=True
                                                          )
                                ),
-
         }
 
         answers = dict()
