@@ -164,7 +164,11 @@ class Empire(commands.Cog):
 			await ctx.send(s)
 
 		else:
-			await ctx.send(f"You lost against **{target.display_name}**")
+			results = await self.simulate_attack(ctx.bot.pool, ctx.author)
+
+			await BankM.decrement(ctx.bot.pool, ctx.author.id, field="money", amount=results.money_lost)
+
+			await ctx.send(f"Your attack on **{target.display_name}** failed and you lost **${results.money_lost:,}**")
 
 		# - Take the author out of their cooldown so they can be attacked
 		await EmpireM.set(ctx.bot.pool, ctx.author.id, last_attack=dt.datetime.utcnow() - dt.timedelta(hours=24.0))
@@ -173,6 +177,7 @@ class Empire(commands.Cog):
 	@commands.cooldown(1, 60 * 90, commands.BucketType.user)
 	@commands.command(name="empireevent", aliases=["ee"])
 	async def empire_event(self, ctx):
+		""" Trigger an empire event. """
 		""" Trigger an empire event. """
 
 		options = (events.loot_event, events.stolen_event, events.assassinated_event)

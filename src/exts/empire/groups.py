@@ -43,28 +43,6 @@ class _MoneyUnitGroup(_UnitGroup):
 	def __init__(self, name, units):
 		super().__init__(UnitGroupType.MONEY, name, units)
 
-	def create_empire_page(self, empire, upgrades):
-		page = TextPage(title=empire["name"], headers=["Unit", "Owned", "Income"])
-
-		total_hourly_income = 0
-
-		for unit in self.units:
-			units_owned = empire[unit.db_col]
-
-			unit_hourly_income = unit.get_hourly_income(units_owned, upgrades)
-
-			total_hourly_income += unit_hourly_income
-
-			owned = f"{units_owned}/{unit.get_max_amount(upgrades)}"
-
-			row = [unit.display_name, owned, f"${unit_hourly_income:,}"]
-
-			page.add_row(row)
-
-		page.set_footer(f"Hourly Income: ${total_hourly_income:,}")
-
-		return page
-
 	def create_units_page(self, empire, upgrades):
 		page = TextPage(title=self.name, headers=["ID", "Unit", "Owned", "Income", "Cost"])
 
@@ -88,28 +66,6 @@ class _MoneyUnitGroup(_UnitGroup):
 class _MilitaryUnitGroup(_UnitGroup):
 	def __init__(self, name, units):
 		super().__init__(UnitGroupType.MILITARY, name, units)
-
-	def create_empire_page(self, empire, upgrades):
-		page = TextPage(title=empire["name"], headers=["Unit", "Owned", "Power", "Upkeep"])
-
-		total_upkeep = 0
-
-		for unit in self.units:
-			units_owned = empire[unit.db_col]
-
-			hourly_upkeep = unit.get_hourly_upkeep(units_owned, upgrades)
-
-			total_upkeep += hourly_upkeep
-
-			upkeep, power = f"${hourly_upkeep:,}", unit.power * units_owned
-
-			row = [unit.display_name, f"{units_owned}/{unit.get_max_amount(upgrades)}", power, upkeep]
-
-			page.add_row(row)
-
-		page.set_footer(f"Hourly Upkeep: ${total_upkeep:,}")
-
-		return page
 
 	def create_units_page(self, empire, upgrades):
 		page = TextPage(title=self.name, headers=["ID", "Unit", "Owned", "Power", "Upkeep", "Cost"])
