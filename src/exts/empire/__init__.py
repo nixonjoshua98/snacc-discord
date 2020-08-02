@@ -3,6 +3,7 @@
 import math
 import asyncio
 import random
+import discord
 import itertools
 
 import datetime as dt
@@ -11,7 +12,7 @@ from discord.ext import tasks, commands
 from dataclasses import dataclass
 
 from src import inputs
-from src.common import checks
+from src.common import MainServer, checks
 from src.common.models import BankM, EmpireM, PopulationM, UserUpgradesM
 from src.common.converters import EmpireUnit, Range, EmpireTargetUser
 from src.common.empireunits import MilitaryGroup, MoneyGroup
@@ -44,6 +45,10 @@ class Empire(commands.Cog):
 				self.income_loop.start()
 
 		asyncio.create_task(predicate())
+
+	def cog_before_invoke(self, ctx):
+		if ctx.guild.id == MainServer.ID:
+			await ctx.author.add_roles(discord.utils.get(ctx.guild.roles, id=MainServer.EMPIRE_ROLE))
 
 	@staticmethod
 	def get_win_chance(atk_power, def_power):
