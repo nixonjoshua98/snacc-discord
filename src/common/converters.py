@@ -3,7 +3,11 @@ import discord
 import datetime as dt
 
 from discord.ext import commands
+
 from src.common.models import EmpireM
+
+from src.common.empireunits import ALL_UNITS
+from src.common.empirequests import EmpireQuests
 
 
 class DiscordUser(commands.Converter):
@@ -104,8 +108,6 @@ class BotModule(commands.Converter):
 
 class EmpireUnit(commands.Converter):
 	async def convert(self, ctx, argument):
-		from src.exts.empire.units import ALL_UNITS
-
 		try:
 			val = int(argument)
 
@@ -142,3 +144,19 @@ class EmpireUpgrade(commands.Converter):
 
 		return item
 
+
+class EmpireQuest(commands.Converter):
+	async def convert(self, ctx, argument):
+		try:
+			val = int(argument)
+
+		except ValueError:
+			raise commands.UserInputError(f"A quest with the ID `{argument}` could not be found.")
+
+		else:
+			quest = EmpireQuests.get(id=val)
+
+			if quest is None:
+				raise commands.UserInputError(f"A quest with the ID `{val}` could not be found.")
+
+		return quest

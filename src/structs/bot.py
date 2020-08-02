@@ -7,7 +7,7 @@ from discord.ext import commands
 
 import datetime as dt
 
-from src.common import SNACCMAN
+from src.common import MainServer, SNACCMAN
 
 from src.structs.help import Help
 from src.structs.context import CustomContext
@@ -15,8 +15,8 @@ from src.structs.context import CustomContext
 from src.common.models import ServersM, EmpireM
 
 EXTENSIONS = [
-    "errorhandler", "arenastats", "empire", "units", "quests", "shop", "tags", "hangman",
-    "gambling", "bank", "crypto", "darkness", "moderator", "misc", "serverdoor", "settings"
+    "errorhandler", "arenastats", "empire", "quests", "shop", "tags", "hangman", "gambling",
+    "bank", "crypto", "darkness", "moderator", "misc", "serverdoor", "settings"
 ]
 
 
@@ -150,6 +150,9 @@ class SnaccBot(commands.AutoShardedBot):
 
     async def before_invoke_func(self, ctx):
         await EmpireM.set(ctx.bot.pool, ctx.author.id, last_login=dt.datetime.utcnow())
+
+        if ctx.guild.id == MainServer.ID:
+            await ctx.author.add_roles(discord.utils.get(ctx.guild.roles, id=MainServer.SNACC_FOLK_ROLE))
 
     async def on_message(self, message):
         if self.exts_loaded and message.guild is not None and not message.author.bot:

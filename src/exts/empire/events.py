@@ -4,7 +4,7 @@ from src.common.models import BankM, PopulationM, UserUpgradesM
 
 from . import utils
 
-from .units import MilitaryGroup
+from src.common.empireunits import MilitaryGroup
 
 
 async def assassinated_event(ctx):

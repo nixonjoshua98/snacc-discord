@@ -73,3 +73,11 @@ user_upgrades_id    BIGINT      PRIMARY KEY,
 extra_units         SMALLINT    DEFAULT 0 CHECK (extra_units    >= 0),
 less_upkeep         SMALLINT    DEFAULT 0 CHECK (less_upkeep    >= 0)
 );
+
+
+CREATE TABLE IF NOT EXISTS quests (
+quest_id            BIGINT                      PRIMARY KEY,
+quest_num           SMALLINT,
+success_rate        REAL,
+date_started        TIMESTAMP WITHOUT time zone DEFAULT (now() at time zone 'utc')
+);

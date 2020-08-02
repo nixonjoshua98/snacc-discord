@@ -15,3 +15,7 @@ class MissingEmpire(CommandError):
 
 class HasEmpire(CommandError):
 	""" User already has an emire. """
+
+
+class UserOnQuest(CommandError):
+	""" User is already on a quest. """

@@ -34,6 +34,12 @@ class TableModel:
 
 		return row
 
+	@classmethod
+	async def delete(cls, con, id_: int):
+		q = f"DELETE FROM {cls._TABLE} WHERE {cls._PK}=$1;"
+
+		await con.execute(q, id_)
+
 
 class ServersM(TableModel):
 	_TABLE, _PK = "servers", "server_id"
@@ -184,3 +190,20 @@ class UserUpgradesM(TableModel):
 		DO NOTHING
 	RETURNING * 
 	"""
+
+
+class QuestsM(TableModel):
+	_TABLE, _PK = "quests", "quest_id"
+
+	SELECT_ROW = "SELECT * FROM quests WHERE quest_id=$1 LIMIT 1;"
+	INSERT_ROW = """
+	INSERT INTO quests (quest_id, quest_num, success_rate, date_started)  
+	VALUES ($1, $2, $3, $4) 
+	ON CONFLICT (quest_id) 
+		DO NOTHING
+	RETURNING * 
+	"""
+
+	@classmethod
+	async def fetchrow(cls, con, id_: int, *, insert: bool = True):
+		return await super(QuestsM, cls).fetchrow(con, id_, insert=False)
