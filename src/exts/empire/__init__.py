@@ -46,7 +46,7 @@ class Empire(commands.Cog):
 
 		asyncio.create_task(predicate())
 
-	def cog_before_invoke(self, ctx):
+	async def cog_before_invoke(self, ctx):
 		if ctx.guild.id == MainServer.ID:
 			await ctx.author.add_roles(discord.utils.get(ctx.guild.roles, id=MainServer.EMPIRE_ROLE))
 
