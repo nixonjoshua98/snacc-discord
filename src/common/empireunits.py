@@ -49,7 +49,7 @@ class _MoneyUnitGroup(_UnitGroup):
 
 		page.set_footer("No units available to hire" if len(page.rows) == 0 else None)
 
-		return
+		return page
 
 	def get_total_hourly_income(self, empire, upgrades):
 		return sum(map(lambda u: u.get_hourly_income(empire[u.db_col], upgrades), self.units))
