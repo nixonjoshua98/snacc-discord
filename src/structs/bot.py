@@ -15,8 +15,8 @@ from src.structs.context import CustomContext
 from src.common.models import ServersM, EmpireM
 
 EXTENSIONS = [
-    "errorhandler", "arenastats", "empire", "shop", "tags", "hangman", "gambling",
-    "bank", "crypto", "darkness", "moderator", "misc", "serverdoor", "settings"
+    "errorhandler", "arenastats", "empire", "units", "quests", "shop", "tags", "hangman",
+    "gambling", "bank", "crypto", "darkness", "moderator", "misc", "serverdoor", "settings"
 ]
 
 
@@ -32,7 +32,6 @@ class SnaccBot(commands.AutoShardedBot):
         self.add_check(self.bot_check)
 
         self.before_invoke(self.before_invoke_func)
-        self.after_invoke(self.after_invoke_func)
 
     @property
     def debug(self):
@@ -151,9 +150,6 @@ class SnaccBot(commands.AutoShardedBot):
 
     async def before_invoke_func(self, ctx):
         await EmpireM.set(ctx.bot.pool, ctx.author.id, last_login=dt.datetime.utcnow())
-
-    async def after_invoke_func(self, ctx):
-        pass
 
     async def on_message(self, message):
         if self.exts_loaded and message.guild is not None and not message.author.bot:

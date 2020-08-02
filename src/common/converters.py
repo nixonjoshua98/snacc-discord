@@ -3,9 +3,7 @@ import discord
 import datetime as dt
 
 from discord.ext import commands
-from src.common.models import EmpireM, PopulationM
-
-from src.structs.context import CustomContext
+from src.common.models import EmpireM
 
 
 class DiscordUser(commands.Converter):
@@ -41,7 +39,7 @@ class DiscordUser(commands.Converter):
 class EmpireTargetUser(DiscordUser):
 	ATTACK_COOLDOWN = 1.5 * 3_600
 
-	async def convert(self, ctx: CustomContext, argument):
+	async def convert(self, ctx, argument):
 		user = await super().convert(ctx, argument)
 
 		row = await EmpireM.fetchrow(ctx.bot.pool, user.id, insert=False)

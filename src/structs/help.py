@@ -39,7 +39,7 @@ class Help(commands.HelpCommand):
 				embed = discord.Embed(title=title, description=cog.__doc__ or "", color=discord.Color.orange())
 
 				embed.set_thumbnail(url=bot.user.avatar_url)
-				embed.set_footer(text=f"{bot.user.name} | Page {i + 1}/{len(mapping)}", icon_url=bot.user.avatar_url)
+				embed.set_footer(text=f"{bot.user.name} | Module {i + 1}/{len(mapping)}", icon_url=bot.user.avatar_url)
 
 				for ii, cmd in enumerate(chunk):
 					if not cmd.hidden:
