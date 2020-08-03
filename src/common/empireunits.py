@@ -109,7 +109,7 @@ class _Unit(Purchasable):
 
 	def get_hourly_income(self, total, upgrades):
 		income = self.income_hour * total
-		income = income * (1.0 - (upgrades["more_income"] * 0.05))
+		income = income * (1.0 + (upgrades["more_income"] * 0.05))
 
 		return math.floor(income)
 

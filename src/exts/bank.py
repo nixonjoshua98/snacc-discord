@@ -45,9 +45,11 @@ class Bank(commands.Cog):
 	async def steal_coins(self, ctx, *, target: DiscordUser()):
 		""" Attempt to steal from another user. """
 
+		author_bank = await BankM.fetchrow(ctx.bot.pool, ctx.author.id)
 		target_bank = await BankM.fetchrow(ctx.bot.pool, target.id)
 
-		min_stolen, max_stolen = int(target_bank["money"] * 0.025), int(target_bank["money"] * 0.075)
+		min_stolen = int(target_bank["money"] * 0.025)
+		max_stolen = max(author_bank, int(target_bank["money"] * 0.075))
 
 		stolen_amount = random.randint(max(1, min_stolen), max(1, max_stolen))
 

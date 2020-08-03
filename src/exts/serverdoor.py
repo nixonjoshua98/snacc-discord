@@ -43,7 +43,7 @@ class ServerDoor(commands.Cog, name="Server Door"):
         msg = (
             f"The infamous **{self.bot.user.name}** has graced your ~~lowly~~ server! [{guild.owner.mention}]"
             f"\n"
-            f"Please look at my help `!help`"
+            f"Please look at my `!help`"
         )
 
         await self.send_message(guild, msg)

@@ -14,7 +14,7 @@ from src.common.empireunits import MilitaryGroup
 from src.common.empirequests import EmpireQuests
 
 
-class Quests(commands.Cog):
+class Quest(commands.Cog):
 	@checks.has_empire()
 	@commands.group(name="quest", aliases=["q"], invoke_without_command=True)
 	async def quest_group(self, ctx):
@@ -101,4 +101,4 @@ class Quests(commands.Cog):
 
 
 def setup(bot):
-	bot.add_cog(Quests())
+	bot.add_cog(Quest())

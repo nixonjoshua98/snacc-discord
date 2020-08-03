@@ -15,7 +15,7 @@ from src.structs.context import CustomContext
 from src.common.models import ServersM, EmpireM
 
 EXTENSIONS = [
-    "errorhandler", "arenastats", "empire", "quests", "shop", "tags", "hangman", "gambling",
+    "errorhandler", "arenastats", "empire", "quest", "shop", "tags", "hangman", "gambling",
     "bank", "crypto", "darkness", "moderator", "misc", "serverdoor", "settings"
 ]
 
