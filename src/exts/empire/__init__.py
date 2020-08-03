@@ -81,7 +81,7 @@ class Empire(commands.Cog):
 		hourly_income = max(0, utils.get_hourly_money_change(population, upgrades))
 
 		units_lost = get_units_lost()
-		money_lost = min(bank["money"], int(hourly_income * random.uniform(0.5, 2.0)))
+		money_lost = min(bank["money"], int(hourly_income * random.uniform(0.5, 1.5)))
 
 		return BattleResults(units_lost=units_lost, money_lost=money_lost)
 

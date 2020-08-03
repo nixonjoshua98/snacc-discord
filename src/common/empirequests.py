@@ -14,7 +14,7 @@ class _Quest:
 
 	def get_reward(self): return math.floor(random.uniform(0.9, 1.1) * self.reward)
 
-	def success_rate(self, author_power): return max(0.01, min(math.floor(author_power / self.power), 0.99))
+	def success_rate(self, author_power): return round(max(0.01, min(author_power / self.power, 0.99)), 2)
 
 
 class _EmpireQuests(type):
