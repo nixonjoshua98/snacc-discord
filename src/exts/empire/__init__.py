@@ -313,8 +313,8 @@ class Empire(commands.Cog):
 
 				hours_since_login = (now - empire["last_login"]).total_seconds() / 3600
 
-				# - User must have logged in the past 12 hours in order to get passive income
-				if hours_since_login >= 12:
+				# - User must have logged in the past 8 hours in order to get passive income
+				if hours_since_login >= 8:
 					continue
 
 				upgrades = await UserUpgradesM.fetchrow(con, empire["empire_id"])
@@ -327,7 +327,6 @@ class Empire(commands.Cog):
 
 				# - Increment the bank. Note: It can also be a negative
 				await BankM.increment(con, empire["empire_id"], field="money", amount=money_change)
-
 
 
 def setup(bot):
