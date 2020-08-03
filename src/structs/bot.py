@@ -143,7 +143,9 @@ class SnaccBot(commands.AutoShardedBot):
 
         embed.timestamp = dt.datetime.utcnow()
 
-        embed.set_thumbnail(url=thumbnail)
+        if thumbnail is not None:
+            embed.set_thumbnail(url=thumbnail)
+
         embed.set_footer(text=f"{str(self.user)}", icon_url=self.user.avatar_url)
 
         return embed

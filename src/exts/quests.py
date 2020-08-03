@@ -1,4 +1,3 @@
-import math
 import random
 
 import datetime as dt
@@ -9,16 +8,15 @@ from src import inputs
 
 from src.common import checks
 from src.common.converters import EmpireQuest
-from src.common.models import QuestsM, PopulationM
+from src.common.models import QuestsM, PopulationM, BankM
 
 from src.common.empireunits import MilitaryGroup
 from src.common.empirequests import EmpireQuests
 
 
 class Quests(commands.Cog):
-
 	@checks.has_empire()
-	@commands.group(name="quests", aliases=["q"], invoke_without_command=True)
+	@commands.group(name="quest", aliases=["q"], invoke_without_command=True)
 	async def quest_group(self, ctx):
 		""" Display all the available quests. """
 
@@ -31,13 +29,14 @@ class Quests(commands.Cog):
 		for quest in EmpireQuests.quests:
 			embed = ctx.bot.embed(title=f"Quest {quest.id}: {quest.name}", thumbnail=ctx.author.avatar_url)
 
-			sucess_rate = math.floor(max(author_power / quest.power, 99))
+			sucess_rate = quest.success_rate(author_power)
 
-			embed.description = (
-				f"**Duration:** {quest.duration} hour(s)"
-				f"\n"
-				f"**Success Rate:** {sucess_rate}%"
-				f"\n"
+			embed.description = "\n".join(
+				[
+					f"**Duration:** {quest.duration} hour(s)",
+					f"**Success Rate:** {sucess_rate * 100}%",
+					f"**Avg. Reward:** ${quest.reward:,}"
+				]
 			)
 
 			embeds.append(embed)
@@ -62,7 +61,22 @@ class Quests(commands.Cog):
 			if (time_since_start.total_seconds() / 3600) > quest_inst.duration:
 				await QuestsM.delete(ctx.bot.pool, ctx.author.id)
 
-				await ctx.send("Quest is complete!")
+				# - User completed the quest without dying
+				if quest["success_rate"] >= random.uniform(0.0, 1.0):
+					money_reward = quest_inst.get_reward()
+
+					await BankM.increment(ctx.bot.pool, ctx.author.id, field="money", amount=money_reward)
+
+					embed = ctx.bot.embed(title="Quest Completion!")
+
+					value = [f"**Reward:** {money_reward}", f"**Duration:** {quest_inst.duration} hour(s)"]
+
+					embed.add_field(name=quest_inst.name, value="\n".join(value))
+
+					await ctx.send(embed=embed)
+
+				else:
+					await ctx.send("Your squad died while questing!")
 
 			else:
 				seconds = quest_inst.duration * 3600 - time_since_start.total_seconds()
@@ -79,7 +93,7 @@ class Quests(commands.Cog):
 
 		author_power = MilitaryGroup.get_total_power(author_population)
 
-		sucess_rate = math.floor(max(author_power / quest.power, 99)) / 100
+		sucess_rate = quest.success_rate(author_power)
 
 		await ctx.bot.pool.execute(QuestsM.INSERT_ROW, ctx.author.id, quest.id, sucess_rate, dt.datetime.utcnow())
 

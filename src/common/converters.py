@@ -4,9 +4,9 @@ import datetime as dt
 
 from discord.ext import commands
 
-from src.common.models import EmpireM
+from src.common.models import EmpireM, PopulationM
 
-from src.common.empireunits import ALL_UNITS
+from src.common.empireunits import ALL_UNITS, MilitaryGroup
 from src.common.empirequests import EmpireQuests
 
 
@@ -58,6 +58,13 @@ class EmpireTargetUser(DiscordUser):
 			delta = dt.timedelta(seconds=int(self.ATTACK_COOLDOWN - time_since_attack))
 
 			raise commands.CommandError(f"Target is still recovering from a previous attack. Try again in `{delta}`")
+
+		author_population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
+
+		author_power = MilitaryGroup.get_total_power(author_population)
+
+		if author_power < 15:
+			raise commands.CommandError("You need at least **15** power to do that.")
 
 		return user
 

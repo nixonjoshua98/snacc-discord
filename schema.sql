@@ -52,8 +52,7 @@ shoemakers      SMALLINT 	DEFAULT 0 CHECK (shoemakers     >= 0),
 peasants        SMALLINT    DEFAULT 0 CHECK (peasants   >= 0),
 soldiers        SMALLINT    DEFAULT 0 CHECK (soldiers   >= 0),
 warriors        SMALLINT    DEFAULT 0 CHECK (warriors   >= 0),
-spearmen        SMALLINT    DEFAULT 0 CHECK (spearmen   >= 0),
-knights         SMALLINT    DEFAULT 0 CHECK (knights    >= 0)
+spearmen        SMALLINT    DEFAULT 0 CHECK (spearmen   >= 0)
 );
 
 

@@ -241,7 +241,7 @@ class Empire(commands.Cog):
 		await inputs.send_pages(ctx, [money_units_page, military_units_page])
 
 	@checks.has_empire()
-	@commands.command(name="hire")
+	@commands.command(name="hire", aliases=["buy"])
 	@commands.max_concurrency(1, commands.BucketType.user)
 	async def hire_unit(self, ctx, unit: EmpireUnit(), amount: Range(1, 100) = 1):
 		""" Hire a new unit to serve your empire. """
