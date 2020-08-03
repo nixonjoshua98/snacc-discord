@@ -7,7 +7,6 @@ from discord.ext import commands
 import datetime as dt
 from bs4 import BeautifulSoup
 
-from src.common import checks
 from src.structs.textpage import TextPage
 
 
@@ -30,7 +29,6 @@ class Miscellaneous(commands.Cog):
 								lines += 1
 
 		await ctx.send(f"I am made up of **{lines:,}** lines of code.")
-
 
 	@commands.command(name="whatis")
 	async def what_is_this(self, ctx, word: str):
@@ -79,7 +77,6 @@ class Miscellaneous(commands.Cog):
 			"https://discord.com/oauth2/authorize?client_id=666616515436478473&scope=bot&permissions=8"
 		)
 
-	@checks.snaccman_only()
 	@commands.command(name="whois")
 	async def who_is_this(self, ctx, user_id: int):
 		""" Find the user who has the ID provided. """
