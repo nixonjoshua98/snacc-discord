@@ -19,5 +19,5 @@ ALL_UPGRADES = [
 	_Upgrade(db_col="extra_money_units", display_name="Extra Money Unit Slots", base_cost=10_000, exponent=1.25),
 	_Upgrade(db_col="extra_military_units", display_name="Extra Military Unit Slots", base_cost=10_000, exponent=1.25),
 	_Upgrade(db_col="less_upkeep", display_name="Reduced Upkeep", base_cost=15_000, exponent=1.50, max_amount=5),
-	_Upgrade(db_col="mpre_income", display_name="Increased Income", base_cost=35_000, exponent=1.50, max_amount=5),
+	_Upgrade(db_col="more_income", display_name="Increased Income", base_cost=35_000, exponent=1.50, max_amount=5),
 ]
