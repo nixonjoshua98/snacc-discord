@@ -1,3 +1,4 @@
+import math
 import random
 
 import datetime as dt
@@ -34,7 +35,7 @@ class Quest(commands.Cog):
 			embed.description = "\n".join(
 				[
 					f"**Duration:** {quest.duration} hour(s)",
-					f"**Success Rate:** {sucess_rate * 100}%",
+					f"**Success Rate:** {math.floor(sucess_rate * 100)}%",
 					f"**Avg. Reward:** ${quest.reward:,}"
 				]
 			)

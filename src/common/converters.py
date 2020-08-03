@@ -41,7 +41,7 @@ class DiscordUser(commands.Converter):
 
 
 class EmpireTargetUser(DiscordUser):
-	ATTACK_COOLDOWN = 1.5 * 3_600
+	ATTACK_COOLDOWN = 2.0 * 3_600
 
 	async def convert(self, ctx, argument):
 		user = await super().convert(ctx, argument)
@@ -53,7 +53,7 @@ class EmpireTargetUser(DiscordUser):
 
 		time_since_attack = (dt.datetime.utcnow() - row['last_attack']).total_seconds()
 
-		# Target is in cooldown period
+		# - Target is in cooldown period
 		if time_since_attack < self.ATTACK_COOLDOWN:
 			delta = dt.timedelta(seconds=int(self.ATTACK_COOLDOWN - time_since_attack))
 
@@ -63,8 +63,8 @@ class EmpireTargetUser(DiscordUser):
 
 		author_power = MilitaryGroup.get_total_power(author_population)
 
-		if author_power < 15:
-			raise commands.CommandError("You need at least **15** power to do that.")
+		if author_power < 25:
+			raise commands.CommandError("You need at least **25** power to do that.")
 
 		return user
 
