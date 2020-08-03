@@ -101,9 +101,6 @@ class _Unit(Purchasable):
 		# Increment the internal ID for the next unit
 		_Unit.__unit_id += 1
 
-	def get_max_amount(self, upgrades: dict):
-		return self.max_amount + upgrades["extra_units"]
-
 	def get_hourly_upkeep(self, total, upgrades):
 		upkeep = self.upkeep_hour * total
 		upkeep = upkeep * (1.0 - (upgrades["less_upkeep"] * 0.05))
@@ -111,7 +108,10 @@ class _Unit(Purchasable):
 		return math.floor(upkeep)
 
 	def get_hourly_income(self, total, upgrades):
-		return math.floor(self.income_hour * total)
+		income = self.income_hour * total
+		income = income * (1.0 - (upgrades["more_income"] * 0.05))
+
+		return math.floor(income)
 
 
 class _MoneyUnit(_Unit):
