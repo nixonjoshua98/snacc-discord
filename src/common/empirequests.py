@@ -20,10 +20,10 @@ class _Quest:
 class _EmpireQuests(type):
 	_QUESTS = [
 		_Quest(id_=1, name="Herb Collection", 		power=50, 	reward=350, 	duration=1),
-		_Quest(id_=2, name="Spider Cave", 			power=100, 	reward=750, 	duration=2),
-		_Quest(id_=3, name="Enemy Empire Raid", 	power=150, 	reward=1_200, 	duration=3),
-		_Quest(id_=4, name="Ogre Subjugation", 		power=200, 	reward=1_800, 	duration=4),
-		_Quest(id_=5, name="Enemy Empire Raid", 	power=250, 	reward=2_500, 	duration=5),
+		_Quest(id_=2, name="Spider Cave", 			power=100, 	reward=900, 	duration=2),
+		_Quest(id_=3, name="Enemy Empire Raid", 	power=150, 	reward=1_700, 	duration=3),
+		_Quest(id_=4, name="Ogre Subjugation", 		power=200, 	reward=2_500, 	duration=4),
+		_Quest(id_=5, name="Enemy Empire Raid", 	power=250, 	reward=4_000, 	duration=5),
 	]
 
 	def get(self, **kwargs): return discord.utils.get(self._QUESTS, **kwargs)
