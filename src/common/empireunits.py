@@ -117,16 +117,16 @@ class _Unit(Purchasable):
 _UNIT_GROUPS = {
 	_UnitGroupType.MONEY:
 		_MoneyUnitGroup("Money Making Units", [
-			_Unit(income_hour=25, db_col="farmers",		base_cost=350),
-			_Unit(income_hour=30, db_col="stonemason",	base_cost=400),
-			_Unit(income_hour=35, db_col="butchers",	base_cost=550),
-			_Unit(income_hour=40, db_col="weaver",		base_cost=650),
-			_Unit(income_hour=45, db_col="taylors",		base_cost=700),
-			_Unit(income_hour=50, db_col="bakers",		base_cost=800),
-			_Unit(income_hour=55, db_col="blacksmiths",	base_cost=950),
-			_Unit(income_hour=60, db_col="cooks",		base_cost=1250),
-			_Unit(income_hour=65, db_col="winemakers", 	base_cost=1500),
-			_Unit(income_hour=70, db_col="shoemakers", 	base_cost=1750),
+			_Unit(income_hour=15, db_col="farmers",		base_cost=350),
+			_Unit(income_hour=20, db_col="stonemason",	base_cost=400),
+			_Unit(income_hour=25, db_col="butchers",	base_cost=550),
+			_Unit(income_hour=30, db_col="weaver",		base_cost=650),
+			_Unit(income_hour=35, db_col="taylors",		base_cost=700),
+			_Unit(income_hour=40, db_col="bakers",		base_cost=800),
+			_Unit(income_hour=45, db_col="blacksmiths",	base_cost=950),
+			_Unit(income_hour=50, db_col="cooks",		base_cost=1250),
+			_Unit(income_hour=55, db_col="winemakers", 	base_cost=1500),
+			_Unit(income_hour=60, db_col="shoemakers", 	base_cost=1750),
 		]
 						),
 
