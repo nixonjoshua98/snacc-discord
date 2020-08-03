@@ -49,10 +49,8 @@ class Shop(commands.Cog):
 
 		price = upgrade.get_price(ctx.upgrades_["author"][upgrade.db_col])
 
-		max_units = upgrade.max_amount + ctx.upgrades_["author"]["extra_units"]
-
-		if ctx.upgrades_["author"][upgrade.db_col] > max_units:
-			await ctx.send(f"**{upgrade.display_name}** have an owned limit of **{max_units}**.")
+		if ctx.upgrades_["author"][upgrade.db_col] > upgrade.max_amount:
+			await ctx.send(f"**{upgrade.display_name}** have an owned limit of **{upgrade.max_amount}**.")
 
 		elif price > ctx.bank_["author"]["money"]:
 			await ctx.send(f"You can't afford to hire **1x {upgrade.display_name}**")

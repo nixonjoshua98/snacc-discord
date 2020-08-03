@@ -68,9 +68,10 @@ last_attack     TIMESTAMP WITHOUT time zone DEFAULT (now() at time zone 'utc')
 
 
 CREATE TABLE IF NOT EXISTS user_upgrades (
-user_upgrades_id    BIGINT      PRIMARY KEY,
-extra_units         SMALLINT    DEFAULT 0 CHECK (extra_units    >= 0),
-less_upkeep         SMALLINT    DEFAULT 0 CHECK (less_upkeep    >= 0)
+user_upgrades_id        BIGINT      PRIMARY KEY,
+extra_money_units       SMALLINT    DEFAULT 0 CHECK (extra_money_units      >= 0),
+extra_military_units    SMALLINT    DEFAULT 0 CHECK (extra_military_units   >= 0),
+less_upkeep             SMALLINT    DEFAULT 0 CHECK (less_upkeep            >= 0)
 );
 
 

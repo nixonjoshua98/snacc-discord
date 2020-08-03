@@ -69,7 +69,7 @@ class Quests(commands.Cog):
 
 					embed = ctx.bot.embed(title="Quest Completion!")
 
-					value = [f"**Reward:** {money_reward}", f"**Duration:** {quest_inst.duration} hour(s)"]
+					value = [f"**Reward:** ${money_reward}", f"**Duration:** {quest_inst.duration} hour(s)"]
 
 					embed.add_field(name=quest_inst.name, value="\n".join(value))
 
