@@ -45,7 +45,7 @@ class Darkness(commands.Cog):
 
             "device": (inputs.options, Arguments(ctx,
                                                  "How do you play?",
-                                                 ("Phone/Tablet", "PC/Laptop", "Other"),
+                                                 ("Phone/Tablet", "Spare Device", "PC/Laptop", "Other"),
                                                  send_dm=True
                                                  )
                        ),
