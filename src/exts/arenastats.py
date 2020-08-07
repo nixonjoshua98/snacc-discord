@@ -74,10 +74,7 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 
 		conf = await self.bot.get_server_config(channel.guild)
 
-		role = channel.guild.get_role(conf["member_role"])
-
-		if role is None:
-			return
+		role = channel.guild.get_role(666615010579054614)
 
 		rows = await self.bot.pool.fetch(ArenaStatsM.SELECT_LATEST_MEMBERS, tuple(m.id for m in role.members))
 
