@@ -17,16 +17,6 @@ async def get_input(ctx, question, *, send_dm: bool = False, validation=None):
 	return menu.get()
 
 
-async def options(ctx, title, ops, *, send_dm: bool = False):
-	from .optionmenu import OptionMenu
-
-	menu = OptionMenu(ctx.bot, ctx.author, title, ops)
-
-	await menu.send(ctx.author if send_dm else ctx.channel)
-
-	return menu.get()
-
-
 async def show_leaderboard(ctx, title, columns, order_by, query_func, **kwargs):
 	from .textleaderboard import TextLeaderboard
 

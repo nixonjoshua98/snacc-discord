@@ -31,7 +31,7 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 		self.start_shame_users()
 
 	async def cog_check(self, ctx):
-		return ctx.guild.id in (MainServer.ID, 720798797004931153)
+		return ctx.guild.id == MainServer.ID
 
 	@staticmethod
 	async def set_users_stats(ctx, user: discord.Member, level, trophies):

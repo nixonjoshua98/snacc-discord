@@ -9,10 +9,6 @@ from src.common.converters import DiscordUser
 
 class Bank(commands.Cog):
 
-	@commands.command(name="free")
-	async def free_money(self, ctx):
-		await ctx.send(f"This command has been replaced with `{ctx.prefix}daily`")
-
 	@commands.cooldown(1, 3_600 * 24, commands.BucketType.user)
 	@commands.command(name="daily")
 	async def daily(self, ctx):

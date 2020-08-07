@@ -6,6 +6,25 @@ from src.common import SNACCMAN
 
 from src.common.models import ServersM
 
+GUILD_JOIN_MESSAGE = """
+The infamous **{bot.user.name}** has graced your ~~lowly~~ server! [{guild.owner.mention}]
+
+Please look at my `!help`
+
+**!create** to start your Empire adventure!
+
+**!quest** to view your quests (hint: buy **!units** with a power rating to increase your success rate)
+
+Play a game of **!hangman** (view the leaderboard **!hlb**)
+
+**Moderation** commands require a `Mod` role.
+
+Buy Crypto using **!c** and **!c buy/sell**
+
+__Join the **NEW** support server__
+https://discord.gg/QExQuvE
+"""
+
 
 class ServerDoor(commands.Cog, name="Server Door"):
 
@@ -42,21 +61,19 @@ class ServerDoor(commands.Cog, name="Server Door"):
     async def on_guild_join(self, guild):
         """ Called when the bot joins a new server. """
 
-        msg = (
-            f"The infamous **{self.bot.user.name}** has graced your ~~lowly~~ server! [{guild.owner.mention}]"
-            f"\n"
-            f"Please look at my `!help`"
-        )
+        snacc = self.bot.get_user(SNACCMAN)
+
+        msg = GUILD_JOIN_MESSAGE.format(bot=self.bot, guild=guild)
 
         await self.send_message(guild, msg)
 
-        await self.bot.get_user(SNACCMAN).send(f"I have joined {guild.name} which has {len(guild.members):,} members.")
+        await snacc.send(f"I have joined `{guild.name}` which has {len(guild.members):,} members")
 
     @commands.Cog.listener("on_guild_remove")
     async def on_guild_remove(self, guild):
         snacc = self.bot.get_user(SNACCMAN)
 
-        await snacc.send(f"I have been removed from {guild.name} which has {len(guild.members):,} members.")
+        await snacc.send(f"I have been removed from `{guild.name}`")
 
     @commands.Cog.listener("on_member_join")
     async def on_member_join(self, member):
@@ -80,5 +97,5 @@ class ServerDoor(commands.Cog, name="Server Door"):
 
 
 def setup(bot):
-    if not bot.debug:
+    if bot.debug:
         bot.add_cog(ServerDoor(bot))
