@@ -49,8 +49,17 @@ class Darkness(commands.Cog):
                                                  send_dm=True
                                                  )
                        ),
-
-            "daily playtime": (inputs.get_input, Arguments(ctx, "How many hours do you play daily?", send_dm=True)),
+            "daily playtime": (inputs.options, Arguments(ctx,
+                                                         "How many hours do you play daily?",
+                                                         (
+                                                             "0-6 hours",
+                                                             "7-12 hours",
+                                                             "13-18 hours",
+                                                             "19-24 hours",
+                                                         ),
+                                                         send_dm=True
+                                                         )
+                               ),
         }
 
         answers = dict()
