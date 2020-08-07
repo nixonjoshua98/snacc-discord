@@ -25,29 +25,71 @@ class Darkness(commands.Cog):
 
         await ctx.send("I have DM'ed you")
 
-        embed = discord.Embed(title="Guild Application", colour=discord.Color.orange())
+        questions = {
+            "username": (inputs.get_input, Arguments(ctx, "What is your in-game-name?", send_dm=True)),
 
-        for q in (
-                "What is your in-game-name?",
+            "trophies": (inputs.get_input, Arguments(
+                ctx,
                 "What is your trophy count?",
-                "How long have you been playing?",
-                "What device do you use to play the game?",
-                "How long do you play the game each day?"
-        ):
-            resp = await inputs.get_input(ctx, q, send_dm=True)
+                send_dm=True,
+                validation=lambda s: s.isdigit()
+            )
+                         ),
 
-            if resp is None:
+            "play time": (inputs.options, Arguments(ctx,
+                                                    "How long have you been playing?",
+                                                    ("0-1 months", "2-4 months", "5-6 months", "6+ months"),
+                                                    send_dm=True
+                                                    )
+                          ),
+
+            "device": (inputs.options, Arguments(ctx,
+                                                 "How do you play?",
+                                                 ("Phone/Tablet", "PC/Laptop", "Other"),
+                                                 send_dm=True
+                                                 )
+                       ),
+            "daily playtime": (inputs.options, Arguments(ctx,
+                                                         "How long do you play the game each day?",
+                                                         (
+                                                             "0-6 hours",
+                                                             "7-12 hours",
+                                                             "13-18 hours",
+                                                             "19-24 hours",
+                                                         ),
+                                                         send_dm=True
+                                                         )
+                               ),
+        }
+
+        answers = dict()
+
+        # - - - ASK QUESTIONS - - - #
+
+        for k in questions:
+            func, args = questions[k]
+
+            response = await func(*args.args, **args.kwargs)
+
+            if response is None:
                 return self.application.reset_cooldown(ctx)
 
-            embed.add_field(name=q, value=resp, inline=False)
+            answers[k] = response
+
+        await ctx.author.send("Your application is complete!")
+
+        #  - - - LOG RESULTS - - - #
 
         channel = ctx.bot.get_channel(MainServer.APP_CHANNEL)
+
+        embed = discord.Embed(title="Guild Application", colour=discord.Color.orange())
+
+        for k, v in answers.items():
+            embed.add_field(name=k.title(), value=v, inline=False)
 
         embed.timestamp = datetime.utcnow()
 
         embed.set_footer(text=f"{str(ctx.author)}", icon_url=ctx.author.avatar_url)
-
-        await ctx.send("Your application is done!")
 
         await channel.send(embed=embed)
 

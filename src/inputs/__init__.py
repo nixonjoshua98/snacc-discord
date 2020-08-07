@@ -21,3 +21,13 @@ async def show_leaderboard(ctx, title, columns, order_by, query_func, **kwargs):
 	from .textleaderboard import TextLeaderboard
 
 	await TextLeaderboard(title=title, columns=columns, order_by=order_by, query_func=query_func, **kwargs).send(ctx)
+
+
+async def options(ctx, title, ops, *, send_dm: bool = False):
+	from .optionmenu import OptionMenu
+
+	menu = OptionMenu(ctx.bot, ctx.author, title, ops)
+
+	await menu.send(ctx.author if send_dm else ctx.channel)
+
+	return menu.get()
