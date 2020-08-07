@@ -31,7 +31,7 @@ class Darkness(commands.Cog):
                 "What is your in-game-name?",
                 "What is your trophy count?",
                 "How long have you been playing?",
-                "How do you play?",
+                "What device do you use to play the game?",
                 "How long do you play the game each day?"
         ):
             resp = await inputs.get_input(ctx, q, send_dm=True)

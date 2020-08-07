@@ -14,11 +14,11 @@ class Arguments:
 
 
 class Server_701056373797945386(commands.Cog):
-	@commands.command(name="apply", hidden=True)
-	async def apply(self, ctx):
-		if ctx.guild.id != 701056373797945386:
-			return
+	async def cog_check(self, ctx):
+		return ctx.guild.id == 701056373797945386
 
+	@commands.command(name="apply")
+	async def apply(self, ctx):
 		await ctx.send("I have DM'ed you")
 
 		await ctx.author.send("If you wish to join OwO please fill in this application")
