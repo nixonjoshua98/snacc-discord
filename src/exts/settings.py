@@ -1,8 +1,8 @@
-import discord
 
 from discord.ext import commands
 
 from src.common.models import ServersM
+from src.common.converters import ServerAssignedRole
 
 
 class Settings(commands.Cog):
@@ -22,34 +22,35 @@ class Settings(commands.Cog):
 
 		await ServersM.set(ctx.bot.pool, ctx.guild.id, prefix=prefix)
 
-		await ctx.send(f"Prefix has been updated to `{prefix}`")
+		await ctx.send(f"Server prefix has been updated to `{prefix}`")
 
-	@commands.command(name="setdefaultrole")
-	async def set_default_role(self, ctx: commands.Context, role: discord.Role = None):
-		""" Set (or remove) the default role which gets added to each member when they join the server. """
+	@commands.group(name="role", invoke_without_command=True, hidden=True)
+	async def role_group(self, ctx):
+		await ctx.send(f"Use either {ctx.prefix}role bot <role> or {ctx.prefix}role user <role>")
 
-		if role is not None and role > ctx.guild.me.top_role:
-			return await ctx.send(f"I cannot use the role `{role.name}` since the role is higher than me.")
+	@role_group.command(name="user")
+	async def set_user_role(self, ctx, *, role: ServerAssignedRole() = None):
+		""" Set the role which is given to every user when they join the server. """
 
-		await ServersM.set(ctx.bot.pool, ctx.guild.id, default_role=getattr(role, "id", 0))
-
-		if role is None:
-			await ctx.send(f"Default role has been removed")
-
-		else:
-			await ctx.send(f"The default role has been set to `{role.name}`")
-
-	@commands.command(name="setmemberrole")
-	async def set_member_role(self, ctx: commands.Context, role: discord.Role = None):
-		""" Set (or remove) the member role which can open up server-specific commands for server regulars. """
-
-		await ServersM.set(ctx.bot.pool, ctx.guild.id, member_role=getattr(role, "id", 0))
+		await ServersM.set(ctx.bot.pool, ctx.guild.id, user_role=getattr(role, "id", 0))
 
 		if role is None:
-			await ctx.send(f"The member role has been removed.")
+			await ctx.send(f"User role has been removed")
 
 		else:
-			await ctx.send(f"The member role has been set to `{role.name}`")
+			await ctx.send(f"User role set to `{role.name}`")
+
+	@role_group.command(name="bot")
+	async def set_bot_role(self, ctx, *, role: ServerAssignedRole() = None):
+		""" Set the role which is given to every bot account when they join the server. """
+
+		await ServersM.set(ctx.bot.pool, ctx.guild.id, bot_role=getattr(role, "id", 0))
+
+		if role is None:
+			await ctx.send(f"Bot role has been removed")
+
+		else:
+			await ctx.send(f"Bot role set to `{role.name}`")
 
 
 def setup(bot):

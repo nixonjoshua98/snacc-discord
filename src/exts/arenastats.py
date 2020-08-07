@@ -31,20 +31,7 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 		self.start_shame_users()
 
 	async def cog_check(self, ctx):
-		config = await ctx.bot.get_server_config(ctx.guild)
-
-		role = ctx.guild.get_role(config["member_role"])
-
-		if config["member_role"] == 0:
-			raise commands.CommandError("Your server has not assigned a `Member` role. Look at my Settings.")
-
-		elif role is None:
-			raise commands.CommandError("Your server `Member` role has either not been set or deleted.")
-
-		elif role not in ctx.author.roles:
-			raise commands.MissingRole(role)
-
-		return True
+		return ctx.guild.id in (MainServer.ID, 720798797004931153)
 
 	@staticmethod
 	async def set_users_stats(ctx, user: discord.Member, level, trophies):

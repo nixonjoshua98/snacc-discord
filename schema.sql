@@ -19,6 +19,11 @@ CREATE table IF NOT EXISTS servers (
 server_id               BIGINT      PRIMARY KEY,
 default_role            BIGINT      DEFAULT 0,
 member_role             BIGINT      DEFAULT 0,
+
+-- Entry roles
+user_role               BIGINT      DEFAULT 0,
+bot_role                BIGINT      DEFAULT 0,
+
 prefix                  VARCHAR     DEFAULT '!',
 display_joins           BOOL        DEFAULT True
 );

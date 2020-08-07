@@ -54,7 +54,8 @@ class ServerDoor(commands.Cog, name="Server Door"):
         svr = await self.bot.get_server_config(member.guild)
 
         try:
-            role = member.guild.get_role(svr["default_role"])
+            role = svr["bot_role" if member.bot else "user_role"]
+            role = member.guild.get_role(role)
 
             if role is not None:
                 await member.add_roles(role)

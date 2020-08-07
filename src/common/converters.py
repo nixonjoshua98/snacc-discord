@@ -151,3 +151,17 @@ class EmpireQuest(commands.Converter):
 				raise commands.UserInputError(f"A quest with the ID `{val}` could not be found.")
 
 		return quest
+
+
+class ServerAssignedRole(commands.RoleConverter):
+	async def convert(self, ctx, argument):
+		try:
+			role = await super().convert(ctx, argument)
+
+		except commands.BadArgument:
+			raise commands.CommandError("Role not recognised. Remove a role by not specifying a role.")
+
+		if role > ctx.guild.me.top_role:
+			return await ctx.send(f"I cannot use that role. It is higher than me in the hierachy.")
+
+		return role
