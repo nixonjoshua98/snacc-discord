@@ -24,7 +24,7 @@ class Bank(commands.Cog):
 
 		await BankM.increment(ctx.pool, ctx.author.id, field="money", amount=money)
 
-		await ctx.send(f"You have recieved **${money:,}**")
+		await ctx.send(f"You have received **${money:,}**")
 
 	@commands.command(name="balance", aliases=["bal"])
 	async def balance(self, ctx):

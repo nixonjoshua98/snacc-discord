@@ -2,6 +2,8 @@ import discord
 
 from discord.ext import commands
 
+from src.common import SNACCMAN
+
 from src.common.models import ServersM
 
 
@@ -47,6 +49,8 @@ class ServerDoor(commands.Cog, name="Server Door"):
         )
 
         await self.send_message(guild, msg)
+
+        await self.bot.get_user(SNACCMAN).send(f"I have joined {guild.name} which has {len(guild.members)} members.")
 
     @commands.Cog.listener("on_member_join")
     async def on_member_join(self, member):
