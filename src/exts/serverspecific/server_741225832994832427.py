@@ -38,6 +38,9 @@ class Server_741225832994832427(commands.Cog):
 
 	@commands.Cog.listener(name="on_member_remove")
 	async def on_member_remove(self, member):
+		if member.guild.id != 741225832994832427:
+			return
+
 		for cat in member.guild.categories:
 			if cat.name.upper() in ("SERVER ADVERTISMENTS", "BOT ADVERTISMENTS"):
 				for chnl in cat.channels:
