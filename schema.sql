@@ -20,9 +20,7 @@ server_id               BIGINT      PRIMARY KEY,
 default_role            BIGINT      DEFAULT 0,
 member_role             BIGINT      DEFAULT 0,
 prefix                  VARCHAR     DEFAULT '!',
-display_joins           BOOL        DEFAULT True,
-blacklisted_channels    BIGINT[]    DEFAULT array[]::bigint[],
-blacklisted_cogs        VARCHAR[]   DEFAULT array[]::varchar[]
+display_joins           BOOL        DEFAULT True
 );
 
 

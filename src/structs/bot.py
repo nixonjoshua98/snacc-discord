@@ -70,19 +70,6 @@ class SnaccBot(commands.AutoShardedBot):
         if (not self.exts_loaded) or (ctx.guild is None) or ctx.author.bot:
             return False
 
-        svr = await self.get_server_config(ctx.guild)
-
-        bl_chnls, bl_modules = svr["blacklisted_channels"], svr["blacklisted_cogs"]
-
-        if ctx.command.cog is not None and not getattr(ctx.command.cog, "__blacklistable__", True):
-            return True
-
-        elif ctx.channel.id in bl_chnls:
-            raise commands.CommandError("That command is disabled in this channel.")
-
-        elif ctx.command.cog and ctx.command.cog.qualified_name in bl_modules:
-            raise commands.CommandError("That command is disabled in this server.")
-
         return True
 
     async def create_pool(self):

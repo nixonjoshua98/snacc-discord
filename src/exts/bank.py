@@ -1,44 +1,40 @@
 import random
-import discord
 
 from discord.ext import commands
 
 from src import inputs
 from src.common.models import BankM
-from src.common.emoji import Emoji
 from src.common.converters import DiscordUser
 
 
 class Bank(commands.Cog):
-	async def cog_before_invoke(self, ctx):
-		ctx.bank_["author"] = await BankM.fetchrow(ctx.bot.pool, ctx.author.id)
 
-	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
 	@commands.command(name="free")
 	async def free_money(self, ctx):
-		""" Gain some free money """
+		await ctx.send(f"This command has been replaced with `{ctx.prefix}daily`")
 
-		money = random.randint(500, 1_500)
+	@commands.cooldown(1, 3_600 * 24, commands.BucketType.user)
+	@commands.command(name="daily")
+	async def daily(self, ctx):
+		""" Gain your daily rewards. """
 
-		await BankM.increment(ctx.bot.pool, ctx.author.id, field="money", amount=money)
+		hourly_income = max(250, await ctx.bot.get_cog("Empire").get_hourly_income(ctx.pool, ctx.author))
 
-		await ctx.send(f"You gained **${money:,}**!")
+		money = random.randint(hourly_income // 2, hourly_income)
+
+		await BankM.increment(ctx.pool, ctx.author.id, field="money", amount=money)
+
+		await ctx.send(f"You have recieved **${money:,}**")
 
 	@commands.command(name="balance", aliases=["bal"])
 	async def balance(self, ctx):
 		""" Show your bank balance(s). """
 
-		embed = discord.Embed(title=f"{ctx.author.display_name}'s Bank", colour=discord.Color.orange())
+		author_bank = await BankM.fetchrow(ctx.bot.pool, ctx.author.id)
 
-		author_bank = ctx.bank_['author']
+		msg = f"You have **${author_bank['money']:,}** and **{author_bank['btc']:,}** BTC"
 
-		embed.description = (
-			f"{Emoji.BTC} **{author_bank['btc']}**"
-			"\n"
-			f":moneybag: **${author_bank['money']:,}**"
-		)
-
-		await ctx.send(embed=embed)
+		await ctx.send(msg)
 
 	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
 	@commands.command(name="steal", cooldown_after_parsing=True)

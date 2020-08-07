@@ -97,22 +97,6 @@ class CoinSide(commands.Converter):
 		return argument
 
 
-class BotModule(commands.Converter):
-	async def convert(self, ctx, argument):
-		module = ctx.bot.get_cog(argument.strip().title())
-
-		if module is None:
-			raise commands.CommandError(f"`{argument}` is not a bot module.")
-
-		elif not module.get_commands():
-			raise commands.CommandError(f"The module `{module.qualified_name}` has no commands.")
-
-		elif not getattr(module, "__blacklistable__", True):
-			raise commands.CommandError(f"The module `{module.qualified_name}` is not blacklistable.")
-
-		return module
-
-
 class EmpireUnit(commands.Converter):
 	async def convert(self, ctx, argument):
 		try:

@@ -26,6 +26,14 @@ class TableModel:
 		await con.execute(q, id_, amount)
 
 	@classmethod
+	async def decrement_many(cls, con, id_, data: dict):
+		q = f"UPDATE {cls._TABLE} SET "
+		q += ", ".join((f"{field} = GREATEST(0, {field} - ${i})" for i, field in enumerate(data, start=2)))
+		q += f" WHERE {cls._PK} = $1;"
+
+		await con.execute(q, id_, *list(data.values()))
+
+	@classmethod
 	async def fetchrow(cls, con, id_: int, *, insert: bool = True):
 		row = await con.fetchrow(cls.SELECT_ROW, id_)
 
@@ -53,50 +61,6 @@ class ServersM(TableModel):
 		DO NOTHING
 	RETURNING *
 	"""
-
-	@classmethod
-	async def blacklist_channels(cls, con, svr: int, channels):
-		""" Blacklist a list of channels. """
-
-		row = await con.fetchrow("SELECT blacklisted_channels FROM servers WHERE server_id=$1 LIMIT 1;", svr)
-
-		blacklisted = row["blacklisted_channels"]
-		blacklisted = list(set(blacklisted + channels))
-
-		await cls.set(con, svr, blacklisted_channels=blacklisted)
-
-	@classmethod
-	async def whitelist_channels(cls, con, svr: int, channels):
-		""" Remove an list of channels from the blacklist list. """
-
-		row = await con.fetchrow("SELECT blacklisted_channels FROM servers WHERE server_id=$1 LIMIT 1;", svr)
-
-		blacklisted = row["blacklisted_channels"]
-		blacklisted = list(set(blacklisted) - set(channels))
-
-		await cls.set(con, svr, blacklisted_channels=blacklisted)
-
-	@classmethod
-	async def blacklist_modules(cls, con, svr: int, channels):
-		""" Blacklist a list of modules. """
-
-		row = await con.fetchrow("SELECT blacklisted_cogs FROM servers WHERE server_id=$1 LIMIT 1;", svr)
-
-		blacklisted = row["blacklisted_cogs"]
-		blacklisted = list(set(blacklisted + channels))
-
-		await cls.set(con, svr, blacklisted_cogs=blacklisted)
-
-	@classmethod
-	async def whitelist_modules(cls, con, svr: int, channels):
-		""" Remove an list of modules from the blacklist list. """
-
-		row = await con.fetchrow("SELECT blacklisted_cogs FROM servers WHERE server_id=$1 LIMIT 1;", svr)
-
-		blacklisted = row["blacklisted_cogs"]
-		blacklisted = list(set(blacklisted) - set(channels))
-
-		await cls.set(con, svr, blacklisted_cogs=blacklisted)
 
 
 class ArenaStatsM:

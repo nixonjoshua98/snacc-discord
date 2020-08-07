@@ -7,3 +7,6 @@ class CustomContext(commands.Context):
 
 	upgrades_ = dict()
 	bank_ = dict()
+
+	@property
+	def pool(self): return self.bot.pool

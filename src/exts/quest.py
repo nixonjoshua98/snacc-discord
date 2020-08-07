@@ -16,6 +16,21 @@ from src.common.empirequests import EmpireQuests
 
 
 class Quest(commands.Cog):
+	@staticmethod
+	async def get_quest_timer(con, user):
+		quest = await QuestsM.fetchrow(con, user.id, insert=False)
+
+		if quest is None:
+			return None
+
+		quest_inst = EmpireQuests.get(id=quest["quest_num"])
+
+		time_since_start = dt.datetime.utcnow() - quest["date_started"]
+
+		seconds = max(0, quest_inst.duration * 3600 - time_since_start.total_seconds())
+
+		return dt.timedelta(seconds=int(seconds))
+
 	@checks.has_empire()
 	@commands.group(name="quest", aliases=["q"], invoke_without_command=True)
 	async def quest_group(self, ctx):
