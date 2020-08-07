@@ -45,17 +45,17 @@ class Empire(commands.Cog):
 		return max(0.15, min(0.85, 0.25 + ((atk_power / max(1, def_power)) / 2.0)))
 
 	@staticmethod
-	async def get_hourly_income(con, user, *, population=None, upgrades=None):
-		population = await PopulationM.fetchrow(con, user.id) if population is None else population
-		upgrades = await UserUpgradesM.fetchrow(con, user.id) if upgrades is None else upgrades
+	async def get_hourly_income(con, user):
+		population = await PopulationM.fetchrow(con, user.id)
+		upgrades = await UserUpgradesM.fetchrow(con, user.id)
 
 		return utils.get_hourly_money_change(population, upgrades)
 
-	def calculate_units_lost(self, population, upgrades):
+	async def calculate_units_lost(self, population, upgrades):
 		units_lost = dict()
 		units_lost_cost = 0
 
-		hourly_income = max(0, await self.get_hourly_income(population, upgrades))
+		hourly_income = max(0, utils.get_hourly_money_change(population, upgrades))
 
 		available_units = list(itertools.filterfalse(lambda u: population[u.db_col] == 0, MilitaryGroup.units))
 
