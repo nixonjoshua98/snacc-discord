@@ -54,16 +54,6 @@ class ServerDoor(commands.Cog, name="Server Door"):
 
         svr = await self.bot.get_server_config(member.guild)
 
-        try:
-            role = svr["bot_role" if member.bot else "user_role"]
-            role = member.guild.get_role(role)
-
-            if role is not None:
-                await member.add_roles(role)
-
-        except (discord.Forbidden, discord.HTTPException):
-            """ We failed to add the role. """
-
         if svr.get("display_joins"):
             await self.send_message(member.guild, f"Welcome {member.mention} to {member.guild.name}!")
 

@@ -12,11 +12,11 @@ from src.common import SNACCMAN
 from src.structs.help import Help
 from src.structs.context import CustomContext
 
-from src.common.models import ServersM, EmpireM
+from src.common.models import ServersM
 
 EXTENSIONS = [
     "errorhandler", "arenastats", "empire", "quest", "shop", "tags", "hangman", "gambling",
-    "bank", "crypto", "darkness", "moderator", "misc", "serverdoor", "settings"
+    "bank", "crypto", "darkness", "moderator", "misc", "autorole", "serverdoor", "settings"
 ]
 
 
