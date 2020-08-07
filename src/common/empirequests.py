@@ -1,16 +1,16 @@
 import math
 import discord
 import random
+import dataclasses
 
 
+@dataclasses.dataclass(frozen=True,)
 class _Quest:
-	def __init__(self, *, id_, name, power, reward, duration):
-		self.id = id_
-		self.name = name
-		self.power = power
-		self.duration = duration
-
-		self.reward = reward
+	id: int
+	name: str
+	power: int
+	reward: int
+	duration: int
 
 	def get_reward(self): return math.floor(random.uniform(0.9, 1.1) * self.reward)
 
@@ -19,11 +19,13 @@ class _Quest:
 
 class _EmpireQuests(type):
 	_QUESTS = [
-		_Quest(id_=1, name="Herb Collection", 		power=50, 	reward=500, 	duration=1),
-		_Quest(id_=2, name="Spider Cave", 			power=100, 	reward=1_250, 	duration=2),
-		_Quest(id_=3, name="Enemy Empire Raid", 	power=150, 	reward=2_000, 	duration=3),
-		_Quest(id_=4, name="Ogre Subjugation", 		power=200, 	reward=3_000, 	duration=4),
-		_Quest(id_=5, name="Enemy Empire Raid", 	power=250, 	reward=4_500, 	duration=5),
+		_Quest(id=1, name="Herb Collection", 	power=50, 	reward=500, 	duration=1),
+		_Quest(id=2, name="Spider Cave", 		power=100, 	reward=1_250, 	duration=2),
+		_Quest(id=3, name="Enemy Empire Raid", 	power=165, 	reward=2_000, 	duration=3),
+		_Quest(id=4, name="Ogre Subjugation", 	power=225, 	reward=3_000, 	duration=4),
+		_Quest(id=5, name="Enemy Empire Raid", 	power=260, 	reward=4_500, 	duration=5),
+		_Quest(id=6, name="The Dragon", 		power=380, 	reward=5_500,	duration=6),
+		_Quest(id=7, name="Kill the Traitors", 	power=475, 	reward=7_000, 	duration=7),
 	]
 
 	def get(self, **kwargs): return discord.utils.get(self._QUESTS, **kwargs)

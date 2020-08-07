@@ -131,21 +131,23 @@ _UNIT_GROUPS = {
 			_MoneyUnit(income_hour=20, db_col="stonemason",		base_cost=400),
 			_MoneyUnit(income_hour=25, db_col="butchers",		base_cost=550),
 			_MoneyUnit(income_hour=30, db_col="weaver",			base_cost=650),
-			_MoneyUnit(income_hour=35, db_col="taylors",		base_cost=700),
+			_MoneyUnit(income_hour=35, db_col="taylors",		base_cost=700, display_name="Tailers"),
 			_MoneyUnit(income_hour=40, db_col="bakers",			base_cost=800),
 			_MoneyUnit(income_hour=45, db_col="blacksmiths",	base_cost=950),
 			_MoneyUnit(income_hour=50, db_col="cooks",			base_cost=1250),
 			_MoneyUnit(income_hour=55, db_col="winemakers", 	base_cost=1500),
 			_MoneyUnit(income_hour=60, db_col="shoemakers", 	base_cost=1750),
+			_MoneyUnit(income_hour=65, db_col="falconer", 		base_cost=3000)
 		]
 						),
 
 	_UnitGroupType.MILITARY:
 		_MilitaryUnitGroup("Military Units", [
-			_MilitaryUnit(upkeep_hour=10, power=1, 	db_col="peasants", 	base_cost=250, 	max_amount=10),
-			_MilitaryUnit(upkeep_hour=25, power=3, 	db_col="soldiers", 	base_cost=500, 	max_amount=10),
-			_MilitaryUnit(upkeep_hour=35, power=5, 	db_col="spearmen", 	base_cost=750, 	max_amount=10),
-			_MilitaryUnit(upkeep_hour=50, power=10, db_col="warriors", 	base_cost=1250, max_amount=10),
+			_MilitaryUnit(upkeep_hour=10, 	power=1, 	db_col="peasants", 	base_cost=250, 	max_amount=10),
+			_MilitaryUnit(upkeep_hour=35, 	power=3, 	db_col="soldiers", 	base_cost=500, 	max_amount=10),
+			_MilitaryUnit(upkeep_hour=50, 	power=5, 	db_col="spearmen", 	base_cost=750, 	max_amount=10),
+			_MilitaryUnit(upkeep_hour=75, 	power=10, 	db_col="warriors", 	base_cost=1250, max_amount=10),
+			_MilitaryUnit(upkeep_hour=100, power=15, db_col="knights", base_cost=2000, max_amount=10, exponent=1.25),
 		]
 						),
 }
