@@ -3,7 +3,7 @@ import ssl
 import discord
 import asyncpg
 
-from discord.ext import commands
+from discord.ext import commands, tasks
 
 import datetime as dt
 
@@ -37,6 +37,22 @@ class SnaccBot(commands.AutoShardedBot):
     def debug(self):
         return int(os.getenv("DEBUG", 0))
 
+    @property
+    def users(self):
+        return set([m for g in self.guilds for m in g.members])
+
+    def start_activity_loop(self):
+
+        @tasks.loop(minutes=15.0)
+        async def activity_loop():
+            activity = discord.Game(f"with {len(self.users)} users in {len(self.guilds)} servers")
+
+            await self.change_presence(status=discord.Status.online, activity=activity)
+
+        print("Starting loop: Bot Activity")
+
+        activity_loop.start()
+
     async def on_ready(self):
         """ Invoked once the bot is connected and ready to use. """
 
@@ -44,6 +60,8 @@ class SnaccBot(commands.AutoShardedBot):
         await self.setup_database()
 
         self.load_extensions()
+
+        self.start_activity_loop()
 
         print(f"Bot '{self.user.display_name}' is ready")
 
@@ -96,13 +114,16 @@ class SnaccBot(commands.AutoShardedBot):
 
         self.exts_loaded = False
 
-        path = os.path.join(os.getcwd(), "src", "exts", "serverspecific")
+        exts = []
 
-        extensions = [f"serverspecific.{f[:-3]}" for f in os.listdir(path) if not f.startswith("__")]
+        if not self.debug:
+            path = os.path.join(os.getcwd(), "src", "exts", "serverspecific")
 
-        extensions.extend(EXTENSIONS)
+            exts = [f"serverspecific.{f[:-3]}" for f in os.listdir(path) if not f.startswith("__")]
 
-        for i, ext in enumerate(extensions):
+        exts.extend(EXTENSIONS)
+
+        for i, ext in enumerate(exts):
             try:
                 self.load_extension(f"src.exts.{ext}")
 
