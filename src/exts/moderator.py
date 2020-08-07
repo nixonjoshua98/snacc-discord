@@ -8,7 +8,6 @@ from typing import Optional
 
 
 class Moderator(commands.Cog):
-	__blacklistable__ = False
 
 	@commands.has_role("Mod")
 	@commands.max_concurrency(1, commands.BucketType.guild)

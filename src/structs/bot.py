@@ -96,7 +96,13 @@ class SnaccBot(commands.AutoShardedBot):
 
         self.exts_loaded = False
 
-        for i, ext in enumerate(EXTENSIONS):
+        path = os.path.join(os.getcwd(), "src", "exts", "serverspecific")
+
+        extensions = [f"serverspecific.{f[:-3]}" for f in os.listdir(path) if not f.startswith("__")]
+
+        extensions.extend(EXTENSIONS)
+
+        for i, ext in enumerate(extensions):
             try:
                 self.load_extension(f"src.exts.{ext}")
 

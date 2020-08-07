@@ -49,6 +49,10 @@ class TableModel:
 		await con.execute(q, id_)
 
 
+class EmbedsM(TableModel):
+	_TABLE, _PK = "embeds", "embed_id"
+
+
 class ServersM(TableModel):
 	_TABLE, _PK = "servers", "server_id"
 

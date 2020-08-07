@@ -80,3 +80,11 @@ quest_num           SMALLINT,
 success_rate        REAL,
 date_started        TIMESTAMP WITHOUT time zone DEFAULT (now() at time zone 'utc')
 );
+
+
+CREATE TABLE IF NOT EXISTS embeds (
+embed_id            SERIAL,
+server_id           BIGINT,
+embed_tag           VARCHAR,
+xml                 VARCHAR
+);
