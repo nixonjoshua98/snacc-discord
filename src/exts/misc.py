@@ -94,6 +94,17 @@ class Miscellaneous(commands.Cog):
 
 		await ctx.send(f"Pong! {round(ctx.bot.latency * 1000, 3)}ms")
 
+	@commands.command(name="support")
+	async def support(self, ctx):
+		""" Link to the support server. """
+
+		await ctx.send("https://discord.gg/QExQuvE")
+
+	@commands.command(name="vote")
+	async def vote(self, ctx):
+		""" Link to the vote site. """
+		await ctx.send("not yet")
+
 	@commands.command(name="cooldowns", aliases=["cd"])
 	async def cooldowns(self, ctx):
 		""" Display your command cooldowns. """
