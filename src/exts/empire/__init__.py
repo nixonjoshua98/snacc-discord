@@ -71,7 +71,7 @@ class Empire(commands.Cog):
 		return units_lost
 
 	@staticmethod
-	def calculate_money_lost(bank):
+	async def calculate_money_lost(bank):
 		min_stolen = int(bank["money"] * 0.025)
 		max_stolen = min(bank["money"], int(bank["money"] * 0.075))
 
@@ -143,8 +143,8 @@ class Empire(commands.Cog):
 				target_upgrades = await UserUpgradesM.fetchrow(con, target.id)
 				target_bank = await BankM.fetchrow(con, target.id)
 
-				money_lost = self.calculate_money_lost(target_bank)
-				units_lost = self.calculate_units_lost(target_population, target_upgrades)
+				money_lost = await self.calculate_money_lost(target_bank)
+				units_lost = await self.calculate_units_lost(target_population, target_upgrades)
 
 				# - Perform the money pillaging - Transfer money from one account to the other
 				await BankM.increment(con, ctx.author.id, field="money", amount=money_lost)
