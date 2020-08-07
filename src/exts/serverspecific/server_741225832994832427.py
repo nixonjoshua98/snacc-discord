@@ -13,6 +13,7 @@ class Server_741225832994832427(commands.Cog):
 	@commands.Cog.listener(name="on_message")
 	async def on_message(self, message):
 		if (
+				message.guild is None or
 				message.guild.id != 741225832994832427 or
 				message.author.bot or
 				message.channel.id in OPEN_MOD_CHANNELS or

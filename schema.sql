@@ -25,7 +25,7 @@ user_role               BIGINT      DEFAULT 0,
 bot_role                BIGINT      DEFAULT 0,
 
 prefix                  VARCHAR     DEFAULT '!',
-display_joins           BOOL        DEFAULT True
+display_joins           BOOL        DEFAULT False
 );
 
 
