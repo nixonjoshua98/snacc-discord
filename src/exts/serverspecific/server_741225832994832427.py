@@ -36,6 +36,18 @@ class Server_741225832994832427(commands.Cog):
 
 			await message.channel.send(embed=embed)
 
+	@commands.Cog.listener(name="on_member_remove")
+	async def on_member_remove(self, member):
+		for cat in member.guild.categories:
+			if cat.name.upper() in ("SERVER ADVERTISMENTS", "BOT ADVERTISMENTS"):
+				for chnl in cat.channels:
+					async for msg in chnl.history(limit=100):
+						if msg.author.id == member.id:
+							try:
+								await msg.delete()
+							except (discord.HTTPException, discord.Forbidden):
+								""" Failed """
+
 
 def setup(bot):
 	bot.add_cog(Server_741225832994832427(bot))
