@@ -116,7 +116,7 @@ class SnaccBot(commands.AutoShardedBot):
 
         exts = []
 
-        if self.debug:
+        if not self.debug:
             path = os.path.join(os.getcwd(), "src", "exts", "serverspecific")
 
             exts = [f"serverspecific.{f[:-3]}" for f in os.listdir(path) if not f.startswith("__")]

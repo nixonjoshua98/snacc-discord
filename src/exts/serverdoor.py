@@ -80,7 +80,7 @@ class ServerDoor(commands.Cog, name="Server Door"):
 
             await self.send_message(member.guild, msg)
 
-    async def start_assign_role_loop(self):
+    def start_assign_role_loop(self):
         @tasks.loop(hours=1.0)
         async def assign_role_loop():
             pass
