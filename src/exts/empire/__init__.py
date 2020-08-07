@@ -55,7 +55,7 @@ class Empire(commands.Cog):
 		units_lost = dict()
 		units_lost_cost = 0
 
-		hourly_income = max(0, self.get_hourly_income(population, upgrades))
+		hourly_income = max(0, await self.get_hourly_income(population, upgrades))
 
 		available_units = list(itertools.filterfalse(lambda u: population[u.db_col] == 0, MilitaryGroup.units))
 
@@ -89,7 +89,7 @@ class Empire(commands.Cog):
 
 		await EmpireM.set(ctx.bot.pool, ctx.guild.id, name=empire_name)
 
-		await ctx.send(f"Your empire has been established! You can rename your empire using `!rename`")
+		await ctx.send(f"Your empire has been established! You can rename your empire using `{ctx.prefix}rename`")
 
 		await self.show_empire(ctx)
 
