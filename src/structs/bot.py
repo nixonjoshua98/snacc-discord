@@ -45,7 +45,7 @@ class SnaccBot(commands.AutoShardedBot):
 
         @tasks.loop(minutes=15.0)
         async def activity_loop():
-            activity = discord.Game(f"with {len(self.users)} users in {len(self.guilds)} servers")
+            activity = discord.Game(f"{len(self.users)} users | {len(self.guilds)} servers")
 
             await self.change_presence(status=discord.Status.online, activity=activity)
 
