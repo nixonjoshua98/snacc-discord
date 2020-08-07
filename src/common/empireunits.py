@@ -137,7 +137,7 @@ _UNIT_GROUPS = {
 			_MoneyUnit(income_hour=50, db_col="cooks",			base_cost=1250),
 			_MoneyUnit(income_hour=55, db_col="winemakers", 	base_cost=1500),
 			_MoneyUnit(income_hour=60, db_col="shoemakers", 	base_cost=1750),
-			_MoneyUnit(income_hour=65, db_col="falconer", 		base_cost=3000)
+			_MoneyUnit(income_hour=65, db_col="falconers", 		base_cost=3000)
 		]
 						),
 

@@ -50,7 +50,7 @@ taylors 	    SMALLINT 	DEFAULT 0 CHECK (taylors        >= 0),
 stonemason 	    SMALLINT 	DEFAULT 0 CHECK (stonemason     >= 0),
 weaver 	        SMALLINT 	DEFAULT 0 CHECK (weaver         >= 0),
 shoemakers      SMALLINT 	DEFAULT 0 CHECK (shoemakers     >= 0),
-falconer        SMALLINT 	DEFAULT 0 CHECK (falconer       >= 0),
+falconers        SMALLINT 	DEFAULT 0 CHECK (falconer       >= 0),
 
 -- Military Units
 peasants        SMALLINT    DEFAULT 0 CHECK (peasants   >= 0),

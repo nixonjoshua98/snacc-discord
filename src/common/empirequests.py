@@ -4,7 +4,7 @@ import random
 import dataclasses
 
 
-@dataclasses.dataclass(frozen=True,)
+@dataclasses.dataclass(frozen=True)
 class _Quest:
 	id: int
 	name: str
