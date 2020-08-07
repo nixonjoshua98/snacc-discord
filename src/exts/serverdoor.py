@@ -52,6 +52,12 @@ class ServerDoor(commands.Cog, name="Server Door"):
 
         await self.bot.get_user(SNACCMAN).send(f"I have joined {guild.name} which has {len(guild.members)} members.")
 
+    @commands.Cog.listener("on_guild_remove")
+    async def on_guild_remove(self, guild):
+        snacc = self.bot.get_user(SNACCMAN)
+
+        await snacc.send(f"I have been removed from {guild.name} which has {len(guild.members)} members.")
+
     @commands.Cog.listener("on_member_join")
     async def on_member_join(self, member):
         """ Called when a member joins a server. """
