@@ -31,8 +31,6 @@ class SnaccBot(commands.AutoShardedBot):
 
         self.add_check(self.bot_check)
 
-        self.before_invoke(self.before_invoke_func)
-
     @property
     def debug(self):
         return int(os.getenv("DEBUG", 0))
@@ -163,9 +161,6 @@ class SnaccBot(commands.AutoShardedBot):
         embed.set_footer(text=f"{str(self.user)}", icon_url=self.user.avatar_url)
 
         return embed
-
-    async def before_invoke_func(self, ctx):
-        await EmpireM.set(ctx.bot.pool, ctx.author.id, last_login=dt.datetime.utcnow())
 
     async def on_message(self, message):
         if self.exts_loaded and message.guild is not None and not message.author.bot:

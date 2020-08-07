@@ -40,6 +40,9 @@ class Empire(commands.Cog):
 		if ctx.guild.id == MainServer.ID:
 			await ctx.author.add_roles(discord.utils.get(ctx.guild.roles, id=MainServer.EMPIRE_ROLE))
 
+	async def cog_after_invoke(self, ctx):
+		await EmpireM.set(ctx.bot.pool, ctx.author.id, last_login=dt.datetime.utcnow())
+
 	@staticmethod
 	def get_win_chance(atk_power, def_power):
 		return max(0.15, min(0.85, 0.25 + ((atk_power / max(1, def_power)) / 2.0)))

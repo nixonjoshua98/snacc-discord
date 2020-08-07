@@ -1,6 +1,6 @@
 import discord
 
-from discord.ext import commands, tasks
+from discord.ext import commands
 
 from src.common.models import ServersM
 
@@ -9,8 +9,6 @@ class ServerDoor(commands.Cog, name="Server Door"):
 
     def __init__(self, bot):
         self.bot = bot
-
-        self.start_assign_role_loop()
 
     @staticmethod
     async def send_message(guild, message):
@@ -79,16 +77,6 @@ class ServerDoor(commands.Cog, name="Server Door"):
             msg = f"**{str(member)}** " + (f"({member.nick}) " if member.nick else "") + "has left the server"
 
             await self.send_message(member.guild, msg)
-
-    def start_assign_role_loop(self):
-        @tasks.loop(hours=1.0)
-        async def assign_role_loop():
-            pass
-
-        if not self.bot.debug:
-            print("Starting loop: Role assignment")
-
-            assign_role_loop.start()
 
 
 def setup(bot):

@@ -25,71 +25,29 @@ class Darkness(commands.Cog):
 
         await ctx.send("I have DM'ed you")
 
-        questions = {
-            "username": (inputs.get_input, Arguments(ctx, "What is your in-game-name?", send_dm=True)),
-
-            "trophies": (inputs.get_input, Arguments(
-                ctx,
-                "What is your trophy count?",
-                send_dm=True,
-                validation=lambda s: s.isdigit()
-            )
-                         ),
-
-            "play time": (inputs.options, Arguments(ctx,
-                                                    "How long have you been playing?",
-                                                    ("0-1 months", "2-4 months", "5-6 months", "6+ months"),
-                                                    send_dm=True
-                                                    )
-                          ),
-
-            "device": (inputs.options, Arguments(ctx,
-                                                 "How do you play?",
-                                                 ("Phone/Tablet", "Spare Device", "PC/Laptop", "Other"),
-                                                 send_dm=True
-                                                 )
-                       ),
-            "daily playtime": (inputs.options, Arguments(ctx,
-                                                         "How long do you play the game each day?",
-                                                         (
-                                                             "0-6 hours",
-                                                             "7-12 hours",
-                                                             "13-18 hours",
-                                                             "19-24 hours",
-                                                         ),
-                                                         send_dm=True
-                                                         )
-                               ),
-        }
-
-        answers = dict()
-
-        # - - - ASK QUESTIONS - - - #
-
-        for k in questions:
-            func, args = questions[k]
-
-            response = await func(*args.args, **args.kwargs)
-
-            if response is None:
-                return self.application.reset_cooldown(ctx)
-
-            answers[k] = response
-
-        await ctx.author.send("Your application is complete!")
-
-        #  - - - LOG RESULTS - - - #
-
-        channel = ctx.bot.get_channel(MainServer.APP_CHANNEL)
-
         embed = discord.Embed(title="Guild Application", colour=discord.Color.orange())
 
-        for k, v in answers.items():
-            embed.add_field(name=k.title(), value=v, inline=False)
+        for q in (
+                "What is your in-game-name?",
+                "What is your trophy count?",
+                "How long have you been playing?",
+                "How do you play?",
+                "How long do you play the game each day?"
+        ):
+            resp = await inputs.get_input(ctx, q, send_dm=True)
+
+            if resp is None:
+                return self.application.reset_cooldown(ctx)
+
+            embed.add_field(name=q, value=resp, inline=False)
+
+        channel = ctx.bot.get_channel(MainServer.APP_CHANNEL)
 
         embed.timestamp = datetime.utcnow()
 
         embed.set_footer(text=f"{str(ctx.author)}", icon_url=ctx.author.avatar_url)
+
+        await ctx.send("Your application is done!")
 
         await channel.send(embed=embed)
 
