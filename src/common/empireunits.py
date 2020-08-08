@@ -131,7 +131,7 @@ _UNIT_GROUPS = {
 			_MoneyUnit(income_hour=20, db_col="stonemason",		base_cost=400),
 			_MoneyUnit(income_hour=25, db_col="butchers",		base_cost=550),
 			_MoneyUnit(income_hour=30, db_col="weaver",			base_cost=650),
-			_MoneyUnit(income_hour=35, db_col="tailers",		base_cost=700),
+			_MoneyUnit(income_hour=35, db_col="tailors",		base_cost=700),
 			_MoneyUnit(income_hour=40, db_col="bakers",			base_cost=800),
 			_MoneyUnit(income_hour=45, db_col="blacksmiths",	base_cost=950),
 			_MoneyUnit(income_hour=50, db_col="cooks",			base_cost=1250),
