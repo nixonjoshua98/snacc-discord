@@ -193,9 +193,7 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 		""" Show the server trophy leaderboard. """
 
 		async def query():
-			svr_config = await ctx.bot.get_server_config(ctx.guild)
-
-			role = ctx.guild.get_role(svr_config["member_role"])
+			role = ctx.guild.get_role(666615010579054614)
 
 			return await ctx.bot.pool.fetch(ArenaStatsM.SELECT_LEADERBOARD, tuple(member.id for member in role.members))
 
