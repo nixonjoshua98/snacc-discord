@@ -170,7 +170,7 @@ class Empire(commands.Cog):
 			else:
 				author_bank = await BankM.fetchrow(con, ctx.author.id)
 
-				money_lost = self.calculate_money_lost(author_bank)
+				money_lost = await self.calculate_money_lost(author_bank)
 
 				await BankM.decrement(con, ctx.author.id, field="money", amount=money_lost)
 
