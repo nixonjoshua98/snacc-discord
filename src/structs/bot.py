@@ -47,9 +47,10 @@ class SnaccBot(commands.AutoShardedBot):
 
             await self.change_presence(status=discord.Status.online, activity=activity)
 
-        print("Starting loop: Bot Activity")
+        if not self.debug:
+            print("Starting loop: Bot Activity")
 
-        activity_loop.start()
+            activity_loop.start()
 
     async def on_ready(self):
         """ Invoked once the bot is connected and ready to use. """

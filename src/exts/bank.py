@@ -41,7 +41,7 @@ class Bank(commands.Cog):
 		target_bank = await BankM.fetchrow(ctx.bot.pool, target.id)
 
 		min_stolen = int(target_bank["money"] * 0.025)
-		max_stolen = min(author_bank["money"], int(target_bank["money"] * 0.075))
+		max_stolen = min(min_stolen, author_bank["money"], int(target_bank["money"] * 0.075))
 
 		stolen_amount = random.randint(max(1, min_stolen), max(1, max_stolen))
 

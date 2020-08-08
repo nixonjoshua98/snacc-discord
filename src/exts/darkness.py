@@ -52,7 +52,8 @@ class Darkness(commands.Cog):
             "daily playtime": (inputs.options, Arguments(ctx,
                                                          "How many hours do you play daily?",
                                                          (
-                                                             "0-6 hours",
+                                                             "0-3 hours",
+                                                             "4-6 hours",
                                                              "7-12 hours",
                                                              "13-18 hours",
                                                              "19-24 hours",
