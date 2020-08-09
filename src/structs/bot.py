@@ -10,6 +10,7 @@ import datetime as dt
 from src.common import SNACCMAN
 
 from src.structs.help import Help
+from src.common.errors import GlobalCheckFail
 from src.structs.context import CustomContext
 
 from src.common.models import ServersM
@@ -84,8 +85,8 @@ class SnaccBot(commands.AutoShardedBot):
             await self.pool.execute(fh.read())
 
     async def bot_check(self, ctx) -> bool:
-        if (not self.exts_loaded) or (ctx.guild is None) or ctx.author.bot:
-            return False
+        if not self.exts_loaded or ctx.guild is None or ctx.author.bot or not self.can_message_in(ctx.channel):
+            raise GlobalCheckFail(".")
 
         return True
 
@@ -107,6 +108,8 @@ class SnaccBot(commands.AutoShardedBot):
             self.pool = await asyncpg.create_pool(os.getenv("DATABASE_URL"), ssl=ctx, max_size=15)
 
         print("OK")
+
+    def can_message_in(self, chnl): return chnl.permissions_for(chnl.guild.me).send_messages
 
     def load_extensions(self):
         """ Load all of the extensions for the bot. """

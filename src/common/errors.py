@@ -19,3 +19,7 @@ class HasEmpire(CommandError):
 
 class UserOnQuest(CommandError):
 	""" User is already on a quest. """
+
+
+class GlobalCheckFail(CommandError):
+	""" Bot global check failed. """

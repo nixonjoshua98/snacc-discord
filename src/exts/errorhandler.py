@@ -11,6 +11,10 @@ from discord.ext.commands import (
     MissingRole,
 )
 
+from src.common.errors import (
+    GlobalCheckFail
+)
+
 
 class ErrorHandler(commands.Cog):
     def __init__(self, bot):
@@ -19,7 +23,7 @@ class ErrorHandler(commands.Cog):
         self.bot.on_command_error = self.on_command_error
 
     async def on_command_error(self, ctx, esc):
-        if isinstance(esc, CommandNotFound):
+        if isinstance(esc, (CommandNotFound, GlobalCheckFail)):
             return None
 
         elif isinstance(esc, CommandOnCooldown):

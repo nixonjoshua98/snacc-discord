@@ -29,7 +29,7 @@ class Quest(commands.Cog):
 
 		time_since_start = dt.datetime.utcnow() - quest["date_started"]
 
-		seconds = max(0, quest_inst.get_duration(author_upgrades) * 3600 - time_since_start.total_seconds())
+		seconds = quest_inst.get_duration(author_upgrades) * 3600 - time_since_start.total_seconds()
 
 		return dt.timedelta(seconds=int(seconds))
 
