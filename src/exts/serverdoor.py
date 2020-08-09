@@ -2,8 +2,6 @@ import discord
 
 from discord.ext import commands
 
-from src.common import SNACCMAN
-
 from src.common.models import ServersM
 
 GUILD_JOIN_MESSAGE = """
@@ -61,19 +59,9 @@ class ServerDoor(commands.Cog, name="Server Door"):
     async def on_guild_join(self, guild):
         """ Called when the bot joins a new server. """
 
-        snacc = self.bot.get_user(SNACCMAN)
-
         msg = GUILD_JOIN_MESSAGE.format(bot=self.bot, guild=guild)
 
         await self.send_message(guild, msg)
-
-        await snacc.send(f"I have joined `{guild.name}` which has {len(guild.members):,} members")
-
-    @commands.Cog.listener("on_guild_remove")
-    async def on_guild_remove(self, guild):
-        snacc = self.bot.get_user(SNACCMAN)
-
-        await snacc.send(f"I have been removed from `{guild.name}`")
 
     @commands.Cog.listener("on_member_join")
     async def on_member_join(self, member):
