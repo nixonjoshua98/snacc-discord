@@ -7,6 +7,7 @@ class Purchasable:
 		self.base_price = base_cost
 
 		self.max_amount = kwargs.get("max_amount", 15)
+		self.max_price = kwargs.get("max_price", None)
 		self.exponent = kwargs.get("exponent", 1.15)
 		self.display_name = kwargs.get("display_name", db_col.title().replace("_", " "))
 
@@ -16,6 +17,11 @@ class Purchasable:
 		price = 0
 
 		for i in range(total_owned, total_owned + total_buying):
-			price += self.base_price * pow(self.exponent, i)
+			p = self.base_price * pow(self.exponent, i)
+
+			if self.max_price is not None:
+				p = min(self.max_price, p)
+
+			price += p
 
 		return math.ceil(price)

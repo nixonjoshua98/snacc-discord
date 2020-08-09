@@ -4,7 +4,7 @@ from discord.ext import commands
 from src import inputs
 from src.common import checks
 from src.common.models import BankM, UserUpgradesM
-from src.common.converters import EmpireUpgrade
+from src.common.converters import EmpireUpgrade, Range
 
 from src.exts.shop.upgrades import ALL_UPGRADES
 
@@ -23,7 +23,7 @@ class Shop(commands.Cog):
 
 		for upgrade in ALL_UPGRADES:
 			if upgrades[upgrade.db_col] < upgrade.max_amount:
-				price = f"{upgrade.get_price(upgrades[upgrade.db_col]):,}"
+				price = f"${upgrade.get_price(upgrades[upgrade.db_col]):,}"
 				owned = f"{upgrades[upgrade.db_col]}/{upgrade.max_amount}"
 
 				page.add_row([upgrade.id, upgrade.display_name, owned, price])
@@ -44,21 +44,21 @@ class Shop(commands.Cog):
 	@checks.has_empire()
 	@commands.max_concurrency(1, commands.BucketType.user)
 	@shop_group.command(name="buy")
-	async def buy_upgrade(self, ctx, upgrade: EmpireUpgrade()):
+	async def buy_upgrade(self, ctx, upgrade: EmpireUpgrade(), amount: Range(1, 100)):
 		""" Buy a new upgrade. """
 
-		price = upgrade.get_price(ctx.upgrades_["author"][upgrade.db_col])
+		price = upgrade.get_price(ctx.upgrades_["author"][upgrade.db_col], amount)
 
-		if ctx.upgrades_["author"][upgrade.db_col] > upgrade.max_amount:
+		if ctx.upgrades_["author"][upgrade.db_col] + amount > upgrade.max_amount:
 			await ctx.send(f"**{upgrade.display_name}** have an owned limit of **{upgrade.max_amount}**.")
 
 		elif price > ctx.bank_["author"]["money"]:
-			await ctx.send(f"You can't afford to hire **1x {upgrade.display_name}**")
+			await ctx.send(f"You can't afford to hire **{amount}x {upgrade.display_name}**")
 
 		else:
 			await BankM.decrement(ctx.bot.pool, ctx.author.id, field="money", amount=price)
 
-			await UserUpgradesM.increment(ctx.bot.pool, ctx.author.id, field=upgrade.db_col, amount=1)
+			await UserUpgradesM.increment(ctx.bot.pool, ctx.author.id, field=upgrade.db_col, amount=amount)
 
-			await ctx.send(f"Bought **{upgrade.display_name}** for **${price:,}**!")
+			await ctx.send(f"Bought **{amount}x {upgrade.display_name}** for **${price:,}**!")
 

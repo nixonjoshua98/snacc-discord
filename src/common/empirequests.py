@@ -14,6 +14,8 @@ class _Quest:
 
 	def get_reward(self): return math.floor(random.uniform(0.9, 1.1) * self.reward)
 
+	def get_duration(self, upgrades): return self.duration * (1.0 - (upgrades["quicker_quests"] * 0.02))
+
 	def success_rate(self, author_power): return round(max(0.01, min(author_power / self.power, 0.99)), 2)
 
 

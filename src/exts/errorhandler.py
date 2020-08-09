@@ -1,3 +1,5 @@
+import discord
+
 import datetime as dt
 
 from discord.ext import commands
@@ -36,7 +38,10 @@ class ErrorHandler(commands.Cog):
             await ctx.send(f"Role `{esc.missing_role}` is required to run this command.")
 
         else:
-            await ctx.send(esc)
+            try:
+                await ctx.send(esc)
+            except discord.Forbidden:
+                print(esc)
 
 
 def setup(bot):

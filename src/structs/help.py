@@ -36,14 +36,15 @@ class Help(commands.HelpCommand):
 			for j, chunk in enumerate(chunked_cmds):
 				title = f"{cog.qualified_name} | Page {j + 1} / {len(chunked_cmds)}"
 
-				embed = discord.Embed(title=title, description=cog.__doc__ or "", color=discord.Color.orange())
+				embed = bot.embed(title=title, description=(cog.__doc__ or "").strip())
 
 				embed.set_thumbnail(url=bot.user.avatar_url)
 				embed.set_footer(text=f"{bot.user.name} | Module {i + 1}/{len(mapping)}", icon_url=bot.user.avatar_url)
 
 				for ii, cmd in enumerate(chunk):
 					if not cmd.hidden:
-						embed.add_field(name=get_cmd_title(cmd), value=str(cmd.callback.__doc__), inline=False)
+						desc = str(cmd.callback.__doc__).strip()
+						embed.add_field(name=get_cmd_title(cmd), value=desc, inline=False)
 
 					if isinstance(cmd, commands.Group):
 						for sub in cmd.commands:
@@ -51,7 +52,9 @@ class Help(commands.HelpCommand):
 
 							name = get_cmd_title(sub)
 
-							embed.add_field(name=f"{parent} {name}", value=str(sub.callback.__doc__), inline=False)
+							desc = str(cmd.callback.__doc__).strip()
+
+							embed.add_field(name=f"{parent} {name}", value=desc, inline=False)
 
 				embeds.append(embed)
 

@@ -50,14 +50,15 @@ taylors 	    SMALLINT 	DEFAULT 0 CHECK (taylors        >= 0),
 stonemason 	    SMALLINT 	DEFAULT 0 CHECK (stonemason     >= 0),
 weaver 	        SMALLINT 	DEFAULT 0 CHECK (weaver         >= 0),
 shoemakers      SMALLINT 	DEFAULT 0 CHECK (shoemakers     >= 0),
-falconers        SMALLINT 	DEFAULT 0 CHECK (falconer       >= 0),
+falconers       SMALLINT 	DEFAULT 0 CHECK (falconers      >= 0),
 
 -- Military Units
 peasants        SMALLINT    DEFAULT 0 CHECK (peasants   >= 0),
 soldiers        SMALLINT    DEFAULT 0 CHECK (soldiers   >= 0),
 warriors        SMALLINT    DEFAULT 0 CHECK (warriors   >= 0),
 spearmen        SMALLINT    DEFAULT 0 CHECK (spearmen   >= 0),
-knights         SMALLINT    DEFAULT 0 CHECK (knights    >= 0)
+knights         SMALLINT    DEFAULT 0 CHECK (knights    >= 0),
+archers         SMALLINT    DEFAULT 0 CHECK (archers    >= 0)
 );
 
 
@@ -77,7 +78,8 @@ user_upgrades_id        BIGINT      PRIMARY KEY,
 extra_money_units       SMALLINT    DEFAULT 0 CHECK (extra_money_units      >= 0),
 extra_military_units    SMALLINT    DEFAULT 0 CHECK (extra_military_units   >= 0),
 less_upkeep             SMALLINT    DEFAULT 0 CHECK (less_upkeep            >= 0),
-more_income             SMALLINT    DEFAULT 0 CHECK (more_income            >= 0)
+more_income             SMALLINT    DEFAULT 0 CHECK (more_income            >= 0),
+quicker_quests          SMALLINT    DEFAULT 0 CHECK (quicker_quests         >= 0)
 );
 
 

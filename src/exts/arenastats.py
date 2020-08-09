@@ -31,7 +31,10 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 		self.start_shame_users()
 
 	async def cog_check(self, ctx):
-		return ctx.guild.id == MainServer.ID
+		if ctx.guild.id != MainServer.ID:
+			raise commands.DisabledCommand("This command is disabled in this server")
+
+		return True
 
 	@staticmethod
 	async def set_users_stats(ctx, user: discord.Member, level, trophies):

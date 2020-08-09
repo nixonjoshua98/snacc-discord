@@ -147,7 +147,8 @@ _UNIT_GROUPS = {
 			_MilitaryUnit(upkeep_hour=35, 	power=3, 	db_col="soldiers", 	base_cost=500, 	max_amount=10),
 			_MilitaryUnit(upkeep_hour=50, 	power=5, 	db_col="spearmen", 	base_cost=750, 	max_amount=10),
 			_MilitaryUnit(upkeep_hour=75, 	power=10, 	db_col="warriors", 	base_cost=1250, max_amount=10),
-			_MilitaryUnit(upkeep_hour=100, power=15, db_col="knights", base_cost=2000, max_amount=10, exponent=1.25),
+			_MilitaryUnit(upkeep_hour=85, 	power=12, 	db_col="archers", 	base_cost=1500, max_amount=10),
+			_MilitaryUnit(upkeep_hour=100, 	power=15, 	db_col="knights", 	base_cost=2000, max_amount=10),
 		]
 						),
 }
