@@ -36,7 +36,6 @@ class Quest(commands.Cog):
 	@staticmethod
 	async def show_all_quest(ctx):
 		author_population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
-
 		author_upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
 
 		author_power = MilitaryGroup.get_total_power(author_population)
@@ -99,7 +98,7 @@ class Quest(commands.Cog):
 		await ctx.send(f"You have embarked on **- {quest.name} -** quest! Check back in **{duration}**")
 
 	@checks.has_empire()
-	@commands.group(name="quest", aliases=["q"], invoke_without_command=True, usage="<quest=None>")
+	@commands.command(name="quest", aliases=["q"], invoke_without_command=True, usage="<quest=None>")
 	async def quest_group(self, ctx, quest: EmpireQuest() = None):
 		"""
 *One quest can be ongoing at any one time*

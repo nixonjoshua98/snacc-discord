@@ -14,9 +14,7 @@ class Bank(commands.Cog):
 	async def daily(self, ctx):
 		""" Gain your daily rewards. """
 
-		hourly_income = max(250, await ctx.bot.get_cog("Empire").get_hourly_income(ctx.pool, ctx.author))
-
-		money = random.randint(hourly_income // 2, hourly_income)
+		money = random.randint(5_000, 10_000)
 
 		await BankM.increment(ctx.pool, ctx.author.id, field="money", amount=money)
 
