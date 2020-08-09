@@ -98,6 +98,8 @@ class _Unit(Purchasable):
 		self.income_hour = kwargs.get("income_hour", 0)
 		self.upkeep_hour = kwargs.get("upkeep_hour", 0)
 
+		self.max_price = kwargs.get("max_price", 50_000)
+
 		# Increment the internal ID for the next unit
 		_Unit.__unit_id += 1
 
