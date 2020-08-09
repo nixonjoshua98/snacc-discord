@@ -25,6 +25,6 @@ ALL_UPGRADES = [
 		max_amount=15
 	),
 	_Upgrade(db_col="less_upkeep", display_name="Reduced Upkeep", base_cost=20_000, exponent=1.50, max_amount=5),
-	_Upgrade(db_col="more_income", display_name="Increased Income", base_cost=35_000, exponent=1.50, max_amount=5),
+	_Upgrade(db_col="more_income", display_name="Increased Income", base_cost=30_000, exponent=1.50, max_amount=5),
 	_Upgrade(db_col="quicker_quests", display_name="Faster Quests", base_cost=7_500, max_amount=25, max_price=50_000)
 ]

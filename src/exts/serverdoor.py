@@ -85,5 +85,5 @@ class ServerDoor(commands.Cog, name="Server Door"):
 
 
 def setup(bot):
-    if bot.debug:
+    if not bot.debug:
         bot.add_cog(ServerDoor(bot))
