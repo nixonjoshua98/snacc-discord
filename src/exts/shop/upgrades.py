@@ -16,10 +16,10 @@ class _Upgrade(Purchasable):
 
 
 ALL_UPGRADES = [
-	_Upgrade(db_col="extra_money_units", display_name="Extra Money Unit Slots", base_cost=12_500, exponent=1.30),
+	_Upgrade(db_col="extra_money_units", display_name="Money Unit Slots", base_cost=12_500, exponent=1.30),
 	_Upgrade(
 		db_col="extra_military_units",
-		display_name="Extra Military Unit Slots",
+		display_name="Military Unit Slots",
 		base_cost=10_000,
 		exponent=1.25,
 		max_amount=15

@@ -43,18 +43,19 @@ class Help(commands.HelpCommand):
 
 				for ii, cmd in enumerate(chunk):
 					if not cmd.hidden:
-						desc = str(cmd.callback.__doc__).strip()
-						embed.add_field(name=get_cmd_title(cmd), value=desc, inline=False)
+						embed.add_field(
+							name=get_cmd_title(cmd),
+							value=str(cmd.callback.__doc__).strip(),
+							inline=False
+						)
 
 					if isinstance(cmd, commands.Group):
 						for sub in cmd.commands:
-							parent = get_cmd_title(sub.parent)
-
-							name = get_cmd_title(sub)
-
-							desc = str(cmd.callback.__doc__).strip()
-
-							embed.add_field(name=f"{parent} {name}", value=desc, inline=False)
+							embed.add_field(
+								name=f"{get_cmd_title(sub.parent)} {get_cmd_title(sub)}",
+								value=str(sub.callback.__doc__).strip(),
+								inline=False
+							)
 
 				embeds.append(embed)
 

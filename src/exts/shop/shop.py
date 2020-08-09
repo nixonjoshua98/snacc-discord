@@ -44,7 +44,7 @@ class Shop(commands.Cog):
 	@checks.has_empire()
 	@commands.max_concurrency(1, commands.BucketType.user)
 	@shop_group.command(name="buy")
-	async def buy_upgrade(self, ctx, upgrade: EmpireUpgrade(), amount: Range(1, 100)):
+	async def buy_upgrade(self, ctx, upgrade: EmpireUpgrade(), amount: Range(1, 100) = 1):
 		""" Buy a new upgrade. """
 
 		price = upgrade.get_price(ctx.upgrades_["author"][upgrade.db_col], amount)

@@ -45,7 +45,7 @@ class Empire(commands.Cog):
 
 	@staticmethod
 	def get_win_chance(atk_power, def_power):
-		return max(0.15, min(0.85, 0.25 + ((atk_power / max(1, def_power)) / 2.0)))
+		return max(0.15, min(0.85, 0.2 + ((atk_power / max(1, def_power)) / 2.0)))
 
 	@staticmethod
 	async def get_hourly_income(con, user):
@@ -112,7 +112,7 @@ class Empire(commands.Cog):
 			target_power = MilitaryGroup.get_total_power(target_population)
 
 			if author_bank["money"] < 500:
-				await ctx.send(f"Scouting an empire costs **${500:,}**.")
+				await ctx.send(f"Scouting an empire costs **$500**.")
 
 			else:
 				await BankM.decrement(con, ctx.author.id, field="money", amount=500)
@@ -120,7 +120,7 @@ class Empire(commands.Cog):
 				win_chance = self.get_win_chance(author_power, target_power)
 
 				await ctx.send(
-					f"You hired a scout for **${500:,}**. "
+					f"You hired a scout for **$500**. "
 					f"You have a **{int(win_chance * 100)}%** chance of winning against **{target.display_name}**."
 				)
 
