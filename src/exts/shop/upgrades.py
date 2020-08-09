@@ -31,7 +31,7 @@ ALL_UPGRADES = [
 		display_name="Faster Quests",
 		base_cost=10_000,
 		max_amount=25,
-		exponent=1.05,
+		exponent=1.10,
 		max_price=50_000
 	)
 ]
