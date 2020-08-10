@@ -99,7 +99,15 @@ class Miscellaneous(commands.Cog):
 	async def vote(self, ctx):
 		""" Link to the vote site. """
 
-		await ctx.send("https://top.gg/bot/666616515436478473")
+		await ctx.send(
+			"\n".join(
+				(
+					"Voting for me is super helpful and greatly appreciated! :heart:",
+
+					"https://discord.boats/bot/666616515436478473",
+					"https://top-bots.xyz/bot/666616515436478473"
+				)
+			)
 
 	@commands.command(name="cooldowns", aliases=["cd"])
 	async def cooldowns(self, ctx):

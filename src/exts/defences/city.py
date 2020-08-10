@@ -1,3 +1,4 @@
+import os
 import enum
 
 from PIL import Image, ImageFont, ImageDraw
@@ -13,15 +14,6 @@ class Buildings(enum.IntEnum):
 
 
 def build_city_image(buildings: list):
-	def get_font(size):
-		try:
-			font = ImageFont.truetype("Arial.ttf", size)
-
-		except OSError:
-			font = ImageFont.truetype("Ubuntu-R.ttf", size)
-
-		return font
-
 	def enum_to_text(e):
 		return e.name
 
@@ -41,8 +33,10 @@ def build_city_image(buildings: list):
 
 	index = 0
 
-	lbl_font = get_font(11)
-	cell_font = get_font(16)
+	font_path = os.path.join(os.getcwd(), "src", "data", "Moriana.ttf")
+
+	lbl_font = ImageFont.truetype(font_path, 11)
+	cell_font = ImageFont.truetype(font_path, 16)
 
 	for y in range(0, image.height, CELL_SIZE):
 		for x in range(0, image.width, CELL_SIZE):
