@@ -51,9 +51,13 @@ async def stolen_event(ctx):
 async def loot_event(ctx):
 	""" Empire finds loot event. """
 
-	items = ("tiny ruby", "pink diamond", "small emerald", "holy sword", "demon sword", "iron shield", "wooden sword")
+	items = (
+		"tiny ruby", 		"pink diamond", 	"small emerald",
+		"holy sword", 		"demon sword", 		"iron shield",
+		"wooden sword",		"dragon scale",		"golden egg",
+		"treasure map",		"rare scroll",		"recursive bow"
+	)
 
-	# - Load the data
 	author_upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
 	author_population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
 
@@ -67,14 +71,21 @@ async def loot_event(ctx):
 
 
 async def recruit_unit(ctx):
-	""" Empire find gains a unit regardless of cap. """
+	""" Empire gains a unit or gains money. """
 
 	author_population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
+	author_upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
 
 	units = MilitaryGroup.units + MoneyGroup.units
 
-	unit_recruited = min(units, key=lambda u: u.get_price(author_population[u.db_col]))
+	units = list(filter(lambda u: author_population[u.db_col] < u.get_max_amount(author_upgrades), units))
 
-	await PopulationM.increment(ctx.bot.pool, ctx.author.id, field=unit_recruited.db_col, amount=1)
+	if units:
+		unit_recruited = sorted(units, key=lambda u: u.get_price(author_population[u.db_col]))[0]
 
-	await ctx.send(f"You recruited a rogue **{unit_recruited.display_name}!**")
+		await PopulationM.increment(ctx.bot.pool, ctx.author.id, field=unit_recruited.db_col, amount=1)
+
+		await ctx.send(f"You recruited a rogue **{unit_recruited.display_name}!**")
+
+	else:
+		await loot_event(ctx)
