@@ -52,7 +52,7 @@ class Quest(commands.Cog):
 				[
 					f"**Duration:** {duration}",
 					f"**Success Rate:** {math.floor(sucess_rate * 100)}%",
-					f"**Avg. Reward:** ${quest.reward:,}"
+					f"**Avg. Reward:** ${quest.get_avg_reward(author_upgrades):,}"
 				]
 			)
 
@@ -68,7 +68,9 @@ class Quest(commands.Cog):
 
 		# - User completed the quest without dying
 		if quest["success_rate"] >= random.uniform(0.0, 1.0):
-			money_reward = quest_inst.get_reward()
+			author_upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
+
+			money_reward = quest_inst.get_reward(author_upgrades)
 
 			await BankM.increment(ctx.bot.pool, ctx.author.id, field="money", amount=money_reward)
 

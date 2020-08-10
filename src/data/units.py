@@ -13,10 +13,7 @@ class _Unit(Purchasable):
 
 		self.id = _Unit.__unit_id
 
-		self.power = kwargs.get("power", 0)
-
-		self.income_hour = kwargs.get("income_hour", 0)
-		self.upkeep_hour = kwargs.get("upkeep_hour", 0)
+		self.max_amount = kwargs.get("max_amount", 10)
 
 		self.max_price = kwargs.get("max_price", 50_000)
 
@@ -25,6 +22,11 @@ class _Unit(Purchasable):
 
 
 class _MoneyUnit(_Unit):
+	def __init__(self, *, db_col, base_cost, **kwargs):
+		super(_MoneyUnit, self).__init__(db_col=db_col, base_cost=base_cost, **kwargs)
+
+		self.income_hour = kwargs.get("income_hour", 0)
+
 	def get_max_amount(self, upgrades: dict):
 		return self.max_amount + upgrades["extra_money_units"]
 
@@ -36,6 +38,12 @@ class _MoneyUnit(_Unit):
 
 
 class _MilitaryUnit(_Unit):
+	def __init__(self, *, db_col, base_cost, **kwargs):
+		super(_MilitaryUnit, self).__init__(db_col=db_col, base_cost=base_cost, **kwargs)
+
+		self.power = kwargs.get("power", 0)
+		self.upkeep_hour = kwargs.get("upkeep_hour", 0)
+
 	def get_max_amount(self, upgrades: dict):
 		return self.max_amount + upgrades["extra_military_units"]
 
@@ -92,12 +100,12 @@ class _MoneyGroup(type):
 
 class _MilitaryGroup(type):
 	_UNITS = [
-			_MilitaryUnit(upkeep_hour=10, 	power=1, 	db_col="peasants", 	base_cost=250, 	max_amount=10),
-			_MilitaryUnit(upkeep_hour=35, 	power=3, 	db_col="soldiers", 	base_cost=500, 	max_amount=10),
-			_MilitaryUnit(upkeep_hour=50, 	power=5, 	db_col="spearmen", 	base_cost=750, 	max_amount=10),
-			_MilitaryUnit(upkeep_hour=75, 	power=10, 	db_col="warriors", 	base_cost=1250, max_amount=10),
-			_MilitaryUnit(upkeep_hour=85, 	power=12, 	db_col="archers", 	base_cost=1500, max_amount=10),
-			_MilitaryUnit(upkeep_hour=100, 	power=15, 	db_col="knights", 	base_cost=2000, max_amount=10),
+			_MilitaryUnit(upkeep_hour=10, 	power=1, 	db_col="peasants", 	base_cost=250),
+			_MilitaryUnit(upkeep_hour=35, 	power=3, 	db_col="soldiers", 	base_cost=500),
+			_MilitaryUnit(upkeep_hour=50, 	power=5, 	db_col="spearmen", 	base_cost=750),
+			_MilitaryUnit(upkeep_hour=75, 	power=10, 	db_col="warriors", 	base_cost=1250),
+			_MilitaryUnit(upkeep_hour=85, 	power=12, 	db_col="archers", 	base_cost=1500),
+			_MilitaryUnit(upkeep_hour=100, 	power=15, 	db_col="knights", 	base_cost=2000),
 		]
 
 	def create_units_page(self, empire, upgrades):

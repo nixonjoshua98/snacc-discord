@@ -97,12 +97,12 @@ class Miscellaneous(commands.Cog):
 
 	@commands.command(name="vote")
 	async def vote(self, ctx):
-		""" Link to the vote site. """
+		""" Link to the vote sites. """
 
 		await ctx.send(
 			"\n".join(
 				(
-					"Voting for me is super helpful and greatly appreciated! :heart:",
+					"**Voting for me is super helpful and greatly appreciated!** :heart:",
 
 					"https://discord.boats/bot/666616515436478473",
 					"https://top-bots.xyz/bot/666616515436478473"

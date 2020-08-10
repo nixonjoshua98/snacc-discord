@@ -16,10 +16,8 @@ from src.structs.context import CustomContext
 from src.common.models import ServersM
 
 EXTENSIONS = [
-    "errorhandler",
-
-    "arenastats",   "empire",       "quest",
-    "defences",     "shop",         "hangman",
+    "errorhandler", "arenastats",   "empire",
+    "quest",        "shop",         "hangman",
     "gambling",     "bank",         "crypto",
     "darkness",     "moderator",    "misc",
     "autorole",     "serverdoor",   "settings",
@@ -130,12 +128,8 @@ class Bot(commands.Bot):
 
         exts.extend(EXTENSIONS)
 
-        for i, ext in enumerate(exts):
-            try:
-                self.load_extension(f"src.exts.{ext}")
-
-            except commands.ExtensionAlreadyLoaded as e:
-                print(e)
+        for ext in exts:
+            self.load_extension(f"src.exts.{ext}")
 
         self.exts_loaded = True
 
