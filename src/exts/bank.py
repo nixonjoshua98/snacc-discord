@@ -38,10 +38,13 @@ class Bank(commands.Cog):
 		author_bank = await BankM.fetchrow(ctx.bot.pool, ctx.author.id)
 		target_bank = await BankM.fetchrow(ctx.bot.pool, target.id)
 
-		min_stolen = int(author_bank["money"], target_bank["money"] * 0.025)
-		max_stolen = min(min_stolen, author_bank["money"], int(target_bank["money"] * 0.075))
-
-		stolen_amount = random.randint(max(1, min_stolen), max(1, max_stolen))
+		stolen_amount = min(
+			author_bank["money"],
+			random.randint(
+				max(1, int(target_bank["money"] * 0.025)),
+				max(1, min(int(target_bank["money"] * 0.025), int(target_bank["money"] * 0.075)))
+			)
+		)
 
 		thief_tax = int(stolen_amount // random.uniform(2.0, 8.0)) if stolen_amount >= 2_500 else 0
 
