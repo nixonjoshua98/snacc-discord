@@ -29,7 +29,7 @@ class _EmpireQuests(type):
 		_Quest(id=6, name="The Dragon", 			power=380, 	reward=5_500,	duration=6),
 		_Quest(id=7, name="Kill the Traitors", 		power=475, 	reward=7_000, 	duration=7),
 		_Quest(id=8, name="Sabotage the Enemy", 	power=550, 	reward=8_250, 	duration=8),
-		_Quest(id=9, name="Search for Durandel", 	power=650, 	reward=9_000, 	duration=9),
+		_Quest(id=9, name="Search for Durandel", 	power=650, 	reward=9_500, 	duration=9),
 	]
 
 	def get(self, **kwargs): return discord.utils.get(self._QUESTS, **kwargs)
