@@ -51,10 +51,10 @@ class Bank(commands.Cog):
 		await BankM.increment(ctx.bot.pool, ctx.author.id, field="money", amount=stolen_amount-thief_tax)
 		await BankM.decrement(ctx.bot.pool, target.id, field="money", amount=stolen_amount)
 
-		s = f"You stole **${stolen_amount:,}** from **{target.display_name}**."
+		s = f"You stole **${stolen_amount:,}** from **{target.display_name}!**"
 
 		if thief_tax > 0:
-			s = s[0:-1] + f" but the thief you hired took a cut of **${thief_tax:,}**."
+			s = s[0:-3] + f" but the thief you hired took a cut of **${thief_tax:,}**."
 
 		await ctx.send(s)
 

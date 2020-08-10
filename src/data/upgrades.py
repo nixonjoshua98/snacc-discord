@@ -11,6 +11,7 @@ class _Upgrade(Purchasable):
 
 		self.max_amount = kwargs.get("max_amount", 10)
 		self.exponent = kwargs.get("exponent", 1.25)
+		self.max_price = kwargs.get("max_price", 100_000)
 
 		self.id = _Upgrade.__id
 
