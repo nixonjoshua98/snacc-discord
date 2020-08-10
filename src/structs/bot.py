@@ -101,7 +101,7 @@ class Bot(commands.Bot):
         if self.debug:
             print("local", end="...")
 
-            self.pool = await asyncpg.create_pool(os.getenv("CON_STR"), max_size=15)
+            self.pool = await asyncpg.create_pool(os.getenv("PG_CON_STR"), max_size=15)
 
         else:
             print("heroku", end="...")
@@ -178,6 +178,6 @@ class Bot(commands.Bot):
             await self.invoke(ctx)
 
     def run(self):
-        super(Bot, self).run(os.getenv("PG_CON_STR"))
+        super(Bot, self).run(os.getenv("BOT_TOKEN"))
 
 
