@@ -2,9 +2,10 @@ import dbl
 import os
 import discord
 
-from discord.ext import commands
+from discord.ext import commands, tasks
 
 from src import inputs
+from src.common import SupportServer
 from src.common.models import BankM, PlayerM
 
 
@@ -12,7 +13,16 @@ class Vote(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-		self.topgg = dbl.DBLClient(self.bot, os.getenv("TOPGG_TOKEN"), autopost=True)
+		self.support_server = self.bot.get_guild(SupportServer.ID)
+
+		if os.getenv("DBL_TOKEN") is not None:
+			self.topgg = dbl.DBLClient(self.bot, os.getenv("DBL_TOKEN"), autopost=True)
+
+		self.refresh_support_server.start()
+
+	@tasks.loop(minutes=30.0)
+	async def refresh_support_server(self):
+		self.support_server = self.bot.get_guild(SupportServer.ID)
 
 	@commands.Cog.listener(name="on_dbl_vote")
 	async def on_dbl_vote(self, data):
@@ -24,7 +34,6 @@ class Vote(commands.Cog):
 			user = self.bot.get_user(user_id)
 
 			async with self.bot.pool.acquire() as con:
-				_ = await BankM.fetchrow(con, user_id)
 				_ = await PlayerM.fetchrow(con, user_id)
 
 				await PlayerM.increment(con, user_id, field="votes", amount=num_votes)
@@ -32,6 +41,12 @@ class Vote(commands.Cog):
 			if user is not None:
 				try:
 					await user.send("Thank you for voting for me! :heart:")
+
+					member = self.support_server.get_member(user_id)
+
+					if member is not None:
+						await user.send("psst...you can join our support server here https://discord.gg/QExQuvE")
+
 				except (discord.Forbidden, discord.HTTPException):
 					""" Failed """
 
@@ -39,15 +54,18 @@ class Vote(commands.Cog):
 	async def vote(self, ctx):
 		""" Link to the vote sites. """
 
-		await ctx.send(
-			"\n".join(
-				(
-					"**Voting for me is super helpful and greatly appreciated!** :heart:",
+		"""
+		"\n"
+		"https://top.gg/bot/666616515436478473"
+		"\n"
+		"""
 
-					"https://discord.boats/bot/666616515436478473",
-					"https://top-bots.xyz/bot/666616515436478473"
-				)
-			)
+		await ctx.send(
+			"**Vote to be rewarded!** :heart:"
+			"\n"
+			"https://discord.boats/bot/666616515436478473"
+			"\n"
+			"https://top-bots.xyz/bot/666616515436478473"
 		)
 
 	@commands.command(name="voters")
@@ -61,5 +79,5 @@ class Vote(commands.Cog):
 
 
 def setup(bot):
-	if not bot.debug and os.getenv("TOPGG_TOKEN") is not None:
+	if not bot.debug:
 		bot.add_cog(Vote(bot))
