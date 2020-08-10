@@ -1,6 +1,6 @@
 import math
 
-from src.common.empireunits import MoneyGroup, MilitaryGroup
+from src.data import MilitaryGroup, MoneyGroup
 
 
 def get_hourly_money_change(empire, upgrades):

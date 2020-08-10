@@ -57,10 +57,6 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 					await con.execute(ArenaStatsM.DELETE_ROW, user.id, result["date_set"])
 
 	def start_shame_users(self):
-		"""
-		Start the `shame_users_loop` asyncio task loop assuming that the bot is not in DEBUG mode and that Snaccman
-		is the owner of the bot.
-		"""
 
 		async def predicate():
 			if not self.bot.debug and await self.bot.is_snacc_owner():

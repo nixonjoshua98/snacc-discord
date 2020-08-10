@@ -11,8 +11,7 @@ from src.common import checks
 from src.common.converters import EmpireQuest
 from src.common.models import QuestsM, PopulationM, BankM, UserUpgradesM
 
-from src.common.empireunits import MilitaryGroup
-from src.common.empirequests import EmpireQuests
+from src.data import EmpireQuests, MilitaryGroup
 
 
 class Quest(commands.Cog):

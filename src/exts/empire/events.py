@@ -4,7 +4,7 @@ from src.common.models import BankM, PopulationM, UserUpgradesM
 
 from . import utils
 
-from src.common.empireunits import MilitaryGroup
+from src.data import MilitaryGroup, MoneyGroup
 
 
 async def assassinated_event(ctx):
@@ -64,3 +64,17 @@ async def loot_event(ctx):
 	await BankM.increment(ctx.bot.pool, ctx.author.id, field="money", amount=money_gained)
 
 	await ctx.send(f"You found **- {random.choice(items)} -** which sold for **${money_gained:,}**")
+
+
+async def recruit_unit(ctx):
+	""" Empire find gains a unit regardless of cap. """
+
+	author_population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
+
+	units = MilitaryGroup.units + MoneyGroup.units
+
+	unit_recruited = min(units, key=lambda u: u.get_price(author_population[u.db_col]))
+
+	await PopulationM.increment(ctx.bot.pool, ctx.author.id, field=unit_recruited.db_col, amount=1)
+
+	await ctx.send(f"You recruited a rogue **{unit_recruited.display_name}!**")

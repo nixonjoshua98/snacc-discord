@@ -16,12 +16,17 @@ from src.structs.context import CustomContext
 from src.common.models import ServersM
 
 EXTENSIONS = [
-    "errorhandler", "arenastats", "empire", "quest", "shop", "tags", "hangman",
-    "gambling", "bank", "crypto", "darkness", "moderator", "misc", "autorole", "serverdoor", "settings"
+    "errorhandler",
+
+    "arenastats",   "empire",       "quest",
+    "defences",     "shop",         "hangman",
+    "gambling",     "bank",         "crypto",
+    "darkness",     "moderator",    "misc",
+    "autorole",     "serverdoor",   "settings",
 ]
 
 
-class SnaccBot(commands.AutoShardedBot):
+class Bot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix=self.get_prefix, case_insensitive=True, help_command=Help())
 
@@ -173,6 +178,6 @@ class SnaccBot(commands.AutoShardedBot):
             await self.invoke(ctx)
 
     def run(self):
-        super(SnaccBot, self).run(os.getenv("BOT_TOKEN"))
+        super(Bot, self).run(os.getenv("BOT_TOKEN"))
 
 

@@ -6,8 +6,7 @@ from discord.ext import commands
 
 from src.common.models import EmpireM, PopulationM
 
-from src.common.empireunits import ALL_UNITS, MilitaryGroup
-from src.common.empirequests import EmpireQuests
+from src.data import EmpireQuests, EmpireUpgrades, MilitaryGroup, MoneyGroup
 
 
 class DiscordUser(commands.Converter):
@@ -103,13 +102,10 @@ class EmpireUnit(commands.Converter):
 			val = int(argument)
 
 		except ValueError:
-			unit = discord.utils.get(ALL_UNITS, db_col=argument.lower())
-
-			if unit is None:
-				raise commands.UserInputError(f"A unit with the name `{argument}` could not be found.")
+			raise commands.UserInputError(f"Units should be referenced by their IDs")
 
 		else:
-			unit = discord.utils.get(ALL_UNITS, id=val)
+			unit = MoneyGroup.get(id=val) or MilitaryGroup.get(id=val)
 
 			if unit is None:
 				raise commands.UserInputError(f"A unit with the ID `{val}` could not be found.")
@@ -119,21 +115,19 @@ class EmpireUnit(commands.Converter):
 
 class EmpireUpgrade(commands.Converter):
 	async def convert(self, ctx, argument):
-		from src.exts.shop.upgrades import ALL_UPGRADES
-
 		try:
 			val = int(argument)
 
 		except ValueError:
-			raise commands.UserInputError(f"An item with the name `{argument}` could not be found.")
+			raise commands.UserInputError(f"Upgrades should be referenced by their IDs")
 
 		else:
-			item = discord.utils.get(ALL_UPGRADES, id=val)
+			upgrade = EmpireUpgrades.get(id=val)
 
-			if item is None:
-				raise commands.UserInputError(f"A item with the ID `{val}` could not be found.")
+			if upgrade is None:
+				raise commands.UserInputError(f"Upgrade with ID `{val}` could not be found.")
 
-		return item
+		return upgrade
 
 
 class EmpireQuest(commands.Converter):
@@ -142,7 +136,7 @@ class EmpireQuest(commands.Converter):
 			val = int(argument)
 
 		except ValueError:
-			raise commands.UserInputError(f"A quest with the ID `{argument}` could not be found.")
+			raise commands.UserInputError(f"Quests should be referenced by their IDs")
 
 		else:
 			quest = EmpireQuests.get(id=val)

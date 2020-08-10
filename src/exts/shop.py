@@ -1,4 +1,5 @@
 
+
 from discord.ext import commands
 
 from src import inputs
@@ -6,9 +7,9 @@ from src.common import checks
 from src.common.models import BankM, UserUpgradesM
 from src.common.converters import EmpireUpgrade, Range
 
-from src.exts.shop.upgrades import ALL_UPGRADES
-
 from src.structs.textpage import TextPage
+
+from src.data import EmpireUpgrades
 
 
 class Shop(commands.Cog):
@@ -21,7 +22,7 @@ class Shop(commands.Cog):
 	def create_upgrades_shop_page(upgrades):
 		page = TextPage(title="Empire Upgrades", headers=["ID", "Name", "Owned", "Cost"])
 
-		for upgrade in ALL_UPGRADES:
+		for upgrade in EmpireUpgrades.upgrades:
 			if upgrades[upgrade.db_col] < upgrade.max_amount:
 				price = f"${upgrade.get_price(upgrades[upgrade.db_col]):,}"
 				owned = f"{upgrades[upgrade.db_col]}/{upgrade.max_amount}"
@@ -62,3 +63,6 @@ class Shop(commands.Cog):
 
 			await ctx.send(f"Bought **{amount}x {upgrade.display_name}** for **${price:,}**!")
 
+
+def setup(bot):
+	bot.add_cog(Shop())

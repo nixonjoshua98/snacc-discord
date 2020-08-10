@@ -131,9 +131,7 @@ class HangmanGame:
     @staticmethod
     def load_words():
         if not HangmanGame.__word_cache:
-            dir_ = os.path.dirname(os.path.abspath(__file__))
-
-            for root, dirs, files in os.walk(os.path.join(dir_, "words")):
+            for root, dirs, files in os.walk(os.path.join(os.getcwd(), "src", "data", "words")):
                 for f in files:
                     if f.endswith(".txt"):
                         category = f.replace(".txt", "")

@@ -14,7 +14,8 @@ from src import inputs
 from src.common import MainServer, checks
 from src.common.models import BankM, EmpireM, PopulationM, UserUpgradesM
 from src.common.converters import EmpireUnit, Range, EmpireTargetUser
-from src.common.empireunits import MilitaryGroup, MoneyGroup
+
+from src.data import MilitaryGroup, MoneyGroup
 
 from src.exts.empire import utils, events
 
@@ -185,8 +186,8 @@ class Empire(commands.Cog):
 	async def empire_event(self, ctx):
 		""" Trigger an empire event. """
 
-		options = (events.loot_event, events.stolen_event, events.assassinated_event)
-		weights = (110, 10, 10)
+		options = (events.loot_event, events.stolen_event, events.assassinated_event, events.recruit_unit)
+		weights = (85, 10, 10, 25)
 
 		chosen_events = random.choices(options, weights=weights, k=1)
 

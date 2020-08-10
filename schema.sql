@@ -17,8 +17,6 @@ wins        INTEGER DEFAULT 0
 
 CREATE table IF NOT EXISTS servers (
 server_id               BIGINT      PRIMARY KEY,
-default_role            BIGINT      DEFAULT 0,
-member_role             BIGINT      DEFAULT 0,
 
 -- Entry roles
 user_role               BIGINT      DEFAULT 0,
