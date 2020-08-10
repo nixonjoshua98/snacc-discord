@@ -21,6 +21,7 @@ EXTENSIONS = [
     "gambling",     "bank",         "crypto",
     "darkness",     "moderator",    "misc",
     "autorole",     "serverdoor",   "settings",
+    "vote",
 ]
 
 

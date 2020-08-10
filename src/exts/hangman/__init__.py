@@ -121,7 +121,7 @@ class Hangman(commands.Cog):
     @checks.snaccman_only()
     @commands.command(name="cheat")
     async def cheat(self, ctx):
-        """ Recieve a DM with the hidden word. """
+        """ Receive a DM with the hidden word. """
 
         inst = self.games.get(ctx.channel.id)
 

@@ -9,6 +9,7 @@ from discord.ext.commands import (
     CommandOnCooldown,
     MissingRequiredArgument,
     MissingRole,
+    MaxConcurrencyReached
 )
 
 from src.common.errors import (
@@ -25,6 +26,9 @@ class ErrorHandler(commands.Cog):
     async def on_command_error(self, ctx, esc):
         if isinstance(esc, (CommandNotFound, GlobalCheckFail)):
             return None
+
+        elif isinstance(esc, MaxConcurrencyReached):
+            await ctx.send("You are doing that too fast.")
 
         elif isinstance(esc, CommandOnCooldown):
             seconds = float(esc.args[0].split(" ")[-1][0:-1])

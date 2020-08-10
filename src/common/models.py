@@ -49,6 +49,26 @@ class TableModel:
 		await con.execute(q, id_)
 
 
+class PlayerM(TableModel):
+	_TABLE, _PK = "players", "player_id"
+
+	SELECT_ROW = f"SELECT * FROM {_TABLE} WHERE {_PK}=$1 LIMIT 1;"
+
+	INSERT_ROW = f"""
+	INSERT INTO {_TABLE} ({_PK})
+	VALUES ($1)
+	ON CONFLICT ({_PK})
+		DO NOTHING
+	RETURNING *
+	"""
+
+	SELECT_TOP_VOTERS = f"""
+	SELECT player_id, votes
+	FROM {_TABLE}
+	ORDER BY votes DESC;
+	"""
+
+
 class ServersM(TableModel):
 	_TABLE, _PK = "servers", "server_id"
 

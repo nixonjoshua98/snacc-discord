@@ -9,11 +9,9 @@ def set_env():
 
     os.environ["DEBUG"] = "1"
 
-    # Bot
     os.environ["BOT_TOKEN"] = config.get("bot", "TOKEN")
-
-    # Postgres
     os.environ["PG_CON_STR"] = config.get("postgres", "CON_STR")
+    os.environ["TOPGG_TOKEN"] = config.get("api", "TOPGG_TOKEN")
 
 
 def setup_loop():
