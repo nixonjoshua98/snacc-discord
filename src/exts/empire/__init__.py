@@ -144,6 +144,7 @@ class Empire(commands.Cog):
 		await ctx.send(f"Your empire has been renamed to `{new_name}`")
 
 	@checks.has_empire()
+	@commands.max_concurrency(1, commands.BucketType.user)
 	@commands.command(name="collect")
 	async def collect_income(self, ctx):
 		""" Collect your hourly income. """
@@ -166,7 +167,7 @@ class Empire(commands.Cog):
 
 			await EmpireM.set(con, empire["empire_id"], last_income=now)
 
-		await ctx.send(f"You received **${money_change:,}**.")
+		await ctx.send(f"You received **${money_change:,}**")
 
 	@checks.has_empire()
 	@commands.cooldown(1, 15, commands.BucketType.user)
