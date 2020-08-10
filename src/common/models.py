@@ -49,10 +49,6 @@ class TableModel:
 		await con.execute(q, id_)
 
 
-class EmbedsM(TableModel):
-	_TABLE, _PK = "embeds", "embed_id"
-
-
 class ServersM(TableModel):
 	_TABLE, _PK = "servers", "server_id"
 
@@ -125,6 +121,7 @@ class PopulationM(TableModel):
 class EmpireM(TableModel):
 	_TABLE, _PK = "empire", "empire_id"
 
+	SELECT_ALL = "SELECT * FROM empire;"
 	SELECT_ROW = "SELECT * FROM empire WHERE empire_id = $1 LIMIT 1;"
 	INSERT_ROW = """
 	INSERT INTO empire (empire_id) VALUES ($1)
@@ -132,19 +129,6 @@ class EmpireM(TableModel):
 		DO NOTHING		
 	RETURNING *;
 	"""
-
-	SELECT_ALL_AND_POPULATION = """
-	SELECT * FROM empire 
-	INNER JOIN 
-		population ON (empire.empire_id = population.population_id);
-		"""
-
-	SELECT_ROW_AND_POPULATION = """
-	SELECT * FROM empire 
-	INNER JOIN 
-		population ON (empire.empire_id = population.population_id)
-	WHERE empire_id = $1;
-		"""
 
 
 class UserUpgradesM(TableModel):

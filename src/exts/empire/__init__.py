@@ -20,9 +20,14 @@ from src.data import MilitaryGroup, MoneyGroup
 from src.exts.empire import utils, events
 
 
+MAX_HOURS_OFFLINE = 8
+
+
 class Empire(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
+
+		self.currently_adding_income = False
 
 		self.start_income_loop()
 
@@ -32,6 +37,8 @@ class Empire(commands.Cog):
 		async def predicate():
 			if await self.bot.is_snacc_owner():
 				print("Starting loop: Income")
+
+				await asyncio.sleep(60 * 15)
 
 				self.income_loop.start()
 
@@ -47,13 +54,6 @@ class Empire(commands.Cog):
 	@staticmethod
 	def get_win_chance(atk_power, def_power):
 		return max(0.15, min(0.85, ((atk_power / max(1, def_power)) / 2.0)))
-
-	@staticmethod
-	async def get_hourly_income(con, user):
-		population = await PopulationM.fetchrow(con, user.id)
-		upgrades = await UserUpgradesM.fetchrow(con, user.id)
-
-		return utils.get_hourly_money_change(population, upgrades)
 
 	async def calculate_units_lost(self, population, upgrades):
 		units_lost = dict()
@@ -96,6 +96,77 @@ class Empire(commands.Cog):
 		await ctx.send(f"Your empire has been established! You can rename your empire using `{ctx.prefix}rename`")
 
 		await self.show_empire(ctx)
+
+	@checks.has_empire()
+	@commands.max_concurrency(1, commands.BucketType.user)
+	@commands.command(name="empire", aliases=["e"])
+	async def show_empire(self, ctx):
+		""" View your empire. """
+
+		# - Load the data from the database
+		author_empire = await EmpireM.fetchrow(ctx.pool, ctx.author.id)
+		author_upgrades = await UserUpgradesM.fetchrow(ctx.pool, ctx.author.id)
+		author_population = await PopulationM.fetchrow(ctx.pool, ctx.author.id)
+
+		author_quest = await ctx.bot.get_cog("Quest").get_quest_timer(ctx.pool, ctx.author)
+
+		# - Calculate the values used in the Embed message
+		hourly_income = MoneyGroup.get_total_hourly_income(author_population, author_upgrades)
+		hourly_upkeep = MilitaryGroup.get_total_hourly_upkeep(author_population, author_upgrades)
+
+		empire_power = MilitaryGroup.get_total_power(author_population)
+
+		# - Quest text for the embed
+		quest_text = author_quest if author_quest is None or author_quest.total_seconds() > 0 else 'Finished'
+
+		# - Create the Embed message which will be sent back to Discord
+		embed = ctx.bot.embed(title=f"{str(ctx.author)}: {author_empire['name']}", thumbnail=ctx.author.avatar_url)
+
+		embed.add_field(name="General", value=(
+			f"**Power Rating:** `{empire_power:,}`\n"
+			f"**Quest:** `{quest_text}`"
+		))
+
+		embed.add_field(name="Finances", value=(
+			f"**Income:** `${hourly_income:,}`\n"
+			f"**Upkeep:** `${hourly_upkeep:,}`"
+		))
+
+		await ctx.send(embed=embed)
+
+	@checks.has_empire()
+	@commands.command(name="rename")
+	async def rename_empire(self, ctx, *, new_name):
+		""" Rename your established empire. """
+
+		await EmpireM.set(ctx.bot.pool, ctx.author.id, name=new_name)
+
+		await ctx.send(f"Your empire has been renamed to `{new_name}`")
+
+	@checks.has_empire()
+	@commands.command(name="collect")
+	async def collect_income(self, ctx):
+		""" Collect your hourly income. """
+
+		if self.currently_adding_income:
+			return await ctx.send("Currently adding passive income. Please try again")
+
+		now = dt.datetime.utcnow()
+
+		async with ctx.pool.acquire() as con:
+			empire = await EmpireM.fetchrow(con, ctx.author.id)
+			population = await PopulationM.fetchrow(con, empire["empire_id"])
+			upgrades = await UserUpgradesM.fetchrow(con, empire["empire_id"])
+
+			hours_since_income = min(MAX_HOURS_OFFLINE, (now - empire["last_income"]).total_seconds() / 3600)
+
+			money_change = utils.get_hourly_money_change(population, upgrades, hours=hours_since_income)
+
+			await BankM.increment(con, empire["empire_id"], field="money", amount=money_change)
+
+			await EmpireM.set(con, empire["empire_id"], last_income=now)
+
+		await ctx.send(f"You received **${money_change:,}**.")
 
 	@checks.has_empire()
 	@commands.cooldown(1, 15, commands.BucketType.user)
@@ -195,52 +266,6 @@ class Empire(commands.Cog):
 			await event(ctx)
 
 	@checks.has_empire()
-	@commands.max_concurrency(1, commands.BucketType.user)
-	@commands.command(name="empire", aliases=["e"])
-	async def show_empire(self, ctx):
-		""" View your empire. """
-
-		# - Load the data from the database
-		author_empire = await EmpireM.fetchrow(ctx.pool, ctx.author.id)
-		author_upgrades = await UserUpgradesM.fetchrow(ctx.pool, ctx.author.id)
-		author_population = await PopulationM.fetchrow(ctx.pool, ctx.author.id)
-
-		author_quest = await ctx.bot.get_cog("Quest").get_quest_timer(ctx.pool, ctx.author)
-
-		# - Calculate the values used in the Embed message
-		hourly_income = MoneyGroup.get_total_hourly_income(author_population, author_upgrades)
-		hourly_upkeep = MilitaryGroup.get_total_hourly_upkeep(author_population, author_upgrades)
-
-		empire_power = MilitaryGroup.get_total_power(author_population)
-
-		# - Quest text for the embed
-		quest_text = author_quest if author_quest is None or author_quest.total_seconds() > 0 else 'Finished'
-
-		# - Create the Embed message which will be sent back to Discord
-		embed = ctx.bot.embed(title=f"{str(ctx.author)}: {author_empire['name']}", thumbnail=ctx.author.avatar_url)
-
-		embed.add_field(name="General", value=(
-			f"**Power Rating:** `{empire_power:,}`\n"
-			f"**Quest:** `{quest_text}`"
-		))
-
-		embed.add_field(name="Finances", value=(
-			f"**Income:** `${hourly_income:,}`\n"
-			f"**Upkeep:** `${hourly_upkeep:,}`"
-		))
-
-		await ctx.send(embed=embed)
-
-	@checks.has_empire()
-	@commands.command(name="rename")
-	async def rename_empire(self, ctx, *, new_name):
-		""" Rename your established empire. """
-
-		await EmpireM.set(ctx.bot.pool, ctx.author.id, name=new_name)
-
-		await ctx.send(f"Your empire has been renamed to `{new_name}`")
-
-	@checks.has_empire()
 	@commands.command(name="units")
 	async def show_units(self, ctx):
 		""" Show all the possible units which you can buy. """
@@ -316,9 +341,11 @@ class Empire(commands.Cog):
 	async def income_loop(self):
 		""" Background income & upkeep loop. """
 
+		self.currently_adding_income = True
+
 		async with self.bot.pool.acquire() as con:
 			# - Fetch all existing empires in the database
-			empires = await con.fetch(EmpireM.SELECT_ALL_AND_POPULATION)
+			empires = await con.fetch(EmpireM.SELECT_ALL)
 
 			for empire in empires:
 				now = dt.datetime.utcnow()
@@ -329,19 +356,22 @@ class Empire(commands.Cog):
 				hours_since_login = (now - empire["last_login"]).total_seconds() / 3600
 
 				# - User must have logged in the past 8 hours in order to get passive income
-				if hours_since_login >= 8:
+				if hours_since_login >= MAX_HOURS_OFFLINE:
 					continue
 
+				population = await PopulationM.fetchrow(con, empire["empire_id"])
 				upgrades = await UserUpgradesM.fetchrow(con, empire["empire_id"])
 
 				# - Total number of hours we need to credit the empire's bank
 				hours_since_income = (now - empire["last_income"]).total_seconds() / 3600
 
 				# - How much the user has earned (or lost) since their last income
-				money_change = math.ceil(utils.get_hourly_money_change(empire, upgrades) * hours_since_income)
+				money_change = utils.get_hourly_money_change(population, upgrades, hours=hours_since_income)
 
 				# - Increment the bank. Note: It can also be a negative
 				await BankM.increment(con, empire["empire_id"], field="money", amount=money_change)
+
+		self.currently_adding_income = False
 
 
 def setup(bot):
