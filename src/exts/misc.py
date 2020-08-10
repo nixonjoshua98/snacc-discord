@@ -108,6 +108,7 @@ class Miscellaneous(commands.Cog):
 					"https://top-bots.xyz/bot/666616515436478473"
 				)
 			)
+		)
 
 	@commands.command(name="cooldowns", aliases=["cd"])
 	async def cooldowns(self, ctx):
