@@ -13,7 +13,7 @@ def set_env():
     os.environ["BOT_TOKEN"] = config.get("bot", "TOKEN")
 
     # Postgres
-    os.environ["CON_STR"] = config.get("postgres", "CON_STR")
+    os.environ["PG_CON_STR"] = config.get("postgres", "CON_STR")
 
 
 def setup_loop():

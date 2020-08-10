@@ -178,6 +178,6 @@ class Bot(commands.Bot):
             await self.invoke(ctx)
 
     def run(self):
-        super(Bot, self).run(os.getenv("BOT_TOKEN"))
+        super(Bot, self).run(os.getenv("PG_CON_STR"))
 
 
