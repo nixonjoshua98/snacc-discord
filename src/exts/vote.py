@@ -15,7 +15,7 @@ class Vote(commands.Cog):
 
 		self.support_server = self.bot.get_guild(SupportServer.ID)
 
-		if os.getenv("DBL_TOKEN") not in (None, "TOKEN"):
+		if os.getenv("DBL_TOKEN") not in (None, "TOKEN", "VALUE", "", " "):
 			self.dbl = dbl.DBLClient(self.bot, os.getenv("DBL_TOKEN"), autopost=True)
 
 		self.refresh_support_server.start()

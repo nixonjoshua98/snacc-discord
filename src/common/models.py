@@ -112,7 +112,7 @@ class UserUpgradesM(metaclass=TableModel):
 	_TABLE, _PK = "user_upgrades", "user_upgrades_id"
 
 
-class QuestsM(TableModel):
+class QuestsM(metaclass=TableModel):
 	_TABLE, _PK = "quests", "quest_id"
 
 	INSERT_ROW = f"""
@@ -124,7 +124,5 @@ class QuestsM(TableModel):
 	"""
 
 	@classmethod
-	async def fetchrow(mcs, con, id_, **_):
-		q = f"SELECT * FROM {mcs._TABLE} WHERE {mcs._PK}=$1 LIMIT 1;"
-
-		return await con.fetchrow(q, id_)
+	async def fetchrow(cls, con, id_, **_):
+		return await con.fetchrow(f"SELECT * FROM {cls._TABLE} WHERE {cls._PK}=$1 LIMIT 1;", id_)

@@ -233,7 +233,7 @@ class Empire(commands.Cog):
 				units_text = ", ".join(map(lambda kv: f"{kv[1]}x {kv[0].display_name}", units_lost.items()))
 
 				s = f"You won against **{target.display_name}**, pillaged **${money_lost :,}**"
-				s = s + f" and killed **{units_text if units_text else 'nothing'}**."
+				s = s + f" and killed **{units_text if units_text else 'no units'}**."
 
 				await ctx.send(s)
 
