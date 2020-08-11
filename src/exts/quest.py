@@ -16,13 +16,13 @@ from src.data import EmpireQuests, MilitaryGroup
 
 class Quest(commands.Cog):
 	@staticmethod
-	async def get_quest_timer(con, user):
-		quest = await QuestsM.fetchrow(con, user.id, insert=False)
+	async def get_quest_timer(con, user, *, quest_row=None, upgrades=None):
+		quest = quest_row if quest_row is not None else await QuestsM.fetchrow(con, user.id, insert=False)
 
 		if quest is None:
 			return None
 
-		author_upgrades = await UserUpgradesM.fetchrow(con, user.id)
+		author_upgrades = upgrades if upgrades is not None else await UserUpgradesM.fetchrow(con, user.id)
 
 		quest_inst = EmpireQuests.get(id=quest["quest_num"])
 
@@ -32,14 +32,17 @@ class Quest(commands.Cog):
 
 		return dt.timedelta(seconds=int(seconds))
 
-	@staticmethod
-	async def show_all_quest(ctx):
-		author_population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
-		author_upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
-
-		author_power = MilitaryGroup.get_total_power(author_population)
+	async def show_all_quests(self, ctx):
+		async with ctx.pool.acquire() as con:
+			author_population = await PopulationM.fetchrow(con, ctx.author.id)
+			author_upgrades = await UserUpgradesM.fetchrow(con, ctx.author.id)
+			author_power = MilitaryGroup.get_total_power(author_population)
 
 		embeds = []
+
+		timer = await self.get_quest_timer(ctx.pool, ctx.author, upgrades=author_upgrades)
+
+		quest_text = timer if timer is None or timer.total_seconds() > 0 else 'Finished'
 
 		for quest in EmpireQuests.quests:
 			embed = ctx.bot.embed(title=f"Quest {quest.id}: {quest.name}", thumbnail=ctx.author.avatar_url)
@@ -50,6 +53,8 @@ class Quest(commands.Cog):
 
 			embed.description = "\n".join(
 				[
+					f"*Current Quest: {quest_text}*"
+					f"\n",
 					f"**Duration:** {duration}",
 					f"**Success Rate:** {math.floor(sucess_rate * 100)}%",
 					f"**Avg. Reward:** ${quest.get_avg_reward(author_upgrades):,}"
@@ -115,7 +120,7 @@ class Quest(commands.Cog):
 			if quest is not None:
 				return await self.start_quest(ctx, quest)
 
-			return await self.show_all_quest(ctx)
+			return await self.show_all_quests(ctx)
 
 		author_upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
 
@@ -126,7 +131,7 @@ class Quest(commands.Cog):
 		if (time_since_start.total_seconds() / 3600) >= quest_inst.get_duration(author_upgrades):
 			return await self.complete_quest(ctx, quest_row)
 
-		return await self.show_all_quest(ctx)
+		await self.show_all_quests(ctx)
 
 
 def setup(bot):

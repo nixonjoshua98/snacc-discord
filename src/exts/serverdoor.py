@@ -42,6 +42,9 @@ class ServerDoor(commands.Cog, name="Server Door"):
 
             break
 
+    async def cog_after_invoke(self, ctx):
+        await ctx.bot.update_server_cache(ctx.message.guild)
+
     @commands.has_permissions(administrator=True)
     @commands.command(name="toggledoor")
     async def toggle_door(self, ctx):
@@ -52,8 +55,6 @@ class ServerDoor(commands.Cog, name="Server Door"):
         display_joins = config.get("display_joins", True)
 
         await ServersM.set(ctx.bot.pool, ctx.guild.id, display_joins=not display_joins)
-
-        await ctx.bot.update_server_cache(ctx.guild)
 
         await ctx.send(f"Server door: {'`Hidden`' if display_joins else '`Shown`'}")
 

@@ -11,7 +11,7 @@ def set_env():
 
     os.environ["BOT_TOKEN"] = config.get("bot", "TOKEN")
     os.environ["PG_CON_STR"] = config.get("postgres", "CON_STR")
-    os.environ["DBL_TOKEN"] = config.get("api", "TOPGG_TOKEN")
+    os.environ["DBL_TOKEN"] = config.get("api", "DBL_TOKEN")
 
 
 def setup_loop():
