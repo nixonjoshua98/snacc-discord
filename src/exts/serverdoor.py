@@ -53,6 +53,8 @@ class ServerDoor(commands.Cog, name="Server Door"):
 
         await ServersM.set(ctx.bot.pool, ctx.guild.id, display_joins=not display_joins)
 
+        await ctx.bot.update_server_cache(ctx.guild)
+
         await ctx.send(f"Server door: {'`Hidden`' if display_joins else '`Shown`'}")
 
     @commands.Cog.listener("on_guild_join")
