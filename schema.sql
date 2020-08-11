@@ -1,7 +1,7 @@
 
 CREATE TABLE IF NOT EXISTS players (
 player_id   BIGINT                      PRIMARY KEY,
-votes       SMALLINT                      DEFAULT 0 CHECK (votes > 0),
+votes       SMALLINT                    DEFAULT 0 CHECK (votes >= 0),
 last_login  TIMESTAMP WITHOUT time zone DEFAULT (now() at time zone 'utc')
 );
 
@@ -88,8 +88,8 @@ more_quest_money        SMALLINT    DEFAULT 0 CHECK (more_quest_money       >= 0
 
 
 CREATE TABLE IF NOT EXISTS quests (
-quest_id            BIGINT                      PRIMARY KEY,
+quest_id            BIGINT  PRIMARY KEY,
 quest_num           SMALLINT,
 success_rate        REAL,
-date_started        TIMESTAMP WITHOUT time zone DEFAULT (now() at time zone 'utc')
+date_started        TIMESTAMP WITHOUT time zone
 );

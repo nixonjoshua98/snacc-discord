@@ -13,7 +13,7 @@ from src.structs.help import Help
 from src.common.errors import GlobalCheckFail
 from src.structs.context import CustomContext
 
-from src.common.models import ServersM
+from src.common.models import ServersM, PlayerM
 
 EXTENSIONS = [
     "errorhandler", "arenastats",   "empire",
@@ -81,6 +81,11 @@ class Bot(commands.Bot):
             self.owner_id = app.owner.id
 
         return self.owner_id == SNACCMAN
+
+    async def after_invoke_coro(self, ctx):
+        _ = await PlayerM.fetchrow(self.pool, ctx.author.id)
+
+        await PlayerM.set(self.pool, ctx.author.id, last_login=dt.datetime.utcnow())
 
     async def setup_database(self):
         """ Create the database tables required for the bot. """
@@ -171,6 +176,9 @@ class Bot(commands.Bot):
             ctx = await self.get_context(message, cls=CustomContext)
 
             await self.invoke(ctx)
+
+            if ctx.command is not None:
+                await self.after_invoke_coro(ctx)
 
     def run(self):
         super(Bot, self).run(os.getenv("BOT_TOKEN"))

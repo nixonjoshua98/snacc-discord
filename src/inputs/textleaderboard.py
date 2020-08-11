@@ -64,11 +64,10 @@ class TextLeaderboard:
 
             user = self._get_user(ctx, row[user_id_key])
 
-            if user is not None:
-                if prev_row is None or prev_row[self.order_col] > row[self.order_col]:
-                    prev_row, rank = row, rank + 1
+            if prev_row is None or prev_row[self.order_col] > row[self.order_col]:
+                prev_row, rank = row, rank + 1
 
-                yield rank, user, row
+            yield rank, user, row
 
     async def _get_data(self, ctx) -> tuple:
         entries = []
@@ -85,7 +84,7 @@ class TextLeaderboard:
 
             entry = self._create_row(rank, user, row)
 
-            author_row = entry if user.id == ctx.author.id else author_row
+            author_row = entry if getattr(user, "id", None) == ctx.author.id else author_row
 
             if self.max_rows is None or num_entries < self.max_rows:
                 entries.append(entry)
@@ -93,7 +92,7 @@ class TextLeaderboard:
         return entries, author_row
 
     def _create_row(self, rank, user, row):
-        username = "" if user is None else str(user) if isinstance(user, discord.User) else user.display_name
+        username = str(user) if isinstance(user, (discord.User, str, int)) else user.display_name
 
         entry = [f"#{rank:02d}", username]
 
@@ -108,4 +107,4 @@ class TextLeaderboard:
         if user is None:
             user = ctx.bot.get_user(id_)
 
-        return user
+        return user or id_

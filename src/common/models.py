@@ -1,86 +1,71 @@
 
-class TableModel:
+class TableModel(type):
 	_TABLE, _PK = None, None
 
-	SELECT_ROW = None
-	INSERT_ROW = None
+	@property
+	def SELECT_ALL(self): return f"SELECT * FROM {self._TABLE};"
 
-	@classmethod
-	async def set(cls, con, id_, **kwargs):
+	async def set(self, con, id_, **kwargs):
 		set_values = ", ".join([f"{k}=${i}" for i, k in enumerate(kwargs.keys(), start=2)])
 
-		q = f"UPDATE {cls._TABLE} SET {set_values} WHERE {cls._PK}=$1;"
+		q = f"UPDATE {self._TABLE} SET {set_values} WHERE {self._PK}=$1;"
 
 		await con.execute(q, id_, *list(kwargs.values()))
 
-	@classmethod
-	async def increment(cls, con, id_, *, field, amount):
-		q = f"UPDATE {cls._TABLE} SET {field} = GREATEST(0, {field} + $2) WHERE {cls._PK} = $1;"
+	async def increment(self, con, id_, *, field, amount):
+		q = f"UPDATE {self._TABLE} SET {field} = GREATEST(0, {field} + $2) WHERE {self._PK} = $1;"
 
 		await con.execute(q, id_, amount)
 
-	@classmethod
-	async def decrement(cls, con, id_, *, field, amount):
-		q = f"UPDATE {cls._TABLE} SET {field} = GREATEST(0, {field} - $2) WHERE {cls._PK} = $1;"
+	async def decrement(self, con, id_, *, field, amount):
+		q = f"UPDATE {self._TABLE} SET {field} = GREATEST(0, {field} - $2) WHERE {self._PK} = $1;"
 
 		await con.execute(q, id_, amount)
 
-	@classmethod
-	async def decrement_many(cls, con, id_, data: dict):
-		q = f"UPDATE {cls._TABLE} SET "
+	async def decrement_many(self, con, id_, data: dict):
+		q = f"UPDATE {self._TABLE} SET "
 		q += ", ".join((f"{field} = GREATEST(0, {field} - ${i})" for i, field in enumerate(data, start=2)))
-		q += f" WHERE {cls._PK} = $1;"
+		q += f" WHERE {self._PK} = $1;"
 
 		await con.execute(q, id_, *list(data.values()))
 
-	@classmethod
-	async def fetchrow(cls, con, id_: int, *, insert: bool = True):
-		row = await con.fetchrow(cls.SELECT_ROW, id_)
+	async def fetchrow(self, con, id_: int, *, insert: bool = True):
+		select = f"SELECT * FROM {self._TABLE} WHERE {self._PK}=$1 LIMIT 1;"
+
+		row = await con.fetchrow(select, id_)
 
 		if insert and row is None:
-			row = await con.fetchrow(cls.INSERT_ROW, id_)
+			insert = f"""
+			INSERT INTO {self._TABLE} ({self._PK})
+			VALUES ($1)
+			ON CONFLICT ({self._PK})
+				DO NOTHING
+			RETURNING *
+			"""
+
+			row = await con.fetchrow(insert, id_)
 
 		return row
 
-	@classmethod
-	async def delete(cls, con, id_: int):
-		q = f"DELETE FROM {cls._TABLE} WHERE {cls._PK}=$1;"
+	async def delete(self, con, id_: int):
+		q = f"DELETE FROM {self._TABLE} WHERE {self._PK}=$1;"
 
 		await con.execute(q, id_)
 
 
-class PlayerM(TableModel):
+class PlayerM(metaclass=TableModel):
 	_TABLE, _PK = "players", "player_id"
-
-	SELECT_ROW = f"SELECT * FROM {_TABLE} WHERE {_PK}=$1 LIMIT 1;"
-
-	INSERT_ROW = f"""
-	INSERT INTO {_TABLE} ({_PK})
-	VALUES ($1)
-	ON CONFLICT ({_PK})
-		DO NOTHING
-	RETURNING *
-	"""
 
 	SELECT_TOP_VOTERS = f"""
 	SELECT player_id, votes
 	FROM {_TABLE}
-	ORDER BY votes DESC;
+	ORDER BY votes DESC
+	LIMIT 100;
 	"""
 
 
-class ServersM(TableModel):
+class ServersM(metaclass=TableModel):
 	_TABLE, _PK = "servers", "server_id"
-
-	SELECT_ROW = "SELECT * FROM servers WHERE server_id=$1 LIMIT 1;"
-
-	INSERT_ROW = """
-	INSERT INTO servers (server_id)
-	VALUES ($1)
-	ON CONFLICT (server_id)
-		DO NOTHING
-	RETURNING *
-	"""
 
 
 class ArenaStatsM:
@@ -99,22 +84,14 @@ class ArenaStatsM:
 	SELECT_LEADERBOARD = f"SELECT * FROM ({SELECT_LATEST_MEMBERS}) q ORDER BY trophies DESC;"
 
 
-class BankM(TableModel):
+class BankM(metaclass=TableModel):
 	_TABLE, _PK = "bank", "user_id"
 
-	SELECT_ROW = "SELECT * FROM bank WHERE user_id = $1 LIMIT 1;"
-	INSERT_ROW = """
-	INSERT INTO bank (user_id) VALUES ($1) 
-	ON CONFLICT (user_id)
-		DO NOTHING 
-	RETURNING *;
-	"""
-
-	SELECT_RICHEST = "SELECT * FROM bank ORDER BY money DESC;"
+	SELECT_RICHEST = "SELECT * FROM bank ORDER BY money DESC LIMIT 100;"
 
 
 class HangmanM:
-	SELECT_MOST_WINS = "SELECT user_id, wins FROM hangman ORDER BY wins DESC LIMIT 15;"
+	SELECT_MOST_WINS = "SELECT * FROM hangman ORDER BY wins DESC LIMIT 100;"
 
 	ADD_WIN = """
 	INSERT INTO hangman (user_id, wins) VALUES ($1, 1)
@@ -123,59 +100,17 @@ class HangmanM:
 	"""
 
 
-class PopulationM(TableModel):
+class PopulationM(metaclass=TableModel):
 	_TABLE, _PK = "population", "population_id"
 
-	SELECT_ROW = "SELECT * FROM population WHERE population_id = $1 LIMIT 1;"
-	INSERT_ROW = """
-	INSERT INTO population (population_id)
-	VALUES ($1)
-	ON CONFLICT (population_id)
-		DO NOTHING
-	RETURNING *;
-	"""
 
-	SELECT_ALL = "SELECT * FROM population;"
-
-
-class EmpireM(TableModel):
+class EmpireM(metaclass=TableModel):
 	_TABLE, _PK = "empire", "empire_id"
 
-	SELECT_ALL = "SELECT * FROM empire;"
-	SELECT_ROW = "SELECT * FROM empire WHERE empire_id = $1 LIMIT 1;"
-	INSERT_ROW = """
-	INSERT INTO empire (empire_id) VALUES ($1)
-	ON CONFLICT (empire_id)
-		DO NOTHING		
-	RETURNING *;
-	"""
 
-
-class UserUpgradesM(TableModel):
+class UserUpgradesM(metaclass=TableModel):
 	_TABLE, _PK = "user_upgrades", "user_upgrades_id"
 
-	SELECT_ROW = "SELECT * FROM user_upgrades WHERE user_upgrades_id=$1 LIMIT 1;"
-	INSERT_ROW = """
-	INSERT INTO user_upgrades (user_upgrades_id)  
-	VALUES ($1) 
-	ON CONFLICT (user_upgrades_id) 
-		DO NOTHING
-	RETURNING * 
-	"""
 
-
-class QuestsM(TableModel):
+class QuestsM(metaclass=TableModel):
 	_TABLE, _PK = "quests", "quest_id"
-
-	SELECT_ROW = "SELECT * FROM quests WHERE quest_id=$1 LIMIT 1;"
-	INSERT_ROW = """
-	INSERT INTO quests (quest_id, quest_num, success_rate, date_started)  
-	VALUES ($1, $2, $3, $4) 
-	ON CONFLICT (quest_id) 
-		DO NOTHING
-	RETURNING * 
-	"""
-
-	@classmethod
-	async def fetchrow(cls, con, id_: int, *, insert: bool = True):
-		return await super(QuestsM, cls).fetchrow(con, id_, insert=False)

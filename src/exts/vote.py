@@ -54,14 +54,11 @@ class Vote(commands.Cog):
 	async def vote(self, ctx):
 		""" Link to the vote sites. """
 
-		"""
-		"\n"
-		"https://top.gg/bot/666616515436478473"
-		"\n"
-		"""
-
 		await ctx.send(
 			"**Vote to be rewarded!** :heart:"
+			"\n"
+			"https://top.gg/bot/666616515436478473 (not verified yet)"
+			"\n"
 			"\n"
 			"https://discord.boats/bot/666616515436478473"
 			"\n"

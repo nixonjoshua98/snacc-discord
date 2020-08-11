@@ -1,4 +1,5 @@
 import random
+import discord
 
 from discord.ext import commands
 
@@ -54,7 +55,7 @@ class Bank(commands.Cog):
 		s = f"You stole **${stolen_amount:,}** from **{target.display_name}!**"
 
 		if thief_tax > 0:
-			s = s[0:-3] + f" but the thief you hired took a cut of **${thief_tax:,}**."
+			s = s[0:-3] + f" **but the thief you hired took a cut of **${thief_tax:,}**."
 
 		await ctx.send(s)
 
