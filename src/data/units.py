@@ -38,7 +38,7 @@ class _MoneyUnit(_Unit):
 	def calculate_price(self, upgrades, total_owned: int, total_buying: int = 1) -> int:
 		cost = self.get_price(total_owned, total_buying)
 
-		return math.floor(cost * (1.0 - (upgrades['cheaper_money_units'] * 0.01)))
+		return math.floor(cost * (1.0 - (upgrades['cheaper_money_units'] * 0.005)))
 
 
 class _MilitaryUnit(_Unit):
@@ -58,7 +58,7 @@ class _MilitaryUnit(_Unit):
 	def calculate_price(self, upgrades, total_owned: int, total_buying: int = 1) -> int:
 		cost = self.get_price(total_owned, total_buying)
 
-		return math.floor(cost * (1.0 - (upgrades['cheaper_military_units'] * 0.01)))
+		return math.floor(cost * (1.0 - (upgrades['cheaper_military_units'] * 0.005)))
 
 
 class _MoneyGroup(type):
