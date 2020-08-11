@@ -14,7 +14,6 @@ class _Unit(Purchasable):
 		self.id = _Unit.__unit_id
 
 		self.max_price = kwargs.get("max_price", 50_000)
-		self.max_amount = kwargs.get("max_amount", 15)
 
 		# Increment the internal ID for the next unit
 		_Unit.__unit_id += 1
@@ -24,6 +23,7 @@ class _MoneyUnit(_Unit):
 	def __init__(self, *, db_col, base_cost, **kwargs):
 		super(_MoneyUnit, self).__init__(db_col=db_col, base_cost=base_cost, **kwargs)
 
+		self.max_amount = kwargs.get("max_amount", 15)
 		self.income_hour = kwargs.get("income_hour", 0)
 
 	def get_max_amount(self, upgrades: dict):
@@ -41,6 +41,7 @@ class _MilitaryUnit(_Unit):
 		super(_MilitaryUnit, self).__init__(db_col=db_col, base_cost=base_cost, **kwargs)
 
 		self.power = kwargs.get("power", 0)
+		self.max_amount = kwargs.get("max_amount", 10)
 		self.upkeep_hour = kwargs.get("upkeep_hour", 0)
 
 	def get_max_amount(self, upgrades: dict):
