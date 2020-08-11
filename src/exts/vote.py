@@ -15,10 +15,8 @@ class Vote(commands.Cog):
 
 		self.support_server = self.bot.get_guild(SupportServer.ID)
 
-		try:
+		if os.getenv("DBL_TOKEN") not in (None, "TOKEN"):
 			self.dbl = dbl.DBLClient(self.bot, os.getenv("DBL_TOKEN"), autopost=True)
-		except dbl.errors.UnauthorizedDetected:
-			pass
 
 		self.refresh_support_server.start()
 
