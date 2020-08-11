@@ -36,7 +36,8 @@ class Quest(commands.Cog):
 		async with ctx.pool.acquire() as con:
 			author_population = await PopulationM.fetchrow(con, ctx.author.id)
 			author_upgrades = await UserUpgradesM.fetchrow(con, ctx.author.id)
-			author_power = MilitaryGroup.get_total_power(author_population)
+
+		author_power = MilitaryGroup.get_total_power(author_population)
 
 		embeds = []
 
