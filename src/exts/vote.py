@@ -6,7 +6,7 @@ from discord.ext import commands, tasks
 
 from src import inputs
 from src.common import SupportServer
-from src.common.models import BankM, PlayerM
+from src.common.models import PlayerM
 
 
 class Vote(commands.Cog):

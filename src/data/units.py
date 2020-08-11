@@ -13,9 +13,8 @@ class _Unit(Purchasable):
 
 		self.id = _Unit.__unit_id
 
-		self.max_amount = kwargs.get("max_amount", 10)
-
 		self.max_price = kwargs.get("max_price", 50_000)
+		self.max_amount = kwargs.get("max_amount", 15)
 
 		# Increment the internal ID for the next unit
 		_Unit.__unit_id += 1
