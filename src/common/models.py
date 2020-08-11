@@ -114,3 +114,16 @@ class UserUpgradesM(metaclass=TableModel):
 
 class QuestsM(metaclass=TableModel):
 	_TABLE, _PK = "quests", "quest_id"
+
+	INSERT_ROW = f"""
+	INSERT INTO {_TABLE} ({_PK}, quest_num, success_rate, date_started)  
+	VALUES ($1, $2, $3, $4) 
+	ON CONFLICT (quest_id) 
+		DO NOTHING
+	RETURNING * 
+	"""
+
+	async def fetchrow(self, con, id_, **_):
+		q = f"SELECT * FROM {self._TABLE} WHERE {self._PK}=$1 LIMIT 1;"
+
+		return await con.fetchrow(q, id_)

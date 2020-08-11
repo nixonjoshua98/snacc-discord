@@ -81,6 +81,9 @@ extra_money_units       SMALLINT    DEFAULT 0 CHECK (extra_money_units      >= 0
 extra_military_units    SMALLINT    DEFAULT 0 CHECK (extra_military_units   >= 0),
 less_upkeep             SMALLINT    DEFAULT 0 CHECK (less_upkeep            >= 0),
 more_income             SMALLINT    DEFAULT 0 CHECK (more_income            >= 0),
+cheaper_money_units     SMALLINT    DEFAULT 0 CHECK (cheaper_money_units    >= 0),
+cheaper_military_units  SMALLINT    DEFAULT 0 CHECK (cheaper_military_units >= 0),
+more_quest_money        SMALLINT    DEFAULT 0 CHECK (more_quest_money       >= 0),
 quicker_quests          SMALLINT    DEFAULT 0 CHECK (quicker_quests         >= 0),
 more_quest_money        SMALLINT    DEFAULT 0 CHECK (more_quest_money       >= 0)
 );

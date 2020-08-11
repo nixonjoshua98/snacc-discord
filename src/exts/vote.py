@@ -44,7 +44,7 @@ class Vote(commands.Cog):
 
 					member = self.support_server.get_member(user_id)
 
-					if member is not None:
+					if member is None:
 						await user.send("psst...you can join our support server here https://discord.gg/QExQuvE")
 
 				except (discord.Forbidden, discord.HTTPException):
