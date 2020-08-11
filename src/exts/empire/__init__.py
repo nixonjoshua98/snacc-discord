@@ -1,6 +1,5 @@
 
 
-import math
 import asyncio
 import random
 import discord
@@ -87,9 +86,7 @@ class Empire(commands.Cog):
 	async def create_empire(self, ctx, empire_name: str):
 		""" Establish an empire under your name. """
 
-		await ctx.bot.pool.execute(EmpireM.INSERT_ROW, ctx.author.id)
-		await ctx.bot.pool.execute(PopulationM.INSERT_ROW, ctx.author.id)
-		await ctx.bot.pool.execute(UserUpgradesM.INSERT_ROW, ctx.author.id)
+		_ = await EmpireM.fetchrow(ctx.pool, ctx.author.id)
 
 		await EmpireM.set(ctx.bot.pool, ctx.guild.id, name=empire_name)
 
