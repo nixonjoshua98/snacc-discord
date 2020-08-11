@@ -70,7 +70,9 @@ class Miscellaneous(commands.Cog):
 	async def send_bot_invite(self, ctx):
 		""" Bot invite link. """
 
-		await ctx.send("https://discord.com/oauth2/authorize?client_id=666616515436478473&scope=bot&permissions=8")
+		url = "https://discord.com/oauth2/authorize?client_id=666616515436478473&scope=bot&permissions=1544023127"
+
+		await ctx.send(url)
 
 	@commands.command(name="whois")
 	async def who_is_this(self, ctx, user_id: int):

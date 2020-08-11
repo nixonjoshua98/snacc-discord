@@ -320,7 +320,7 @@ class Empire(commands.Cog):
 		""" Display the most powerful empires. """
 
 		async def query():
-			empires = await ctx.bot.pool.fetch(PopulationM.SELECT_ALL)
+			empires = await PopulationM.fetchall(ctx.pool)
 
 			for i, row in enumerate(empires):
 				empires[i] = dict(**row, __power__=MilitaryGroup.get_total_power(row))
@@ -346,7 +346,7 @@ class Empire(commands.Cog):
 
 		async with self.bot.pool.acquire() as con:
 			# - Fetch all existing empires in the database
-			empires = await con.fetch(EmpireM.SELECT_ALL)
+			empires = await EmpireM.fetchall(con)
 
 			for empire in empires:
 				now = dt.datetime.utcnow()

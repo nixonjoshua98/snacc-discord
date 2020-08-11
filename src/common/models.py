@@ -2,9 +2,6 @@
 class TableModel(type):
 	_TABLE, _PK = None, None
 
-	@property
-	def SELECT_ALL(self): return f"SELECT * FROM {self._TABLE};"
-
 	async def set(self, con, id_, **kwargs):
 		set_values = ", ".join([f"{k}=${i}" for i, k in enumerate(kwargs.keys(), start=2)])
 
@@ -46,6 +43,9 @@ class TableModel(type):
 			row = await con.fetchrow(insert, id_)
 
 		return row
+
+	async def fetchall(self, con, *, limit: int = None):
+		return await con.fetch(f"SELECT * FROM {self._TABLE}{f' LIMIT {limit}' if limit is not None else ''};")
 
 	async def delete(self, con, id_: int):
 		q = f"DELETE FROM {self._TABLE} WHERE {self._PK}=$1;"

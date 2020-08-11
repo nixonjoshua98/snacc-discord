@@ -1,8 +1,7 @@
 
 CREATE TABLE IF NOT EXISTS players (
 player_id   BIGINT                      PRIMARY KEY,
-votes       SMALLINT                    DEFAULT 0 CHECK (votes >= 0),
-last_login  TIMESTAMP WITHOUT time zone DEFAULT (now() at time zone 'utc')
+votes       SMALLINT                    DEFAULT 0 CHECK (votes >= 0)
 );
 
 
