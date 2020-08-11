@@ -35,6 +35,11 @@ class _MoneyUnit(_Unit):
 
 		return math.floor(income)
 
+	def calculate_price(self, upgrades, total_owned: int, total_buying: int = 1) -> int:
+		cost = self.get_price(total_owned, total_buying)
+
+		return math.floor(cost * (1.0 - (upgrades['cheaper_money_units'] * 0.01)))
+
 
 class _MilitaryUnit(_Unit):
 	def __init__(self, *, db_col, base_cost, **kwargs):
@@ -48,10 +53,12 @@ class _MilitaryUnit(_Unit):
 		return self.max_amount + upgrades["extra_military_units"]
 
 	def get_hourly_upkeep(self, total, upgrades):
-		upkeep = self.upkeep_hour * total
-		upkeep = upkeep * (1.0 - (upgrades["less_upkeep"] * 0.05))
+		return math.floor((self.upkeep_hour * total) * (1.0 - (upgrades["less_upkeep"] * 0.05)))
 
-		return math.floor(upkeep)
+	def calculate_price(self, upgrades, total_owned: int, total_buying: int = 1) -> int:
+		cost = self.get_price(total_owned, total_buying)
+
+		return math.floor(cost * (1.0 - (upgrades['cheaper_military_units'] * 0.01)))
 
 
 class _MoneyGroup(type):
@@ -79,7 +86,7 @@ class _MoneyGroup(type):
 				unit_hourly_income = unit.get_hourly_income(1, upgrades)
 
 				owned = f"{units_owned}/{unit.get_max_amount(upgrades)}"
-				price = f"${unit.get_price(units_owned):,}"
+				price = f"${unit.calculate_price(upgrades, units_owned):,}"
 
 				row = [unit.id, unit.display_name, owned, f"${unit_hourly_income}", price]
 
@@ -118,7 +125,7 @@ class _MilitaryGroup(type):
 				hourly_upkeep = unit.get_hourly_upkeep(1, upgrades)
 
 				owned = f"{units_owned}/{unit.get_max_amount(upgrades)}"
-				price = f"${unit.get_price(units_owned):,}"
+				price = f"${unit.calculate_price(upgrades, units_owned):,}"
 
 				row = [unit.id, unit.display_name, owned, unit.power, f"${hourly_upkeep}", price]
 

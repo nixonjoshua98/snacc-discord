@@ -290,7 +290,7 @@ class Empire(commands.Cog):
 		author_bank = await BankM.fetchrow(ctx.bot.pool, ctx.author.id)
 
 		# - Cost of upgrading from current -> (current + amount)
-		price = unit.get_price(author_population[unit.db_col], amount)
+		price = unit.calculate_price(author_upgrades, author_population[unit.db_col], amount)
 
 		max_units = unit.get_max_amount(author_upgrades)
 

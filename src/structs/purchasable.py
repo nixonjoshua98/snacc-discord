@@ -2,6 +2,7 @@ import math
 
 
 class Purchasable:
+
 	def __init__(self, *, db_col, base_cost, **kwargs):
 		self.db_col = db_col
 		self.base_price = base_cost
