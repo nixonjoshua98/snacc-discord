@@ -21,6 +21,8 @@ class Settings(commands.Cog):
 
 		await ServersM.set(ctx.bot.pool, ctx.guild.id, prefix=prefix)
 
+		ctx.bot.mongo.update_server(ctx.guild.id, prefix=prefix)
+
 		await ctx.send(f"Server prefix has been updated to `{prefix}`")
 
 

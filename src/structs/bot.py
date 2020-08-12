@@ -11,7 +11,8 @@ from src.common import SNACCMAN
 
 from src.structs.help import Help
 from src.common.errors import GlobalCheckFail
-from src.structs.context import CustomContext
+
+from src.structs import CustomContext, MongoClient
 
 from src.common.models import ServersM
 
@@ -30,6 +31,7 @@ class Bot(commands.Bot):
         super().__init__(command_prefix=self.get_prefix, case_insensitive=True, help_command=Help())
 
         self.pool = None
+        self.mongo = None
         self.exts_loaded = False
 
         self.server_cache = dict()
@@ -59,6 +61,8 @@ class Bot(commands.Bot):
 
     async def on_ready(self):
         """ Invoked once the bot is connected and ready to use. """
+
+        self.mongo = MongoClient()
 
         await self.create_pool()
         await self.setup_database()
@@ -91,6 +95,9 @@ class Bot(commands.Bot):
     async def bot_check(self, ctx) -> bool:
         if not self.exts_loaded or ctx.guild is None or ctx.author.bot or not self.can_message_in(ctx.channel):
             raise GlobalCheckFail(".")
+
+        elif self.debug and ctx.author.id != SNACCMAN:
+            return False
 
         return True
 

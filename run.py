@@ -10,7 +10,8 @@ def set_env():
     os.environ["DEBUG"] = "1"
 
     os.environ["BOT_TOKEN"] = config.get("bot", "TOKEN")
-    os.environ["PG_CON_STR"] = config.get("postgres", "CON_STR")
+    os.environ["PG_CON_STR"] = config.get("database", "PG_CON_STR")
+    os.environ["MONGO_CON_STR"] = config.get("database", "MONGO_CON_STR")
     os.environ["DBL_TOKEN"] = config.get("api", "DBL_TOKEN")
 
 

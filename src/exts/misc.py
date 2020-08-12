@@ -90,6 +90,8 @@ class Miscellaneous(commands.Cog):
 
 	@commands.command(name="bot")
 	async def show_stats(self, ctx):
+		""" Display information about the bot """
+
 		def get_system():
 			memory = psutil.virtual_memory()
 			cpu = cpuinfo.get_cpu_info()
@@ -97,7 +99,6 @@ class Miscellaneous(commands.Cog):
 			system = {
 				"CPU": {
 					"Brand": cpu["brand"],
-					"Base Clock": cpu["hz_actual"],
 					"Logical Cores": psutil.cpu_count(),
 					"Utilisation": f"{round(psutil.cpu_percent(), 1)}%",
 				},
