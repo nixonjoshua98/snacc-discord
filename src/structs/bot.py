@@ -130,7 +130,10 @@ class Bot(commands.Bot):
         exts.extend(EXTENSIONS)
 
         for ext in exts:
-            self.load_extension(f"src.exts.{ext}")
+            try:
+                self.load_extension(f"src.exts.{ext}")
+            except commands.ExtensionAlreadyLoaded:
+                continue
 
         self.exts_loaded = True
 
