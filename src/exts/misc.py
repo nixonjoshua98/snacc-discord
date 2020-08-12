@@ -74,17 +74,6 @@ class Miscellaneous(commands.Cog):
 
 		await ctx.send(url)
 
-	@commands.command(name="whois")
-	async def who_is_this(self, ctx, user_id: int):
-		""" Find the user who has the ID provided. """
-
-		user = ctx.bot.get_user(user_id)
-
-		if user is None:
-			return await ctx.send("I found no user with that ID in my search.")
-
-		await ctx.send(f"That ID belongs to **{str(user)}**.")
-
 	@commands.command(name="ping")
 	async def ping(self, ctx):
 		""" Check the bot latency. """
