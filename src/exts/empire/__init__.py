@@ -66,7 +66,7 @@ class Empire(commands.Cog):
 			for i in range(1, population[unit.db_col] + 1):
 				price = unit.get_price(population[unit.db_col] - i, i)
 
-				if (price + units_lost_cost) < hourly_income:
+				if (price + units_lost_cost) < (hourly_income * 0.75):
 					units_lost[unit] = i
 
 				units_lost_cost = sum([u.get_price(population[unit.db_col] - n, n) for u, n in units_lost.items()])
@@ -76,7 +76,7 @@ class Empire(commands.Cog):
 	@staticmethod
 	async def calculate_money_lost(bank):
 		min_stolen = int(bank["money"] * 0.025)
-		max_stolen = min(bank["money"], int(bank["money"] * 0.075))
+		max_stolen = int(bank["money"] * 0.05)
 
 		return random.randint(max(1, min_stolen), max(1, max_stolen))
 

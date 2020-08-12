@@ -1,6 +1,8 @@
 import os
 import httpx
 import discord
+import psutil
+import cpuinfo
 
 from discord.ext import commands
 
@@ -85,6 +87,41 @@ class Miscellaneous(commands.Cog):
 		""" Link to the support server. """
 
 		await ctx.send("https://discord.gg/QExQuvE")
+
+	@commands.command(name="bot")
+	async def show_stats(self, ctx):
+		def get_system():
+			memory = psutil.virtual_memory()
+			cpu = cpuinfo.get_cpu_info()
+
+			system = {
+				"CPU": {
+					"Brand": cpu["brand"],
+					"Base Clock": cpu["hz_actual"],
+					"Logical Cores": psutil.cpu_count(),
+					"Utilisation": f"{round(psutil.cpu_percent(), 1)}%",
+				},
+
+				"Memory": {
+					"Total": f"{round(memory.total / (1024 ** 3), 1)}GB",
+					"Used": f"{round(memory.used / (1024 ** 3), 1)}GB",
+					"Available": f"{round(memory.available / (1024 ** 3), 1)}GB"
+				},
+			}
+
+			return system
+
+		embed = ctx.bot.embed(title="Bot Stats", thumbnail=ctx.author.avatar_url)
+
+		for k, v in get_system().items():
+			if isinstance(v, dict):
+				embed.add_field(name=k, value="\n".join([f"{k2}: **{v2}**" for k2, v2 in v.items()]), inline=False)
+
+				continue
+
+			embed.add_field(name=k, value=v, inline=False)
+
+		await ctx.send(embed=embed)
 
 	@commands.command(name="cooldowns", aliases=["cd"])
 	async def cooldowns(self, ctx):
