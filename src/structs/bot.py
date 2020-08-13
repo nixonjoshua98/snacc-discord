@@ -12,7 +12,7 @@ from src.common import SNACCMAN
 from src.structs.help import Help
 from src.common.errors import GlobalCheckFail
 
-from src.structs import CustomContext, MongoClient
+from src.structs import CustomContext
 
 from src.common.models import ServersM
 
@@ -31,7 +31,6 @@ class Bot(commands.Bot):
         super().__init__(command_prefix=self.get_prefix, case_insensitive=True, help_command=Help())
 
         self.pool = None
-        self.mongo = None
         self.exts_loaded = False
 
         self.server_cache = dict()
@@ -61,8 +60,6 @@ class Bot(commands.Bot):
 
     async def on_ready(self):
         """ Invoked once the bot is connected and ready to use. """
-
-        self.mongo = MongoClient()
 
         await self.create_pool()
         await self.setup_database()

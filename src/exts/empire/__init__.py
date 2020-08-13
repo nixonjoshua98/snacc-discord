@@ -52,7 +52,7 @@ class Empire(commands.Cog):
 
 	@staticmethod
 	def get_win_chance(atk_power, def_power):
-		return max(0.15, min(0.85, ((atk_power / max(1, def_power)) / 2.0)))
+		return max(0.15, min(0.85, 0.15 + ((atk_power / max(1, def_power)) / 2.0)))
 
 	async def calculate_units_lost(self, population, upgrades):
 		units_lost = dict()

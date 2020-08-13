@@ -10,6 +10,9 @@ class AutoRole(commands.Cog, name="Auto Role"):
 	def __init__(self, bot):
 		self.bot = bot
 
+		if not bot.debug:
+			self.bot.add_listener(self.on_member_join, "on_member_join")
+
 	def cog_check(self, ctx):
 		if not ctx.author.guild_permissions.administrator:
 			raise commands.MissingPermissions(("Administrator",))
@@ -19,7 +22,6 @@ class AutoRole(commands.Cog, name="Auto Role"):
 	async def cog_after_invoke(self, ctx):
 		await ctx.bot.update_server_cache(ctx.message.guild)
 
-	@commands.Cog.listener("on_member_join")
 	async def on_member_join(self, member):
 		""" Called when a member joins a server. """
 
@@ -65,5 +67,4 @@ class AutoRole(commands.Cog, name="Auto Role"):
 
 
 def setup(bot):
-	if not bot.debug:
-		bot.add_cog(AutoRole(bot))
+	bot.add_cog(AutoRole(bot))
