@@ -41,10 +41,7 @@ class Bank(commands.Cog):
 
 		stolen_amount = min(
 			author_bank["money"],
-			random.randint(
-				max(1, int(target_bank["money"] * 0.025)),
-				max(1, min(int(target_bank["money"] * 0.025), int(target_bank["money"] * 0.075)))
-			)
+			random.randint(max(1, int(target_bank["money"] * 0.025)), max(1, int(target_bank["money"] * 0.075)))
 		)
 
 		thief_tax = int(stolen_amount // random.uniform(2.0, 8.0)) if stolen_amount >= 2_500 else 0
