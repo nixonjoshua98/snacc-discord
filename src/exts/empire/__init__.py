@@ -52,7 +52,7 @@ class Empire(commands.Cog):
 
 	@staticmethod
 	def get_win_chance(atk_power, def_power):
-		return max(0.15, min(0.85, 0.15 + ((atk_power / max(1, def_power)) / 2.0)))
+		return max(0.15, min(0.85, ((atk_power / max(1, def_power)) / 2.0)))
 
 	async def calculate_units_lost(self, population, upgrades):
 		units_lost = dict()
@@ -62,11 +62,13 @@ class Empire(commands.Cog):
 
 		available_units = list(itertools.filterfalse(lambda u: population[u.db_col] == 0, MilitaryGroup.units))
 
-		for unit in sorted(available_units, key=lambda u: u.get_price(population[u.db_col]), reverse=False):
-			for i in range(1, population[unit.db_col] + 1):
-				price = unit.get_price(population[unit.db_col] - i, i)
+		available_units.sort(key=lambda u: u.calculate_price(upgrades, population[u.db_col]), reverse=False)
 
-				if (price + units_lost_cost) < (hourly_income * 0.75):
+		for unit in available_units:
+			for i in range(1, population[unit.db_col] + 1):
+				price = unit.calculate_price(upgrades, population[unit.db_col] - i, i)
+
+				if (price + units_lost_cost) < hourly_income:
 					units_lost[unit] = i
 
 				units_lost_cost = sum([u.get_price(population[unit.db_col] - n, n) for u, n in units_lost.items()])
@@ -210,18 +212,24 @@ class Empire(commands.Cog):
 			author_power = MilitaryGroup.get_total_power(author_population)
 			target_power = MilitaryGroup.get_total_power(target_population)
 
+			win_chance = self.get_win_chance(author_power, target_power)
+
 			# - Author won the attack
-			if self.get_win_chance(author_power, target_power) >= random.uniform(0.0, 1.0):
+			if win_chance >= random.uniform(0.0, 1.0):
 				target_population = await PopulationM.fetchrow(con, target.id)
 				target_upgrades = await UserUpgradesM.fetchrow(con, target.id)
 				target_bank = await BankM.fetchrow(con, target.id)
+				target_empire = await EmpireM.fetchrow(con, target.id)
 
-				money_lost = await self.calculate_money_lost(target_bank)
+				money_stolen = await self.calculate_money_lost(target_bank)
+
 				units_lost = await self.calculate_units_lost(target_population, target_upgrades)
 
+				bonus_money = int(money_stolen * (1.0 - win_chance) if win_chance <= 0.5 else 0)
+
 				# - Perform the money pillaging - Transfer money from one account to the other
-				await BankM.increment(con, ctx.author.id, field="money", amount=money_lost)
-				await BankM.decrement(con, target.id, field="money", amount=money_lost)
+				await BankM.increment(con, ctx.author.id, field="money", amount=money_stolen+bonus_money)
+				await BankM.decrement(con, target.id, field="money", amount=money_stolen+bonus_money)
 
 				if units_lost:
 					await PopulationM.decrement_many(con, target.id, {k.db_col: v for k, v in units_lost.items()})
@@ -230,12 +238,17 @@ class Empire(commands.Cog):
 				await EmpireM.set(con, target.id, last_attack=dt.datetime.utcnow())
 
 				# - Create the message to return to Discord
-				units_text = ", ".join(map(lambda kv: f"{kv[1]}x {kv[0].display_name}", units_lost.items()))
+				units_text = "\n".join(map(lambda kv: f"{kv[1]}x {kv[0].display_name}", units_lost.items()))
+				val = f"${money_stolen:,} {f'**+ ${bonus_money:,} bonus**' if bonus_money > 0 else ''}"
 
-				s = f"You won against **{target.display_name}**, pillaged **${money_lost :,}**"
-				s = s + f" and killed **{units_text if units_text else 'no units'}**."
+				embed = ctx.bot.embed(title=f"Attack on {str(target)}: {target_empire['name']}")
 
-				await ctx.send(s)
+				embed.description = f"**Money Pillaged:** {val}"
+
+				if units_text:
+					embed.add_field(name="Attack Results", value=units_text)
+
+				await ctx.send(embed=embed)
 
 			else:
 				author_bank = await BankM.fetchrow(con, ctx.author.id)
