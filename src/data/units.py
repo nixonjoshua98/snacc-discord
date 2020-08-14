@@ -56,7 +56,7 @@ class _MilitaryUnit(_Unit):
 		return self.upkeep_hour * total * (1.0 - (upgrades["less_upkeep"] * 0.05))
 
 	def get_power(self, total, upgrades):
-		return (self.power * total) * (1.0 - (upgrades.get("more_power", 0) * 0.01))
+		return (self.power * total) * (1.0 + (upgrades.get("more_power", 0) * 0.01))
 
 	def calculate_price(self, upgrades, total_owned: int, total_buying: int = 1) -> int:
 		cost = self.get_price(total_owned, total_buying)
