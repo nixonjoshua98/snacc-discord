@@ -36,7 +36,7 @@ class Quest(commands.Cog):
 
 			timedelta = dt.timedelta(seconds=int(seconds))
 
-			embed.add_field(name=inst.name, value=f"`{timedelta}`")
+			embed.add_field(name=inst.name, value=timedelta)
 
 		return embed
 
