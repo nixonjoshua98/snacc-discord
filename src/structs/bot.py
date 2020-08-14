@@ -39,11 +39,6 @@ class Bot(commands.Bot):
 
         self.add_check(self.bot_check)
 
-        if not self.debug:
-            print("Starting loop: Bot Activity")
-
-            self.activity_loop.start()
-
     @property
     def debug(self):
         return int(os.getenv("DEBUG", 0))
@@ -64,6 +59,11 @@ class Bot(commands.Bot):
         await self.create_pool()
 
         self.load_extensions()
+
+        if not self.debug:
+            print("Starting loop: Bot Activity")
+
+            self.activity_loop.start()
 
         print(f"Bot '{self.user.display_name}' is ready")
 
