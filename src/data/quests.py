@@ -23,7 +23,7 @@ class _Quest:
 
 class _EmpireQuests(type):
 	_QUESTS = [
-		_Quest(id=0, 	name="__TEST__", 				power=0, 	reward=0, 		duration=0),
+		_Quest(id=0, 	name="__TEST__", 				power=1, 	reward=1, 		duration=0.001),
 		_Quest(id=1, 	name="Herb Collection", 		power=50, 	reward=500, 	duration=1),
 		_Quest(id=2, 	name="Spider Cave", 			power=100, 	reward=1_250, 	duration=2),
 		_Quest(id=3, 	name="Enemy Empire Raid", 		power=165, 	reward=2_000, 	duration=3),
