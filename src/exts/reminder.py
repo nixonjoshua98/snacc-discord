@@ -31,7 +31,7 @@ class Reminder(commands.Cog):
 
 			await self.bot.mongo.delete_one("reminders", {"_id": _id})
 
-		_id, user_id, chnl_id = row["_id"], row["_id"], row["channel"]
+		_id, user_id, chnl_id = row["_id"], row["user"], row["channel"]
 
 		if _id not in self.__set_reminders:
 			sleep_time = max(1, (row["end"] - dt.datetime.utcnow()).total_seconds())
@@ -45,7 +45,7 @@ View your reminder or create a new one.
 e.g `!remind 2d 5m 17s`
 		"""
 
-		reminder = await ctx.bot.mongo.find_one("reminders", {"_id": ctx.author.id})
+		reminder = await ctx.bot.mongo.find_one("reminders", {"user": ctx.author.id})
 
 		if period is None and not reminder:
 			await ctx.send("You do not have any active reminders")
@@ -60,7 +60,7 @@ e.g `!remind 2d 5m 17s`
 		elif period is not None and not reminder:
 			now = dt.datetime.utcnow()
 
-			row = dict(_id=ctx.author.id, channel=ctx.channel.id, start=now, end=now + period)
+			row = dict(user=ctx.author.id, channel=ctx.channel.id, start=now, end=now + period)
 
 			await ctx.bot.mongo.insert_one("reminders", row)
 
@@ -72,7 +72,7 @@ e.g `!remind 2d 5m 17s`
 	async def cancel_reminder(self, ctx):
 		""" Cancel your current reminder. """
 
-		reminder = await ctx.bot.mongo.find_one("reminders", {"_id": ctx.author.id})
+		reminder = await ctx.bot.mongo.find_one("reminders", {"user": ctx.author.id})
 
 		if not reminder:
 			await ctx.send("You do not have any active reminders")

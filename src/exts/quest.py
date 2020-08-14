@@ -9,24 +9,26 @@ from src import inputs
 
 from src.common import checks
 from src.common.converters import EmpireQuest
-from src.common.models import QuestsM, PopulationM, BankM, UserUpgradesM
+from src.common.models import PopulationM, BankM, UserUpgradesM
 
 from src.data import EmpireQuests, MilitaryGroup
 
 
 class Quest(commands.Cog):
-	@staticmethod
-	async def get_quest_timer(con, user, *, quest_row=None, upgrades=None):
-		quest = quest_row if quest_row is not None else await QuestsM.fetchrow(con, user.id, insert=False)
+	def __init__(self, bot):
+		self.bot = bot
 
-		if quest is None:
+	async def get_quest_timer(self, user, *, upgrades=None):
+		current_quest = await self.bot.mongo.find_one("quests", {"user": user.id})
+
+		if current_quest is None:
 			return None
 
 		author_upgrades = upgrades if upgrades is not None else await UserUpgradesM.fetchrow(con, user.id)
 
-		quest_inst = EmpireQuests.get(id=quest["quest_num"])
+		quest_inst = EmpireQuests.get(id=current_quest["quest"])
 
-		time_since_start = dt.datetime.utcnow() - quest["date_started"]
+		time_since_start = dt.datetime.utcnow() - current_quest["start"]
 
 		seconds = quest_inst.get_duration(author_upgrades) * 3600 - time_since_start.total_seconds()
 
@@ -41,7 +43,7 @@ class Quest(commands.Cog):
 
 		embeds = []
 
-		timer = await self.get_quest_timer(ctx.pool, ctx.author, upgrades=author_upgrades)
+		timer = await self.get_quest_timer(ctx.author, upgrades=author_upgrades)
 
 		quest_text = timer if timer is None or timer.total_seconds() > 0 else 'Finished'
 
@@ -68,9 +70,9 @@ class Quest(commands.Cog):
 
 	@staticmethod
 	async def complete_quest(ctx, quest):
-		quest_inst = EmpireQuests.get(id=quest["quest_num"])
+		quest_inst = EmpireQuests.get(id=quest["quest"])
 
-		await QuestsM.delete(ctx.bot.pool, ctx.author.id)
+		await ctx.bot.mongo.delete_one("quests", {"user": ctx.author.id})
 
 		# - User completed the quest without dying
 		if quest["success_rate"] >= random.uniform(0.0, 1.0):
@@ -100,7 +102,9 @@ class Quest(commands.Cog):
 
 		duration = dt.timedelta(hours=quest.get_duration(author_upgrades))
 
-		await ctx.bot.pool.execute(QuestsM.INSERT_ROW, ctx.author.id, quest.id, sucess_rate, dt.datetime.utcnow())
+		row = dict(user=ctx.author.id, quest=quest.id, sucess_rate=sucess_rate, start=dt.datetime.utcnow())
+
+		await ctx.bot.mongo.insert_one("quests", row)
 
 		await ctx.send(f"You have embarked on **- {quest.name} -** quest! Check back in **{duration}**")
 
@@ -115,9 +119,9 @@ class Quest(commands.Cog):
 - `!q 5` while not on a quest will start a new quest
 		"""
 
-		quest_row = await QuestsM.fetchrow(ctx.bot.pool, ctx.author.id, insert=False)
+		current_quest = await ctx.bot.mongo.find_one("quests", {"user": ctx.author.id})
 
-		if quest_row is None:
+		if current_quest is None:
 			if quest is not None:
 				return await self.start_quest(ctx, quest)
 
@@ -125,15 +129,15 @@ class Quest(commands.Cog):
 
 		author_upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
 
-		quest_inst = EmpireQuests.get(id=quest_row["quest_num"])
+		quest_inst = EmpireQuests.get(id=current_quest["quest"])
 
-		time_since_start = dt.datetime.utcnow() - quest_row["date_started"]
+		time_since_start = dt.datetime.utcnow() - current_quest["start"]
 
 		if (time_since_start.total_seconds() / 3600) >= quest_inst.get_duration(author_upgrades):
-			return await self.complete_quest(ctx, quest_row)
+			return await self.complete_quest(ctx, current_quest)
 
 		await self.show_all_quests(ctx)
 
 
 def setup(bot):
-	bot.add_cog(Quest())
+	bot.add_cog(Quest(bot))

@@ -110,36 +110,3 @@ class EmpireM(metaclass=TableModel):
 
 class UserUpgradesM(metaclass=TableModel):
 	_TABLE, _PK = "user_upgrades", "user_upgrades_id"
-
-
-class QuestsM(metaclass=TableModel):
-	_TABLE, _PK = "quests", "quest_id"
-
-	INSERT_ROW = f"""
-	INSERT INTO {_TABLE} ({_PK}, quest_num, success_rate, date_started)  
-	VALUES ($1, $2, $3, $4) 
-	ON CONFLICT (quest_id) 
-		DO NOTHING
-	RETURNING * 
-	"""
-
-	@classmethod
-	async def fetchrow(cls, con, id_, **_):
-		return await con.fetchrow(f"SELECT * FROM {cls._TABLE} WHERE {cls._PK}=$1 LIMIT 1;", id_)
-
-
-class RemindersM:
-	_TABLE, _PK = "reminders", "reminder_id"
-
-	SELECT_ALL = f"SELECT * FROM {_TABLE};"
-	DELETE_ROW = f"DELETE FROM {_TABLE} WHERE {_PK} = $1;"
-
-	INSERT_ROW = f"""
-	INSERT INTO {_TABLE} ({_PK}, channel_id, remind_start, remind_end)  
-	VALUES ($1, $2, $3, $4) 
-	RETURNING * 
-	"""
-
-	@classmethod
-	async def fetchrow(cls, con, id_, **_):
-		return await con.fetchrow(f"SELECT * FROM {cls._TABLE} WHERE {cls._PK}=$1 LIMIT 1;", id_)

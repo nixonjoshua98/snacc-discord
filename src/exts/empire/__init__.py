@@ -107,7 +107,7 @@ class Empire(commands.Cog):
 			upgrades = await UserUpgradesM.fetchrow(con, ctx.author.id)
 			population = await PopulationM.fetchrow(con, ctx.author.id)
 
-			quest_timer = await ctx.bot.get_cog("Quest").get_quest_timer(con, ctx.author)
+			quest_timer = await ctx.bot.get_cog("Quest").get_quest_timer(ctx.author)
 
 		# - Calculate the values used in the Embed message
 		hourly_income = MoneyGroup.get_total_hourly_income(population, upgrades)

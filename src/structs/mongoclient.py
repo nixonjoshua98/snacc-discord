@@ -4,10 +4,10 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 
 class MongoClient(AsyncIOMotorClient):
-	def __init__(self, bot):
+	def __init__(self):
 		super(MongoClient, self).__init__(os.getenv("MONGO_CON_STR"))
 
-		self.db = getattr(self, "snacc_test") if bot.debug else getattr(self, "snacc")
+		self.db = self.snacc
 
 	def find(self, col, kwargs=None): return self.db[col].find(kwargs or dict())
 

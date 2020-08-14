@@ -30,7 +30,7 @@ class Bot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix=self.get_prefix, case_insensitive=True, help_command=Help())
 
-        self.mongo = MongoClient(self)
+        self.mongo = MongoClient()
 
         self.pool = None
         self.exts_loaded = False

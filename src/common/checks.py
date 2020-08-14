@@ -10,7 +10,7 @@ from src.common.errors import (
 
 from src.common import SNACCMAN, MainServer
 
-from src.common.models import EmpireM, QuestsM
+from src.common.models import EmpireM
 
 
 def snaccman_only():
@@ -59,7 +59,7 @@ def main_server_only():
 
 def not_on_quest():
 	async def predicate(ctx):
-		current_quest = await QuestsM.fetchrow(ctx.bot.pool, ctx.author.id, insert=False)
+		current_quest = await ctx.bot.mongo.find_one("quests", {"user": ctx.author.id})
 
 		if current_quest is not None:
 			raise UserOnQuest("You are already embarked on another quest.")
