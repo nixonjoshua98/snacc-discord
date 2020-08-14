@@ -87,11 +87,3 @@ more_quest_money        SMALLINT    DEFAULT 0 CHECK (more_quest_money       >= 0
 quicker_quests          SMALLINT    DEFAULT 0 CHECK (quicker_quests         >= 0),
 more_quest_money        SMALLINT    DEFAULT 0 CHECK (more_quest_money       >= 0)
 );
-
-
-CREATE TABLE IF NOT EXISTS quests (
-quest_id            BIGINT  PRIMARY KEY,
-quest_num           SMALLINT,
-success_rate        REAL,
-date_started        TIMESTAMP WITHOUT time zone
-);

@@ -98,11 +98,14 @@ class Quest(commands.Cog):
 
 		author_power = MilitaryGroup.get_total_power(author_population)
 
-		sucess_rate = quest.success_rate(author_power)
-
 		duration = dt.timedelta(hours=quest.get_duration(author_upgrades))
 
-		row = dict(user=ctx.author.id, quest=quest.id, sucess_rate=sucess_rate, start=dt.datetime.utcnow())
+		row = dict(
+			user=ctx.author.id,
+			quest=quest.id,
+			sucess_rate=quest.success_rate(author_power),
+			start=dt.datetime.utcnow()
+		)
 
 		await ctx.bot.mongo.insert_one("quests", row)
 
@@ -121,7 +124,9 @@ class Quest(commands.Cog):
 
 		current_quest = await ctx.bot.mongo.find_one("quests", {"user": ctx.author.id})
 
-		if current_quest is None:
+		# - User is not on any quest
+		if not current_quest:
+			# - Start a new quest
 			if quest is not None:
 				return await self.start_quest(ctx, quest)
 
