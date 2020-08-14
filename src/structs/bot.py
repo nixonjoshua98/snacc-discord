@@ -39,7 +39,7 @@ class Bot(commands.Bot):
 
         self.add_check(self.bot_check)
 
-        if self.debug:
+        if not self.debug:
             print("Starting loop: Bot Activity")
 
             self.activity_loop.start()
