@@ -33,12 +33,12 @@ class Reminder(commands.Cog):
 
 			await self.bot.pool.execute(RemindersM.DELETE_ROW, _id)
 
-		_id, user_id, chnl_id = row["reminder_id"], row["user_id"], row["channel_id"]
+		_id, chnl_id = row["reminder_id"], row["channel_id"]
 
 		if _id not in self.__set_reminders:
 			sleep_time = max(1, (row["remind_end"] - dt.datetime.utcnow()).total_seconds())
 
-			self.__set_reminders[_id] = asyncio.create_task(remind_task(_id, user_id, chnl_id, sleep_time))
+			self.__set_reminders[_id] = asyncio.create_task(remind_task(_id, _id, chnl_id, sleep_time))
 
 	@commands.group(name="remind", invoke_without_command=True)
 	async def remind_me(self, ctx, *, period: TimePeriod() = None):
@@ -63,7 +63,7 @@ Usage: `!remind <56s/14m/5d>`
 
 			self.create_reminder_task(row)
 
-			await ctx.send(f"Created a reminder for `{period}`")
+			await ctx.send(f"I will remind you in `{period}`")
 
 	@remind_me.command(name="cancel")
 	async def cancel_reminder(self, ctx):
