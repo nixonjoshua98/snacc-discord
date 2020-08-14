@@ -282,7 +282,7 @@ class Empire(commands.Cog):
 		""" Show all the possible units which you can buy. """
 
 		# - Load the data from the database
-		async with ctx.bot.acquire() as con:
+		async with ctx.bot.pool.acquire() as con:
 			upgrades = await UserUpgradesM.fetchrow(con, ctx.author.id)
 			population = await PopulationM.fetchrow(con, ctx.author.id)
 
