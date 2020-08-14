@@ -6,15 +6,10 @@ from src.common.models import ServersM
 
 class Settings(commands.Cog):
 
-	def cog_check(self, ctx):
-		if not ctx.author.guild_permissions.administrator:
-			raise commands.MissingPermissions(("Administrator",))
-
-		return True
-
 	async def cog_after_invoke(self, ctx):
 		await ctx.bot.update_server_cache(ctx.message.guild)
 
+	@commands.has_permissions(administrator=True)
 	@commands.command(name="prefix")
 	async def set_prefix(self, ctx: commands.Context, prefix: str):
 		""" Set the server-wide prefix. """

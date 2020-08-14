@@ -14,10 +14,6 @@ from src.data import EmpireUpgrades
 
 class Shop(commands.Cog):
 
-	async def cog_before_invoke(self, ctx):
-		ctx.upgrades_["author"] = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
-		ctx.bank_["author"] = await BankM.fetchrow(ctx.bot.pool, ctx.author.id)
-
 	@staticmethod
 	def create_upgrades_shop_page(upgrades):
 		page = TextPage(title="Empire Upgrades", headers=["ID", "Name", "Owned", "Cost"])
@@ -38,7 +34,9 @@ class Shop(commands.Cog):
 	async def shop_group(self, ctx):
 		""" Display your shop. """
 
-		page = self.create_upgrades_shop_page(ctx.upgrades_["author"])
+		upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
+
+		page = self.create_upgrades_shop_page(upgrades)
 
 		await inputs.send_pages(ctx, [page.get()])
 
@@ -48,12 +46,15 @@ class Shop(commands.Cog):
 	async def buy_upgrade(self, ctx, upgrade: EmpireUpgrade(), amount: Range(1, 100) = 1):
 		""" Buy a new upgrade. """
 
-		price = upgrade.get_price(ctx.upgrades_["author"][upgrade.db_col], amount)
+		bank = await BankM.fetchrow(ctx.bot.pool, ctx.author.id)
+		upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
 
-		if ctx.upgrades_["author"][upgrade.db_col] + amount > upgrade.max_amount:
+		price = upgrade.get_price(upgrades[upgrade.db_col], amount)
+
+		if upgrades[upgrade.db_col] + amount > upgrade.max_amount:
 			await ctx.send(f"**{upgrade.display_name}** have an owned limit of **{upgrade.max_amount}**.")
 
-		elif price > ctx.bank_["author"]["money"]:
+		elif price > bank["money"]:
 			await ctx.send(f"You can't afford to hire **{amount}x {upgrade.display_name}**")
 
 		else:

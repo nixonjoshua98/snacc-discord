@@ -62,7 +62,6 @@ class Bot(commands.Bot):
         """ Invoked once the bot is connected and ready to use. """
 
         await self.create_pool()
-        await self.setup_database()
 
         self.load_extensions()
 
@@ -83,12 +82,6 @@ class Bot(commands.Bot):
 
         return self.owner_id == SNACCMAN
 
-    async def setup_database(self):
-        """ Create the database tables required for the bot. """
-
-        with open(os.path.join(os.getcwd(), "schema.sql")) as fh:
-            await self.pool.execute(fh.read())
-
     async def bot_check(self, ctx) -> bool:
         if not self.exts_loaded or ctx.guild is None or ctx.author.bot or not self.can_message_in(ctx.channel):
             raise GlobalCheckFail(".")
@@ -99,25 +92,29 @@ class Bot(commands.Bot):
         return True
 
     async def create_pool(self):
-        print("Creating connection pool", end="...")
+        def get_init_args():
+            """ Return the args and kwargs needed for the connection pool initialization. """
 
-        if self.debug:
-            print("local", end="...")
+            if self.debug:  # Local
+                return (os.getenv("PG_CON_STR"),), {"max_size": 15}
 
-            self.pool = await asyncpg.create_pool(os.getenv("PG_CON_STR"), max_size=15)
+            else:  # Cloud (most likely Heroku)
+                ctx = ssl.create_default_context(cafile="./rds-combined-ca-bundle.pem")
+                ctx.check_hostname = False
+                ctx.verify_mode = ssl.CERT_NONE
 
-        else:
-            print("heroku", end="...")
+                return (os.getenv("DATABASE_URL"),), {"ssl": ctx, "max_size": 15}
 
-            ctx = ssl.create_default_context(cafile="./rds-combined-ca-bundle.pem")
-            ctx.check_hostname = False
-            ctx.verify_mode = ssl.CERT_NONE
+        args, kwargs = get_init_args()
 
-            self.pool = await asyncpg.create_pool(os.getenv("DATABASE_URL"), ssl=ctx, max_size=15)
+        self.pool = await asyncpg.create_pool(*args, **kwargs)
 
-        print("OK")
+        # - Execute the SQL schematic
+        with open(os.path.join(os.getcwd(), "schema.sql")) as fh:
+            await self.pool.execute(fh.read())
 
-    def can_message_in(self, chnl): return chnl.permissions_for(chnl.guild.me).send_messages
+    def can_message_in(self, chnl):
+        return chnl.permissions_for(chnl.guild.me).send_messages
 
     def load_extensions(self):
         """ Load all of the extensions for the bot. """

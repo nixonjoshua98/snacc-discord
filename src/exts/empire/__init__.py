@@ -102,27 +102,27 @@ class Empire(commands.Cog):
 	async def show_empire(self, ctx):
 		""" View your empire. """
 
-		# - Load the data from the database
-		author_empire = await EmpireM.fetchrow(ctx.pool, ctx.author.id)
-		author_upgrades = await UserUpgradesM.fetchrow(ctx.pool, ctx.author.id)
-		author_population = await PopulationM.fetchrow(ctx.pool, ctx.author.id)
+		async with ctx.pool.acquire() as con:
+			empire = await EmpireM.fetchrow(con, ctx.author.id)
+			upgrades = await UserUpgradesM.fetchrow(con, ctx.author.id)
+			population = await PopulationM.fetchrow(con, ctx.author.id)
 
-		author_quest = await ctx.bot.get_cog("Quest").get_quest_timer(ctx.pool, ctx.author)
+			quest_timer = await ctx.bot.get_cog("Quest").get_quest_timer(con, ctx.author)
 
 		# - Calculate the values used in the Embed message
-		hourly_income = MoneyGroup.get_total_hourly_income(author_population, author_upgrades)
-		hourly_upkeep = MilitaryGroup.get_total_hourly_upkeep(author_population, author_upgrades)
-
-		empire_power = MilitaryGroup.get_total_power(author_population)
+		hourly_income = MoneyGroup.get_total_hourly_income(population, upgrades)
+		hourly_upkeep = MilitaryGroup.get_total_hourly_upkeep(population, upgrades)
 
 		# - Quest text for the embed
-		quest_text = author_quest if author_quest is None or author_quest.total_seconds() > 0 else 'Finished'
+		quest_text = quest_timer if quest_timer is None or quest_timer.total_seconds() > 0 else 'Finished'
 
 		# - Create the Embed message which will be sent back to Discord
-		embed = ctx.bot.embed(title=f"{str(ctx.author)}: {author_empire['name']}", thumbnail=ctx.author.avatar_url)
+		embed = ctx.bot.embed(title=f"{str(ctx.author)}: {empire['name']}", thumbnail=ctx.author.avatar_url)
+
+		total_power = MilitaryGroup.get_total_power(population)
 
 		embed.add_field(name="General", value=(
-			f"**Power Rating:** `{empire_power:,}`\n"
+			f"**Power Rating:** `{total_power:,}`\n"
 			f"**Quest:** `{quest_text}`"
 		))
 
@@ -149,7 +149,7 @@ class Empire(commands.Cog):
 		""" Collect your hourly income. """
 
 		if self.currently_adding_income:
-			return await ctx.send("Currently adding passive income. Please try again")
+			return await ctx.send("Currently calculating and adding passive income. Please try again")
 
 		now = dt.datetime.utcnow()
 
@@ -246,7 +246,7 @@ class Empire(commands.Cog):
 				embed.description = f"**Money Pillaged:** {val}"
 
 				if units_text:
-					embed.add_field(name="Attack Results", value=units_text)
+					embed.add_field(name="Units Killed", value=units_text)
 
 				await ctx.send(embed=embed)
 
@@ -282,12 +282,13 @@ class Empire(commands.Cog):
 		""" Show all the possible units which you can buy. """
 
 		# - Load the data from the database
-		author_upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
-		author_population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
+		async with ctx.bot.acquire() as con:
+			upgrades = await UserUpgradesM.fetchrow(con, ctx.author.id)
+			population = await PopulationM.fetchrow(con, ctx.author.id)
 
 		# - Unit pages
-		money_units_page = MoneyGroup.create_units_page(author_population, author_upgrades).get()
-		military_units_page = MilitaryGroup.create_units_page(author_population, author_upgrades).get()
+		money_units_page = MoneyGroup.create_units_page(population, upgrades).get()
+		military_units_page = MilitaryGroup.create_units_page(population, upgrades).get()
 
 		await inputs.send_pages(ctx, [money_units_page, military_units_page])
 
@@ -298,21 +299,21 @@ class Empire(commands.Cog):
 		""" Hire a new unit to serve your empire. """
 
 		# - Load the data
-		author_upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
-		author_population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
-		author_bank = await BankM.fetchrow(ctx.bot.pool, ctx.author.id)
+		upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
+		population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
+		bank = await BankM.fetchrow(ctx.bot.pool, ctx.author.id)
 
 		# - Cost of upgrading from current -> (current + amount)
-		price = unit.calculate_price(author_upgrades, author_population[unit.db_col], amount)
+		price = unit.calculate_price(upgrades, population[unit.db_col], amount)
 
-		max_units = unit.get_max_amount(author_upgrades)
+		max_units = unit.get_max_amount(upgrades)
 
 		# - Buying the unit will surpass the owned limit of that particular unit
-		if author_population[unit.db_col] + amount > max_units:
+		if population[unit.db_col] + amount > max_units:
 			await ctx.send(f"**{unit.display_name}** have a limit of **{max_units}** units.")
 
 		# - Author cannot afford to buy the unit
-		elif price > author_bank["money"]:
+		elif price > bank["money"]:
 			await ctx.send(f"You can't afford to hire **{amount}x {unit.display_name}**")
 
 		else:
