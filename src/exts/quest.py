@@ -20,7 +20,7 @@ class Quest(commands.Cog):
 
 	@staticmethod
 	def get_max_quests(upgrades):
-		return 25 + upgrades.get("extra_quests", 0)
+		return 1 + upgrades.get("extra_quests", 0)
 
 	async def get_current_quests_embed(self, ctx, quests, upgrades):
 		max_num_quests = self.get_max_quests(upgrades)
