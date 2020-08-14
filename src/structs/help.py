@@ -74,3 +74,9 @@ class Help(commands.HelpCommand):
 	async def send_command_help(self, command):
 		if command.cog is not None:
 			await self.send_bot_help({command.cog: [command]})
+
+	async def send_group_help(self, group):
+		if group.cog is not None:
+			await self.send_bot_help({group.cog: [group]})
+
+	async def send_error_message(self, error): pass
