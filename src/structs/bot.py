@@ -156,7 +156,7 @@ class Bot(commands.Bot):
 
         return commands.when_mentioned_or(prefix)(self, message)
 
-    def embed(self, *, title=None, description=None, thumbnail=None):
+    def embed(self, *, title=None, description=None, thumbnail=None, footer=None):
         embed = discord.Embed(title=title, description=description, colour=discord.Color.orange())
 
         embed.timestamp = dt.datetime.utcnow()
@@ -164,7 +164,7 @@ class Bot(commands.Bot):
         if thumbnail is not None:
             embed.set_thumbnail(url=thumbnail)
 
-        embed.set_footer(text=f"{str(self.user)}", icon_url=self.user.avatar_url)
+        embed.set_footer(text=footer or f"{str(self.user)}", icon_url=self.user.avatar_url)
 
         return embed
 

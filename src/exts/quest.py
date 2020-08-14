@@ -1,4 +1,3 @@
-import math
 import random
 
 import datetime as dt
@@ -18,13 +17,13 @@ class Quest(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-	async def get_quest_timer(self, user, *, upgrades=None):
+	async def get_quest_timer(self, user):
 		current_quest = await self.bot.mongo.find_one("quests", {"user": user.id})
 
 		if current_quest is None:
 			return None
 
-		author_upgrades = upgrades if upgrades is not None else await UserUpgradesM.fetchrow(con, user.id)
+		author_upgrades = await UserUpgradesM.fetchrow(self.bot.pool, user.id)
 
 		quest_inst = EmpireQuests.get(id=current_quest["quest"])
 
@@ -43,12 +42,16 @@ class Quest(commands.Cog):
 
 		embeds = []
 
-		timer = await self.get_quest_timer(ctx.author, upgrades=author_upgrades)
+		timer = await self.get_quest_timer(ctx.author)
 
 		quest_text = timer if timer is None or timer.total_seconds() > 0 else 'Finished'
 
 		for quest in EmpireQuests.quests:
-			embed = ctx.bot.embed(title=f"Quest {quest.id}: {quest.name}", thumbnail=ctx.author.avatar_url)
+			embed = ctx.bot.embed(
+				title=f"Quest {quest.id}: {quest.name}",
+				thumbnail=ctx.author.avatar_url,
+				footer=f"Current: {quest_text}"
+			)
 
 			sucess_rate = quest.success_rate(author_power)
 
@@ -56,10 +59,8 @@ class Quest(commands.Cog):
 
 			embed.description = "\n".join(
 				[
-					f"*Current Quest: {quest_text}*"
-					f"\n",
 					f"**Duration:** {duration}",
-					f"**Success Rate:** {math.floor(sucess_rate * 100)}%",
+					f"**Success Rate:** {int(quest.success_rate(author_power) * 100)}%",
 					f"**Avg. Reward:** ${quest.get_avg_reward(author_upgrades):,}"
 				]
 			)
@@ -126,6 +127,7 @@ class Quest(commands.Cog):
 
 		# - User is not on any quest
 		if not current_quest:
+
 			# - Start a new quest
 			if quest is not None:
 				return await self.start_quest(ctx, quest)
