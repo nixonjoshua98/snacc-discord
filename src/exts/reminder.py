@@ -107,7 +107,7 @@ e.g `!remind 2d 5m 17s`
 			if row["_id"] in self.__set_reminders:
 				continue
 
-			elif seconds_until_end <= (30 * 60):
+			elif seconds_until_end <= 3600:
 				self.create_reminder_task(row)
 
 
