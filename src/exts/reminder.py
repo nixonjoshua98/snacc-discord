@@ -55,7 +55,7 @@ e.g `!remind 2d 5m 17s`
 
 			delta = dt.timedelta(seconds=int(seconds))
 
-			await ctx.send(f"Time left on your reminder: `{delta}`")
+			await ctx.send(f"Time left on your current reminder: `{delta}`")
 
 		elif period is not None and not reminder:
 			now = dt.datetime.utcnow()
@@ -74,43 +74,26 @@ e.g `!remind 2d 5m 17s`
 
 		reminder = await ctx.bot.mongo.find_one("reminders", {"_id": ctx.author.id})
 
-		print(reminder)
-
 		if not reminder:
-			print("no reminder")
 			await ctx.send("You do not have any active reminders")
 
 		else:
-			print("b")
-			cancelled = False
-
 			if reminder["_id"] in self.__set_reminders:
-				print("in cache")
-
 				task = self.__set_reminders[reminder["_id"]]
 
 				task.cancel()
-
-				print("c")
 
 				try:
 					await task
 				except asyncio.CancelledError:
 					self.__set_reminders.pop(reminder["_id"], None)
 
-					print("cancelled")
-
-					cancelled = True
-
-					await ctx.send("Your reminder has been cancelled.")
-
 				else:
-					print("failed")
-					await ctx.send("Your reminder could not be cancelled.")
+					return await ctx.send("Your reminder could not be cancelled.")
 
-			if cancelled:
-				print("deleted")
-				await ctx.bot.mongo.delete_one("reminders", {"_id": ctx.author.id})
+			await ctx.bot.mongo.delete_one("reminders", {"_id": ctx.author.id})
+
+			await ctx.send("Your reminder has been cancelled.")
 
 	@tasks.loop(minutes=30.0)
 	async def remind_loop(self):
