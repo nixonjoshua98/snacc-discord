@@ -17,7 +17,9 @@ class Reminder(commands.Cog):
 
 		self.__set_reminders = dict()
 
-		self.remind_loop.start()
+		if not self.bot.debug:
+			print("Starting Loop: Reminders")
+			self.remind_loop.start()
 
 	def create_reminder_task(self, row):
 		async def remind_task(_id, user, chnl, seconds):
@@ -40,6 +42,12 @@ class Reminder(commands.Cog):
 
 	@commands.group(name="remind", invoke_without_command=True)
 	async def remind_me(self, ctx, *, period: TimePeriod() = None):
+		"""
+View your reminder or create a new one.
+Usage: `!remind <56s/14m/5d>`
+
+"""
+
 		reminder = await RemindersM.fetchrow(ctx.bot.pool, ctx.author.id, insert=False)
 
 		if period is None and reminder is None:
@@ -59,6 +67,8 @@ class Reminder(commands.Cog):
 
 	@remind_me.command(name="cancel")
 	async def cancel_reminder(self, ctx):
+		""" Cancel your current reminder. """
+
 		reminder = await RemindersM.fetchrow(ctx.bot.pool, ctx.author.id, insert=False)
 
 		if reminder is None:
@@ -74,6 +84,8 @@ class Reminder(commands.Cog):
 					await task
 				except asyncio.CancelledError:
 					self.__set_reminders.pop(reminder["reminder_id"], None)
+
+					await self.bot.pool.execute(RemindersM.DELETE_ROW, reminder["reminder_id"])
 
 					await ctx.send("Your reminder has been cancelled.")
 

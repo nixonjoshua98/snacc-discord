@@ -16,9 +16,9 @@ class Help(commands.HelpCommand):
 		return {k: v for k, v in mapping.items() if k is not None and v}
 
 	async def create_embeds(self, mapping):
-		def get_cmd_title(cmd_):
-			s_ = cmd_.usage or cmd_.signature.replace("[", "<").replace("]", ">")
-			n_ = f"[{'|'.join([cmd_.name] + cmd_.aliases)}] {s_}"
+		def get_cmd_title(cmd_, *, signature: bool = True):
+			s_ = " " + str(cmd_.usage) or cmd_.signature.replace("[", "<").replace("]", ">") if signature else ""
+			n_ = f"[{'|'.join([cmd_.name] + cmd_.aliases)}]{s_}"
 
 			return n_
 
@@ -52,7 +52,7 @@ class Help(commands.HelpCommand):
 					if isinstance(cmd, commands.Group):
 						for sub in cmd.commands:
 							embed.add_field(
-								name=f"{get_cmd_title(sub.parent)} {get_cmd_title(sub)}",
+								name=f"{get_cmd_title(sub.parent, signature=False)} {get_cmd_title(sub)}",
 								value=str(sub.callback.__doc__).strip(),
 								inline=False
 							)
