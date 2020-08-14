@@ -18,33 +18,35 @@ class Quest(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-	async def get_quest_timer(self, user):
-		current_quest = await self.bot.mongo.find_one("quests", {"user": user.id})
+	@staticmethod
+	async def show_current_quests(ctx):
+		current_quests = await ctx.bot.mongo.find("quests", {"user": ctx.author.id}).to_list(length=100)
 
-		if current_quest is None:
-			return None
+		upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
 
-		author_upgrades = await UserUpgradesM.fetchrow(self.bot.pool, user.id)
+		embed = ctx.bot.embed(title="Ongoing Quests", thumbnail=ctx.author.avatar_url)
 
-		quest_inst = EmpireQuests.get(id=current_quest["quest"])
+		for quest in current_quests:
+			inst = EmpireQuests.get(id=quest["quest"])
 
-		time_since_start = dt.datetime.utcnow() - current_quest["start"]
+			time_since_start = dt.datetime.utcnow() - quest["start"]
 
-		seconds = quest_inst.get_duration(author_upgrades) * 3600 - time_since_start.total_seconds()
+			seconds = inst.get_duration(upgrades) * 3600 - time_since_start.total_seconds()
 
-		return dt.timedelta(seconds=int(seconds))
+			timedelta = dt.timedelta(seconds=int(seconds))
 
-	async def show_all_quests(self, ctx):
+			embed.add_field(name=inst.name, value=f"`{timedelta}`")
+
+		await ctx.send(embed=embed)
+
+	@staticmethod
+	async def show_all_quests(ctx):
 		author_population = await PopulationM.fetchrow(ctx.pool, ctx.author.id)
 		author_upgrades = await UserUpgradesM.fetchrow(ctx.pool, ctx.author.id)
 
 		author_power = MilitaryGroup.get_total_power(author_population)
 
 		embeds = []
-
-		timer = await self.get_quest_timer(ctx.author)
-
-		quest_text = timer if timer is None or timer.total_seconds() > 0 else 'Finished'
 
 		for quest in EmpireQuests.quests:
 			embed = ctx.bot.embed(title=f"Quest {quest.id}: {quest.name}", thumbnail=ctx.author.avatar_url)
@@ -55,8 +57,6 @@ class Quest(commands.Cog):
 
 			embed.description = "\n".join(
 				[
-					f"*Current Quest: {quest_text}*"
-					f"\n",
 					f"**Duration:** {duration}",
 					f"**Success Rate:** {math.floor(sucess_rate * 100)}%",
 					f"**Avg. Reward:** ${quest.get_avg_reward(author_upgrades):,}"
@@ -68,40 +68,34 @@ class Quest(commands.Cog):
 		await inputs.send_pages(ctx, embeds)
 
 	@staticmethod
-	async def complete_quests(ctx, current_quests):
-		pass
-
-	@staticmethod
 	async def complete_quest(ctx, quest):
 		quest_inst = EmpireQuests.get(id=quest["quest"])
 
-		await ctx.bot.mongo.delete_one("quests", {"user": ctx.author.id})
+		upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
 
-		# - User completed the quest without dying
-		if quest["success_rate"] >= random.uniform(0.0, 1.0):
-			author_upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
+		quest_completed = quest["success_rate"] >= random.uniform(0.0, 1.0)
 
-			money_reward = quest_inst.get_reward(author_upgrades)
+		embed = ctx.bot.embed(title="Quest Completion!" if quest_completed else "Quest Failed!")
+
+		if quest_completed:
+			money_reward = quest_inst.get_reward(upgrades)
 
 			await BankM.increment(ctx.bot.pool, ctx.author.id, field="money", amount=money_reward)
 
-			embed = ctx.bot.embed(title="Quest Completion!")
-
 			embed.add_field(name=quest_inst.name, value=f"**Reward:** ${money_reward}")
 
-			await ctx.send(embed=embed)
+		await ctx.bot.mongo.delete_one("quests", {"user": ctx.author.id})
 
-		else:
-			await ctx.send("Your squad died while questing!")
+		return embed
 
 	@staticmethod
 	async def start_quest(ctx, quest):
-		author_population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
-		author_upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
+		population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
+		upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
 
-		author_power = MilitaryGroup.get_total_power(author_population)
+		author_power = MilitaryGroup.get_total_power(population)
 
-		duration = dt.timedelta(hours=quest.get_duration(author_upgrades))
+		duration = dt.timedelta(hours=quest.get_duration(upgrades))
 
 		row = dict(
 			user=ctx.author.id,
@@ -115,7 +109,7 @@ class Quest(commands.Cog):
 		await ctx.send(f"You have embarked on **- {quest.name} -** quest! Check back in **{duration}**")
 
 	@checks.has_empire()
-	@commands.command(name="quest", aliases=["q"], invoke_without_command=True, usage="<quest=None>")
+	@commands.command(name="quest_", aliases=["q"], invoke_without_command=True, usage="<quest=None>")
 	async def quest_group(self, ctx, quest: EmpireQuest() = None):
 		"""
 *One quest can be ongoing at any one time*
@@ -125,30 +119,46 @@ class Quest(commands.Cog):
 - `!q 5` while not on a quest will start a new quest
 		"""
 
-		current_quests = await ctx.bot.mongo.find("quests", {"user": ctx.author.id})
+		current_quests = await ctx.bot.mongo.find("quests", {"user": ctx.author.id}).to_list(length=100)
 
-		# - User is not on any quest
+		upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
+
 		if not current_quests:
 
 			# - Start a new quest
 			if quest is not None:
-				return await self.start_quest(ctx, quest)
+				population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
 
-			return await self.show_all_quests(ctx)
+				power = MilitaryGroup.get_total_power(population)
+				duration = dt.timedelta(hours=quest.get_duration(upgrades))
+				sucess_rate = quest.success_rate(power)
 
-		author_upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
+				row = dict(user=ctx.author.id, quest=quest.id, sucess_rate=sucess_rate, start=dt.datetime.utcnow())
 
-		for quest in current_quests:
-			quest_inst = EmpireQuests.get(id=quest["quest"])
+				await ctx.bot.mongo.insert_one("quests", row)
 
-			duration = quest_inst.get_duration(author_upgrades)
+				return await ctx.send(f"You have embarked on **- {quest.name} -** quest! Check back in **{duration}**")
 
-			time_since_start = dt.datetime.utcnow() - quest["start"]
+			return await self.show_current_quests(ctx)
 
-			if (time_since_start.total_seconds() / 3600) >= duration:
-				return await self.complete_quest(ctx, quest)
+		else:
+			quest_embeds = []
 
-		await self.show_all_quests(ctx)
+			for quest in current_quests:
+				inst = EmpireQuests.get(id=quest["quest"])
+
+				duration = inst.get_duration(upgrades)
+
+				time_since_start = dt.datetime.utcnow() - quest["start"]
+
+				# - Quest completed
+				if (time_since_start.total_seconds() / 3600) >= duration:
+					quest_embeds.append(await self.complete_quest(ctx, quest))
+
+			if quest_embeds:
+				return await inputs.send_pages(ctx, quest_embeds)
+
+			await self.show_current_quests(ctx)
 
 
 def setup(bot):

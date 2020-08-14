@@ -102,21 +102,14 @@ class Empire(commands.Cog):
 	async def show_empire(self, ctx):
 		""" View your empire. """
 
-		quest_cog = ctx.bot.get_cog("Quest")
-
 		async with ctx.pool.acquire() as con:
 			empire = await EmpireM.fetchrow(con, ctx.author.id)
 			upgrades = await UserUpgradesM.fetchrow(con, ctx.author.id)
 			population = await PopulationM.fetchrow(con, ctx.author.id)
 
-			quest_timer = await quest_cog.get_quest_timer(ctx.author)
-
 		# - Calculate the values used in the Embed message
 		hourly_income = MoneyGroup.get_total_hourly_income(population, upgrades)
 		hourly_upkeep = MilitaryGroup.get_total_hourly_upkeep(population, upgrades)
-
-		# - Quest text for the embed
-		quest_text = quest_timer if quest_timer is None or quest_timer.total_seconds() > 0 else 'Finished'
 
 		# - Create the Embed message which will be sent back to Discord
 		embed = ctx.bot.embed(title=f"{str(ctx.author)}: {empire['name']}", thumbnail=ctx.author.avatar_url)
@@ -124,8 +117,7 @@ class Empire(commands.Cog):
 		total_power = MilitaryGroup.get_total_power(population)
 
 		embed.add_field(name="General", value=(
-			f"**Power Rating:** `{total_power:,}`\n"
-			f"**Quest:** `{quest_text}`"
+			f"**Power Rating:** `{total_power:,}`"
 		))
 
 		embed.add_field(name="Finances", value=(
