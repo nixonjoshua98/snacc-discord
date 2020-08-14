@@ -4,7 +4,7 @@ import datetime as dt
 
 from discord.ext import commands
 
-from src.common.models import EmpireM, PopulationM
+from src.common.models import EmpireM, PopulationM, UserUpgradesM
 
 from src.data import EmpireQuests, EmpireUpgrades, MilitaryGroup, MoneyGroup
 
@@ -58,9 +58,10 @@ class EmpireTargetUser(DiscordUser):
 
 			raise commands.CommandError(f"Target is still recovering from a previous attack. Try again in `{delta}`")
 
-		author_population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
+		population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
+		upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
 
-		author_power = MilitaryGroup.get_total_power(author_population)
+		author_power = MilitaryGroup.get_total_power(population, upgrades)
 
 		if author_power < 25:
 			raise commands.CommandError("You need at least **25** power to do that.")

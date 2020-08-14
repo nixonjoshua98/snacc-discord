@@ -43,7 +43,7 @@ class Quest(commands.Cog):
 	async def show_all_quests(self, ctx, quests, upgrades):
 		population = await PopulationM.fetchrow(ctx.pool, ctx.author.id)
 
-		author_power = MilitaryGroup.get_total_power(population)
+		author_power = MilitaryGroup.get_total_power(population, upgrades)
 
 		embeds = [await self.get_current_quests_embed(ctx, quests, upgrades)]
 
@@ -101,7 +101,7 @@ class Quest(commands.Cog):
 	async def start_quest(self, ctx, quest, upgrades):
 		population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
 
-		power = MilitaryGroup.get_total_power(population)
+		power = MilitaryGroup.get_total_power(population, upgrades)
 		duration = dt.timedelta(hours=quest.get_duration(upgrades))
 		sucess_rate = quest.success_rate(power)
 
