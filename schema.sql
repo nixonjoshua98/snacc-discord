@@ -86,5 +86,6 @@ cheaper_military_units  SMALLINT    DEFAULT 0 CHECK (cheaper_military_units >= 0
 more_quest_money        SMALLINT    DEFAULT 0 CHECK (more_quest_money       >= 0),
 quicker_quests          SMALLINT    DEFAULT 0 CHECK (quicker_quests         >= 0),
 more_quest_money        SMALLINT    DEFAULT 0 CHECK (more_quest_money       >= 0),
-quest_slots             SMALLINT    DEFAULT 0 CHECK (quest_slots            >= 0)
+quest_slots             SMALLINT    DEFAULT 0 CHECK (quest_slots            >= 0),
+more_power              SMALLINT    DEFAULT 0 CHECK (more_power             >= 0)
 );

@@ -28,6 +28,7 @@ class _EmpireUpgrades(type):
 		_Upgrade(db_col="cheaper_money_units", display_name="Cheaper Money Makers", base_cost=5_000, max_amount=10),
 		_Upgrade(db_col="cheaper_military_units", display_name="Cheaper Military", base_cost=7_500, max_amount=10),
 		_Upgrade(db_col="quest_slots", display_name="Quest Slots", base_cost=1_000_000, max_amount=1, exponent=2.0),
+		_Upgrade(db_col="more_power", display_name="More Power", base_cost=10_000, max_amount=25, max_price=250_000),
 	]
 
 	def get(self, **kwargs): return discord.utils.get(self._UPGRADES, **kwargs)

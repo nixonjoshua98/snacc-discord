@@ -53,10 +53,10 @@ class _MilitaryUnit(_Unit):
 		return self.max_amount + upgrades["extra_military_units"]
 
 	def get_hourly_upkeep(self, total, upgrades):
-		return math.floor((self.upkeep_hour * total) * (1.0 - (upgrades["less_upkeep"] * 0.05)))
+		return self.upkeep_hour * total * (1.0 - (upgrades["less_upkeep"] * 0.05))
 
 	def get_power(self, total, upgrades):
-		return math.floor((self.power * total) * (1.0 - (upgrades.get("more_power", 0) * 0.01)))
+		return (self.power * total) * (1.0 - (upgrades.get("more_power", 0) * 0.01))
 
 	def calculate_price(self, upgrades, total_owned: int, total_buying: int = 1) -> int:
 		cost = self.get_price(total_owned, total_buying)
@@ -139,10 +139,10 @@ class _MilitaryGroup(type):
 		return page
 
 	def get_total_hourly_upkeep(self, empire, upgrades):
-		return sum(map(lambda u: u.get_hourly_upkeep(empire[u.db_col], upgrades), self.units))
+		return math.floor(sum(map(lambda u: u.get_hourly_upkeep(empire.get(u.db_col, 0), upgrades), self.units)))
 
 	def get_total_power(self, empire, upgrades):
-		return sum(map(lambda u: u.get_power(empire.get(u.db_col, 0), upgrades), self.units))
+		return math.floor(sum(map(lambda u: u.get_power(empire.get(u.db_col, 0), upgrades), self.units)))
 
 	@property
 	def units(self): return self._UNITS
