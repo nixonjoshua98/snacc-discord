@@ -55,15 +55,3 @@ def main_server_only():
 		return ctx.guild.id == MainServer.ID
 
 	return commands.check(predicate)
-
-
-def not_on_quest():
-	async def predicate(ctx):
-		current_quest = await ctx.bot.mongo.find_one("quests", {"user": ctx.author.id})
-
-		if current_quest is not None:
-			raise UserOnQuest("You are already embarked on another quest.")
-
-		return current_quest is None
-
-	return commands.check(predicate)

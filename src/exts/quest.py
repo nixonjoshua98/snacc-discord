@@ -68,6 +68,10 @@ class Quest(commands.Cog):
 		await inputs.send_pages(ctx, embeds)
 
 	@staticmethod
+	async def complete_quests(ctx, current_quests):
+		pass
+
+	@staticmethod
 	async def complete_quest(ctx, quest):
 		quest_inst = EmpireQuests.get(id=quest["quest"])
 
@@ -121,25 +125,28 @@ class Quest(commands.Cog):
 - `!q 5` while not on a quest will start a new quest
 		"""
 
-		current_quest = await ctx.bot.mongo.find_one("quests", {"user": ctx.author.id})
+		current_quests = await ctx.bot.mongo.find("quests", {"user": ctx.author.id})
 
 		# - User is not on any quest
-		if not current_quest:
+		if not current_quests:
 
 			# - Start a new quest
 			if quest is not None:
-				return await self.start_quest(ctx, current_quest)
+				return await self.start_quest(ctx, quest)
 
 			return await self.show_all_quests(ctx)
 
 		author_upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
 
-		quest_inst = EmpireQuests.get(id=current_quest["quest"])
+		for quest in current_quests:
+			quest_inst = EmpireQuests.get(id=quest["quest"])
 
-		time_since_start = dt.datetime.utcnow() - current_quest["start"]
+			duration = quest_inst.get_duration(author_upgrades)
 
-		if (time_since_start.total_seconds() / 3600) >= quest_inst.get_duration(author_upgrades):
-			return await self.complete_quest(ctx, current_quest)
+			time_since_start = dt.datetime.utcnow() - quest["start"]
+
+			if (time_since_start.total_seconds() / 3600) >= duration:
+				return await self.complete_quest(ctx, quest)
 
 		await self.show_all_quests(ctx)
 
