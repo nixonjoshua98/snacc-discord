@@ -4,13 +4,15 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 
 class MongoClient(AsyncIOMotorClient):
-	def __init__(self):
+	def __init__(self, bot):
 		super(MongoClient, self).__init__(os.getenv("MONGO_CON_STR"))
 
-	def find(self, col, kwargs=None): return self.snacc[col].find(kwargs or dict())
+		self.db = getattr(self, "snacc_test") if bot.debug else getattr(self, "snacc")
 
-	async def insert_one(self, col, kwargs): return await self.snacc[col].insert_one(kwargs)
+	def find(self, col, kwargs=None): return self.db[col].find(kwargs or dict())
 
-	async def find_one(self, col, kwargs): return await self.snacc[col].find_one(kwargs)
+	async def insert_one(self, col, kwargs): return await self.db[col].insert_one(kwargs)
 
-	async def delete_one(self, col, kwargs): return await self.snacc[col].delete_one(kwargs)
+	async def find_one(self, col, kwargs): return await self.db[col].find_one(kwargs)
+
+	async def delete_one(self, col, kwargs): return await self.db[col].delete_one(kwargs)

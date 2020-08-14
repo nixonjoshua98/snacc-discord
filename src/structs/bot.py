@@ -30,7 +30,7 @@ class Bot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix=self.get_prefix, case_insensitive=True, help_command=Help())
 
-        self.mongo = MongoClient()
+        self.mongo = MongoClient(self)
 
         self.pool = None
         self.exts_loaded = False
@@ -92,6 +92,13 @@ class Bot(commands.Bot):
     async def create_pool(self):
         def get_init_args():
             """ Return the args and kwargs needed for the connection pool initialization. """
+
+            ctx = ssl.create_default_context(cafile="./rds-combined-ca-bundle.pem")
+            ctx.check_hostname = False
+            ctx.verify_mode = ssl.CERT_NONE
+
+            return (os.getenv("DATABASE_URL"),), {"ssl": ctx, "max_size": 15}
+
 
             if self.debug:  # Local
                 return (os.getenv("PG_CON_STR"),), {"max_size": 15}
