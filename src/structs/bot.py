@@ -12,7 +12,7 @@ from src.common import SNACCMAN
 from src.structs.help import Help
 from src.common.errors import GlobalCheckFail
 
-from src.structs import CustomContext
+from src.structs import CustomContext, MongoClient
 
 from src.common.models import ServersM
 
@@ -30,12 +30,19 @@ class Bot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix=self.get_prefix, case_insensitive=True, help_command=Help())
 
+        self.mongo = MongoClient()
+
         self.pool = None
         self.exts_loaded = False
 
         self.server_cache = dict()
 
         self.add_check(self.bot_check)
+
+        if self.debug:
+            print("Starting loop: Bot Activity")
+
+            self.activity_loop.start()
 
     @property
     def debug(self):
@@ -45,18 +52,11 @@ class Bot(commands.Bot):
     def users(self):
         return set([m for g in self.guilds for m in g.members])
 
-    def start_activity_loop(self):
+    @tasks.loop(minutes=15.0)
+    async def activity_loop(self):
+        activity = discord.Game(f"{len(self.users):,} users | {len(self.guilds):,} servers")
 
-        @tasks.loop(minutes=15.0)
-        async def activity_loop():
-            activity = discord.Game(f"{len(self.users):,} users | {len(self.guilds):,} servers")
-
-            await self.change_presence(status=discord.Status.online, activity=activity)
-
-        if not self.debug:
-            print("Starting loop: Bot Activity")
-
-            activity_loop.start()
+        await self.change_presence(status=discord.Status.online, activity=activity)
 
     async def on_ready(self):
         """ Invoked once the bot is connected and ready to use. """
@@ -64,8 +64,6 @@ class Bot(commands.Bot):
         await self.create_pool()
 
         self.load_extensions()
-
-        self.start_activity_loop()
 
         print(f"Bot '{self.user.display_name}' is ready")
 

@@ -8,8 +8,6 @@ from discord.ext import commands, tasks
 
 from src.common.converters import TimePeriod
 
-from src.common.models import RemindersM
-
 
 class Reminder(commands.Cog):
 	def __init__(self, bot):
@@ -29,63 +27,63 @@ class Reminder(commands.Cog):
 			user = self.bot.get_user(user)
 
 			if chnl is not None and user is not None:
-				await utils.msg.send(chnl, f"{user.mention} :alarm_clock:")
+				await utils.msg.send(chnl, f":alarm_clock: {user.mention}")
 
-			await self.bot.pool.execute(RemindersM.DELETE_ROW, _id)
+			await self.bot.mongo.delete_one("reminders", {"_id": _id})
 
-		_id, chnl_id = row["reminder_id"], row["channel_id"]
+		_id, user_id, chnl_id = row["_id"], row["_id"], row["channel"]
 
 		if _id not in self.__set_reminders:
-			sleep_time = max(1, (row["remind_end"] - dt.datetime.utcnow()).total_seconds())
+			sleep_time = max(1, (row["end"] - dt.datetime.utcnow()).total_seconds())
 
-			self.__set_reminders[_id] = asyncio.create_task(remind_task(_id, _id, chnl_id, sleep_time))
+			self.__set_reminders[_id] = asyncio.create_task(remind_task(_id, user_id, chnl_id, sleep_time))
 
 	@commands.group(name="remind", invoke_without_command=True)
 	async def remind_me(self, ctx, *, period: TimePeriod() = None):
-		"""
-View your reminder or create a new one.
-Usage: `!remind <56s/14m/5d>`
+		""" View your reminder or create a new one. e.g `!remind <56s/14m/5d>` """
 
-"""
+		reminder = await ctx.bot.mongo.find_one("reminders", {"_id": ctx.author.id})
 
-		reminder = await RemindersM.fetchrow(ctx.bot.pool, ctx.author.id, insert=False)
-
-		if period is None and reminder is None:
+		if period is None and not reminder:
 			await ctx.send("You do not have any active reminders")
 
-		elif reminder is not None:
-			await ctx.send("Remindme")
+		elif reminder:
+			delta = reminder["end"] - dt.datetime.utcnow()
 
-		else:
+			await ctx.send(f"Time left on your reminder: `{delta}`")
+
+		elif period is not None and not reminder:
 			now = dt.datetime.utcnow()
 
-			row = await ctx.pool.fetchrow(RemindersM.INSERT_ROW, ctx.author.id, ctx.channel.id, now, now + period)
+			row = dict(_id=ctx.author.id, channel=ctx.channel.id, start=now, end=now + period)
+
+			await ctx.bot.mongo.insert_one("reminders", row)
 
 			self.create_reminder_task(row)
 
-			await ctx.send(f"I will remind you in `{period}`")
+			await ctx.send(f"I will ping you in `{period}`. Cancel this with `{ctx.prefix}remind cancel`")
 
 	@remind_me.command(name="cancel")
 	async def cancel_reminder(self, ctx):
 		""" Cancel your current reminder. """
 
-		reminder = await RemindersM.fetchrow(ctx.bot.pool, ctx.author.id, insert=False)
+		reminder = await ctx.bot.mongo.find_one("reminders", {"_id": ctx.author.id})
 
-		if reminder is None:
+		if not reminder:
 			await ctx.send("You do not have any active reminders")
 
 		else:
-			if reminder["reminder_id"] in self.__set_reminders:
-				task = self.__set_reminders[reminder["reminder_id"]]
+			if reminder["_id"] in self.__set_reminders:
+				task = self.__set_reminders[reminder["_id"]]
 
 				task.cancel()
 
 				try:
 					await task
 				except asyncio.CancelledError:
-					self.__set_reminders.pop(reminder["reminder_id"], None)
+					self.__set_reminders.pop(reminder["_id"], None)
 
-					await self.bot.pool.execute(RemindersM.DELETE_ROW, reminder["reminder_id"])
+					await ctx.bot.mongo.delete_one("reminders", {"_id": ctx.author.id})
 
 					await ctx.send("Your reminder has been cancelled.")
 
@@ -94,12 +92,14 @@ Usage: `!remind <56s/14m/5d>`
 
 	@tasks.loop(minutes=30.0)
 	async def remind_loop(self):
-		for row in await self.bot.pool.fetch(RemindersM.SELECT_ALL):
+		cur = self.bot.mongo.find("reminders")
+
+		for row in await cur.to_list(length=None):
 			now = dt.datetime.utcnow()
 
-			seconds_until_end = (row["remind_end"] - now).total_seconds()
+			seconds_until_end = (row["end"] - now).total_seconds()
 
-			if row["reminder_id"] in self.__set_reminders:
+			if row["_id"] in self.__set_reminders:
 				continue
 
 			elif seconds_until_end <= (30 * 60):

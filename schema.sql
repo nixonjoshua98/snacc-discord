@@ -95,11 +95,3 @@ quest_num           SMALLINT,
 success_rate        REAL,
 date_started        TIMESTAMP WITHOUT time zone
 );
-
-
-CREATE TABLE IF NOT EXISTS reminders (
-reminder_id     BIGINT                      PRIMARY KEY,
-channel_id      BIGINT                      NOT NULL,
-remind_start    TIMESTAMP WITHOUT time zone NOT NULL,
-remind_end      TIMESTAMP WITHOUT time zone NOT NULL
-);
