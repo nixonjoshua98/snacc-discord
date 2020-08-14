@@ -40,7 +40,10 @@ class Reminder(commands.Cog):
 
 	@commands.group(name="remind", invoke_without_command=True)
 	async def remind_me(self, ctx, *, period: TimePeriod() = None):
-		""" View your reminder or create a new one. e.g `!remind <56s/14m/5d>` """
+		"""
+View your reminder or create a new one.
+e.g `!remind <56s/14m/5d>`
+		"""
 
 		reminder = await ctx.bot.mongo.find_one("reminders", {"_id": ctx.author.id})
 
@@ -48,7 +51,9 @@ class Reminder(commands.Cog):
 			await ctx.send("You do not have any active reminders")
 
 		elif reminder:
-			delta = reminder["end"] - dt.datetime.utcnow()
+			seconds = (reminder["end"] - dt.datetime.utcnow()).total_seconds()
+
+			delta = dt.timedelta(seconds=int(seconds))
 
 			await ctx.send(f"Time left on your reminder: `{delta}`")
 
