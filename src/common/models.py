@@ -126,3 +126,20 @@ class QuestsM(metaclass=TableModel):
 	@classmethod
 	async def fetchrow(cls, con, id_, **_):
 		return await con.fetchrow(f"SELECT * FROM {cls._TABLE} WHERE {cls._PK}=$1 LIMIT 1;", id_)
+
+
+class RemindersM(metaclass=TableModel):
+	_TABLE, _PK = "reminders", "reminder_id"
+
+	SELECT_ALL = f"SELECT * FROM {_TABLE};"
+	DELETE_ROW = f"DELETE FROM {_TABLE} WHERE {_PK} = $1;"
+
+	INSERT_ROW = f"""
+	INSERT INTO {_TABLE} (user_id, channel_id, remind_start, remind_end)  
+	VALUES ($1, $2, $3, $4) 
+	RETURNING * 
+	"""
+
+	@classmethod
+	async def fetchrow(cls, con, id_, **_):
+		return await con.fetchrow(f"SELECT * FROM {cls._TABLE} WHERE {cls._PK}=$1 LIMIT 1;", id_)

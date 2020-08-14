@@ -21,8 +21,8 @@ EXTENSIONS = [
     "quest",        "shop",         "hangman",
     "gambling",     "bank",         "crypto",
     "darkness",     "moderator",    "misc",
-    "autorole",     "serverdoor",   "settings",
-    "vote",
+    "reminder",     "autorole",     "serverdoor",
+    "settings",     "vote",
 ]
 
 

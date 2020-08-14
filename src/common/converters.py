@@ -159,3 +159,38 @@ class ServerAssignedRole(commands.RoleConverter):
 			return await ctx.send(f"I cannot use that role. It is higher than me in the hierachy.")
 
 		return role
+
+
+class TimePeriod(commands.Converter):
+	async def convert(self, ctx, argument):
+		seconds = self.get_seconds(argument)
+
+		if seconds < 30 or seconds > 604_800:
+			raise commands.UserInputError("Time period must be between `30s` and `7d`")
+
+		return dt.timedelta(seconds=seconds)
+
+	def get_seconds(self, argument):
+		lookup = {"s": lambda n: n, "m": lambda n: n * 60, "h": lambda n: 3600 * n, "d": lambda n: (3600 * n) * 24}
+
+		ls = argument.split()
+
+		seconds = 0
+
+		if len(ls) == 1 and ls[0].isdigit():
+			seconds = int(ls[0])
+
+		else:
+			for i, ele in enumerate(ls):
+				if len(ele) > 1 and ele[:-1].isdigit():
+					num = int(ele[:-1])
+
+					func = lookup.get(ele[-1].lower())
+
+					if func is None:
+						continue
+
+					seconds += func(num)
+
+		return seconds
+
