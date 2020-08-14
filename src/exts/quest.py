@@ -1,3 +1,4 @@
+import math
 import random
 
 import datetime as dt
@@ -34,9 +35,8 @@ class Quest(commands.Cog):
 		return dt.timedelta(seconds=int(seconds))
 
 	async def show_all_quests(self, ctx):
-		async with ctx.pool.acquire() as con:
-			author_population = await PopulationM.fetchrow(con, ctx.author.id)
-			author_upgrades = await UserUpgradesM.fetchrow(con, ctx.author.id)
+		author_population = await PopulationM.fetchrow(ctx.pool, ctx.author.id)
+		author_upgrades = await UserUpgradesM.fetchrow(ctx.pool, ctx.author.id)
 
 		author_power = MilitaryGroup.get_total_power(author_population)
 
@@ -47,11 +47,7 @@ class Quest(commands.Cog):
 		quest_text = timer if timer is None or timer.total_seconds() > 0 else 'Finished'
 
 		for quest in EmpireQuests.quests:
-			embed = ctx.bot.embed(
-				title=f"Quest {quest.id}: {quest.name}",
-				thumbnail=ctx.author.avatar_url,
-				footer=f"Current: {quest_text}"
-			)
+			embed = ctx.bot.embed(title=f"Quest {quest.id}: {quest.name}", thumbnail=ctx.author.avatar_url)
 
 			sucess_rate = quest.success_rate(author_power)
 
@@ -59,8 +55,10 @@ class Quest(commands.Cog):
 
 			embed.description = "\n".join(
 				[
+					f"*Current Quest: {quest_text}*"
+					f"\n",
 					f"**Duration:** {duration}",
-					f"**Success Rate:** {int(quest.success_rate(author_power) * 100)}%",
+					f"**Success Rate:** {math.floor(sucess_rate * 100)}%",
 					f"**Avg. Reward:** ${quest.get_avg_reward(author_upgrades):,}"
 				]
 			)
@@ -130,7 +128,7 @@ class Quest(commands.Cog):
 
 			# - Start a new quest
 			if quest is not None:
-				return await self.start_quest(ctx, quest)
+				return await self.start_quest(ctx, current_quest)
 
 			return await self.show_all_quests(ctx)
 
