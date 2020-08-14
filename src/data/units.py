@@ -55,6 +55,9 @@ class _MilitaryUnit(_Unit):
 	def get_hourly_upkeep(self, total, upgrades):
 		return math.floor((self.upkeep_hour * total) * (1.0 - (upgrades["less_upkeep"] * 0.05)))
 
+	def get_power(self, total, upgrades):
+		return math.floor((self.upkeep_hour * total) * (1.0 - (upgrades.get("more_power", 0) * 0.01)))
+
 	def calculate_price(self, upgrades, total_owned: int, total_buying: int = 1) -> int:
 		cost = self.get_price(total_owned, total_buying)
 
@@ -107,12 +110,12 @@ class _MoneyGroup(type):
 
 class _MilitaryGroup(type):
 	_UNITS = [
-			_MilitaryUnit(upkeep_hour=10, 	power=1, 	db_col="peasants", 	base_cost=250),
+			_MilitaryUnit(upkeep_hour=25, 	power=1, 	db_col="peasants", 	base_cost=250),
 			_MilitaryUnit(upkeep_hour=35, 	power=3, 	db_col="soldiers", 	base_cost=500),
 			_MilitaryUnit(upkeep_hour=50, 	power=5, 	db_col="spearmen", 	base_cost=750),
-			_MilitaryUnit(upkeep_hour=75, 	power=10, 	db_col="warriors", 	base_cost=1250),
-			_MilitaryUnit(upkeep_hour=85, 	power=12, 	db_col="archers", 	base_cost=1500),
-			_MilitaryUnit(upkeep_hour=100, 	power=15, 	db_col="knights", 	base_cost=2000),
+			_MilitaryUnit(upkeep_hour=75, 	power=7, 	db_col="warriors", 	base_cost=1_250),
+			_MilitaryUnit(upkeep_hour=85, 	power=10, 	db_col="archers", 	base_cost=1_500),
+			_MilitaryUnit(upkeep_hour=100, 	power=14, 	db_col="knights", 	base_cost=2_000),
 		]
 
 	def create_units_page(self, empire, upgrades):

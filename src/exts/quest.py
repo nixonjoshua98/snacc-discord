@@ -20,7 +20,7 @@ class Quest(commands.Cog):
 
 	@staticmethod
 	def get_max_quests(upgrades):
-		return 1 + upgrades.get("extra_quests", 0)
+		return 1 + upgrades.get("quest_slots", 0)
 
 	async def get_current_quests_embed(self, ctx, quests, upgrades):
 		max_num_quests = self.get_max_quests(upgrades)
@@ -66,26 +66,50 @@ class Quest(commands.Cog):
 
 		await inputs.send_pages(ctx, embeds)
 
-	@staticmethod
-	async def complete_quest_and_get_embed(ctx, quest):
-		quest_inst = EmpireQuests.get(id=quest["quest"])
+	async def complete_quests(self, ctx, upgrades, quests):
+		quest_embeds = []
 
-		upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
+		for quest in quests:
+			inst = EmpireQuests.get(id=quest["quest"])
 
-		quest_completed = quest["success_rate"] >= random.uniform(0.0, 1.0)
+			duration = inst.get_duration(upgrades)
 
-		embed = ctx.bot.embed(title="Quest Completion!" if quest_completed else "Quest Failed!")
+			time_since_start = dt.datetime.utcnow() - quest["start"]
 
-		if quest_completed:
-			money_reward = quest_inst.get_reward(upgrades)
+			if (time_since_start.total_seconds() / 3600) >= duration:
+				quest_inst = EmpireQuests.get(id=quest["quest"])
 
-			await BankM.increment(ctx.bot.pool, ctx.author.id, field="money", amount=money_reward)
+				upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
 
-			embed.add_field(name=quest_inst.name, value=f"**Reward:** ${money_reward}")
+				quest_completed = quest["success_rate"] >= random.uniform(0.0, 1.0)
 
-		await ctx.bot.mongo.delete_one("quests", {"_id": quest["_id"]})
+				embed = ctx.bot.embed(title="Quest Completion!" if quest_completed else "Quest Failed!")
 
-		return embed
+				money_reward = quest_inst.get_reward(upgrades)
+
+				if quest_completed:
+					await BankM.increment(ctx.bot.pool, ctx.author.id, field="money", amount=money_reward)
+
+				embed.add_field(name=quest_inst.name, value=f"**Reward:** ${money_reward}" if money_reward else "None")
+
+				quest_embeds.append(embed)
+
+				await ctx.bot.mongo.delete_one("quests", {"_id": quest["_id"]})
+
+		return quest_embeds
+
+	async def start_quest(self, ctx, quest, upgrades):
+		population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
+
+		power = MilitaryGroup.get_total_power(population)
+		duration = dt.timedelta(hours=quest.get_duration(upgrades))
+		sucess_rate = quest.success_rate(power)
+
+		row = dict(user=ctx.author.id, quest=quest.id, success_rate=sucess_rate, start=dt.datetime.utcnow())
+
+		await ctx.bot.mongo.insert_one("quests", row)
+
+		return await ctx.send(f"You have embarked on **- {quest.name} -** quest! Check back in **{duration}**")
 
 	@checks.has_empire()
 	@commands.command(name="quest_", aliases=["q"], invoke_without_command=True, usage="<quest=None>")
@@ -104,43 +128,20 @@ class Quest(commands.Cog):
 
 		max_num_quests = self.get_max_quests(upgrades)
 
+		completed_quests = await self.complete_quests(ctx, upgrades, current_quests)
+
+		if completed_quests:
+			return await inputs.send_pages(ctx, completed_quests)
+
 		if len(current_quests) < max_num_quests:
 
 			# - Start a new quest
 			if quest is not None:
-				population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
-
-				power = MilitaryGroup.get_total_power(population)
-				duration = dt.timedelta(hours=quest.get_duration(upgrades))
-				sucess_rate = quest.success_rate(power)
-
-				row = dict(user=ctx.author.id, quest=quest.id, sucess_rate=sucess_rate, start=dt.datetime.utcnow())
-
-				await ctx.bot.mongo.insert_one("quests", row)
-
-				return await ctx.send(f"You have embarked on **- {quest.name} -** quest! Check back in **{duration}**")
+				return await self.start_quest(ctx, quest, upgrades)
 
 			return await self.show_all_quests(ctx, current_quests, upgrades)
 
 		else:
-			quest_embeds = []
-
-			for quest in current_quests:
-				inst = EmpireQuests.get(id=quest["quest"])
-
-				duration = inst.get_duration(upgrades)
-
-				time_since_start = dt.datetime.utcnow() - quest["start"]
-
-				# - Quest completed
-				if (time_since_start.total_seconds() / 3600) >= duration:
-					embed = await self.complete_quest_and_get_embed(ctx, quest)
-
-					quest_embeds.append(embed)
-
-			if quest_embeds:
-				return await inputs.send_pages(ctx, quest_embeds)
-
 			await self.show_all_quests(ctx, current_quests, upgrades)
 
 
