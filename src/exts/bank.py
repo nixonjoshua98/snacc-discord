@@ -15,7 +15,7 @@ class Bank(commands.Cog):
 
 		money = random.randint(5_000, 10_000)
 
-		await ctx.bot.mongo.increment_one("bank", {"id": ctx.author.id}, {"usd": money})
+		await ctx.bot.mongo.increment_one("bank", {"_id": ctx.author.id}, {"usd": money})
 
 		await ctx.send(f"You have received **${money:,}**")
 

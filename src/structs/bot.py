@@ -1,7 +1,5 @@
 import os
-import ssl
 import discord
-import asyncpg
 
 from discord.ext import commands, tasks
 
@@ -12,11 +10,11 @@ from src.common import SNACCMAN
 from src.structs.help import Help
 from src.common.errors import GlobalCheckFail
 
-from src.structs import CustomContext, MongoClient
+from src.structs import MongoClient
 
 
 EXTENSIONS = [
-    "errorhandler", "arenastats",   "empire",
+    "errorhandler", "arena",        "empire",
     "quests",       "shop",         "units",
     "hangman",      "gambling",     "bank",
     "crypto",       "darkness",     "moderator",
@@ -31,7 +29,6 @@ class Bot(commands.Bot):
 
         self.mongo = MongoClient()
 
-        self.pool = None
         self.exts_loaded = False
 
         self.server_cache = dict()
@@ -63,8 +60,6 @@ class Bot(commands.Bot):
 
         self._bot_started = dt.datetime.utcnow()
 
-        await self.create_pool()
-
         self.load_extensions()
 
         if not self.debug:
@@ -95,28 +90,6 @@ class Bot(commands.Bot):
             return False
 
         return True
-
-    async def create_pool(self):
-        def get_init_args():
-            """ Return the args and kwargs needed for the connection pool initialization. """
-
-            if self.debug:  # Local
-                return (os.getenv("PG_CON_STR"),), {"max_size": 15}
-
-            else:  # Cloud (most likely Heroku)
-                ctx = ssl.create_default_context(cafile="./rds-combined-ca-bundle.pem")
-                ctx.check_hostname = False
-                ctx.verify_mode = ssl.CERT_NONE
-
-                return (os.getenv("DATABASE_URL"),), {"ssl": ctx, "max_size": 15}
-
-        args, kwargs = get_init_args()
-
-        self.pool = await asyncpg.create_pool(*args, **kwargs)
-
-        # - Execute the SQL schematic
-        with open(os.path.join(os.getcwd(), "schema.sql")) as fh:
-            await self.pool.execute(fh.read())
 
     def can_message_in(self, chnl):
         return chnl.permissions_for(chnl.guild.me).send_messages
@@ -166,9 +139,7 @@ class Bot(commands.Bot):
 
     async def on_message(self, message):
         if self.exts_loaded and message.guild is not None and not message.author.bot:
-            ctx = await self.get_context(message, cls=CustomContext)
-
-            await self.invoke(ctx)
+            await super(Bot, self).on_message(message)
 
     def run(self):
         super(Bot, self).run(os.getenv("BOT_TOKEN"))

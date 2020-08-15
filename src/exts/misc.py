@@ -1,8 +1,5 @@
 import os
 import httpx
-import discord
-import psutil
-import cpuinfo
 
 from discord.ext import commands
 
@@ -22,13 +19,13 @@ class Miscellaneous(commands.Cog):
 
 		for root, dirs, files in os.walk("./src/"):
 			for f in files:
-				if f.endswith(".py"):
-					path = os.path.join(root, f)
+				if not f.endswith(".py"):
+					continue
 
-					with open(path, "r") as fh:
-						for line in fh.read().splitlines():
-							if line:
-								lines += 1
+				path = os.path.join(root, f)
+
+				with open(path, "r") as fh:
+					lines += len(tuple(line for line in fh.read().splitlines() if line))
 
 		await ctx.send(f"I am made up of **{lines:,}** lines of code.")
 
@@ -89,28 +86,13 @@ class Miscellaneous(commands.Cog):
 		""" Display information about the bot """
 
 		def get_system():
-			memory = psutil.virtual_memory()
-			cpu = cpuinfo.get_cpu_info()
-
 			system = {
 				"Bot": {
+					"Latency": f"{round(ctx.bot.latency * 1000, 3)}ms",
 					"Uptime": ctx.bot.uptime,
 					"Commands": f"{len(ctx.bot.all_commands):,}",
-					"Latency": f"{round(ctx.bot.latency * 1000, 3)}ms",
 					"Servers": f"{len(ctx.bot.guilds):,}",
-					"Users": f"{len(ctx.bot.users):,}"
-				},
-				"CPU": {
-					"Brand": cpu["brand"],
-					"Logical Cores": psutil.cpu_count(),
-					"Utilisation": f"{round(psutil.cpu_percent(), 1)}%",
-				},
-
-				"Memory": {
-					"Total": f"{round(memory.total / (1024 ** 3), 1)}GB",
-					"Used": f"{round(memory.used / (1024 ** 3), 1)}GB",
-					"Available": f"{round(memory.available / (1024 ** 3), 1)}GB"
-				},
+				}
 			}
 
 			return system

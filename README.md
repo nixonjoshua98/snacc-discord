@@ -3,7 +3,7 @@ Discord Bot
 Please do join the support server https://discord.gg/QExQuvE if you are interested in using or adding to the bot!
 
 ## Requirements
-- PostgreSQL
+- MongoDB
 - Python 3.7+
 
 ## Setup

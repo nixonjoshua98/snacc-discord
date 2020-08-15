@@ -60,9 +60,9 @@ class TextLeaderboard:
         prev_row, rank = None, 0
 
         for row in results:
-            user_id_key = tuple(row.keys())[0]
+            user = row.get("user", row.get("_id"))
 
-            user = self._get_user(ctx, row[user_id_key])
+            user = self._get_user(ctx, user)
 
             if prev_row is None or prev_row[self.order_col] > row[self.order_col]:
                 prev_row, rank = row, rank + 1

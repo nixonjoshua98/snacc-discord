@@ -9,13 +9,23 @@ class MongoClient(AsyncIOMotorClient):
 
 		self.db = self.snacc
 
-	def find(self, col, kwargs=None): return self.db[col].find(kwargs or dict())
+	def find(self, col, kwargs=None):
+		return self.db[col].find(kwargs or dict())
 
-	async def insert_one(self, col, kwargs): return await self.db[col].insert_one(kwargs)
+	async def bulk_write(self, con, requests):
+		return await self.db[con].bulk_write(requests)
 
-	async def find_one(self, col, kwargs): return (await self.db[col].find_one(kwargs)) or dict()
+	async def insert_one(self, col, kwargs):
+		return await self.db[col].insert_one(kwargs)
 
-	async def delete_one(self, col, kwargs): return await self.db[col].delete_one(kwargs)
+	async def find_one(self, col, kwargs):
+		return (await self.db[col].find_one(kwargs)) or dict()
+
+	async def delete_one(self, col, kwargs):
+		return await self.db[col].delete_one(kwargs)
+
+	async def delete_many(self, col, kwargs):
+		return await self.db[col].delete_many(kwargs)
 
 	async def increment_one(self, col, query, kwargs):
 		return await self.db[col].update_one(query, {"$inc": kwargs}, upsert=True)

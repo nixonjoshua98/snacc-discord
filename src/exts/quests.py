@@ -115,7 +115,7 @@ class Quests(commands.Cog):
 					embed.add_field(name=f"[Completed] {inst.name}", value=f"`Reward: ${money_reward}`")
 
 				else:
-					embed.add_field(name=f"[Failed] {inst.name}", value="None")
+					embed.add_field(name=f"[Failed] {inst.name}", value="`No units died`")
 
 				await ctx.bot.mongo.delete_one("quests", {"_id": quest["_id"]})
 

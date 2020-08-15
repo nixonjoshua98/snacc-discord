@@ -218,21 +218,21 @@ class Empire(commands.Cog):
 					{k.key: v for k, v in units_lost.items()}
 				)
 
-				# - Put the target empire into a 'cooldown' so they cannot get attacked for a period of time
-				await ctx.bot.mongo.update_one("empires", {"_id": target.id}, {"last_attack": dt.datetime.utcnow()})
+			# - Put the target empire into a 'cooldown' so they cannot get attacked for a period of time
+			await ctx.bot.mongo.update_one("empires", {"_id": target.id}, {"last_attack": dt.datetime.utcnow()})
 
-				# - Create the message to return to Discord
-				units_text = "\n".join(map(lambda kv: f"{kv[1]}x {kv[0].display_name}", units_lost.items()))
-				val = f"${money_stolen:,} {f'**+ ${bonus_money:,} bonus**' if bonus_money > 0 else ''}"
+			# - Create the message to return to Discord
+			units_text = "\n".join(map(lambda kv: f"{kv[1]}x {kv[0].display_name}", units_lost.items()))
+			val = f"${money_stolen:,} {f'**+ ${bonus_money:,} bonus**' if bonus_money > 0 else ''}"
 
-				embed = ctx.bot.embed(title=f"Attack on {str(target)}: {target_empire['name']}")
+			embed = ctx.bot.embed(title=f"Attack on {str(target)}: {target_empire['name']}")
 
-				embed.description = f"**Money Pillaged:** {val}"
+			embed.description = f"**Money Pillaged:** {val}"
 
-				if units_text:
-					embed.add_field(name="Units Killed", value=units_text)
+			if units_text:
+				embed.add_field(name="Units Killed", value=units_text)
 
-				await ctx.send(embed=embed)
+			await ctx.send(embed=embed)
 
 		else:
 			author_bank = await ctx.bot.mongo.find_one("bank", {"_id": ctx.author.id})
