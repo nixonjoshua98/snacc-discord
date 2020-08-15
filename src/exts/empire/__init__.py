@@ -41,24 +41,26 @@ class Empire(commands.Cog):
 	def get_win_chance(atk_power, def_power):
 		return max(0.15, min(0.85, ((atk_power / max(1, def_power)) / 2.0)))
 
-	async def calculate_units_lost(self, population, upgrades):
+	async def calculate_units_lost(self, military, workers, upgrades):
 		units_lost = dict()
 		units_lost_cost = 0
 
-		hourly_income = max(0, MoneyGroup.get_total_hourly_income(population, upgrades))
+		hourly_income = max(0, MoneyGroup.get_total_hourly_income(workers, upgrades))
 
-		available_units = list(itertools.filterfalse(lambda u: population[u.key] == 0, MilitaryGroup.units))
+		available_units = list(itertools.filterfalse(lambda u: military.get(u.key, 0) == 0, MilitaryGroup.units))
 
-		available_units.sort(key=lambda u: u.price(upgrades, population[u.key]), reverse=False)
+		available_units.sort(key=lambda u: u.price(upgrades, military.get(u.key, 0)), reverse=False)
 
 		for unit in available_units:
-			for i in range(1, population[unit.key] + 1):
-				price = unit.price(upgrades, population[unit.key] - i, i)
+			owned = military.get(unit.key, 0)
+
+			for i in range(1, owned + 1):
+				price = unit.price(upgrades, owned - i, i)
 
 				if (price + units_lost_cost) < hourly_income:
 					units_lost[unit] = i
 
-				units_lost_cost = sum([u.get_price(population[unit.key] - n, n) for u, n in units_lost.items()])
+				units_lost_cost = sum([u.get_price(owned - n, n) for u, n in units_lost.items()])
 
 		return units_lost
 
@@ -200,11 +202,12 @@ class Empire(commands.Cog):
 		if win_chance >= random.uniform(0.0, 1.0):
 			target_bank = await ctx.bot.mongo.find_one("bank", {"_id": target.id})
 			target_empire = await ctx.bot.mongo.find_one("empires", {"_id": target.id})
+			target_workers = await ctx.bot.mongo.find_one("workers", {"_id": target.id})
 			target_upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": target.id})
 
 			money_stolen = await self.calculate_money_lost(target_bank)
 
-			units_lost = await self.calculate_units_lost(target_military, target_upgrades)
+			units_lost = await self.calculate_units_lost(target_military, target_workers, target_upgrades)
 
 			bonus_money = int(money_stolen * (1.0 - win_chance) if win_chance <= 0.5 else 0)
 
