@@ -4,7 +4,7 @@ import datetime as dt
 
 from discord.ext import commands
 
-from src.common.models import EmpireM, PopulationM, UserUpgradesM
+from src.common.models import PopulationM
 
 from src.data import EmpireQuests, EmpireUpgrades, MilitaryGroup, MoneyGroup
 
@@ -45,25 +45,21 @@ class EmpireTargetUser(DiscordUser):
 	async def convert(self, ctx, argument):
 		user = await super().convert(ctx, argument)
 
-		row = await EmpireM.fetchrow(ctx.bot.pool, user.id, insert=False)
+		empire = await ctx.bot.mongo.find_one("empire", {"_id": user.id})
 
-		if row is None:
+		if not empire:
 			raise commands.CommandError(f"Target does not have an empire.")
 
-		time_since_attack = (dt.datetime.utcnow() - row['last_attack']).total_seconds()
+		time_since_attack = 0
+
+		if empire.get("last_attack") is not None:
+			time_since_attack = (dt.datetime.utcnow() - empire['last_attack']).total_seconds()
 
 		# - Target is in cooldown period
 		if time_since_attack < self.ATTACK_COOLDOWN:
 			delta = dt.timedelta(seconds=int(self.ATTACK_COOLDOWN - time_since_attack))
 
 			raise commands.CommandError(f"Target is still recovering from a previous attack. Try again in `{delta}`")
-
-		population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
-
-		author_power = MilitaryGroup.get_total_power(population)
-
-		if author_power < 25:
-			raise commands.CommandError("You need at least **25** power to do that.")
 
 		return user
 

@@ -25,7 +25,7 @@ class _EmpireUpgrades(type):
 		_Upgrade(db_col="more_income", display_name="Increased Income", base_cost=30_000, exponent=1.50, max_amount=5),
 		_Upgrade(db_col="quicker_quests", display_name="Faster Quests", base_cost=12_500),
 		_Upgrade(db_col="more_quest_money", base_cost=15_000),
-		_Upgrade(db_col="cheaper_money_units", display_name="Cheaper Money Makers", base_cost=5_000, max_amount=10),
+		_Upgrade(db_col="cheaper_money_units", display_name="Cheaper Money Makers", base_cost=7_500, max_amount=10),
 		_Upgrade(db_col="cheaper_military_units", display_name="Cheaper Military", base_cost=7_500, max_amount=10)
 	]
 

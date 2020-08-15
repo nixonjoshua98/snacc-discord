@@ -4,7 +4,6 @@ from discord.ext import commands
 
 from src import inputs
 from src.common import checks
-from src.common.models import BankM, UserUpgradesM
 from src.common.converters import EmpireUpgrade, Range
 
 from src.structs.textpage import TextPage
@@ -19,9 +18,11 @@ class Shop(commands.Cog):
 		page = TextPage(title="Empire Upgrades", headers=["ID", "Name", "Owned", "Cost"])
 
 		for upgrade in EmpireUpgrades.upgrades:
-			if upgrades[upgrade.db_col] < upgrade.max_amount:
-				price = f"${upgrade.get_price(upgrades[upgrade.db_col]):,}"
-				owned = f"{upgrades[upgrade.db_col]}/{upgrade.max_amount}"
+			owned = upgrades.get(upgrade.db_col, 0)
+
+			if owned < upgrade.max_amount:
+				price = f"${upgrade.get_price(owned):,}"
+				owned = f"{owned}/{upgrade.max_amount}"
 
 				page.add_row([upgrade.id, upgrade.display_name, owned, price])
 
@@ -34,7 +35,7 @@ class Shop(commands.Cog):
 	async def shop_group(self, ctx):
 		""" Display your shop. """
 
-		upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
+		upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": ctx.author.id})
 
 		page = self.create_upgrades_shop_page(upgrades)
 
@@ -46,21 +47,24 @@ class Shop(commands.Cog):
 	async def buy_upgrade(self, ctx, upgrade: EmpireUpgrade(), amount: Range(1, 100) = 1):
 		""" Buy a new upgrade. """
 
-		bank = await BankM.fetchrow(ctx.bot.pool, ctx.author.id)
-		upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
+		# - Get data from database
+		bank = await ctx.bot.mongo.find_one("bank", {"_id": ctx.author.id})
+		upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": ctx.author.id})
 
-		price = upgrade.get_price(upgrades[upgrade.db_col], amount)
+		price = upgrade.get_price(upgrades.get(upgrade.db_col, 0), amount)
 
-		if upgrades[upgrade.db_col] + amount > upgrade.max_amount:
+		# - Reached the owned limit
+		if upgrades.get(upgrade.db_col, 0) + amount > upgrade.max_amount:
 			await ctx.send(f"**{upgrade.display_name}** have an owned limit of **{upgrade.max_amount}**.")
 
-		elif price > bank["money"]:
+		# - User cannot afford upgrade
+		elif price > bank.get("usd", 0):
 			await ctx.send(f"You can't afford to hire **{amount}x {upgrade.display_name}**")
 
 		else:
-			await BankM.decrement(ctx.bot.pool, ctx.author.id, field="money", amount=price)
-
-			await UserUpgradesM.increment(ctx.bot.pool, ctx.author.id, field=upgrade.db_col, amount=amount)
+			# - Update database
+			await ctx.bot.mongo.decrement_one("bank", {"_id": ctx.author.id}, {"usd": price})
+			await ctx.bot.mongo.increment_one("upgrades", {"_id": ctx.author.id}, {upgrade.db_col: amount})
 
 			await ctx.send(f"Bought **{amount}x {upgrade.display_name}** for **${price:,}**!")
 

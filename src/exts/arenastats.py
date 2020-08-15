@@ -71,7 +71,7 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 	async def create_shame_message(self, channel: discord.TextChannel):
 		""" Create the shame message for the guild (attached to `destination`). """
 
-		conf = await self.bot.get_server_config(channel.guild)
+		svr = await self.bot.mongo.find_one("servers", {"_id": channel.guild.id})
 
 		role = channel.guild.get_role(666615010579054614)
 
@@ -104,7 +104,7 @@ class ArenaStats(commands.Cog, name="Arena Stats", command_attrs=(dict(cooldown_
 		message = None
 
 		if missing:
-			message = f"**__Missing__** - Set your stats `{conf['prefix']}s <level> <trophies>`\n" + ", ".join(missing)
+			message = f"**__Missing__** - Set your stats `{svr['prefix']}s <level> <trophies>`\n" + ", ".join(missing)
 
 		if lacking:
 			lacking.sort(key=lambda row: row[1], reverse=True)

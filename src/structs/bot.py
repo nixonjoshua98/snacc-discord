@@ -14,7 +14,6 @@ from src.common.errors import GlobalCheckFail
 
 from src.structs import CustomContext, MongoClient
 
-from src.common.models import ServersM
 
 EXTENSIONS = [
     "errorhandler", "arenastats",   "empire",
@@ -136,23 +135,12 @@ class Bot(commands.Bot):
 
         self.exts_loaded = True
 
-    async def update_server_cache(self, guild):
-        self.server_cache[guild.id] = await ServersM.fetchrow(self.pool, guild.id)
-
-    async def get_server_config(self, guild, *, refresh: bool = False):
-        """ Get the settings from either the cache or the database for a guild. """
-
-        if refresh or self.server_cache.get(guild.id) is None:
-            await self.update_server_cache(guild)
-
-        return self.server_cache[guild.id]
-
     async def get_prefix(self, message):
         """ Get the prefix for the server/guild from the database/cache. """
 
-        svr = await self.get_server_config(message.guild)
+        svr = await self.mongo.find_one("servers", {"_id": message.guild.id})
 
-        prefix = "." if os.getenv("DEBUG") else svr.get("prefix", "!")
+        prefix = "." if self.debug else svr.get("prefix", "!")
 
         return commands.when_mentioned_or(prefix)(self, message)
 

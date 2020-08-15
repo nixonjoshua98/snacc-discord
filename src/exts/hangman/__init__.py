@@ -7,7 +7,6 @@ from discord.ext import commands
 from src import inputs
 from src.common import checks
 from src.common.emoji import Emoji
-from src.common.models import HangmanM
 
 from .hangmangame import HangmanGame, HangmanGuess
 
@@ -37,7 +36,7 @@ class Hangman(commands.Cog):
             elif result == HangmanGuess.GAME_WON:
                 self.games[message.channel.id] = None
 
-                await self.bot.pool.execute(HangmanM.ADD_WIN, message.author.id)
+                await self.bot.mongo.increment("hangman", {"_id": message.author.id}, {"wins": 1})
 
                 await message.channel.send(f"{message.author.mention} won! The word was `{inst.hidden_word}`")
 
@@ -143,7 +142,7 @@ class Hangman(commands.Cog):
         """ Shows the top hangman players. """
 
         async def query():
-            return await ctx.bot.pool.fetch(HangmanM.SELECT_MOST_WINS)
+            return await ctx.bot.mongo.find("hangman").sort("wins", -1).to_list(length=100)
 
         await inputs.show_leaderboard(ctx, "Top Hangman Players", columns=["wins"], order_by="wins", query_func=query)
 

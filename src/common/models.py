@@ -53,21 +53,6 @@ class TableModel(type):
 		await con.execute(q, id_)
 
 
-class PlayerM(metaclass=TableModel):
-	_TABLE, _PK = "players", "player_id"
-
-	SELECT_TOP_VOTERS = f"""
-	SELECT player_id, votes
-	FROM {_TABLE}
-	ORDER BY votes DESC
-	LIMIT 100;
-	"""
-
-
-class ServersM(metaclass=TableModel):
-	_TABLE, _PK = "servers", "server_id"
-
-
 class ArenaStatsM:
 	INSERT_ROW = "INSERT INTO arena_stats (user_id, date_set, level, trophies) VALUES ($1, $2, $3, $4);"
 	DELETE_ROW = "DELETE FROM arena_stats WHERE user_id = $1 AND date_set = $2;"
@@ -84,29 +69,5 @@ class ArenaStatsM:
 	SELECT_LEADERBOARD = f"SELECT * FROM ({SELECT_LATEST_MEMBERS}) q ORDER BY trophies DESC;"
 
 
-class BankM(metaclass=TableModel):
-	_TABLE, _PK = "bank", "user_id"
-
-	SELECT_RICHEST = "SELECT * FROM bank ORDER BY money DESC LIMIT 100;"
-
-
-class HangmanM:
-	SELECT_MOST_WINS = "SELECT * FROM hangman ORDER BY wins DESC LIMIT 100;"
-
-	ADD_WIN = """
-	INSERT INTO hangman (user_id, wins) VALUES ($1, 1)
-	ON CONFLICT (user_id) DO
-		UPDATE SET wins = hangman.wins + 1;
-	"""
-
-
 class PopulationM(metaclass=TableModel):
 	_TABLE, _PK = "population", "population_id"
-
-
-class EmpireM(metaclass=TableModel):
-	_TABLE, _PK = "empire", "empire_id"
-
-
-class UserUpgradesM(metaclass=TableModel):
-	_TABLE, _PK = "user_upgrades", "user_upgrades_id"

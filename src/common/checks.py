@@ -5,12 +5,9 @@ from src.common.errors import (
 	MainServerOnly,
 	MissingEmpire,
 	HasEmpire,
-	UserOnQuest
 )
 
 from src.common import SNACCMAN, MainServer
-
-from src.common.models import EmpireM
 
 
 def snaccman_only():
@@ -25,24 +22,24 @@ def snaccman_only():
 
 def has_empire():
 	async def predicate(ctx):
-		row = await EmpireM.fetchrow(ctx.bot.pool, ctx.author.id, insert=False)
+		empire = await ctx.bot.mongo.find_one("empires", {"_id": ctx.author.id})
 
-		if row is None:
+		if not empire:
 			raise MissingEmpire(f"You do not have an empire yet. You can establish one using `{ctx.prefix}create`")
 
-		return row is not None
+		return True
 
 	return commands.check(predicate)
 
 
 def no_empire():
 	async def predicate(ctx):
-		row = await EmpireM.fetchrow(ctx.bot.pool, ctx.author.id, insert=False)
+		empire = await ctx.bot.mongo.find_one("empires", {"_id": ctx.author.id})
 
-		if row is not None:
+		if empire:
 			raise HasEmpire(f"You already have an established empire. View your empire using `{ctx.prefix}empire`")
 
-		return row is None
+		return True
 
 	return commands.check(predicate)
 

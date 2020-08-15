@@ -1,10 +1,8 @@
 import random
-import discord
 
 from discord.ext import commands
 
 from src import inputs
-from src.common.models import BankM
 from src.common.converters import DiscordUser
 
 
@@ -17,7 +15,7 @@ class Bank(commands.Cog):
 
 		money = random.randint(5_000, 10_000)
 
-		await BankM.increment(ctx.pool, ctx.author.id, field="money", amount=money)
+		await ctx.bot.mongo.increment_one("bank", {"id": ctx.author.id}, {"usd": money})
 
 		await ctx.send(f"You have received **${money:,}**")
 
@@ -25,9 +23,11 @@ class Bank(commands.Cog):
 	async def balance(self, ctx):
 		""" Show your bank balance(s). """
 
-		author_bank = await BankM.fetchrow(ctx.bot.pool, ctx.author.id)
+		bank = await ctx.bot.mongo.find_one("bank", {"_id": ctx.author.id})
 
-		msg = f"You have **${author_bank['money']:,}** and **{author_bank['btc']:,}** BTC"
+		usd, btc = bank.get("usd", 0), bank.get("btc", 0)
+
+		msg = f"You have **${usd:,}** and **{btc:,}** BTC"
 
 		await ctx.send(msg)
 
@@ -36,18 +36,22 @@ class Bank(commands.Cog):
 	async def steal_coins(self, ctx, *, target: DiscordUser()):
 		""" Attempt to steal from another user. """
 
-		author_bank = await BankM.fetchrow(ctx.bot.pool, ctx.author.id)
-		target_bank = await BankM.fetchrow(ctx.bot.pool, target.id)
+		# - Get data
+		author_bank = await ctx.bot.mongo.find_one("bank", {"_id": ctx.author.id})
+		target_bank = await ctx.bot.mongo.find_one("bank", {"_id": target.id})
 
-		stolen_amount = min(
-			author_bank["money"],
-			random.randint(max(1, int(target_bank["money"] * 0.025)), max(1, int(target_bank["money"] * 0.075)))
-		)
+		# - Calculate stolen amount
+		min_money, max_money = int(target_bank.get("usd", 0) * 0.025), int(target_bank.get("usd", 0) * 0.075)
+
+		stolen_amount = random.randint(max(1, min_money), max(1, max_money))
+
+		stolen_amount = min(author_bank.get("usd", 0), stolen_amount)
 
 		thief_tax = int(stolen_amount // random.uniform(2.0, 8.0)) if stolen_amount >= 2_500 else 0
 
-		await BankM.increment(ctx.bot.pool, ctx.author.id, field="money", amount=stolen_amount-thief_tax)
-		await BankM.decrement(ctx.bot.pool, target.id, field="money", amount=stolen_amount)
+		# - Update database
+		await ctx.bot.mongo.increment_one("bank", {"_id": ctx.author.id}, {"usd": stolen_amount - thief_tax})
+		await ctx.bot.mongo.decrement_one("bank", {"_id": target.id}, {"usd": stolen_amount})
 
 		s = f"You stole **${stolen_amount:,}** from **{target.display_name}!**"
 
@@ -62,9 +66,16 @@ class Bank(commands.Cog):
 		""" Display the richest players. """
 
 		async def query():
-			return await ctx.bot.pool.fetch(BankM.SELECT_RICHEST)
+			return await ctx.bot.mongo.find("bank").sort("usd", -1).to_list(length=100)
 
-		await inputs.show_leaderboard(ctx, "Richest Players", columns=["money"], order_by="money", query_func=query)
+		await inputs.show_leaderboard(
+			ctx,
+			"Richest Players",
+			columns=["usd"],
+			order_by="usd",
+			headers=["Money"],
+			query_func=query
+		)
 
 
 def setup(bot):

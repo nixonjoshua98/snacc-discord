@@ -2,7 +2,6 @@ import discord
 
 from discord.ext import commands
 
-from src.common.models import ServersM
 from src.common.converters import ServerAssignedRole
 
 
@@ -19,20 +18,19 @@ class AutoRole(commands.Cog, name="Auto Role"):
 
 		return True
 
-	async def cog_after_invoke(self, ctx):
-		await ctx.bot.update_server_cache(ctx.message.guild)
-
 	async def on_member_join(self, member):
 		""" Called when a member joins a server. """
 
-		svr = await self.bot.get_server_config(member.guild)
+		svr = await self.bot.mongo.find_one("servers", {"_id": member.guild.id})
 
 		try:
-			role = svr["bot_role" if member.bot else "user_role"]
-			role = member.guild.get_role(role)
+			role = svr.get("bot_role" if member.bot else "user_role")
 
 			if role is not None:
-				await member.add_roles(role)
+				role = member.guild.get_role(role)
+
+				if role is not None:
+					await member.add_roles(role)
 
 		except (discord.Forbidden, discord.HTTPException):
 			""" We failed to add the role. """
@@ -45,7 +43,7 @@ class AutoRole(commands.Cog, name="Auto Role"):
 	async def set_user_role(self, ctx, *, role: ServerAssignedRole() = None):
 		""" Set the role which is given to every user when they join the server. """
 
-		await ServersM.set(ctx.bot.pool, ctx.guild.id, user_role=getattr(role, "id", 0))
+		await ctx.bot.mongo.update_one("servers", {"_id": ctx.guild.id}, {"user_role": getattr(role, "id", 0)})
 
 		if role is None:
 			await ctx.send(f"User role has been removed")
@@ -57,7 +55,7 @@ class AutoRole(commands.Cog, name="Auto Role"):
 	async def set_bot_role(self, ctx, *, role: ServerAssignedRole() = None):
 		""" Set the role which is given to every bot account when they join the server. """
 
-		await ServersM.set(ctx.bot.pool, ctx.guild.id, bot_role=getattr(role, "id", 0))
+		await ctx.bot.mongo.update_one("servers", {"_id": ctx.guild.id}, {"bot_role": getattr(role, "id", 0)})
 
 		if role is None:
 			await ctx.send(f"Bot role has been removed")

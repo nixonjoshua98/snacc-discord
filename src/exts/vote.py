@@ -6,7 +6,6 @@ from discord.ext import commands, tasks
 
 from src import inputs
 from src.common import SupportServer
-from src.common.models import PlayerM
 
 
 class Vote(commands.Cog):
@@ -33,10 +32,7 @@ class Vote(commands.Cog):
 
 			user = self.bot.get_user(user_id)
 
-			async with self.bot.pool.acquire() as con:
-				_ = await PlayerM.fetchrow(con, user_id)
-
-				await PlayerM.increment(con, user_id, field="votes", amount=num_votes)
+			await self.bot.mongo.increment_one("players", {"_id": user_id}, {"votes": num_votes})
 
 			if user is not None:
 				try:
@@ -70,7 +66,7 @@ class Vote(commands.Cog):
 		""" Show the top voters (love you all) """
 
 		async def query():
-			return await ctx.bot.pool.fetch(PlayerM.SELECT_TOP_VOTERS)
+			return await ctx.bot.mongo.find("players").sort("votes", -1).to_list(length=100)
 
 		await inputs.show_leaderboard(ctx, "Top Voters", columns=["votes"], order_by="votes", query_func=query)
 

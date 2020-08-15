@@ -9,7 +9,7 @@ from src import inputs
 
 from src.common import checks
 from src.common.converters import EmpireQuest
-from src.common.models import PopulationM, BankM, UserUpgradesM
+from src.common.models import PopulationM
 
 from src.data import EmpireQuests, MilitaryGroup
 
@@ -24,19 +24,17 @@ class Quests(commands.Cog):
 
 	@checks.has_empire()
 	@commands.max_concurrency(1, commands.BucketType.user)
-	@commands.command(name="quest", aliases=["q"], invoke_without_command=True, usage="<quest=None>")
-	async def quest_group(self, ctx, quest: EmpireQuest() = None):
+	@commands.command(name="quest", aliases=["q"], invoke_without_command=True)
+	async def quest_group(self, ctx, quest: EmpireQuest()):
 		""" Embark on a new quest. """
 
+		# - Query tge database
 		quests = await ctx.bot.mongo.find("quests", {"user": ctx.author.id}).to_list(length=100)
+		upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": ctx.author.id})
 
-		upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
+		population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
 
-		max_num_quests = self.get_max_quests(upgrades)
-
-		if len(quests) < max_num_quests:
-			population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
-
+		if len(quests) < self.get_max_quests(upgrades):
 			power = MilitaryGroup.get_total_power(population)
 
 			duration = dt.timedelta(hours=quest.get_duration(upgrades))
@@ -47,23 +45,26 @@ class Quests(commands.Cog):
 
 			await ctx.bot.mongo.insert_one("quests", row)
 
-			return await ctx.send(f"You have embarked on **- {quest.name} -** quest! Check back in **{duration}**")
+			await ctx.send(f"You have embarked on **- {quest.name} -** quest! Check back in **{duration}**")
+
+		else:
+			await ctx.send("You have already embarked on your maximum number of quests.")
 
 	@checks.has_empire()
 	@commands.command(name="quests")
 	async def quests(self, ctx):
 		""" Show all of the available quests to embark on. """
 
+		# - Query the database
+		upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": ctx.author.id})
 		population = await PopulationM.fetchrow(ctx.pool, ctx.author.id)
-
-		upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
 
 		power = MilitaryGroup.get_total_power(population)
 
 		embeds = []
 
 		for quest in EmpireQuests.quests:
-			embed = ctx.bot.embed(title=f"Quest {quest.id}: {quest.name}", thumbnail=ctx.author.avatar_url)
+			embed = ctx.bot.embed(title=f"Quest {quest.id}: {quest.name}")
 
 			sucess_rate = quest.success_rate(power)
 
@@ -87,13 +88,11 @@ class Quests(commands.Cog):
 	async def status(self, ctx):
 		""" Show the status of your current quests and collect your rewards from your completed quests. """
 
+		# - Query the database
 		quests = await ctx.bot.mongo.find("quests", {"user": ctx.author.id}).to_list(length=100)
+		upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": ctx.author.id})
 
-		upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
-
-		max_num_quests = self.get_max_quests(upgrades)
-
-		embed = ctx.bot.embed(title=f"Ongoing Quests {len(quests)}/{max_num_quests}", thumbnail=ctx.author.avatar_url)
+		embed = ctx.bot.embed(title=f"Ongoing Quests {len(quests)}/{self.get_max_quests(upgrades)}")
 
 		for quest in quests:
 			inst = EmpireQuests.get(id=quest["quest"])
@@ -110,14 +109,14 @@ class Quests(commands.Cog):
 
 			# - Quest has ended
 			if (time_since_start.total_seconds() / 3600) >= duration:
-				upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
+				upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": ctx.author.id})
 
-				quest_completed = quest["success_rate"] >= random.uniform(0.0, 1.0)
+				quest_completed = quest.get("success_rate", 1.0) >= random.uniform(0.0, 1.0)
 
 				money_reward = inst.get_reward(upgrades)
 
 				if quest_completed:
-					await BankM.increment(ctx.bot.pool, ctx.author.id, field="money", amount=money_reward)
+					await ctx.bot.mongo.increment_one("bank", {"_id": ctx.author.id}, {"usd": money_reward})
 
 				embed.add_field(
 					name=inst.name,

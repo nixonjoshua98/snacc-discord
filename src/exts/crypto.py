@@ -7,7 +7,6 @@ from discord.ext import commands, tasks
 import matplotlib.pyplot as plt
 import datetime as dt
 
-from src.common.models import BankM
 from src.common.converters import Range
 
 
@@ -17,23 +16,22 @@ class Crypto(commands.Cog):
 
 		self._price_cache = dict()
 
-		self.start_price_update_loop()
+		if not self.bot.debug:
+			print("Starting loop: Crpyto")
+
+			self.update_prices_loop.start()
 
 	async def cog_before_invoke(self, ctx):
-		if self._price_cache.get("history", None) is None:
+		if self._price_cache.get("history") is None:
 			await self.update_prices()
-
-		ctx.bank_data["author_bank"] = await BankM.fetchrow(ctx.bot.pool, ctx.author.id)
 
 	@commands.group(name="crpto", aliases=["c"], invoke_without_command=True)
 	async def crypto_group(self, ctx):
 		""" Show the current price of Bitcoin. Bitcoin prices are divided by 5. """
 
-		embed = discord.Embed(title="Cryptocurrency", color=discord.Color.orange())
+		current_price = self._price_cache['current']
 
-		price = self._price_cache['current']
-
-		embed.description = f":moneybag: **Current Price: ${price:,}**"
+		embed = ctx.bot.embed(title="Cryptocurrency", description=f":moneybag: **Current Price: ${current_price:,}**")
 
 		file = discord.File("graph.png", filename="graph.png")
 
@@ -46,14 +44,16 @@ class Crypto(commands.Cog):
 	async def buy_coin(self, ctx, amount: Range(1, 100)):
 		""" Buy Bitcoin(s). """
 
+		bank = await ctx.bot.mongo.find_one("bank", {"_id": ctx.author.id})
+
 		price = self._price_cache["current"] * amount
 
-		if price > ctx.bank_data["author_bank"]["money"]:
+		if price > bank.get("usd", 0):
 			await ctx.send(f"You can't afford to buy **{amount}** Bitcoin(s).")
 
 		else:
-			await BankM.increment(ctx.bot.pool, ctx.author.id, field="BTC", amount=amount)
-			await BankM.decrement(ctx.bot.pool, ctx.author.id, field="money", amount=price)
+			await ctx.bot.mongo.increment_one("bank", {"_id": ctx.author.id}, {"btc": amount})
+			await ctx.bot.mongo.decrement_one("bank", {"_id": ctx.author.id}, {"usd": price})
 
 			await ctx.send(f"You bought **{amount}** Bitcoin(s) for **${price:,}**!")
 
@@ -63,12 +63,14 @@ class Crypto(commands.Cog):
 
 		price = self._price_cache["current"] * amount
 
-		if amount > ctx.bank_data["author_bank"]["btc"]:
+		bank = await ctx.bot.mongo.find_one("bank", {"_id": ctx.author.id})
+
+		if amount > bank.get("btc", 0):
 			await ctx.send(f"You are trying to sell more Bitcoin than you currently own.")
 
 		else:
-			await BankM.increment(ctx.bot.pool, ctx.author.id, field="money", amount=price)
-			await BankM.decrement(ctx.bot.pool, ctx.author.id, field="BTC", amount=amount)
+			await ctx.bot.mongo.increment_one("bank", {"_id": ctx.author.id}, {"usd": price})
+			await ctx.bot.mongo.decrement_one("bank", {"_id": ctx.author.id}, {"btc": amount})
 
 			await ctx.send(f"You sold **{amount}** Bitcoin(s) for **${price:,}**!")
 
@@ -80,7 +82,8 @@ class Crypto(commands.Cog):
 		async with httpx.AsyncClient() as client:
 			r = await client.get(
 				f"https://api.coindesk.com/v1/bpi/historical/close.json?"
-				f"start={date_start.strftime('%Y-%m-%d')}&end={date_end.strftime('%Y-%m-%d')}"
+				f"start={date_start.strftime('%Y-%m-%d')}&"
+				f"end={date_end.strftime('%Y-%m-%d')}"
 			)
 
 			data = r.json()
@@ -96,8 +99,9 @@ class Crypto(commands.Cog):
 
 		return int(data["bpi"]["USD"]["rate_float"]) // 5
 
-	@staticmethod
-	def create_graph(data):
+	def create_graph(self):
+		data = self._price_cache["history"]
+
 		fig, ax = plt.subplots(facecolor="#2f3136")
 
 		plt.plot(data.keys(), data.values(), linewidth=3, color="white")
@@ -110,14 +114,6 @@ class Crypto(commands.Cog):
 
 		plt.savefig('graph.png', facecolor=fig.get_facecolor(), transparent=True)
 
-	def start_price_update_loop(self):
-		async def predicate():
-			print("Starting loop: Crpyto")
-
-			self.update_prices_loop.start()
-
-		asyncio.create_task(predicate())
-
 	@tasks.loop(minutes=15.0)
 	async def update_prices_loop(self):
 		await self.update_prices()
@@ -128,7 +124,7 @@ class Crypto(commands.Cog):
 
 		self._price_cache["history"]["current"] = self._price_cache["current"]
 
-		self.create_graph(self._price_cache["history"])
+		self.create_graph()
 
 
 def setup(bot):

@@ -27,18 +27,18 @@ class _MoneyUnit(_Unit):
 		self.income_hour = kwargs.get("income_hour", 0)
 
 	def get_max_amount(self, upgrades: dict):
-		return self.max_amount + upgrades["extra_money_units"]
+		return self.max_amount + upgrades.get("extra_money_units", 0)
 
 	def get_hourly_income(self, total, upgrades):
 		income = self.income_hour * total
-		income = income * (1.0 + (upgrades["more_income"] * 0.05))
+		income = income * (1.0 + (upgrades.get("more_income", 0) * 0.05))
 
 		return math.floor(income)
 
 	def calculate_price(self, upgrades, total_owned: int, total_buying: int = 1) -> int:
 		cost = self.get_price(total_owned, total_buying)
 
-		return math.floor(cost * (1.0 - (upgrades['cheaper_money_units'] * 0.005)))
+		return math.floor(cost * (1.0 - (upgrades.get("cheaper_money_units", 0) * 0.005)))
 
 
 class _MilitaryUnit(_Unit):
@@ -50,15 +50,15 @@ class _MilitaryUnit(_Unit):
 		self.upkeep_hour = kwargs.get("upkeep_hour", 0)
 
 	def get_max_amount(self, upgrades: dict):
-		return self.max_amount + upgrades["extra_military_units"]
+		return self.max_amount + upgrades.get("extra_military_units", 0)
 
 	def get_hourly_upkeep(self, total, upgrades):
-		return math.floor(self.upkeep_hour * total * (1.0 - (upgrades["less_upkeep"] * 0.05)))
+		return math.floor(self.upkeep_hour * total * (1.0 - (upgrades.get("less_upkeep", 0) * 0.05)))
 
 	def calculate_price(self, upgrades, total_owned: int, total_buying: int = 1) -> int:
 		cost = self.get_price(total_owned, total_buying)
 
-		return math.floor(cost * (1.0 - (upgrades['cheaper_military_units'] * 0.005)))
+		return math.floor(cost * (1.0 - (upgrades.get("cheaper_military_units") * 0.005)))
 
 
 class _MoneyGroup(type):
@@ -80,7 +80,7 @@ class _MoneyGroup(type):
 		page = TextPage(title="Money Making Units", headers=["ID", "Unit", "Owned", "Income", "Cost"])
 
 		for unit in self._UNITS:
-			units_owned = empire[unit.db_col]
+			units_owned = empire.get(unit.db_col, 0)
 
 			if units_owned < unit.get_max_amount(upgrades):
 				unit_hourly_income = unit.get_hourly_income(1, upgrades)
@@ -97,7 +97,7 @@ class _MoneyGroup(type):
 		return page
 
 	def get_total_hourly_income(self, empire, upgrades):
-		return sum(map(lambda u: u.get_hourly_income(empire[u.db_col], upgrades), self.units))
+		return sum(map(lambda u: u.get_hourly_income(empire.get(u.db_col, 0), upgrades), self.units))
 
 	@property
 	def units(self): return self._UNITS
@@ -119,7 +119,7 @@ class _MilitaryGroup(type):
 		page = TextPage(title="Military Units", headers=["ID", "Unit", "Owned", "Power", "Upkeep", "Cost"])
 
 		for unit in self._UNITS:
-			units_owned = empire[unit.db_col]
+			units_owned = empire.get(unit.db_col, 0)
 
 			if units_owned < unit.get_max_amount(upgrades):
 				hourly_upkeep = unit.get_hourly_upkeep(1, upgrades)

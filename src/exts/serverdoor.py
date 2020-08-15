@@ -2,7 +2,6 @@ import discord
 
 from discord.ext import commands
 
-from src.common.models import ServersM
 
 GUILD_JOIN_MESSAGE = """
 The infamous **{bot.user.name}** has graced your ~~lowly~~ server! [{guild.owner.mention}]
@@ -42,19 +41,16 @@ class ServerDoor(commands.Cog, name="Server Door"):
 
             break
 
-    async def cog_after_invoke(self, ctx):
-        await ctx.bot.update_server_cache(ctx.message.guild)
-
     @commands.has_permissions(administrator=True)
     @commands.command(name="toggledoor")
     async def toggle_door(self, ctx):
         """ Toggle the messages posted when a member joins or leaves the server. """
 
-        config = await ctx.bot.get_server_config(ctx.guild, refresh=True)
+        svr = await self.bot.mongo.find_one("servers", {"_id": ctx.guild.id})
 
-        display_joins = config.get("display_joins", True)
+        display_joins = svr.get("display_joins", False)
 
-        await ServersM.set(ctx.bot.pool, ctx.guild.id, display_joins=not display_joins)
+        await ctx.bot.mongo.update_one("servers", {"_id": ctx.guild.id}, {"display_joins": not display_joins})
 
         await ctx.send(f"Server door: {'`Hidden`' if display_joins else '`Shown`'}")
 
@@ -70,7 +66,7 @@ class ServerDoor(commands.Cog, name="Server Door"):
     async def on_member_join(self, member):
         """ Called when a member joins a server. """
 
-        svr = await self.bot.get_server_config(member.guild)
+        svr = await self.bot.mongo.find_one("servers", {"_id": member.guild.id})
 
         if svr.get("display_joins"):
             await self.send_message(member.guild, f"Welcome {member.mention} to {member.guild.name}!")
@@ -79,7 +75,7 @@ class ServerDoor(commands.Cog, name="Server Door"):
     async def on_member_remove(self, member):
         """ Called when a member leaves a server. """
 
-        svr = await self.bot.get_server_config(member.guild)
+        svr = await self.bot.mongo.find_one("servers", {"_id": member.guild.id})
 
         if svr.get("display_joins"):
             msg = f"**{str(member)}** " + (f"({member.nick}) " if member.nick else "") + "has left the server"

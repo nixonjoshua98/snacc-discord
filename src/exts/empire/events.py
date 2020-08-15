@@ -1,8 +1,6 @@
 import random
 
-from src.common.models import BankM, PopulationM, UserUpgradesM
-
-from . import utils
+from src.common.models import PopulationM
 
 from src.data import MilitaryGroup, MoneyGroup
 
@@ -34,14 +32,15 @@ async def stolen_event(ctx):
 	""" Empire was stolen from event. """
 
 	# - Load the data
-	author_upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
-	author_population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
+	upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": ctx.author.id})
 
-	hourly_income = utils.get_hourly_money_change(author_population, author_upgrades)
+	population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
+
+	hourly_income = max(0, MoneyGroup.get_total_hourly_income(population, upgrades))
 
 	money_stolen = random.randint(max(250, hourly_income // 2), max(1_000, hourly_income))
 
-	await BankM.decrement(ctx.bot.pool, ctx.author.id, field="money", amount=money_stolen)
+	await ctx.bot.mongo.decrement_one("bank", {"_id": ctx.author.id}, {"usd": money_stolen})
 
 	s = f"${money_stolen:,}" if money_stolen > 0 else "nothing"
 
@@ -58,14 +57,15 @@ async def loot_event(ctx):
 		"treasure map",		"rare scroll",		"recursive bow"
 	)
 
-	author_upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
-	author_population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
+	upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": ctx.author.id})
 
-	hourly_income = utils.get_hourly_money_change(author_population, author_upgrades)
+	population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
+
+	hourly_income = max(0, MoneyGroup.get_total_hourly_income(population, upgrades))
 
 	money_gained = random.randint(max(500, hourly_income // 2), max(1_000, int(hourly_income * 0.75)))
 
-	await BankM.increment(ctx.bot.pool, ctx.author.id, field="money", amount=money_gained)
+	await ctx.bot.mongo.increment_one("bank", {"_id": ctx.author.id}, {"usd": money_gained})
 
 	await ctx.send(f"You found **- {random.choice(items)} -** which sold for **${money_gained:,}**")
 
@@ -74,11 +74,12 @@ async def recruit_unit(ctx):
 	""" Empire gains a unit or gains money. """
 
 	author_population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
-	author_upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
+
+	upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": ctx.author.id})
 
 	units = MilitaryGroup.units + MoneyGroup.units
 
-	units = list(filter(lambda u: author_population[u.db_col] < u.get_max_amount(author_upgrades), units))
+	units = list(filter(lambda u: author_population[u.db_col] < u.get_max_amount(upgrades), units))
 
 	if units:
 		unit_recruited = sorted(units, key=lambda u: u.get_price(author_population[u.db_col]))[0]

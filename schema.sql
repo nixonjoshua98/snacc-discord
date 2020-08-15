@@ -1,40 +1,10 @@
 
-CREATE TABLE IF NOT EXISTS players (
-player_id   BIGINT                      PRIMARY KEY,
-votes       SMALLINT                    DEFAULT 0 CHECK (votes >= 0)
-);
-
-
 CREATE TABLE IF NOT EXISTS arena_stats (
 arena_stat_id   SERIAL,
 user_id         BIGINT,
 level           SMALLINT                    DEFAULT 0   CHECK (level >= 0),
 trophies        SMALLINT                    DEFAULT 0   CHECK (trophies >= 0),
 date_set        TIMESTAMP WITHOUT time zone DEFAULT (now() at time zone 'utc')
-);
-
-CREATE table IF NOT EXISTS hangman (
-user_id     BIGINT  PRIMARY KEY,
-wins        INTEGER DEFAULT 0
-);
-
-
-CREATE table IF NOT EXISTS servers (
-server_id               BIGINT      PRIMARY KEY,
-
--- Entry roles
-user_role               BIGINT      DEFAULT 0,
-bot_role                BIGINT      DEFAULT 0,
-
-prefix                  VARCHAR     DEFAULT '!',
-display_joins           BOOL        DEFAULT False
-);
-
-
-CREATE table IF NOT EXISTS bank (
-user_id         BIGINT PRIMARY KEY,
-money           BIGINT DEFAULT 1000 CHECK (money    >= 0),
-BTC             BIGINT DEFAULT 0    CHECK (BTC      >= 0)
 );
 
 
@@ -61,29 +31,4 @@ warriors        SMALLINT    DEFAULT 0 CHECK (warriors   >= 0),
 spearmen        SMALLINT    DEFAULT 0 CHECK (spearmen   >= 0),
 knights         SMALLINT    DEFAULT 0 CHECK (knights    >= 0),
 archers         SMALLINT    DEFAULT 0 CHECK (archers    >= 0)
-);
-
-
-CREATE TABLE IF NOT EXISTS empire (
-empire_id       BIGINT                      PRIMARY KEY,
-name            VARCHAR                     DEFAULT 'My Empire',
-
--- Timestamps
-last_login      TIMESTAMP WITHOUT time zone DEFAULT (now() at time zone 'utc'),
-last_income     TIMESTAMP WITHOUT time zone DEFAULT (now() at time zone 'utc'),
-last_attack     TIMESTAMP WITHOUT time zone DEFAULT (now() at time zone 'utc')
-);
-
-
-CREATE TABLE IF NOT EXISTS user_upgrades (
-user_upgrades_id        BIGINT      PRIMARY KEY,
-extra_money_units       SMALLINT    DEFAULT 0 CHECK (extra_money_units      >= 0),
-extra_military_units    SMALLINT    DEFAULT 0 CHECK (extra_military_units   >= 0),
-less_upkeep             SMALLINT    DEFAULT 0 CHECK (less_upkeep            >= 0),
-more_income             SMALLINT    DEFAULT 0 CHECK (more_income            >= 0),
-cheaper_money_units     SMALLINT    DEFAULT 0 CHECK (cheaper_money_units    >= 0),
-cheaper_military_units  SMALLINT    DEFAULT 0 CHECK (cheaper_military_units >= 0),
-more_quest_money        SMALLINT    DEFAULT 0 CHECK (more_quest_money       >= 0),
-quicker_quests          SMALLINT    DEFAULT 0 CHECK (quicker_quests         >= 0),
-more_quest_money        SMALLINT    DEFAULT 0 CHECK (more_quest_money       >= 0)
 );

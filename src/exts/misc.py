@@ -56,13 +56,9 @@ class Miscellaneous(commands.Cog):
 			value = "\n".join(definitions)
 			value = value[:1021] + "..." if len(value) > 1024 else value
 
-			embed = discord.Embed(title=word, colour=discord.Color.orange(), url=str(r.url))
-
-			embed.timestamp = dt.datetime.utcnow()
+			embed = ctx.bot.embed(title=word)
 
 			embed.add_field(name="Definition(s)", value=value)
-
-			embed.set_footer(text=ctx.bot.user.name, icon_url=ctx.bot.user.avatar_url)
 
 			return await ctx.send(embed=embed)
 
