@@ -93,6 +93,12 @@ class Miscellaneous(commands.Cog):
 			cpu = cpuinfo.get_cpu_info()
 
 			system = {
+				"Bot": {
+					"Uptime": ctx.bot.uptime,
+					"Commands": f"{len(ctx.bot.all_commands):,}",
+					"Servers": f"{len(ctx.bot.guilds):,}",
+					"Users": f"{len(ctx.bot.users):,}"
+				},
 				"CPU": {
 					"Brand": cpu["brand"],
 					"Logical Cores": psutil.cpu_count(),
@@ -108,15 +114,10 @@ class Miscellaneous(commands.Cog):
 
 			return system
 
-		embed = ctx.bot.embed(title="Bot Stats", thumbnail=ctx.author.avatar_url)
+		embed = ctx.bot.embed(title="Bot Stats")
 
 		for k, v in get_system().items():
-			if isinstance(v, dict):
-				embed.add_field(name=k, value="\n".join([f"{k2}: **{v2}**" for k2, v2 in v.items()]), inline=False)
-
-				continue
-
-			embed.add_field(name=k, value=v, inline=False)
+			embed.add_field(name=k, value="\n".join([f"{k2}: **{v2}**" for k2, v2 in v.items()]), inline=False)
 
 		await ctx.send(embed=embed)
 

@@ -10,8 +10,7 @@ from discord.ext import tasks, commands
 
 from src import inputs
 from src.common import MainServer, checks
-from src.common.models import PopulationM
-from src.common.converters import EmpireUnit, Range, EmpireTargetUser
+from src.common.converters import EmpireTargetUser
 
 from src.data import MilitaryGroup, MoneyGroup
 
@@ -48,18 +47,18 @@ class Empire(commands.Cog):
 
 		hourly_income = max(0, MoneyGroup.get_total_hourly_income(population, upgrades))
 
-		available_units = list(itertools.filterfalse(lambda u: population[u.db_col] == 0, MilitaryGroup.units))
+		available_units = list(itertools.filterfalse(lambda u: population[u.key] == 0, MilitaryGroup.units))
 
-		available_units.sort(key=lambda u: u.calculate_price(upgrades, population[u.db_col]), reverse=False)
+		available_units.sort(key=lambda u: u.price(upgrades, population[u.key]), reverse=False)
 
 		for unit in available_units:
-			for i in range(1, population[unit.db_col] + 1):
-				price = unit.calculate_price(upgrades, population[unit.db_col] - i, i)
+			for i in range(1, population[unit.key] + 1):
+				price = unit.price(upgrades, population[unit.key] - i, i)
 
 				if (price + units_lost_cost) < hourly_income:
 					units_lost[unit] = i
 
-				units_lost_cost = sum([u.get_price(population[unit.db_col] - n, n) for u, n in units_lost.items()])
+				units_lost_cost = sum([u.get_price(population[unit.key] - n, n) for u, n in units_lost.items()])
 
 		return units_lost
 
@@ -86,21 +85,20 @@ class Empire(commands.Cog):
 		""" View your empire. """
 
 		empire = await ctx.bot.mongo.find_one("empires", {"_id": ctx.author.id})
+		workers = await ctx.bot.mongo.find_one("workers", {"_id": ctx.author.id})
 		upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": ctx.author.id})
-
-		population = await PopulationM.fetchrow(ctx.pool, ctx.author.id)
+		military = await ctx.bot.mongo.find_one("military", {"_id": ctx.author.id})
 
 		# - Calculate the values used in the Embed message
-		hourly_income = MoneyGroup.get_total_hourly_income(population, upgrades)
-		hourly_upkeep = MilitaryGroup.get_total_hourly_upkeep(population, upgrades)
+		hourly_income = MoneyGroup.get_total_hourly_income(workers, upgrades)
+		hourly_upkeep = MilitaryGroup.get_total_hourly_upkeep(military, upgrades)
 
-		total_power = MilitaryGroup.get_total_power(population)
+		total_power = MilitaryGroup.get_total_power(military)
+
+		name = empire.get('name', 'No Name Empire')
 
 		# - Create the Embed message which will be sent back to Discord
-		embed = ctx.bot.embed(
-			title=f"{str(ctx.author)}: {empire.get('name', 'No Name Empire')}",
-			thumbnail=ctx.author.avatar_url
-		)
+		embed = ctx.bot.embed(title=f"{str(ctx.author)}: {name}", thumbnail=ctx.author.avatar_url)
 
 		embed.add_field(name="General", value=f"**Power Rating:** `{total_power:,}`")
 
@@ -127,15 +125,15 @@ class Empire(commands.Cog):
 
 		# - Load data from database
 		empire = await ctx.bot.mongo.find_one("empires", {"_id": ctx.author.id})
-		upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": empire["_id"]})
-
-		population = await PopulationM.fetchrow(ctx.pool, empire["_id"])
+		upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": ctx.author.id})
+		workers = await ctx.bot.mongo.find_one("workers", {"_id": ctx.author.id})
+		military = await ctx.bot.mongo.find_one("military", {"_id": ctx.author.id})
 
 		# - Calculate passive income
 		hours = min(MAX_HOURS_OFFLINE, (now - empire["last_income"]).total_seconds() / 3600)
 
-		hourly_income = MoneyGroup.get_total_hourly_income(population, upgrades)
-		hourly_upkeep = MilitaryGroup.get_total_hourly_upkeep(population, upgrades)
+		hourly_income = MoneyGroup.get_total_hourly_income(workers, upgrades)
+		hourly_upkeep = MilitaryGroup.get_total_hourly_upkeep(military, upgrades)
 
 		money_change = int((hourly_income + hourly_upkeep) * hours)
 
@@ -153,12 +151,11 @@ class Empire(commands.Cog):
 
 		# - Load data from database
 		author_bank = await ctx.bot.mongo.find_one("bank", {"_id": ctx.author.id})
+		author_military = await ctx.bot.mongo.find_one("military", {"_id": ctx.author.id})
+		target_military = await ctx.bot.mongo.find_one("military", {"_id": target.id})
 
-		author_population = await PopulationM.fetchrow(ctx.pool, ctx.author.id)
-		target_population = await PopulationM.fetchrow(ctx.pool, target.id)
-
-		author_power = MilitaryGroup.get_total_power(author_population)
-		target_power = MilitaryGroup.get_total_power(target_population)
+		author_power = MilitaryGroup.get_total_power(author_military)
+		target_power = MilitaryGroup.get_total_power(target_military)
 
 		if author_bank.get("usd", 0) < 500:
 			await ctx.send(f"Scouting an empire costs **$500**.")
@@ -183,12 +180,12 @@ class Empire(commands.Cog):
 		async with ctx.pool.acquire() as con:
 
 			# - Load the populations of each empire
-			target_population = await PopulationM.fetchrow(con, target.id)
-			author_population = await PopulationM.fetchrow(con, ctx.author.id)
+			target_military = await ctx.bot.mongo.find_one("military", {"_id": target.id})
+			author_military = await ctx.bot.mongo.find_one("military", {"_id": ctx.author.id})
 
 			# - Power ratings of each empire which is used to calculate the win chance for the author (attacker)
-			author_power = MilitaryGroup.get_total_power(author_population)
-			target_power = MilitaryGroup.get_total_power(target_population)
+			target_power = MilitaryGroup.get_total_power(target_military)
+			author_power = MilitaryGroup.get_total_power(author_military)
 
 			win_chance = self.get_win_chance(author_power, target_power)
 
@@ -201,7 +198,7 @@ class Empire(commands.Cog):
 
 				money_stolen = await self.calculate_money_lost(target_bank)
 
-				units_lost = await self.calculate_units_lost(target_population, target_upgrades)
+				units_lost = await self.calculate_units_lost(target_military, target_upgrades)
 
 				bonus_money = int(money_stolen * (1.0 - win_chance) if win_chance <= 0.5 else 0)
 
@@ -209,7 +206,11 @@ class Empire(commands.Cog):
 				await ctx.bot.mongo.decrement_one("bank", {"_id": target.id}, {"usd": money_stolen + bonus_money})
 
 				if units_lost:
-					await PopulationM.decrement_many(con, target.id, {k.db_col: v for k, v in units_lost.items()})
+					await ctx.bot.mongo.decrement_one(
+						con,
+						{"_id": target.id},
+						{k.key: v for k, v in units_lost.items()}
+					)
 
 				# - Put the target empire into a 'cooldown' so they cannot get attacked for a period of time
 				await ctx.bot.mongo.update_one("empires", {"_id": target.id}, {"last_attack": dt.datetime.utcnow()})
@@ -257,63 +258,13 @@ class Empire(commands.Cog):
 		for event in chosen_events:
 			await event(ctx)
 
-	@checks.has_empire()
-	@commands.command(name="units")
-	async def show_units(self, ctx):
-		""" Show all the possible units which you can buy. """
-
-		# - Load the data from the database
-		upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": ctx.author.id})
-
-		population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
-
-		# - Unit pages
-		money_units_page = MoneyGroup.create_units_page(population, upgrades).get()
-		military_units_page = MilitaryGroup.create_units_page(population, upgrades).get()
-
-		await inputs.send_pages(ctx, [money_units_page, military_units_page])
-
-	@checks.has_empire()
-	@commands.command(name="hire", aliases=["buy"])
-	@commands.max_concurrency(1, commands.BucketType.user)
-	async def hire_unit(self, ctx, unit: EmpireUnit(), amount: Range(1, 100) = 1):
-		""" Hire a new unit to serve your empire. """
-
-		# - Load the data
-		bank = await ctx.bot.mongo.find_one("bank", {"_id": ctx.author.id})
-		upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": ctx.author.id})
-
-		population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
-
-		# - Cost of upgrading from current -> (current + amount)
-		price = unit.calculate_price(upgrades, population.get(unit.db_col, 0), amount)
-
-		max_units = unit.get_max_amount(upgrades)
-
-		# - Buying the unit will surpass the owned limit of that particular unit
-		if population.get(unit.db_col, 0) + amount > max_units:
-			await ctx.send(f"**{unit.display_name}** have a limit of **{max_units}** units.")
-
-		# - Author cannot afford to buy the unit
-		elif price > bank.get("usd", 0):
-			await ctx.send(f"You can't afford to hire **{amount}x {unit.display_name}**")
-
-		else:
-			# - Deduct the money from the authors bank
-			await ctx.bot.mongo.decrement_one("bank", {"_id": ctx.author.id}, {"usd": price})
-
-			# - Add the unit to the author's empire
-			await PopulationM.increment(ctx.bot.pool, ctx.author.id, field=unit.db_col, amount=amount)
-
-			await ctx.send(f"Bought **{amount}x {unit.display_name}** for **${price:,}**!")
-
 	@commands.cooldown(1, 15, commands.BucketType.guild)
 	@commands.command(name="power", aliases=["empires"])
 	async def power_leaderboard(self, ctx):
 		""" Display the most powerful empires. """
 
 		async def query():
-			empires = await PopulationM.fetchall(ctx.pool)
+			empires = await ctx.bot.mongo.find("military").to_list(length=100)
 
 			for i, row in enumerate(empires):
 				empires[i] = dict(**row, __power__=MilitaryGroup.get_total_power(row))
@@ -353,16 +304,16 @@ class Empire(commands.Cog):
 					continue
 
 				# - Query the database
+				workers = await self.bot.mongo.find_one("workers", {"_id": empire["_id"]})
 				upgrades = await self.bot.mongo.find_one("upgrades", {"_id": empire["_id"]})
-
-				population = await PopulationM.fetchrow(con, empire["_id"])
+				military = await self.bot.mongo.find_one("military", {"_id": empire["_id"]})
 
 				# - Total number of hours we need to credit the empire's bank
 				hours = (now - empire["last_income"]).total_seconds() / 3600
 
 				# - Hourly income/keep
-				total_hourly_income = MoneyGroup.get_total_hourly_income(population, upgrades)
-				total_hourly_upkeep = MilitaryGroup.get_total_hourly_upkeep(population, upgrades)
+				total_hourly_income = MoneyGroup.get_total_hourly_income(workers, upgrades)
+				total_hourly_upkeep = MilitaryGroup.get_total_hourly_upkeep(military, upgrades)
 
 				# - Overall money gained/lost per hour
 				money_change = int((total_hourly_income - total_hourly_upkeep) * hours)

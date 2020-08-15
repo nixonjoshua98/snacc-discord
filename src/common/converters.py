@@ -4,8 +4,6 @@ import datetime as dt
 
 from discord.ext import commands
 
-from src.common.models import PopulationM
-
 from src.data import EmpireQuests, EmpireUpgrades, MilitaryGroup, MoneyGroup
 
 

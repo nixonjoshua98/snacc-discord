@@ -67,7 +67,3 @@ class ArenaStatsM:
 	"""
 
 	SELECT_LEADERBOARD = f"SELECT * FROM ({SELECT_LATEST_MEMBERS}) q ORDER BY trophies DESC;"
-
-
-class PopulationM(metaclass=TableModel):
-	_TABLE, _PK = "population", "population_id"

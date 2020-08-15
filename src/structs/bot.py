@@ -17,11 +17,11 @@ from src.structs import CustomContext, MongoClient
 
 EXTENSIONS = [
     "errorhandler", "arenastats",   "empire",
-    "quests",       "shop",         "hangman",
-    "gambling",     "bank",         "crypto",
-    "darkness",     "moderator",    "misc",
-    "reminder",     "autorole",     "serverdoor",
-    "settings",     "vote",
+    "quests",       "shop",         "units",
+    "hangman",      "gambling",     "bank",
+    "crypto",       "darkness",     "moderator",
+    "misc",         "reminder",     "autorole",
+    "serverdoor",   "settings",     "vote",
 ]
 
 
@@ -36,11 +36,17 @@ class Bot(commands.Bot):
 
         self.server_cache = dict()
 
+        self._bot_started = None
+
         self.add_check(self.bot_check)
 
     @property
     def debug(self):
         return int(os.getenv("DEBUG", 0))
+
+    @property
+    def uptime(self):
+        return dt.timedelta(seconds=int((dt.datetime.utcnow() - self._bot_started).total_seconds()))
 
     @property
     def users(self):
@@ -54,6 +60,8 @@ class Bot(commands.Bot):
 
     async def on_ready(self):
         """ Invoked once the bot is connected and ready to use. """
+
+        self._bot_started = dt.datetime.utcnow()
 
         await self.create_pool()
 

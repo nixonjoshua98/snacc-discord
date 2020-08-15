@@ -9,7 +9,6 @@ from src import inputs
 
 from src.common import checks
 from src.common.converters import EmpireQuest
-from src.common.models import PopulationM
 
 from src.data import EmpireQuests, MilitaryGroup
 
@@ -28,14 +27,14 @@ class Quests(commands.Cog):
 	async def quest_group(self, ctx, quest: EmpireQuest()):
 		""" Embark on a new quest. """
 
-		# - Query tge database
+		# - Query the database
 		quests = await ctx.bot.mongo.find("quests", {"user": ctx.author.id}).to_list(length=100)
-		upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": ctx.author.id})
 
-		population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
+		upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": ctx.author.id})
+		military = await ctx.bot.mongo.find_one("military", {"_id": ctx.author.id})
 
 		if len(quests) < self.get_max_quests(upgrades):
-			power = MilitaryGroup.get_total_power(population)
+			power = MilitaryGroup.get_total_power(military)
 
 			duration = dt.timedelta(hours=quest.get_duration(upgrades))
 
@@ -57,9 +56,9 @@ class Quests(commands.Cog):
 
 		# - Query the database
 		upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": ctx.author.id})
-		population = await PopulationM.fetchrow(ctx.pool, ctx.author.id)
+		military = await ctx.bot.mongo.find_one("military", {"_id": ctx.author.id})
 
-		power = MilitaryGroup.get_total_power(population)
+		power = MilitaryGroup.get_total_power(military)
 
 		embeds = []
 
@@ -120,7 +119,7 @@ class Quests(commands.Cog):
 
 				embed.add_field(
 					name=inst.name,
-					value=f"`**Reward:** ${money_reward}`" if quest_completed else "`Quest Failed`"
+					value=f"`Reward: ${money_reward}`" if quest_completed else "`Quest Failed`"
 				)
 
 				await ctx.bot.mongo.delete_one("quests", {"_id": quest["_id"]})
