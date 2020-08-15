@@ -114,7 +114,7 @@ class Empire(commands.Cog):
 		# - Create the Embed message which will be sent back to Discord
 		embed = ctx.bot.embed(title=f"{str(ctx.author)}: {empire['name']}", thumbnail=ctx.author.avatar_url)
 
-		total_power = MilitaryGroup.get_total_power(population, upgrades)
+		total_power = MilitaryGroup.get_total_power(population)
 
 		embed.add_field(name="General", value=(
 			f"**Power Rating:** `{total_power:,}`"
@@ -172,13 +172,10 @@ class Empire(commands.Cog):
 			author_population = await PopulationM.fetchrow(con, ctx.author.id)
 			target_population = await PopulationM.fetchrow(con, target.id)
 
-			author_upgrades = await UserUpgradesM.fetchrow(con, ctx.author.id)
-			target_upgrades = await UserUpgradesM.fetchrow(con, target.id)
-
 			author_bank = await BankM.fetchrow(con, ctx.author.id)
 
-			author_power = MilitaryGroup.get_total_power(author_population, author_upgrades)
-			target_power = MilitaryGroup.get_total_power(target_population, target_upgrades)
+			author_power = MilitaryGroup.get_total_power(author_population)
+			target_power = MilitaryGroup.get_total_power(target_population)
 
 			if author_bank["money"] < 500:
 				await ctx.send(f"Scouting an empire costs **$500**.")
@@ -205,12 +202,9 @@ class Empire(commands.Cog):
 			target_population = await PopulationM.fetchrow(con, target.id)
 			author_population = await PopulationM.fetchrow(con, ctx.author.id)
 
-			target_upgrades = await UserUpgradesM.fetchrow(con, target.id)
-			author_upgrades = await UserUpgradesM.fetchrow(con, ctx.author.id)
-
 			# - Power ratings of each empire which is used to calculate the win chance for the author (attacker)
-			author_power = MilitaryGroup.get_total_power(author_population, author_upgrades)
-			target_power = MilitaryGroup.get_total_power(target_population, target_upgrades)
+			author_power = MilitaryGroup.get_total_power(author_population)
+			target_power = MilitaryGroup.get_total_power(target_population)
 
 			win_chance = self.get_win_chance(author_power, target_power)
 
@@ -332,9 +326,7 @@ class Empire(commands.Cog):
 			empires = await PopulationM.fetchall(ctx.pool)
 
 			for i, row in enumerate(empires):
-				upgrades = await UserUpgradesM.fetchrow(ctx.pool, row["population_id"])
-
-				empires[i] = dict(**row, __power__=MilitaryGroup.get_total_power(row, upgrades))
+				empires[i] = dict(**row, __power__=MilitaryGroup.get_total_power(row))
 
 			empires.sort(key=lambda ele: ele["__power__"], reverse=True)
 

@@ -61,7 +61,7 @@ class EmpireTargetUser(DiscordUser):
 		population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
 		upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
 
-		author_power = MilitaryGroup.get_total_power(population, upgrades)
+		author_power = MilitaryGroup.get_total_power(population)
 
 		if author_power < 25:
 			raise commands.CommandError("You need at least **25** power to do that.")
