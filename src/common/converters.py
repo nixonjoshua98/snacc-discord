@@ -43,14 +43,15 @@ class EmpireTargetUser(DiscordUser):
 	async def convert(self, ctx, argument):
 		user = await super().convert(ctx, argument)
 
-		empire = await ctx.bot.mongo.find_one("empire", {"_id": user.id})
+		empire = await ctx.bot.mongo.find_one("empires", {"_id": user.id})
 
 		if not empire:
 			raise commands.CommandError(f"Target does not have an empire.")
 
-		time_since_attack = 0
+		if empire.get("last_attack") is None:
+			time_since_attack = self.ATTACK_COOLDOWN
 
-		if empire.get("last_attack") is not None:
+		else:
 			time_since_attack = (dt.datetime.utcnow() - empire['last_attack']).total_seconds()
 
 		# - Target is in cooldown period

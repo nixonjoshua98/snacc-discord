@@ -1,5 +1,6 @@
 import math
 import random
+import itertools
 
 import datetime as dt
 
@@ -96,12 +97,6 @@ class Quests(commands.Cog):
 		for quest in quests:
 			inst = EmpireQuests.get(id=quest["quest"])
 
-			time_since_start = dt.datetime.utcnow() - quest["start"]
-
-			seconds = inst.get_duration(upgrades) * 3_600 - time_since_start.total_seconds()
-
-			inst = EmpireQuests.get(id=quest["quest"])
-
 			duration = inst.get_duration(upgrades)
 
 			time_since_start = dt.datetime.utcnow() - quest["start"]
@@ -110,22 +105,22 @@ class Quests(commands.Cog):
 			if (time_since_start.total_seconds() / 3600) >= duration:
 				upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": ctx.author.id})
 
-				quest_completed = quest.get("success_rate", 1.0) >= random.uniform(0.0, 1.0)
+				quest_completed = quest["success_rate"] >= random.uniform(0.0, 1.0)
 
 				money_reward = inst.get_reward(upgrades)
 
 				if quest_completed:
 					await ctx.bot.mongo.increment_one("bank", {"_id": ctx.author.id}, {"usd": money_reward})
 
-				embed.add_field(
-					name=inst.name,
-					value=f"`Reward: ${money_reward}`" if quest_completed else "`Quest Failed`"
-				)
+					embed.add_field(name=f"[Completed] {inst.name}", value=f"`Reward: ${money_reward}`")
+
+				else:
+					embed.add_field(name=f"[Failed] {inst.name}", value="None")
 
 				await ctx.bot.mongo.delete_one("quests", {"_id": quest["_id"]})
 
 			else:
-				timedelta = dt.timedelta(seconds=int(seconds))
+				timedelta = dt.timedelta(seconds=int(duration * 3_600 - time_since_start.total_seconds()))
 
 				embed.add_field(name=inst.name, value=f"`{timedelta}`")
 

@@ -96,6 +96,7 @@ class Miscellaneous(commands.Cog):
 				"Bot": {
 					"Uptime": ctx.bot.uptime,
 					"Commands": f"{len(ctx.bot.all_commands):,}",
+					"Latency": f"{round(ctx.bot.latency * 1000, 3)}ms",
 					"Servers": f"{len(ctx.bot.guilds):,}",
 					"Users": f"{len(ctx.bot.users):,}"
 				},

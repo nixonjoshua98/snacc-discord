@@ -73,7 +73,7 @@ async def recruit_unit(ctx):
 	military = await ctx.bot.mongo.find_one("military", {"_id": ctx.author.id})
 	upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": ctx.author.id})
 
-	units = list(filter(lambda u: military.get(u.key, 0) < u._max_amount(upgrades), MilitaryGroup.units))
+	units = list(filter(lambda u: military.get(u.key, 0) < u.max_amount(upgrades), MilitaryGroup.units))
 
 	if units:
 		unit_recruited = min(units, key=lambda u: u.get_price(military.get(u.key, 0)))
