@@ -59,7 +59,6 @@ class EmpireTargetUser(DiscordUser):
 			raise commands.CommandError(f"Target is still recovering from a previous attack. Try again in `{delta}`")
 
 		population = await PopulationM.fetchrow(ctx.bot.pool, ctx.author.id)
-		upgrades = await UserUpgradesM.fetchrow(ctx.bot.pool, ctx.author.id)
 
 		author_power = MilitaryGroup.get_total_power(population)
 

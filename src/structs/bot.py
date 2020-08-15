@@ -18,7 +18,7 @@ from src.common.models import ServersM
 
 EXTENSIONS = [
     "errorhandler", "arenastats",   "empire",
-    "quest",        "shop",         "hangman",
+    "quests",       "shop",         "hangman",
     "gambling",     "bank",         "crypto",
     "darkness",     "moderator",    "misc",
     "reminder",     "autorole",     "serverdoor",
