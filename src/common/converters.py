@@ -125,7 +125,7 @@ class MergeableUnit(EmpireUnit):
 
 		levels = await ctx.bot.mongo.find_one("levels", {"_id": ctx.author.id})
 
-		if levels.get(unit.key, 0) >= EmpireConstants.MAX_UNIT_LEVEL:
+		if levels.get(unit.key, 0) >= EmpireConstants.MAX_UNIT_MERGE:
 			raise commands.CommandError(f"**{unit.display_name}** has already reached the maximum merge level.")
 
 		return unit

@@ -44,7 +44,7 @@ class Units(commands.Cog):
 				row = [unit.id, f"[{unit_level}] {unit.display_name}"]
 
 				if units_owned >= max_units:
-					if unit_level >= EmpireConstants.MAX_UNIT_LEVEL:
+					if unit_level >= EmpireConstants.MAX_UNIT_MERGE:
 						continue
 
 					row.append("Ready to be merged")

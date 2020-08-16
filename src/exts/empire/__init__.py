@@ -224,11 +224,7 @@ class Empire(commands.Cog):
 		chosen_events = random.choices(options, weights=weights, k=1)
 
 		for event in chosen_events:
-			print(str(ctx.author), event.__name__)
-
 			await event(ctx)
-
-		self.empire_event.reset_cooldown(ctx)
 
 	@commands.cooldown(1, 15, commands.BucketType.guild)
 	@commands.command(name="power", aliases=["empires"])

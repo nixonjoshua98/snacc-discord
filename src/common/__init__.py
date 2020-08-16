@@ -17,5 +17,5 @@ class SupportServer:
 
 
 class EmpireConstants:
-	MAX_UNIT_LEVEL = 10
+	MAX_UNIT_MERGE = 10
 	MERGE_COST = 15
