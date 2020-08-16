@@ -24,7 +24,7 @@ class Unit:
 	def calc_price(self, owned: int, buying: int, level):
 		base_cost = self._calculate_base_cost(owned, buying)
 
-		return int(base_cost * (1.0 - (level * 0.0025)))
+		return int(base_cost * (1.0 - (level * 0.005)))
 
 	def _calculate_base_cost(self, owned, buying):
 		price = 0
@@ -49,7 +49,7 @@ class MoneyUnit(Unit):
 	def calc_hourly_income(self, amount, level):
 		base_income = self._hourly_income * amount
 
-		return int(base_income * (1.0 + (level * 0.025)))
+		return int(base_income * (1.0 + (level * 0.05)))
 
 
 class MilitaryUnit(Unit):

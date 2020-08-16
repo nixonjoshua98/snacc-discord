@@ -15,15 +15,6 @@ from src.structs.confirm import Confirm
 class Units(commands.Cog):
 
 	@checks.has_empire()
-	@commands.command(name="hire", aliases=["buy"])
-	async def old_hire_unit(self, ctx, unit: EmpireUnit(), amount: Range(1, 100) = 1):
-		""" Depricated. """
-
-		await ctx.send("This command will be moved to `!u hire` or `!units hire` soon")
-
-		await self.hire_unit(ctx, unit, amount)
-
-	@checks.has_empire()
 	@commands.group(name="units", aliases=["u"], invoke_without_command=True)
 	async def show_units(self, ctx):
 		""" Show all the possible units which you can buy. """
@@ -133,7 +124,13 @@ class Units(commands.Cog):
 
 		max_units = unit.calc_max_amount(levels.get(unit.key, 0))
 
-		confirm = await Confirm(f"Level up **{unit.display_name}** by consuming **{max_units}** units?").prompt(ctx)
+		s = (
+			f"Level up **{unit.display_name}** by consuming **{max_units}** units?"
+			f"\n"
+			"**WARNING** Your number of units will be reset to zero"
+		)
+
+		confirm = await Confirm(s).prompt(ctx)
 
 		if not confirm:
 			return await ctx.send("Merge cancelled.")
