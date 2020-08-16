@@ -29,9 +29,6 @@ class Unit:
 		return self._base_max_amount + level
 
 	def calc_price(self, owned: int, buying: int):
-		return math.ceil(self._calculate_base_cost(owned, buying))
-
-	def _calculate_base_cost(self, owned, buying):
 		price = 0
 
 		for i in range(owned, owned + buying):

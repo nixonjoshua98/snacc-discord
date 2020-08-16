@@ -65,7 +65,7 @@ class Miscellaneous(commands.Cog):
 	async def send_bot_invite(self, ctx):
 		""" Bot invite link. """
 
-		url = "https://discord.com/oauth2/authorize?client_id=666616515436478473&scope=bot&permissions=1544023127"
+		url = "https://discord.com/oauth2/authorize?client_id=666616515436478473&scope=bot&permissions=388168"
 
 		await ctx.send(url)
 
@@ -85,21 +85,15 @@ class Miscellaneous(commands.Cog):
 	async def show_stats(self, ctx):
 		""" Display information about the bot """
 
-		def get_system():
-			system = {
-				"Bot": {
-					"Latency": f"{round(ctx.bot.latency * 1000, 3)}ms",
-					"Uptime": ctx.bot.uptime,
-					"Commands": f"{len(ctx.bot.all_commands):,}",
-					"Servers": f"{len(ctx.bot.guilds):,}",
-				}
+		system = {
+			"Bot": {
+				"Uptime": ctx.bot.uptime,
 			}
-
-			return system
+		}
 
 		embed = ctx.bot.embed(title="Bot Stats")
 
-		for k, v in get_system().items():
+		for k, v in system.items():
 			embed.add_field(name=k, value="\n".join([f"{k2}: **{v2}**" for k2, v2 in v.items()]), inline=False)
 
 		await ctx.send(embed=embed)

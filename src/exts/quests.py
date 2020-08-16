@@ -32,10 +32,10 @@ class Quests(commands.Cog):
 		quests = await ctx.bot.mongo.find("quests", {"user": ctx.author.id}).to_list(length=100)
 
 		upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": ctx.author.id})
-		military = await ctx.bot.mongo.find_one("military", {"_id": ctx.author.id})
+		units = await ctx.bot.mongo.find_one("units", {"_id": ctx.author.id})
 
 		if len(quests) < self.get_max_quests(upgrades):
-			power = Military.get_total_power(military)
+			power = Military.get_total_power(units)
 
 			duration = dt.timedelta(hours=quest.get_duration(upgrades))
 
@@ -57,9 +57,9 @@ class Quests(commands.Cog):
 
 		# - Query the database
 		upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": ctx.author.id})
-		military = await ctx.bot.mongo.find_one("military", {"_id": ctx.author.id})
+		units = await ctx.bot.mongo.find_one("units", {"_id": ctx.author.id})
 
-		power = Military.get_total_power(military)
+		power = Military.get_total_power(units)
 
 		embeds = []
 
