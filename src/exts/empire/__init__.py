@@ -9,7 +9,7 @@ from discord.ext import tasks, commands
 
 from src import inputs
 from src.common import MainServer, checks
-from src.common.converters import EmpireTargetUser
+from src.common.converters import EmpireTargetUser, AnyoneWithEmpire
 
 from src.data import Military, Workers
 
@@ -55,12 +55,14 @@ class Empire(commands.Cog):
 	@checks.has_empire()
 	@commands.max_concurrency(1, commands.BucketType.user)
 	@commands.command(name="empire", aliases=["e"])
-	async def show_empire(self, ctx):
-		""" View your empire. """
+	async def show_empire(self, ctx, target: AnyoneWithEmpire() = None):
+		""" View information about any empire. """
 
-		empire = await ctx.bot.mongo.find_one("empires", {"_id": ctx.author.id})
-		units = await ctx.bot.mongo.find_one("units", {"_id": ctx.author.id})
-		levels = await ctx.bot.mongo.find_one("levels", {"_id": ctx.author.id})
+		target = ctx.author if target is None else target
+
+		empire = await ctx.bot.mongo.find_one("empires", {"_id": target.id})
+		units = await ctx.bot.mongo.find_one("units", {"_id": target.id})
+		levels = await ctx.bot.mongo.find_one("levels", {"_id": target.id})
 
 		# - Calculate the values used in the Embed message
 		hourly_income = Workers.get_total_hourly_income(units, levels)
@@ -71,7 +73,7 @@ class Empire(commands.Cog):
 		name = empire.get('name', 'No Name Empire')
 
 		# - Create the Embed message which will be sent back to Discord
-		embed = ctx.bot.embed(title=f"{str(ctx.author)}: {name}", thumbnail=ctx.author.avatar_url)
+		embed = ctx.bot.embed(title=f"{str(target)}: {name}", thumbnail=target.avatar_url)
 
 		embed.add_field(name="General", value=f"**Power Rating:** `{total_power:,}`")
 
@@ -189,7 +191,7 @@ class Empire(commands.Cog):
 			units_text = "\n".join(map(lambda kv: f"{kv[1]}x {kv[0].display_name}", units_lost.items()))
 			val = f"${money_stolen:,} {f'**+ ${bonus_money:,} bonus**' if bonus_money > 0 else ''}"
 
-			embed = ctx.bot.embed(title=f"Attack on {str(target)}: {target_empire['name']}")
+			embed = ctx.bot.embed(title=f"Attack on {str(target)}: {target_empire.get('name', target.display_name)}")
 
 			embed.description = f"**Money Pillaged:** {val}"
 

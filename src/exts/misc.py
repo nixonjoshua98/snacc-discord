@@ -81,22 +81,11 @@ class Miscellaneous(commands.Cog):
 
 		await ctx.send("https://discord.gg/QExQuvE")
 
-	@commands.command(name="bot")
-	async def show_stats(self, ctx):
-		""" Display information about the bot """
+	@commands.command(name="uptime")
+	async def show_uptime(self, ctx):
+		""" Display the bot uptime """
 
-		system = {
-			"Bot": {
-				"Uptime": ctx.bot.uptime,
-			}
-		}
-
-		embed = ctx.bot.embed(title="Bot Stats")
-
-		for k, v in system.items():
-			embed.add_field(name=k, value="\n".join([f"{k2}: **{v2}**" for k2, v2 in v.items()]), inline=False)
-
-		await ctx.send(embed=embed)
+		await ctx.send(f"I have been up for `{ctx.bot.uptime}`")
 
 	@commands.command(name="cooldowns", aliases=["cd"])
 	async def cooldowns(self, ctx):

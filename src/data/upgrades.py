@@ -37,7 +37,7 @@ class Upgrade:
 
 class EmpireUpgrades:
 	upgrades = [
-		Upgrade(key="quicker_quests", display_name="Faster Quests", base_cost=12_500),
+		Upgrade(key="quicker_quests", 	base_cost=15_000),
 		Upgrade(key="more_quest_money", base_cost=15_000),
 	]
 

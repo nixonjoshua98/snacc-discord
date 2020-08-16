@@ -24,8 +24,11 @@ class ErrorHandler(commands.Cog):
         self.bot.on_command_error = self.on_command_error
 
     async def on_command_error(self, ctx, esc):
-        if isinstance(esc, (CommandNotFound, GlobalCheckFail)):
+        if isinstance(esc, CommandNotFound):
             return None
+
+        elif isinstance(esc, GlobalCheckFail):
+            print(esc)
 
         elif isinstance(esc, MaxConcurrencyReached):
             await ctx.send("You are doing that too fast.")
@@ -46,10 +49,7 @@ class ErrorHandler(commands.Cog):
             await ctx.send(f"Role `{esc.missing_role}` is required to run this command.")
 
         else:
-            try:
-                await ctx.send(esc)
-            except discord.Forbidden:
-                print(esc)
+            await ctx.send(esc)
 
 
 def setup(bot):

@@ -41,6 +41,11 @@ class Bot(commands.Bot):
     def debug(self):
         return int(os.getenv("DEBUG", 0))
 
+    def has_permission(self, chnl, **perms):
+        permissions = chnl.permissions_for(chnl.guild.me)
+
+        return not [perm for perm, value in perms.items() if getattr(permissions, perm) != value]
+
     @property
     def uptime(self):
         return dt.timedelta(seconds=int((dt.datetime.utcnow() - self._bot_started).total_seconds()))
@@ -83,16 +88,16 @@ class Bot(commands.Bot):
         return self.owner_id == SNACCMAN
 
     async def bot_check(self, ctx) -> bool:
-        if not self.exts_loaded or ctx.guild is None or ctx.author.bot or not self.can_message_in(ctx.channel):
-            raise GlobalCheckFail(".")
+        if not self.exts_loaded or ctx.guild is None or ctx.author.bot:
+            raise GlobalCheckFail("Bot not ready")
+
+        elif not self.has_permission(ctx.channel, send_messages=True):
+            raise GlobalCheckFail(f"I cannot message {str(ctx.guild)} {ctx.guild.name}")
 
         elif self.debug and ctx.author.id != SNACCMAN:
             return False
 
         return True
-
-    def can_message_in(self, chnl):
-        return chnl.permissions_for(chnl.guild.me).send_messages
 
     def load_extensions(self):
         """ Load all of the extensions for the bot. """

@@ -131,6 +131,31 @@ class MergeableUnit(EmpireUnit):
 		return unit
 
 
+class AnyoneWithEmpire(DiscordUser):
+	async def _convert(self, ctx, argument):
+		try:
+			user = await commands.MemberConverter().convert(ctx, argument)
+
+		except commands.BadArgument:
+			try:
+				user = await commands.UserConverter().convert(ctx, argument)
+
+			except commands.BadArgument:
+				raise commands.CommandError(f"User '{argument}' could not be found")
+
+		return user
+
+	async def convert(self, ctx, argument) -> discord.Member:
+		user = await self._convert(ctx, argument)
+
+		empire = await ctx.bot.mongo.find_one("empires", {"_id": user.id})
+
+		if not empire:
+			raise commands.CommandError(f"Target does not have an empire.")
+
+		return user
+
+
 class EmpireUpgrade(commands.Converter):
 	async def convert(self, ctx, argument):
 		try:

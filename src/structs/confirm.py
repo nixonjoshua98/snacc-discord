@@ -6,6 +6,7 @@ class Confirm(menus.Menu):
 		super().__init__(timeout=timeout, delete_message_after=True)
 
 		self.msg = msg
+
 		self.result = None
 
 	async def send_initial_message(self, ctx, channel):
