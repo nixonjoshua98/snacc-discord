@@ -51,7 +51,7 @@ class Units(commands.Cog):
 
 				else:
 					# - Calculate price from <units_owned> to <units_owned + 1>
-					price = unit.calc_price(units_owned, 1, unit_level)
+					price = unit.calc_price(units_owned, 1)
 
 					row.append(f"{units_owned}/{max_units}")
 
@@ -82,7 +82,7 @@ class Units(commands.Cog):
 		await inputs.send_pages(ctx, pages)
 
 	@checks.has_empire()
-	@show_units.command(name="hire")
+	@show_units.command(name="hire", aliases=["buy"])
 	@commands.max_concurrency(1, commands.BucketType.user)
 	async def hire_unit(self, ctx, unit: EmpireUnit(), amount: Range(1, 100) = 1):
 		""" Hire a new unit to serve your empire. """
@@ -93,7 +93,7 @@ class Units(commands.Cog):
 		levels = await ctx.bot.mongo.find_one("levels", {"_id": ctx.author.id})
 
 		# - Cost of upgrading from current -> (current + amount)
-		price = unit.calc_price(units.get(unit.key, 0), amount, levels.get(unit.key, 0))
+		price = unit.calc_price(units.get(unit.key, 0), amount)
 
 		# - Max owned number of the unit
 		max_units = unit.calc_max_amount(levels.get(unit.key, 0))
@@ -120,15 +120,7 @@ class Units(commands.Cog):
 	async def merge_unit(self, ctx, unit: MergeableUnit()):
 		""" Merge your units to upgrade their level. """
 
-		levels = await ctx.bot.mongo.find_one("levels", {"_id": ctx.author.id})
-
-		max_units = unit.calc_max_amount(levels.get(unit.key, 0))
-
-		s = (
-			f"Level up **{unit.display_name}** by consuming **{max_units}** units?"
-			f"\n"
-			"**WARNING** Your number of units will be reset to zero"
-		)
+		s = f"Level up **{unit.display_name}** by consuming **{EmpireConstants.MERGE_COST}** units?"
 
 		confirm = await Confirm(s).prompt(ctx)
 
@@ -136,7 +128,7 @@ class Units(commands.Cog):
 			return await ctx.send("Merge cancelled.")
 
 		await ctx.bot.mongo.increment_one("levels", {"_id": ctx.author.id}, {unit.key: 1})
-		await ctx.bot.mongo.decrement_one("units", {"_id": ctx.author.id}, {unit.key: max_units})
+		await ctx.bot.mongo.decrement_one("units", {"_id": ctx.author.id}, {unit.key: EmpireConstants.MERGE_COST})
 
 		await ctx.send(f"**{unit.display_name}** has levelled up!")
 

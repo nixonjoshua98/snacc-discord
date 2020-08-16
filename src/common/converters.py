@@ -120,6 +120,9 @@ class MergeableUnit(EmpireUnit):
 		if units.get(unit.key, 0) < unit.calc_max_amount(levels.get(unit.key, 0)):
 			raise commands.CommandError(f"Merging requires you reach the owned limit first.")
 
+		elif units.get(unit.key, 0) < EmpireConstants.MERGE_COST:
+			raise commands.CommandError(f"Merging consumes **{EmpireConstants.MERGE_COST}** units")
+
 		levels = await ctx.bot.mongo.find_one("levels", {"_id": ctx.author.id})
 
 		if levels.get(unit.key, 0) >= EmpireConstants.MAX_UNIT_LEVEL:

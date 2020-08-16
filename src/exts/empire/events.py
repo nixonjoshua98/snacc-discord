@@ -13,12 +13,10 @@ async def assassinated_event(ctx):
 	# - List of all military units which have an owned amount greater than 0
 	units_owned = [unit for unit in Military.units if units.get(unit.key, 0) > 0]
 
-	def f(u):
-		return u.calc_price(units.get(u.key, 0), 1, levels.get(u.key, 0))
-
 	if len(units_owned) > 0:
+
 		# - Select the cheapest unit to replace for the user
-		unit_killed = min(units_owned, key=lambda u: f(u))
+		unit_killed = min(units_owned, key=lambda u: u.calc_price(units.get(u.key, 0), 1))
 
 		# - Remove the unit from the empire
 		await ctx.bot.mongo.decrement_one("military", {"_id": ctx.author.id}, {unit_killed.key: 1})
@@ -80,7 +78,7 @@ async def recruit_unit(ctx):
 	available = list(filter(lambda u: units.get(u.key, 0) < u.calc_max_amount(levels.get(u.key, 0)), Military.units))
 
 	if available:
-		unit_recruited = min(available, key=lambda u: u.calc_price(units.get(u.key, 0), 1, levels.get(u.key, 0)))
+		unit_recruited = min(available, key=lambda u: u.calc_price(units.get(u.key, 0), 1))
 
 		await ctx.bot.mongo.increment_one("military", {"_id": ctx.author.id}, {unit_recruited.key: 1})
 

@@ -16,23 +16,18 @@ async def calculate_units_lost(units, levels):
 
 	available_units = list(itertools.filterfalse(lambda u: units.get(u.key, 0) == 0, Military.units))
 
-	def f(u):
-		return u.calc_price(units.get(u.key, 0), 1, levels.get(u.key, 0))
-
-	available_units.sort(key=lambda u: f(u), reverse=False)
+	available_units.sort(key=lambda u: u.calc_price(units.get(u.key, 0), 1), reverse=False)
 
 	for unit in available_units:
 		owned = units.get(unit.key, 0)
 
-		unit_level = levels.get(unit.key, 0)
-
 		for i in range(1, owned + 1):
-			price = unit.calc_price(owned - i, i, unit_level)
+			price = unit.calc_price(owned - i, i)
 
 			if (price + units_lost_cost) < hourly_income:
 				units_lost[unit] = i
 
-			units_lost_cost = sum([unit.calc_price(owned - n, n, unit_level) for u, n in units_lost.items()])
+			units_lost_cost = sum([unit.calc_price(owned - n, n) for u, n in units_lost.items()])
 
 	return units_lost
 
