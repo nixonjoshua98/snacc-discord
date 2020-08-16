@@ -39,6 +39,26 @@ class DiscordUser(commands.Converter):
 		return member
 
 
+class ItemWithID(commands.Converter):
+	def __init__(self, collection):
+		self.collection = collection
+
+	async def convert(self, _, argument):
+		try:
+			val = int(argument)
+
+		except ValueError:
+			return False
+
+		else:
+			item = self.collection.get(id=val)
+
+			if item is None:
+				return False
+
+		return item
+
+
 class EmpireTargetUser(DiscordUser):
 	ATTACK_COOLDOWN = 2.0 * 3_600
 
@@ -156,36 +176,24 @@ class AnyoneWithEmpire(DiscordUser):
 		return user
 
 
-class EmpireUpgrade(commands.Converter):
+class EmpireUpgrade(ItemWithID):
+	def __init__(self):
+		super(EmpireUpgrade, self).__init__(EmpireUpgrades)
+
 	async def convert(self, ctx, argument):
-		try:
-			val = int(argument)
-
-		except ValueError:
-			raise commands.UserInputError(f"Upgrades should be referenced by their IDs")
-
-		else:
-			upgrade = EmpireUpgrades.get(id=val)
-
-			if upgrade is None:
-				raise commands.UserInputError(f"Upgrade with ID `{val}` could not be found.")
+		if not (upgrade := super().convert(ctx, argument)):
+			raise commands.UserInputError(f"Upgrade with ID `{upgrade}` could not be found.")
 
 		return upgrade
 
 
-class EmpireQuest(commands.Converter):
+class EmpireQuest(ItemWithID):
+	def __init__(self):
+		super(EmpireQuest, self).__init__(EmpireQuests)
+
 	async def convert(self, ctx, argument):
-		try:
-			val = int(argument)
-
-		except ValueError:
-			raise commands.UserInputError(f"Quests should be referenced by their IDs")
-
-		else:
-			quest = EmpireQuests.get(id=val)
-
-			if quest is None:
-				raise commands.UserInputError(f"A quest with the ID `{val}` could not be found.")
+		if not (quest := super().convert(ctx, argument)):
+			raise commands.UserInputError(f"Quest with ID `{quest}` could not be found.")
 
 		return quest
 
