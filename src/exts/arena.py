@@ -11,14 +11,8 @@ from discord.ext import commands, tasks
 from pymongo import InsertOne, DeleteMany
 
 from src import inputs
-from src.structs import TextPage
 from src.common import MainServer, checks
 from src.common.converters import Range
-
-
-def chunk_list(ls, n):
-	for i in range(0, len(ls), n):
-		yield ls[i: i + n]
 
 
 class Arena(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
@@ -172,19 +166,21 @@ class Arena(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 
 		target = ctx.author if target is None else target
 
-		results = await ctx.bot.mongo.find("arena", {"user": target.id}).sort("date", -1).to_list(length=50)
+		results = await ctx.bot.mongo.find("arena", {"user": target.id}).sort("date", -1).to_list(length=15)
 
 		if not results:
 			return await ctx.send(f"I found nothing for {target.display_name}.")
 
-		page = TextPage(title=f"{target.display_name}'s Arena History", headers=["Date", "Level", "Trophies"])
+		embed = ctx.bot.embed(title=f"{target.display_name}'s Arena Stats")
 
 		for result in results:
-			row = [result["date"].strftime("%d/%m/%Y"), f"{result['level']:,}", f"{result['trophies']:,}"]
+			date = result["date"].strftime("%d/%m/%Y")
 
-			page.add(row)
+			level, trophies = f"{result['level']:,}", f"{result['trophies']:,}"
 
-		await ctx.send(page.get())
+			embed.add_field(name=date, value=f":trophy: {trophies}")
+
+		await ctx.send(embed=embed)
 
 	@commands.cooldown(1, 15, commands.BucketType.guild)
 	@commands.command(name="trophies")
