@@ -1,6 +1,7 @@
 import json
 import pymongo
-import datetime
+
+import datetime as dt
 
 from bson import ObjectId
 
@@ -35,12 +36,13 @@ client.close()
 
 # - Write to JSON
 def default(s):
-    if isinstance(s, (datetime.date, datetime.datetime)):
+    if isinstance(s, (dt.date, dt.datetime)):
         return s.isoformat()
 
     elif isinstance(s, ObjectId):
         return str(s)
 
+now = dt.datetime.utcnow().strftime("%Y-%m-%d %H-%M-%S")
 
-with open("D:\\Program Files\\OneDrive\\Databases\\mongo\\snacc.json", "w") as fh:
+with open(f"D:\\Program Files\\OneDrive\\Databases\\atlas\\snacc\\{now}.json", "w") as fh:
     json.dump(data, fh, default=default, indent=1)

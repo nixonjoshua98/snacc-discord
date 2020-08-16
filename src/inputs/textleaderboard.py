@@ -48,7 +48,7 @@ class TextLeaderboard:
                 page.add(row)
 
             if author_entry is not None:
-                page.set_footer(" ".join(author_entry))
+                page.set_footer(author_entry)
 
             pages.append(page)
 

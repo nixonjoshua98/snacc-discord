@@ -18,7 +18,9 @@ class TextPage:
 			s.append(padded_row)
 
 		if self._footer is not None:
-			s.extend(["-", self._footer])
+			footer = self._pad_row(self._footer, widths) if isinstance(self._footer, (tuple, list)) else self._footer
+
+			s.extend(["-", footer])
 
 		return "```\n" + "\n".join(s) + "```"
 

@@ -4,6 +4,8 @@ import math
 class Unit:
 	__unit_id = 1
 
+	__unit_keys = set()
+
 	def __init__(self, *, key, base_cost, **kwargs):
 		self.key = key
 		self.id = Unit.__unit_id
@@ -17,6 +19,11 @@ class Unit:
 		self.display_name = kwargs.get("display_name", self.key.title().replace("_", " "))
 
 		Unit.__unit_id += 1
+
+		if self.key in Unit.__unit_keys:
+			raise KeyError(f"Key '{self.key}' is not unique.")
+
+		Unit.__unit_keys.add(self.key)
 
 	def calc_max_amount(self, level):
 		return self._base_max_amount + level
@@ -45,9 +52,7 @@ class MoneyUnit(Unit):
 		self._hourly_income = kwargs.get("income_hour", 0)
 
 	def calc_hourly_income(self, amount, level):
-		base_income = self._hourly_income * amount
-
-		return int(base_income * (1.0 + (level * 0.05)))
+		return int(self._hourly_income * amount * (1.0 + (level * 0.025)))
 
 
 class MilitaryUnit(Unit):
