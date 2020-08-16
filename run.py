@@ -10,8 +10,7 @@ def set_env():
 
     os.environ["BOT_TOKEN"] = config.get("bot", "TOKEN")
     os.environ["DBL_TOKEN"] = config.get("api", "DBL_TOKEN")
-
-    return "x"
+    os.environ["MONGO_CON_STR"] = config.get("database", "MONGO_CON_STR")
 
 
 def setup_loop():

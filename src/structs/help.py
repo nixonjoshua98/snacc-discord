@@ -27,7 +27,7 @@ class Help(commands.HelpCommand):
 		mapping = await self.update_bot_mapping(mapping)
 
 		for i, (cog, cog_cmds) in enumerate(mapping.items()):
-			cog_cmds = await self.filter_commands(cog_cmds)
+			cog_cmds = await self.filter_commands(cog_cmds, sort=False)
 
 			chunked_cmds = [cog_cmds[i:i + 10] for i in range(0, len(cog_cmds), 10)]
 

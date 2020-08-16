@@ -11,8 +11,8 @@ from discord.ext import commands, tasks
 from pymongo import InsertOne, DeleteMany
 
 from src import inputs
+from src.structs import TextPage
 from src.common import MainServer, checks
-from src.common.emoji import Emoji
 from src.common.converters import Range
 
 
@@ -172,29 +172,19 @@ class Arena(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 
 		target = ctx.author if target is None else target
 
-		results = await ctx.bot.mongo.find({"user": target.id}).sort("date", -1)
+		results = await ctx.bot.mongo.find("arena", {"user": target.id}).sort("date", -1).to_list(length=50)
 
 		if not results:
 			return await ctx.send(f"I found nothing for {target.display_name}.")
 
-		embeds, chunks = [], tuple(chunk_list(results, 6))
+		page = TextPage(title=f"{target.display_name}'s Arena History", headers=["Date", "Level", "Trophies"])
 
-		for i, page in enumerate(chunks):
-			embed = discord.Embed(title=f"{target.display_name}'s Arena Stats", colour=discord.Color.orange())
+		for result in results:
+			row = [result["date"].strftime("%d/%m/%Y"), f"{result['level']:,}", f"{result['trophies']:,}"]
 
-			embed.set_thumbnail(url=target.avatar_url)
-			embed.set_footer(text=f"{str(ctx.bot.user)} | Page {i + 1}/{len(chunks)}", icon_url=ctx.bot.user.avatar_url)
+			page.add_row(row)
 
-			for row in page:
-				date_set = row["date"].strftime("%d/%m/%Y")
-
-				stats = f"{Emoji.XP} **{row['level']:02d}** :trophy: **{row['trophies']:,}**"
-
-				embed.add_field(name=date_set, value=stats)
-
-			embeds.append(embed)
-
-		await inputs.send_pages(ctx, embeds)
+		await ctx.send(page.get())
 
 	@commands.cooldown(1, 15, commands.BucketType.guild)
 	@commands.command(name="trophies")

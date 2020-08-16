@@ -2,7 +2,6 @@
 
 import random
 import discord
-import itertools
 
 import datetime as dt
 
@@ -14,7 +13,7 @@ from src.common.converters import EmpireTargetUser
 
 from src.data import MilitaryGroup, MoneyGroup
 
-from src.exts.empire import events
+from src.exts.empire import events, utils
 
 
 MAX_HOURS_OFFLINE = 8
@@ -36,37 +35,6 @@ class Empire(commands.Cog):
 
 	async def cog_after_invoke(self, ctx):
 		await ctx.bot.mongo.update_one("empires", {"_id": ctx.author.id}, {"last_login": dt.datetime.utcnow()})
-
-	@staticmethod
-	def get_win_chance(atk_power, def_power):
-		return max(0.15, min(0.85, ((atk_power / max(1, def_power)) / 2.0)))
-
-	async def calculate_units_lost(self, military, workers, upgrades):
-		units_lost = dict()
-		units_lost_cost = 0
-
-		hourly_income = max(0, MoneyGroup.get_total_hourly_income(workers, upgrades))
-
-		available_units = list(itertools.filterfalse(lambda u: military.get(u.key, 0) == 0, MilitaryGroup.units))
-
-		available_units.sort(key=lambda u: u.price(upgrades, military.get(u.key, 0)), reverse=False)
-
-		for unit in available_units:
-			owned = military.get(unit.key, 0)
-
-			for i in range(1, owned + 1):
-				price = unit.price(upgrades, owned - i, i)
-
-				if (price + units_lost_cost) < hourly_income:
-					units_lost[unit] = i
-
-				units_lost_cost = sum([u.get_price(owned - n, n) for u, n in units_lost.items()])
-
-		return units_lost
-
-	@staticmethod
-	async def calculate_money_lost(bank):
-		return random.randint(max(1, int(bank.get("usd", 0) * 0.025)), max(1, int(bank.get("usd", 0) * 0.05)))
 
 	@checks.no_empire()
 	@commands.command(name="create")
@@ -131,8 +99,8 @@ class Empire(commands.Cog):
 
 		# - Load data from database
 		empire = await ctx.bot.mongo.find_one("empires", {"_id": ctx.author.id})
-		upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": ctx.author.id})
 		workers = await ctx.bot.mongo.find_one("workers", {"_id": ctx.author.id})
+		upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": ctx.author.id})
 		military = await ctx.bot.mongo.find_one("military", {"_id": ctx.author.id})
 
 		# - Calculate passive income
@@ -175,7 +143,7 @@ class Empire(commands.Cog):
 			# - Update database
 			await ctx.bot.mongo.decrement_one("bank", {"_id": ctx.author.id}, {"usd": 500})
 
-			win_chance = self.get_win_chance(author_power, target_power)
+			win_chance = utils.get_win_chance(author_power, target_power)
 
 			await ctx.send(
 				f"You hired a scout for **$500**. "
@@ -196,7 +164,7 @@ class Empire(commands.Cog):
 		target_power = MilitaryGroup.get_total_power(target_military)
 		author_power = MilitaryGroup.get_total_power(author_military)
 
-		win_chance = self.get_win_chance(author_power, target_power)
+		win_chance = utils.get_win_chance(author_power, target_power)
 
 		# - Author won the attack
 		if win_chance >= random.uniform(0.0, 1.0):
@@ -205,9 +173,9 @@ class Empire(commands.Cog):
 			target_workers = await ctx.bot.mongo.find_one("workers", {"_id": target.id})
 			target_upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": target.id})
 
-			money_stolen = await self.calculate_money_lost(target_bank)
+			money_stolen = await utils.calculate_money_lost(target_bank)
 
-			units_lost = await self.calculate_units_lost(target_military, target_workers, target_upgrades)
+			units_lost = await utils.calculate_units_lost(target_military, target_workers, target_upgrades)
 
 			bonus_money = int(money_stolen * (1.0 - win_chance) if win_chance <= 0.5 else 0)
 
@@ -240,7 +208,7 @@ class Empire(commands.Cog):
 		else:
 			author_bank = await ctx.bot.mongo.find_one("bank", {"_id": ctx.author.id})
 
-			money_lost = await self.calculate_money_lost(author_bank)
+			money_lost = await utils.calculate_money_lost(author_bank)
 
 			await ctx.bot.mongo.decrement_one("bank", {"_id": ctx.author.id}, {"usd": money_lost})
 

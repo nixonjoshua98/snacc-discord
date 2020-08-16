@@ -11,7 +11,16 @@ from src.data import MilitaryGroup, MoneyGroup
 class Units(commands.Cog):
 
 	@checks.has_empire()
-	@commands.command(name="units")
+	@commands.command(name="hire", aliases=["buy"])
+	async def old_hire_unit(self, ctx, unit: EmpireUnit(), amount: Range(1, 100) = 1):
+		""" Depricated. """
+
+		await ctx.send("This command will be moved to `!u hire` or `!units hire` soon")
+
+		await self.hire_unit(ctx, unit, amount)
+
+	@checks.has_empire()
+	@commands.group(name="units", aliases=["u"], invoke_without_command=True)
 	async def show_units(self, ctx):
 		""" Show all the possible units which you can buy. """
 
@@ -28,16 +37,15 @@ class Units(commands.Cog):
 		await inputs.send_pages(ctx, [money_units_page, military_units_page])
 
 	@checks.has_empire()
-	@commands.command(name="hire", aliases=["buy"])
+	@show_units.command(name="hire")
 	@commands.max_concurrency(1, commands.BucketType.user)
 	async def hire_unit(self, ctx, unit: EmpireUnit(), amount: Range(1, 100) = 1):
 		""" Hire a new unit to serve your empire. """
 
 		# - Load the data
 		bank = await ctx.bot.mongo.find_one("bank", {"_id": ctx.author.id})
-		upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": ctx.author.id})
-
 		units = await ctx.bot.mongo.find_one(unit.collection, {"_id": ctx.author.id})
+		upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": ctx.author.id})
 
 		# - Cost of upgrading from current -> (current + amount)
 		price = unit.price(upgrades, units.get(unit.key, 0), amount)
@@ -59,6 +67,14 @@ class Units(commands.Cog):
 			await ctx.bot.mongo.increment_one(unit.collection, {"_id": ctx.author.id}, {unit.key: amount})
 
 			await ctx.send(f"Bought **{amount}x {unit.display_name}** for **${price:,}**!")
+
+	@checks.has_empire()
+	@show_units.command(name="merge")
+	@commands.max_concurrency(1, commands.BucketType.user)
+	async def merge_unit(self, ctx, unit: EmpireUnit()):
+		""" Merge your units to upgrade their level. """
+
+		pass
 
 
 def setup(bot):
