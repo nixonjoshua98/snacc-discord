@@ -126,7 +126,7 @@ class Miscellaneous(commands.Cog):
 					if bucket._tokens == 0:
 						retry_after = bucket.per - (current - bucket._window)
 
-						page.add_row((cmd.name, dt.timedelta(seconds=int(retry_after))))
+						page.add((cmd.name, dt.timedelta(seconds=int(retry_after))))
 
 		if len(page.rows) == 0:
 			page.set_footer("You have no active cooldowns")

@@ -11,7 +11,7 @@ from src import inputs
 from src.common import checks
 from src.common.converters import EmpireQuest
 
-from src.data import EmpireQuests, MilitaryGroup
+from src.data import EmpireQuests, Military
 
 
 class Quests(commands.Cog):
@@ -35,7 +35,7 @@ class Quests(commands.Cog):
 		military = await ctx.bot.mongo.find_one("military", {"_id": ctx.author.id})
 
 		if len(quests) < self.get_max_quests(upgrades):
-			power = MilitaryGroup.get_total_power(military)
+			power = Military.get_total_power(military)
 
 			duration = dt.timedelta(hours=quest.get_duration(upgrades))
 
@@ -59,7 +59,7 @@ class Quests(commands.Cog):
 		upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": ctx.author.id})
 		military = await ctx.bot.mongo.find_one("military", {"_id": ctx.author.id})
 
-		power = MilitaryGroup.get_total_power(military)
+		power = Military.get_total_power(military)
 
 		embeds = []
 

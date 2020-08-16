@@ -41,5 +41,6 @@ def default(s):
     elif isinstance(s, ObjectId):
         return str(s)
 
+
 with open("D:\\Program Files\\OneDrive\\Databases\\mongo\\snacc.json", "w") as fh:
     json.dump(data, fh, default=default, indent=1)

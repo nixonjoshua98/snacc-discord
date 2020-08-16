@@ -2,10 +2,14 @@
 from discord.ext import commands
 
 from src import inputs
-from src.common import checks
-from src.common.converters import EmpireUnit, Range
+from src.common import checks, EmpireConstants
+from src.structs import TextPage
 
-from src.data import MilitaryGroup, MoneyGroup
+from src.common.converters import EmpireUnit, Range, MergeableUnit
+
+from src.data import Military, Workers
+
+from src.structs.confirm import Confirm
 
 
 class Units(commands.Cog):
@@ -24,17 +28,67 @@ class Units(commands.Cog):
 	async def show_units(self, ctx):
 		""" Show all the possible units which you can buy. """
 
-		# - Load the data from the database
-		workers = await ctx.bot.mongo.find_one("workers", {"_id": ctx.author.id})
-		upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": ctx.author.id})
-		military = await ctx.bot.mongo.find_one("military", {"_id": ctx.author.id})
+		units = await ctx.bot.mongo.find_one("units", {"_id": ctx.author.id})
+		levels = await ctx.bot.mongo.find_one("levels", {"_id": ctx.author.id})
 
-		# - Unit pages
-		money_units_page = MoneyGroup.create_units_page(workers, upgrades).get()
+		pages = []
 
-		military_units_page = MilitaryGroup.create_units_page(military, upgrades).get()
+		for group in [Workers, Military]:
+			headers = ["ID", "Unit", "Owned"]
 
-		await inputs.send_pages(ctx, [money_units_page, military_units_page])
+			for attr in ("_power", "_hourly_income", "_hourly_upkeep"):
+				if all(map(lambda u: hasattr(u, attr), group.units)):
+					headers.append(attr.split("_")[-1].title())
+
+			headers.append("Price")
+
+			page = TextPage(title=group.__name__, headers=headers)
+
+			for unit in group.units:
+				unit_level = levels.get(unit.key, 0)
+				units_owned = units.get(unit.key, 0)
+
+				max_units = unit.calc_max_amount(unit_level)
+
+				row = [unit.id, f"[{unit_level}] {unit.display_name}"]
+
+				if units_owned >= max_units:
+					if unit_level >= EmpireConstants.MAX_UNIT_LEVEL:
+						continue
+
+					row.append("Ready to be merged")
+
+				else:
+					# - Calculate price from <units_owned> to <units_owned + 1>
+					price = unit.calc_price(units_owned, 1, unit_level)
+
+					row.append(f"{units_owned}/{max_units}")
+
+					if "Power" in headers:
+						power = unit.calc_power()
+
+						row.append(power)
+
+					if "Income" in headers:
+						income = unit.calc_hourly_income(1, unit_level)
+
+						row.append(f"${income:,}")
+
+					if "Upkeep" in headers:
+						upkeep = unit.calc_hourly_upkeep(1, unit_level)
+
+						row.append(f"${upkeep:,}")
+
+					row.append(f"${price:,}")
+
+				page.add(row)
+
+			if len(page.rows) == 0:
+				page.set_footer("No units available to hire")
+
+			pages.append(page.get())
+
+		await inputs.send_pages(ctx, pages)
 
 	@checks.has_empire()
 	@show_units.command(name="hire")
@@ -44,13 +98,14 @@ class Units(commands.Cog):
 
 		# - Load the data
 		bank = await ctx.bot.mongo.find_one("bank", {"_id": ctx.author.id})
-		units = await ctx.bot.mongo.find_one(unit.collection, {"_id": ctx.author.id})
-		upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": ctx.author.id})
+		units = await ctx.bot.mongo.find_one("units", {"_id": ctx.author.id})
+		levels = await ctx.bot.mongo.find_one("levels", {"_id": ctx.author.id})
 
 		# - Cost of upgrading from current -> (current + amount)
-		price = unit.price(upgrades, units.get(unit.key, 0), amount)
+		price = unit.calc_price(units.get(unit.key, 0), amount, levels.get(unit.key, 0))
 
-		max_units = unit.max_amount(upgrades)
+		# - Max owned number of the unit
+		max_units = unit.calc_max_amount(levels.get(unit.key, 0))
 
 		# - Buying the unit will surpass the owned limit of that particular unit
 		if units.get(unit.key, 0) + amount > max_units:
@@ -64,17 +119,29 @@ class Units(commands.Cog):
 			# - Deduct the money from the authors bank
 			await ctx.bot.mongo.decrement_one("bank", {"_id": ctx.author.id}, {"usd": price})
 
-			await ctx.bot.mongo.increment_one(unit.collection, {"_id": ctx.author.id}, {unit.key: amount})
+			await ctx.bot.mongo.increment_one("units", {"_id": ctx.author.id}, {unit.key: amount})
 
 			await ctx.send(f"Bought **{amount}x {unit.display_name}** for **${price:,}**!")
 
 	@checks.has_empire()
 	@show_units.command(name="merge")
 	@commands.max_concurrency(1, commands.BucketType.user)
-	async def merge_unit(self, ctx, unit: EmpireUnit()):
+	async def merge_unit(self, ctx, unit: MergeableUnit()):
 		""" Merge your units to upgrade their level. """
 
-		pass
+		levels = await ctx.bot.mongo.find_one("levels", {"_id": ctx.author.id})
+
+		max_units = unit.calc_max_amount(levels.get(unit.key, 0))
+
+		confirm = await Confirm(f"Level up **{unit.display_name}** by consuming **{max_units}** units?").prompt(ctx)
+
+		if not confirm:
+			return await ctx.send("Merge cancelled.")
+
+		await ctx.bot.mongo.increment_one("levels", {"_id": ctx.author.id}, {unit.key: 1})
+		await ctx.bot.mongo.decrement_one("units", {"_id": ctx.author.id}, {unit.key: max_units})
+
+		await ctx.send(f"**{unit.display_name}** has levelled up!")
 
 
 def setup(bot):

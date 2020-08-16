@@ -14,3 +14,7 @@ class MainServer:
 
 class SupportServer:
 	ID = 693550889352560693
+
+
+class EmpireConstants:
+	MAX_UNIT_LEVEL = 10

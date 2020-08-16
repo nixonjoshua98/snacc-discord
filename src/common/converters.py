@@ -4,7 +4,9 @@ import datetime as dt
 
 from discord.ext import commands
 
-from src.data import EmpireQuests, EmpireUpgrades, MilitaryGroup, MoneyGroup
+from src.common import EmpireConstants
+
+from src.data import EmpireQuests, EmpireUpgrades, Military, Workers
 
 
 class DiscordUser(commands.Converter):
@@ -100,10 +102,28 @@ class EmpireUnit(commands.Converter):
 			raise commands.UserInputError(f"Units should be referenced by their IDs")
 
 		else:
-			unit = MoneyGroup.get(id=val) or MilitaryGroup.get(id=val)
+			unit = Workers.get(id=val) or Military.get(id=val)
 
 			if unit is None:
 				raise commands.UserInputError(f"A unit with the ID `{val}` could not be found.")
+
+		return unit
+
+
+class MergeableUnit(EmpireUnit):
+	async def convert(self, ctx, argument):
+		unit = await super().convert(ctx, argument)
+
+		units = await ctx.bot.mongo.find_one("units", {"_id": ctx.author.id})
+		levels = await ctx.bot.mongo.find_one("levels", {"_id": ctx.author.id})
+
+		if units.get(unit.key, 0) < unit.calc_max_amount(levels.get(unit.key, 0)):
+			raise commands.CommandError(f"Merging requires you reach the owned limit first.")
+
+		levels = await ctx.bot.mongo.find_one("levels", {"_id": ctx.author.id})
+
+		if levels.get(unit.key, 0) >= EmpireConstants.MAX_UNIT_LEVEL:
+			raise commands.CommandError(f"**{unit.display_name}** has already reached the maximum merge level.")
 
 		return unit
 

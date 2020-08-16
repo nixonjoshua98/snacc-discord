@@ -20,11 +20,11 @@ class Shop(commands.Cog):
 		for upgrade in EmpireUpgrades.upgrades:
 			owned = upgrades.get(upgrade.key, 0)
 
-			if owned < upgrade._max_amount:
-				price = f"${upgrade.get_price(owned):,}"
-				owned = f"{owned}/{upgrade._max_amount}"
+			if owned < upgrade.max_amount:
+				price = f"${upgrade.calc_price(owned, 1):,}"
+				owned = f"{owned}/{upgrade.max_amount}"
 
-				page.add_row([upgrade.id, upgrade.display_name, owned, price])
+				page.add([upgrade.id, upgrade.display_name, owned, price])
 
 		page.set_footer("No upgrades available to buy" if len(page.rows) == 0 else None)
 
@@ -51,11 +51,11 @@ class Shop(commands.Cog):
 		bank = await ctx.bot.mongo.find_one("bank", {"_id": ctx.author.id})
 		upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": ctx.author.id})
 
-		price = upgrade.get_price(upgrades.get(upgrade.key, 0), amount)
+		price = upgrade.calc_price(upgrades.get(upgrade.key, 0), amount)
 
 		# - Reached the owned limit
-		if upgrades.get(upgrade.key, 0) + amount > upgrade._max_amount:
-			await ctx.send(f"**{upgrade.display_name}** have an owned limit of **{upgrade._max_amount}**.")
+		if upgrades.get(upgrade.key, 0) + amount > upgrade.max_amount:
+			await ctx.send(f"**{upgrade.display_name}** have an owned limit of **{upgrade.max_amount}**.")
 
 		# - User cannot afford upgrade
 		elif price > bank.get("usd", 0):

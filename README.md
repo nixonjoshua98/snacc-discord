@@ -4,7 +4,7 @@ Please do join the support server https://discord.gg/QExQuvE if you are interest
 
 ## Requirements
 - MongoDB
-- Python 3.7+
+- Python 3.8+
 
 ## Setup
 

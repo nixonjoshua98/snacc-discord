@@ -1,52 +1,53 @@
 
-
 class TextPage:
-	def __init__(self, title=None, headers=None, footer=None):
-		self.title = title
-		self.footer = footer
-		self.headers = headers
+	def __init__(self, *, title: str, headers: list = None):
+		self._title = title
+		self._footer = None
+		self._headers = headers or []
 
 		self.rows = []
 
 	def get(self):
-		widths = self._get_max_widths()
+		widths = self._get_widths()
 
-		s = [(self.title or "") + "\n", self._pad_row(self.headers, widths)]
+		s = [self._title + "\n"]
 
-		for row in self.rows:
-			s.append(self._pad_row(row, widths))
+		for i, row in enumerate([self._headers] + self.rows):
+			padded_row = self._pad_row(row, widths)
 
-		if self.footer is not None:
-			s.append("-")
-			s.append(self._pad_row(self.footer, widths) if isinstance(self.footer, (list, tuple)) else self.footer)
+			s.append(padded_row)
 
-		return "```" + '\n'.join(s) + "```"
+		if self._footer is not None:
+			s.extend(["-", self._footer])
 
-	def _get_max_widths(self):
-		widths = [0 for _ in range(max(map(len, [self.headers] + self.rows)))]
+		return "```\n" + "\n".join(s) + "```"
 
-		for ls in [self.headers] + self.rows:
-			for i, cell in enumerate(ls):
-				widths[i] = max(widths[i], len(str(cell)))
+	def add(self, row: list):
+		self.rows.append(list(map(lambda e: str(e), row)))
+
+	def set_headers(self, headers: list):
+		self._headers = list(map(lambda e: str(e), headers))
+
+	def set_footer(self, footer):
+		self._footer = footer
+
+	def _get_widths(self):
+		longest_row = max(map(lambda r: len(r), [self._headers] + self.rows))
+
+		widths = [0 for _ in range(longest_row)]
+
+		for row in [self._headers] + self.rows:
+			for i, ele in enumerate(row[:-1]):
+				widths[i] = max(widths[i], len(ele))
 
 		return widths
 
 	def _pad_row(self, row, widths):
-		return " ".join(f"{col}{' ' * (widths[i] - len(str(col)))}" for i, col in enumerate(row))
+		s = []
 
-	def set_title(self, title):
-		self.title = title
+		for i, ele in enumerate(row):
+			spaces = ' ' * (widths[i] - len(ele))
 
-	def add_row(self, ls):
-		self.rows.append(ls)
+			s.append(f"{ele}{spaces}")
 
-	def add_rows(self, *ls):
-		for row in ls:
-			self.add_row(row)
-
-	def set_headers(self, ls):
-		self.headers = ls
-
-	def set_footer(self, footer):
-		self.footer = footer
-
+		return " ".join(s)

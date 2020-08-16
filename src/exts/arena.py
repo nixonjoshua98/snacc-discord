@@ -182,7 +182,7 @@ class Arena(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 		for result in results:
 			row = [result["date"].strftime("%d/%m/%Y"), f"{result['level']:,}", f"{result['trophies']:,}"]
 
-			page.add_row(row)
+			page.add(row)
 
 		await ctx.send(page.get())
 
