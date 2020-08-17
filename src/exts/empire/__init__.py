@@ -70,7 +70,7 @@ class Empire(commands.Cog):
 
 		total_power = Military.get_total_power(units)
 
-		name = empire.get('name', 'No Name Empire')
+		name = empire.get('name', target.display_name)
 
 		# - Create the Embed message which will be sent back to Discord
 		embed = ctx.bot.embed(title=f"{str(target)}: {name}", thumbnail=target.avatar_url)

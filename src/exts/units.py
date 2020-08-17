@@ -25,7 +25,7 @@ class Units(commands.Cog):
 		pages = []
 
 		for group in [Workers, Military]:
-			headers = ["ID", "Unit", "Owned"]
+			headers = ["ID", "Unit", "Lvl", "Owned"]
 
 			for attr in ("_power", "_hourly_income", "_hourly_upkeep"):
 				if all(map(lambda u: hasattr(u, attr), group.units)):
@@ -41,7 +41,7 @@ class Units(commands.Cog):
 
 				max_units = unit.calc_max_amount(unit_level)
 
-				row = [unit.id, f"[{unit_level}] {unit.display_name}"]
+				row = [unit.id, unit.display_name, unit_level]
 
 				if units_owned >= max_units:
 					if unit_level >= EmpireConstants.MAX_UNIT_MERGE:

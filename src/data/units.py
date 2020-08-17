@@ -15,7 +15,7 @@ class Unit:
 		self._base_cost = base_cost
 
 		self._base_max_amount = 15
-		self._max_price = kwargs.get("max_price", 100_000)
+		self._max_price = kwargs.get("max_price", 75_000)
 		self._exponent = kwargs.get("exponent", 1.15)
 
 		self.display_name = kwargs.get("display_name", self.key.title().replace("_", " "))
@@ -47,11 +47,17 @@ class Unit:
 		return self._calc_price(owned, buying)
 
 
-class MoneyUnit(Unit):
-	def __init__(self, *, key, base_cost, **kwargs):
-		super(MoneyUnit, self).__init__(key=key, base_cost=base_cost, **kwargs)
+class WorkerUnit(Unit):
+	__worker_id = 1
 
-		self._hourly_income = kwargs.get("income_hour", 0)
+	def __init__(self, *, key, **kwargs):
+		self._hourly_income = kwargs.get("hourly_income", 0)
+
+		base_cost = math.floor(self._hourly_income * max(16.0, (24.0 + (0.5 * (WorkerUnit.__worker_id - 1)))))
+
+		super(WorkerUnit, self).__init__(key=key, base_cost=base_cost, **kwargs)
+
+		WorkerUnit.__worker_id += 1
 
 	def calc_hourly_income(self, amount, level):
 		return math.floor(self._hourly_income * amount * (1.0 + (level * 0.05)))
@@ -73,17 +79,32 @@ class MoneyUnit(Unit):
 
 
 class MilitaryUnit(Unit):
-	def __init__(self, *, key, base_cost, **kwargs):
-		super(MilitaryUnit, self).__init__(key=key, base_cost=base_cost, **kwargs)
+	__military_id = 1
 
-		self._power = kwargs.get("power", 0)
+	def __init__(self, *, key, **kwargs):
 		self._hourly_upkeep = kwargs.get("upkeep_hour", 0)
 
+		base_cost = math.floor(self._hourly_upkeep * max(16.0, (24.0 - (0.5 * (MilitaryUnit.__military_id - 1)))))
+
+		super(MilitaryUnit, self).__init__(key=key, base_cost=base_cost, **kwargs)
+
+		self._power = self._base_cost / max(450, (600 - ((MilitaryUnit.__military_id - 1) * 25)))
+
+		print(self._power)
+
+		MilitaryUnit.__military_id += 1
+
 	def calc_hourly_upkeep(self, amount, level):
-		return math.floor(self._hourly_upkeep * (1.0 - (level * 0.05)) * amount)
+
+		return math.ceil(self._hourly_upkeep * (1.0 - (level * 0.05)) * amount)
 
 	def calc_power(self, amount):
-		return self._power * amount
+		def round_up(n, decimals=0):
+			multiplier = 10 ** decimals
+
+			return math.ceil(n * multiplier) / multiplier
+
+		return round_up(self._power * amount, 1)
 
 	def calc_next_merge_stats(self, amount, level):
 		upkeep = self.calc_hourly_upkeep(amount, level)
