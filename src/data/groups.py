@@ -1,3 +1,4 @@
+import math
 import discord
 
 from .units import MilitaryUnit, WorkerUnit
@@ -48,4 +49,9 @@ class Military(UnitGroup):
 
 	@classmethod
 	def get_total_power(cls, units: dict):
-		return sum(map(lambda u: u.calc_power(units.get(u.key, 0)), cls.units))
+		def round_up(n, decimals=0):
+			multiplier = 10 ** decimals
+
+			return math.ceil(n * multiplier) / multiplier
+
+		return round_up(sum(map(lambda u: u.calc_power(units.get(u.key, 0)), cls.units)), 1)

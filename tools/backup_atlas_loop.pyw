@@ -47,9 +47,10 @@ def write_data_to_json(atlas_data):
 def write_to_local_database(atlas_data):
     with pymongo.MongoClient() as client:
         for col in atlas_data:
-            client[db][col].drop()
+            if atlas_data[col]:
+                client[db][col].drop()
 
-            client[db][col].insert_many(atlas_data[col])
+                client[db][col].insert_many(atlas_data[col])
     
 
 while True:
