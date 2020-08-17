@@ -1,5 +1,7 @@
 import math
 
+from src.common import EmpireConstants
+
 
 class Unit:
 	__unit_id = 1
@@ -25,10 +27,7 @@ class Unit:
 
 		Unit.__unit_keys.add(self.key)
 
-	def calc_max_amount(self, level):
-		return self._base_max_amount + level
-
-	def calc_price(self, owned: int, buying: int):
+	def _calc_price(self, owned, buying):
 		price = 0
 
 		for i in range(owned, owned + buying):
@@ -41,6 +40,12 @@ class Unit:
 
 		return math.ceil(price)
 
+	def calc_max_amount(self, level):
+		return self._base_max_amount + level
+
+	def calc_price(self, owned: int, buying: int):
+		return self._calc_price(owned, buying)
+
 
 class MoneyUnit(Unit):
 	def __init__(self, *, key, base_cost, **kwargs):
@@ -49,7 +54,22 @@ class MoneyUnit(Unit):
 		self._hourly_income = kwargs.get("income_hour", 0)
 
 	def calc_hourly_income(self, amount, level):
-		return int(self._hourly_income * amount * (1.0 + (level * 0.025)))
+		return math.floor(self._hourly_income * amount * (1.0 + (level * 0.05)))
+
+	def calc_next_merge_stats(self, amount, level):
+		income = self.calc_hourly_income(amount, level)
+		unit_income = self.calc_hourly_income(1, level)
+		slots = self.calc_max_amount(level)
+
+		new_income = self.calc_hourly_income(amount - EmpireConstants.MAX_UNIT_MERGE, level + 1)
+		new_unit_income = self.calc_hourly_income(1, level + 1)
+		new_slots = self.calc_max_amount(level + 1)
+
+		return {
+			"Hourly Income": f"${income:,} -> ${new_income:,}",
+			"Slots": f"{slots:,} -> {new_slots:,}",
+			"Income /unit": f"${unit_income:,} -> ${new_unit_income:,}"
+		}
 
 
 class MilitaryUnit(Unit):
@@ -60,10 +80,25 @@ class MilitaryUnit(Unit):
 		self._hourly_upkeep = kwargs.get("upkeep_hour", 0)
 
 	def calc_hourly_upkeep(self, amount, level):
-		return int(self._hourly_upkeep * (1.0 - (level * 0.025)) * amount)
+		return math.floor(self._hourly_upkeep * (1.0 - (level * 0.05)) * amount)
 
 	def calc_power(self):
 		return self._power
+
+	def calc_next_merge_stats(self, amount, level):
+		upkeep = self.calc_hourly_upkeep(amount, level)
+		slots = self.calc_max_amount(level)
+		unit_upkeep = self.calc_hourly_upkeep(1, level)
+
+		new_upkeep = self.calc_hourly_upkeep(amount - EmpireConstants.MAX_UNIT_MERGE, level + 1)
+		new_slots = self.calc_max_amount(level + 1)
+		new_unit_upkeep = self.calc_hourly_upkeep(1, level + 1)
+
+		return {
+			"Hourly Upkeep": f"${upkeep:,} -> ${new_upkeep:,}",
+			"Slots": f"{slots:,} -> {new_slots:,}",
+			"Upkeep /unit": f"${unit_upkeep:,} -> ${new_unit_upkeep:,}"
+		}
 
 
 

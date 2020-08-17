@@ -112,7 +112,7 @@ class Quests(commands.Cog):
 				if quest_completed:
 					await ctx.bot.mongo.increment_one("bank", {"_id": ctx.author.id}, {"usd": money_reward})
 
-					embed.add_field(name=f"{inst.name}", value=f"`Reward: ${money_reward}`")
+					embed.add_field(name=f"{inst.name}", value=f"`Reward: ${money_reward:,}`")
 
 				else:
 					embed.add_field(name=f"{inst.name}", value="`Quest failed`")

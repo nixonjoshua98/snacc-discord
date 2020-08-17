@@ -1,3 +1,5 @@
+import discord
+
 from discord.ext import menus
 
 
@@ -10,7 +12,11 @@ class Confirm(menus.Menu):
 		self.result = None
 
 	async def send_initial_message(self, ctx, channel):
-		return await channel.send(self.msg)
+		if isinstance(self.msg, str):
+			return await channel.send(self.msg)
+
+		elif isinstance(self.msg, discord.Embed):
+			return await channel.send(embed=self.msg)
 
 	@menus.button('\N{WHITE HEAVY CHECK MARK}')
 	async def do_confirm(self, _):

@@ -181,7 +181,7 @@ class EmpireUpgrade(ItemWithID):
 		super(EmpireUpgrade, self).__init__(EmpireUpgrades)
 
 	async def convert(self, ctx, argument):
-		if not (upgrade := super().convert(ctx, argument)):
+		if not (upgrade := await super().convert(ctx, argument)):
 			raise commands.UserInputError(f"Upgrade with ID `{upgrade}` could not be found.")
 
 		return upgrade
@@ -192,7 +192,7 @@ class EmpireQuest(ItemWithID):
 		super(EmpireQuest, self).__init__(EmpireQuests)
 
 	async def convert(self, ctx, argument):
-		if not (quest := super().convert(ctx, argument)):
+		if not (quest := await super().convert(ctx, argument)):
 			raise commands.UserInputError(f"Quest with ID `{quest}` could not be found.")
 
 		return quest

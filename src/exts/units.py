@@ -120,15 +120,28 @@ class Units(commands.Cog):
 	async def merge_unit(self, ctx, unit: MergeableUnit()):
 		""" Merge your units to upgrade their level. """
 
+		units = await ctx.bot.mongo.find_one("units", {"_id": ctx.author.id})
+		levels = await ctx.bot.mongo.find_one("levels", {"_id": ctx.author.id})
+
 		async def confirm():
 			resp = True
 
 			if ctx.bot.has_permission(ctx.channel, add_reactions=True):
-				resp = await Confirm(s).prompt(ctx)
+				resp = await Confirm(embed).prompt(ctx)
 
 			return resp
 
-		s = f"Level up **{unit.display_name}** by consuming **{EmpireConstants.MERGE_COST}** units?"
+		num_units = units.get(unit.key, 0)
+		unit_level = levels.get(unit.key, 0)
+
+		embed = ctx.bot.embed(
+			title="Unit Merge",
+			description=f"Level up **{unit.display_name}** by consuming **{EmpireConstants.MERGE_COST}** units?"
+		)
+
+		vale = [f"{k}: **{v}**" for k, v in unit.calc_next_merge_stats(num_units, unit_level).items()]
+
+		embed.add_field(name="WARNING", value="\n".join(vale))
 
 		if not await confirm():
 			return await ctx.send("Merge cancelled.")
