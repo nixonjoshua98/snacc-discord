@@ -56,7 +56,7 @@ class Units(commands.Cog):
 					row.append(f"{units_owned}/{max_units}")
 
 					if "Power" in headers:
-						power = unit.calc_power(units_owned)
+						power = unit.calc_power(1)
 
 						row.append(power)
 
