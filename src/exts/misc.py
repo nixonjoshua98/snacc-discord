@@ -85,7 +85,11 @@ class Miscellaneous(commands.Cog):
 	async def show_uptime(self, ctx):
 		""" Display the bot uptime """
 
-		await ctx.send(f"I have been up for `{ctx.bot.uptime}`")
+		embed = ctx.bot.embed(title="Bot Stats")
+
+		embed.add_field(name="Bot", value=f"**Uptime: ** `{ctx.bot.uptime}`")
+
+		await ctx.send(embed=embed)
 
 	@commands.command(name="cooldowns", aliases=["cd"])
 	async def cooldowns(self, ctx):
