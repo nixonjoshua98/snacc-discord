@@ -46,4 +46,4 @@ class Military(UnitGroup):
 
 	@classmethod
 	def get_total_power(cls, units: dict):
-		return int(sum(map(lambda u: u.calc_power() * units.get(u.key, 0), cls.units)))
+		return int(sum(map(lambda u: u.calc_power(units.get(u.key, 0)), cls.units)))

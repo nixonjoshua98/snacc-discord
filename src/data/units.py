@@ -82,22 +82,25 @@ class MilitaryUnit(Unit):
 	def calc_hourly_upkeep(self, amount, level):
 		return math.floor(self._hourly_upkeep * (1.0 - (level * 0.05)) * amount)
 
-	def calc_power(self):
-		return self._power
+	def calc_power(self, amount):
+		return self._power * amount
 
 	def calc_next_merge_stats(self, amount, level):
 		upkeep = self.calc_hourly_upkeep(amount, level)
 		slots = self.calc_max_amount(level)
 		unit_upkeep = self.calc_hourly_upkeep(1, level)
+		power = self.calc_power(amount)
 
 		new_upkeep = self.calc_hourly_upkeep(amount - EmpireConstants.MAX_UNIT_MERGE, level + 1)
 		new_slots = self.calc_max_amount(level + 1)
 		new_unit_upkeep = self.calc_hourly_upkeep(1, level + 1)
+		new_power = self.calc_power(amount)
 
 		return {
 			"Hourly Upkeep": f"${upkeep:,} -> ${new_upkeep:,}",
 			"Slots": f"{slots:,} -> {new_slots:,}",
-			"Unit Upkeep": f"${unit_upkeep:,} -> ${new_unit_upkeep:,}"
+			"Unit Upkeep": f"${unit_upkeep:,} -> ${new_unit_upkeep:,}",
+			"Unit Power": f"{power:,} -> {new_power:,}"
 		}
 
 

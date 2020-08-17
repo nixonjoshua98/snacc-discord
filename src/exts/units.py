@@ -47,7 +47,7 @@ class Units(commands.Cog):
 					if unit_level >= EmpireConstants.MAX_UNIT_MERGE:
 						continue
 
-					row.append("Ready to be merged")
+					row.append("Mergeable")
 
 				else:
 					# - Calculate price from <units_owned> to <units_owned + 1>
@@ -56,7 +56,7 @@ class Units(commands.Cog):
 					row.append(f"{units_owned}/{max_units}")
 
 					if "Power" in headers:
-						power = unit.calc_power()
+						power = unit.calc_power(units_owned)
 
 						row.append(power)
 

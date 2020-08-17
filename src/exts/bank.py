@@ -60,7 +60,6 @@ class Bank(commands.Cog):
 
 		await ctx.send(s)
 
-	@commands.cooldown(1, 15, commands.BucketType.guild)
 	@commands.command(name="richest")
 	async def show_richest_leaderboard(self, ctx):
 		""" Display the richest players. """
