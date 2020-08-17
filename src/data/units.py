@@ -60,6 +60,7 @@ class WorkerUnit(Unit):
 		WorkerUnit.__worker_id += 1
 
 	def calc_hourly_income(self, amount, level):
+		print(self.key, amount, level)
 		return math.floor(self._hourly_income * amount * (1.0 + (level * 0.05)))
 
 	def calc_next_merge_stats(self, amount, level):
@@ -67,7 +68,7 @@ class WorkerUnit(Unit):
 		unit_income = self.calc_hourly_income(1, level)
 		slots = self.calc_max_amount(level)
 
-		new_income = self.calc_hourly_income(amount - EmpireConstants.MAX_UNIT_MERGE, level + 1)
+		new_income = self.calc_hourly_income(amount - EmpireConstants.MERGE_COST, level + 1)
 		new_unit_income = self.calc_hourly_income(1, level + 1)
 		new_slots = self.calc_max_amount(level + 1)
 
@@ -90,8 +91,6 @@ class MilitaryUnit(Unit):
 
 		self._power = self._base_cost / max(450, (600 - ((MilitaryUnit.__military_id - 1) * 25)))
 
-		print(self._power)
-
 		MilitaryUnit.__military_id += 1
 
 	def calc_hourly_upkeep(self, amount, level):
@@ -112,7 +111,7 @@ class MilitaryUnit(Unit):
 		unit_upkeep = self.calc_hourly_upkeep(1, level)
 		power = self.calc_power(amount)
 
-		new_upkeep = self.calc_hourly_upkeep(amount - EmpireConstants.MAX_UNIT_MERGE, level + 1)
+		new_upkeep = self.calc_hourly_upkeep(amount - EmpireConstants.MERGE_COST, level + 1)
 		new_slots = self.calc_max_amount(level + 1)
 		new_unit_upkeep = self.calc_hourly_upkeep(1, level + 1)
 		new_power = self.calc_power(amount)
