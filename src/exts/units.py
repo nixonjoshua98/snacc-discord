@@ -106,7 +106,7 @@ class Units(commands.Cog):
 		elif price > bank.get("usd", 0):
 			missing = price - bank.get('usd', 0)
 
-			await ctx.send(f"You need an extra **{missing:,}** to hire **{amount}x {unit.display_name}**")
+			await ctx.send(f"You need an extra **${missing:,}** to hire **{amount}x {unit.display_name}**")
 
 		else:
 			# - Deduct the money from the authors bank
