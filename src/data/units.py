@@ -68,7 +68,7 @@ class MoneyUnit(Unit):
 		return {
 			"Hourly Income": f"${income:,} -> ${new_income:,}",
 			"Slots": f"{slots:,} -> {new_slots:,}",
-			"Income /unit": f"${unit_income:,} -> ${new_unit_income:,}"
+			"Unit Income": f"${unit_income:,} -> ${new_unit_income:,}"
 		}
 
 
@@ -97,7 +97,7 @@ class MilitaryUnit(Unit):
 		return {
 			"Hourly Upkeep": f"${upkeep:,} -> ${new_upkeep:,}",
 			"Slots": f"{slots:,} -> {new_slots:,}",
-			"Upkeep /unit": f"${unit_upkeep:,} -> ${new_unit_upkeep:,}"
+			"Unit Upkeep": f"${unit_upkeep:,} -> ${new_unit_upkeep:,}"
 		}
 
 
