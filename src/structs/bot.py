@@ -92,7 +92,7 @@ class Bot(commands.Bot):
             raise GlobalCheckFail("Bot not ready")
 
         elif not self.has_permission(ctx.channel, send_messages=True):
-            raise GlobalCheckFail(f"I cannot message {str(ctx.guild)} {ctx.guild.name}")
+            raise GlobalCheckFail(f"I cannot message G: {str(ctx.guild)} C: {ctx.guild.name}")
 
         elif self.debug and ctx.author.id != SNACCMAN:
             return False

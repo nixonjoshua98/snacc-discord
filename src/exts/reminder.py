@@ -36,7 +36,7 @@ class Reminder(commands.Cog):
 
 		self.__set_reminders = dict()
 
-		if not self.bot.debug:
+		if self.bot.debug:
 			print("Starting Loop: Reminders")
 			self.remind_loop.start()
 
@@ -48,7 +48,7 @@ class Reminder(commands.Cog):
 	async def remind_me(self, ctx, period: TimePeriod() = None, *, note=None):
 		"""
 View your reminder or create a new one.
-e.g `!remind 2d 5m 17s`
+e.g `!remind "2d 5m 17s" Make food`
 		"""
 
 		note = "Reminder!" if note is None else note
@@ -93,11 +93,12 @@ e.g `!remind 2d 5m 17s`
 
 				try:
 					await task
+
 				except asyncio.CancelledError:
 					self.__set_reminders.pop(reminder["_id"], None)
 
 				else:
-					return await ctx.send("Your reminder could not be cancelled.")
+					return await ctx.send("I failed to cancel your reminder.")
 
 			await ctx.bot.mongo.delete_one("reminders", {"_id": ctx.author.id})
 
