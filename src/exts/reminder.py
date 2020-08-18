@@ -13,7 +13,7 @@ async def remind_task(bot, row):
 
 	note_text = row.get("note", "Reminder!")
 
-	sleep_time = max(1, (row["end"] - dt.datetime.utcnow()).total_seconds())
+	sleep_time = max(5, (row["end"] - dt.datetime.utcnow()).total_seconds())
 
 	await asyncio.sleep(sleep_time)
 
@@ -28,6 +28,8 @@ async def remind_task(bot, row):
 			""" Failed """
 
 	await bot.mongo.delete_one("reminders", {"_id": _id})
+
+	self.__set_reminders.pop(reminder["_id"], None)
 
 
 class Reminder(commands.Cog):

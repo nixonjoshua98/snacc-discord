@@ -113,7 +113,7 @@ class MilitaryUnit(Unit):
 		new_upkeep = self.calc_hourly_upkeep(amount - EmpireConstants.MERGE_COST, level + 1)
 		new_slots = self.calc_max_amount(level + 1)
 		new_unit_upkeep = self.calc_hourly_upkeep(1, level + 1)
-		new_power = self.calc_power(amount)
+		new_power = self.calc_power(amount - EmpireConstants.MERGE_COST)
 
 		return {
 			"Hourly Upkeep": f"${upkeep:,} -> ${new_upkeep:,}",
