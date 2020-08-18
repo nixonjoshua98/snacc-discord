@@ -22,6 +22,8 @@ class Arena(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 		self.start_shame_users()
 
 	async def cog_check(self, ctx):
+		raise commands.DisabledCommand("Disabled until release")
+
 		if ctx.guild.id != MainServer.ID:
 			raise commands.DisabledCommand("This command is disabled in this server")
 

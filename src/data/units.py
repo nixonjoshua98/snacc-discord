@@ -60,7 +60,6 @@ class WorkerUnit(Unit):
 		WorkerUnit.__worker_id += 1
 
 	def calc_hourly_income(self, amount, level):
-		print(self.key, amount, level)
 		return math.floor(self._hourly_income * amount * (1.0 + (level * 0.05)))
 
 	def calc_next_merge_stats(self, amount, level):
