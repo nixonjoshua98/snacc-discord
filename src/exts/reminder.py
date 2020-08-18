@@ -8,30 +8,6 @@ from discord.ext import commands, tasks
 from src.common.converters import TimePeriod
 
 
-async def remind_task(bot, row):
-	_id, user_id, chnl_id = row["_id"], row["_id"], row["channel"]
-
-	note_text = row.get("note", "Reminder!")
-
-	sleep_time = max(5, (row["end"] - dt.datetime.utcnow()).total_seconds())
-
-	await asyncio.sleep(sleep_time)
-
-	chnl = bot.get_channel(chnl_id)
-	user = bot.get_user(user_id)
-
-	if chnl is not None and user is not None:
-		try:
-			await chnl.send(f":alarm_clock: {user.mention} {note_text}")
-
-		except (discord.HTTPException, discord.Forbidden):
-			""" Failed """
-
-	await bot.mongo.delete_one("reminders", {"_id": _id})
-
-	self.__set_reminders.pop(reminder["_id"], None)
-
-
 class Reminder(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
@@ -43,8 +19,31 @@ class Reminder(commands.Cog):
 			self.remind_loop.start()
 
 	def create_reminder_task(self, row):
+		async def remind_task():
+			_id, user_id, chnl_id = row["_id"], row["_id"], row["channel"]
+
+			note_text = row.get("note", "Reminder!")
+
+			sleep_time = max(5, (row["end"] - dt.datetime.utcnow()).total_seconds())
+
+			await asyncio.sleep(sleep_time)
+
+			chnl = self.bot.get_channel(chnl_id)
+			user = self.bot.get_user(user_id)
+
+			if chnl is not None and user is not None:
+				try:
+					await chnl.send(f":alarm_clock: {user.mention} {note_text}")
+
+				except (discord.HTTPException, discord.Forbidden):
+					""" Failed """
+
+			await self.bot.mongo.delete_one("reminders", {"_id": _id})
+
+			self.__set_reminders.pop(row["_id"], None)
+
 		if row["_id"] not in self.__set_reminders:
-			self.__set_reminders[row["_id"]] = asyncio.create_task(remind_task(self.bot, row))
+			self.__set_reminders[row["_id"]] = asyncio.create_task(remind_task())
 
 	@commands.group(name="remind", invoke_without_command=True)
 	async def remind_me(self, ctx, period: TimePeriod() = None, *, note=None):
