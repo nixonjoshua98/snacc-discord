@@ -46,7 +46,7 @@ class Reminder(commands.Cog):
 			self.__set_reminders[row["_id"]] = asyncio.create_task(remind_task())
 
 	@commands.group(name="remind", invoke_without_command=True)
-	async def remind_me(self, ctx, period: TimePeriod() = None, *, note=None):
+	async def remind_me(self, ctx: commands.Context, period: TimePeriod() = None, *, note: str = None):
 		"""
 View your reminder or create a new one.
 e.g `!remind "2d 5m 17s" Make food`
@@ -58,6 +58,9 @@ e.g `!remind "2d 5m 17s" Make food`
 
 		if period is None and not reminder:
 			await ctx.send("You do not have any active reminders")
+
+		elif "@" in note:
+			await ctx.send("Reminder note cannot contain `@` to avoid mass mention abuse.")
 
 		elif reminder:
 			seconds = (reminder["end"] - dt.datetime.utcnow()).total_seconds()
