@@ -13,6 +13,9 @@ async def calculate_units_lost(units, levels):
 	units_lost_cost = 0
 
 	hourly_income = max(0, Workers.get_total_hourly_income(units, levels))
+	hourly_upkeep = max(0, Military.get_total_hourly_upkeep(units, levels))
+
+	hourly_income = hourly_income - hourly_upkeep
 
 	available_units = list(itertools.filterfalse(lambda u: units.get(u.key, 0) == 0, Military.units))
 

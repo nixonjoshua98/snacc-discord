@@ -8,6 +8,28 @@ from discord.ext import commands, tasks
 from src.common.converters import TimePeriod
 
 
+async def remind_task(bot, row):
+	_id, user_id, chnl_id = row["_id"], row["_id"], row["channel"]
+
+	note_text = row.get("note", "Reminder!")
+
+	sleep_time = max(1, (row["end"] - dt.datetime.utcnow()).total_seconds())
+
+	await asyncio.sleep(sleep_time)
+
+	chnl = bot.get_channel(chnl_id)
+	user = bot.get_user(user_id)
+
+	if chnl is not None and user is not None:
+		try:
+			await chnl.send(f":alarm_clock: {user.mention} {note_text}")
+
+		except (discord.HTTPException, discord.Forbidden):
+			""" Failed """
+
+	await bot.mongo.delete_one("reminders", {"_id": _id})
+
+
 class Reminder(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
@@ -19,34 +41,17 @@ class Reminder(commands.Cog):
 			self.remind_loop.start()
 
 	def create_reminder_task(self, row):
-		async def remind_task(_id, user, chnl, seconds):
-			await asyncio.sleep(seconds)
-
-			chnl = self.bot.get_channel(chnl)
-			user = self.bot.get_user(user)
-
-			if chnl is not None and user is not None:
-				try:
-					await chnl.send(f":alarm_clock: {user.mention}")
-
-				except (discord.HTTPException, discord.Forbidden):
-					""" Failed """
-
-			await self.bot.mongo.delete_one("reminders", {"_id": _id})
-
-		_id, user_id, chnl_id = row["_id"], row["_id"], row["channel"]
-
-		if _id not in self.__set_reminders:
-			sleep_time = max(1, (row["end"] - dt.datetime.utcnow()).total_seconds())
-
-			self.__set_reminders[_id] = asyncio.create_task(remind_task(_id, user_id, chnl_id, sleep_time))
+		if row["_id"] not in self.__set_reminders:
+			self.__set_reminders[row["_id"]] = asyncio.create_task(remind_task(self.bot, row))
 
 	@commands.group(name="remind", invoke_without_command=True)
-	async def remind_me(self, ctx, *, period: TimePeriod() = None):
+	async def remind_me(self, ctx, period: TimePeriod() = None, *, note=None):
 		"""
 View your reminder or create a new one.
 e.g `!remind 2d 5m 17s`
 		"""
+
+		note = "Reminder!" if note is None else note
 
 		reminder = await ctx.bot.mongo.find_one("reminders", {"_id": ctx.author.id})
 
@@ -63,7 +68,7 @@ e.g `!remind 2d 5m 17s`
 		elif period is not None and not reminder:
 			now = dt.datetime.utcnow()
 
-			row = dict(_id=ctx.author.id, channel=ctx.channel.id, start=now, end=now + period)
+			row = dict(_id=ctx.author.id, channel=ctx.channel.id, start=now, end=now + period, note=note)
 
 			await ctx.bot.mongo.insert_one("reminders", row)
 

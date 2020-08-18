@@ -8,7 +8,6 @@ async def assassinated_event(ctx):
 
 	# - Load the relevant data
 	units = await ctx.bot.mongo.find_one("units", {"_id": ctx.author.id})
-	levels = await ctx.bot.mongo.find_one("levels", {"_id": ctx.author.id})
 
 	# - List of all military units which have an owned amount greater than 0
 	units_owned = [unit for unit in Military.units if units.get(unit.key, 0) > 0]
@@ -36,6 +35,9 @@ async def stolen_event(ctx):
 	units = await ctx.bot.mongo.find_one("units", {"_id": ctx.author.id})
 
 	hourly_income = max(0, Workers.get_total_hourly_income(units, levels))
+	hourly_upkeep = max(0, Military.get_total_hourly_upkeep(units, levels))
+
+	hourly_income = hourly_income - hourly_upkeep
 
 	money_stolen = random.randint(max(250, hourly_income // 2), max(1_000, hourly_income))
 
@@ -61,6 +63,9 @@ async def loot_event(ctx):
 	units = await ctx.bot.mongo.find_one("units", {"_id": ctx.author.id})
 
 	hourly_income = max(0, Workers.get_total_hourly_income(units, levels))
+	hourly_upkeep = max(0, Military.get_total_hourly_upkeep(units, levels))
+
+	hourly_income = hourly_income - hourly_upkeep
 
 	money_gained = random.randint(max(500, hourly_income // 2), max(1_000, int(hourly_income * 0.75)))
 
