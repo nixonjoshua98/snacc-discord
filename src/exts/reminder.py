@@ -36,7 +36,7 @@ class Reminder(commands.Cog):
 
 		self.__set_reminders = dict()
 
-		if self.bot.debug:
+		if not self.bot.debug:
 			print("Starting Loop: Reminders")
 			self.remind_loop.start()
 
