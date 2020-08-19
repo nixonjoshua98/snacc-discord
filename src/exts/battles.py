@@ -94,26 +94,20 @@ class Battles(commands.Cog):
 		""" Pay to scout an empire to recieve valuable information. """
 
 		# - Load data from database
-		author_bank = await ctx.bot.mongo.find_one("bank", {"_id": ctx.author.id})
 		author_units = await ctx.bot.mongo.find_one("units", {"_id": ctx.author.id})
 		target_units = await ctx.bot.mongo.find_one("units", {"_id": target.id})
 
 		author_power = Military.get_total_power(author_units)
 		target_power = Military.get_total_power(target_units)
 
-		if author_bank.get("usd", 0) < 500:
-			await ctx.send(f"Scouting an empire costs **$500**.")
+		await ctx.bot.mongo.decrement_one("units", {"_id": ctx.author.id}, {SCOUT_UNIT.key: 1})
 
-		else:
-			# - Update database
-			await ctx.bot.mongo.decrement_one("bank", {"_id": ctx.author.id}, {"usd": 500})
+		win_chance = self.get_win_chance(author_power, target_power)
 
-			win_chance = self.get_win_chance(author_power, target_power)
-
-			await ctx.send(
-				f"You hired a scout for **$500**. "
-				f"You have a **{int(win_chance * 100)}%** chance of winning against **{target.display_name}**."
-			)
+		await ctx.send(
+			f"Your scout reports that you have a **{int(win_chance * 100)}%** "
+			f"chance of winning against **{str(target)}**."
+		)
 
 	@checks.has_empire()
 	@checks.has_power(25)
