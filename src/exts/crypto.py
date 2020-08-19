@@ -27,7 +27,7 @@ class Crypto(commands.Cog):
 
 	@commands.group(name="crpto", aliases=["c"], invoke_without_command=True)
 	async def crypto_group(self, ctx):
-		""" Show the current price of Bitcoin. Bitcoin prices are divided by 5. """
+		""" Show the current price of Bitcoin. """
 
 		current_price = self._price_cache['current']
 
@@ -88,7 +88,7 @@ class Crypto(commands.Cog):
 
 			data = r.json()
 
-		return {k: int(v // 5) for k, v in data["bpi"].items()}
+		return {k: int(v) for k, v in data["bpi"].items()}
 
 	@staticmethod
 	async def get_current():
@@ -97,7 +97,7 @@ class Crypto(commands.Cog):
 
 			data = r.json()
 
-		return int(data["bpi"]["USD"]["rate_float"]) // 5
+		return int(data["bpi"]["USD"]["rate_float"])
 
 	def create_graph(self):
 		data = self._price_cache["history"]
@@ -114,7 +114,7 @@ class Crypto(commands.Cog):
 
 		plt.savefig('graph.png', facecolor=fig.get_facecolor(), transparent=True)
 
-	@tasks.loop(minutes=15.0)
+	@tasks.loop(minutes=5.0)
 	async def update_prices_loop(self):
 		await self.update_prices()
 
