@@ -30,13 +30,13 @@ class Bank(commands.Cog):
 
 		await ctx.send(msg)
 
-	@commands.cooldown(1, 60 * 60, commands.BucketType.user)
+	@commands.cooldown(1, 3_600, commands.BucketType.user)
 	@commands.command(name="steal", cooldown_after_parsing=True)
 	async def steal_coins(self, ctx, *, target: DiscordUser()):
 		""" Attempt to steal from another user. """
 
 		def calculate_money_lost(bank):
-			extra = (bank.get("usd", 0) / 75_000) * 0.025
+			extra = (bank.get("usd", 0) // 100_000) * 0.025
 
 			min_val, max_val = int(bank.get("usd", 0) * (0.025 + extra)), int(bank.get("usd", 0) * (0.075 + extra))
 

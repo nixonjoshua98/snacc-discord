@@ -174,13 +174,19 @@ class Empire(commands.Cog):
 		# - Author won the attack
 		if win_chance >= random.uniform(0.0, 1.0):
 
+			hourly_income = max(0, Workers.get_total_hourly_income(target_units, target_levels))
+
+			hourly_upkeep = max(0, Military.get_total_hourly_upkeep(target_units, target_levels))
+
+			hourly_income = max(0, hourly_income - hourly_upkeep)
+
 			# - Calculate pillage amount
-			extra = (target_bank.get("usd", 0) // 100_000) * 0.025
+			extra = (target_bank.get("usd", 0) // 100_000) * 0.05
 
 			min_val = int(target_bank.get("usd", 0) * (0.025 + extra))
 			max_val = int(target_bank.get("usd", 0) * (0.050 + extra))
 
-			money_stolen = random.randint(max(0, min_val), max(0, max_val))
+			money_stolen = min(hourly_income, random.randint(max(0, min_val), max(0, max_val)))
 
 			# - Add a bonus pillage amount if the chance of winning is less than 50%
 			bonus_money = int((money_stolen * 2.0) * (1.0 - win_chance) if win_chance <= 0.50 else 0)

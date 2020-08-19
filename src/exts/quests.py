@@ -1,6 +1,5 @@
 import math
 import random
-import itertools
 
 import datetime as dt
 
@@ -20,7 +19,7 @@ class Quests(commands.Cog):
 
 	@staticmethod
 	def get_max_quests(upgrades):
-		return 1 + upgrades.get("quest_slots", 0)
+		return 1 + upgrades.get("extra_quest_slots", 0)
 
 	@checks.has_empire()
 	@commands.max_concurrency(1, commands.BucketType.user)

@@ -14,21 +14,26 @@ from src.data import EmpireUpgrades
 class Shop(commands.Cog):
 
 	@staticmethod
-	def create_upgrades_shop_page(upgrades):
-		page = TextPage(title="Empire Upgrades", headers=["ID", "Name", "Owned", "Cost"])
+	def create_pages(user_upgrades):
+		pages = []
 
-		for upgrade in EmpireUpgrades.upgrades:
-			owned = upgrades.get(upgrade.key, 0)
+		for title, upgrades in EmpireUpgrades.groups.items():
+			page = TextPage(title=title, headers=["ID", "Name", "Owned", "Cost"])
 
-			if owned < upgrade.max_amount:
-				price = f"${upgrade.calc_price(owned, 1):,}"
-				owned = f"{owned}/{upgrade.max_amount}"
+			for upgrade in upgrades:
+				owned = user_upgrades.get(upgrade.key, 0)
 
-				page.add([upgrade.id, upgrade.display_name, owned, price])
+				if owned < upgrade.max_amount:
+					price = f"${upgrade.calc_price(owned, 1):,}"
+					owned = f"{owned}/{upgrade.max_amount}"
 
-		page.set_footer("No upgrades available to buy" if len(page.rows) == 0 else None)
+					page.add([upgrade.id, upgrade.display_name, owned, price])
 
-		return page
+			page.set_footer("No upgrades available to buy" if len(page.rows) == 0 else None)
+
+			pages.append(page.get())
+
+		return pages
 
 	@checks.has_empire()
 	@commands.group(name="shop", invoke_without_command=True)
@@ -37,9 +42,7 @@ class Shop(commands.Cog):
 
 		upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": ctx.author.id})
 
-		page = self.create_upgrades_shop_page(upgrades)
-
-		await inputs.send_pages(ctx, [page.get()])
+		await inputs.send_pages(ctx, self.create_pages(upgrades))
 
 	@checks.has_empire()
 	@commands.max_concurrency(1, commands.BucketType.user)
