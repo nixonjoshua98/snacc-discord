@@ -36,4 +36,8 @@ async def calculate_units_lost(units, levels):
 
 
 async def calculate_money_lost(bank):
-	return random.randint(max(1, int(bank.get("usd", 0) * 0.025)), max(1, int(bank.get("usd", 0) * 0.05)))
+	extra = (bank.get("usd", 0) / 100_000)  * 0.05
+
+	min_val, max_val = int(bank.get("usd", 0) * 0.025), int(bank.get("usd", 0) * 0.075)
+
+	return random.randint(max(1, min_val + extra), max(1, max_val + extra))

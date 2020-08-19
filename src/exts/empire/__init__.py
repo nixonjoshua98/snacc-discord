@@ -23,8 +23,6 @@ class Empire(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-		self.currently_adding_income = False
-
 		print("Starting loop: Income")
 
 		self.income_loop.start()
@@ -168,15 +166,19 @@ class Empire(commands.Cog):
 
 		# - Author won the attack
 		if win_chance >= random.uniform(0.0, 1.0):
+
+			# - Load target data since the author won the attack
 			target_bank = await ctx.bot.mongo.find_one("bank", {"_id": target.id})
 			target_empire = await ctx.bot.mongo.find_one("empires", {"_id": target.id})
 			target_levels = await ctx.bot.mongo.find_one("levels", {"_id": target.id})
 
+			# - Amount stolen
 			money_stolen = await utils.calculate_money_lost(target_bank)
 
+			# - Units killed
 			units_lost = await utils.calculate_units_lost(target_units, target_levels)
 
-			bonus_money = int(money_stolen * (1.0 - win_chance) if win_chance <= 0.5 else 0)
+			bonus_money = int((money_stolen * 2.0) * (1.0 - win_chance) if win_chance <= 0.5 else 0)
 
 			await ctx.bot.mongo.increment_one("bank", {"_id": ctx.author.id}, {"usd": money_stolen + bonus_money})
 			await ctx.bot.mongo.decrement_one("bank", {"_id": target.id}, {"usd": money_stolen + bonus_money})
@@ -188,15 +190,18 @@ class Empire(commands.Cog):
 			await ctx.bot.mongo.update_one("empires", {"_id": target.id}, {"last_attack": dt.datetime.utcnow()})
 
 			# - Create the message to return to Discord
-			units_text = "\n".join(map(lambda kv: f"{kv[1]}x {kv[0].display_name}", units_lost.items()))
 			val = f"${money_stolen:,} {f'**+ ${bonus_money:,} bonus**' if bonus_money > 0 else ''}"
 
-			embed = ctx.bot.embed(title=f"Attack on {str(target)}: {target_empire.get('name', target.display_name)}")
+			embed = ctx.bot.embed(
+				title=f"Attack on {str(target)}: {target_empire.get('name', target.display_name)}",
+				description=f"**Money Pillaged:** {val}"
+			)
 
-			embed.description = f"**Money Pillaged:** {val}"
-
-			if units_text:
-				embed.add_field(name="Units Killed", value=units_text)
+			if units_lost:
+				embed.add_field(
+					name="Units Killed",
+					value="\n".join(map(lambda kv: f"{kv[1]}x {kv[0].display_name}", units_lost.items()))
+				)
 
 			await ctx.send(embed=embed)
 
@@ -256,8 +261,6 @@ class Empire(commands.Cog):
 	async def income_loop(self):
 		""" Background income & upkeep loop. """
 
-		self.currently_adding_income = True
-
 		empires = await self.bot.mongo.find("empires").to_list(length=None)
 
 		for empire in empires:
@@ -294,8 +297,6 @@ class Empire(commands.Cog):
 
 			elif money_change < 0:
 				await self.bot.mongo.decrement_one("bank", {"_id": empire["_id"]}, {"usd": abs(money_change)})
-
-		self.currently_adding_income = False
 
 
 def setup(bot):

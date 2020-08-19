@@ -4,18 +4,14 @@ from discord.ext import commands
 
 
 GUILD_JOIN_MESSAGE = """
-The infamous **{bot.user.name}** has graced your ~~lowly~~ server! [{guild.owner.mention}]
+The infamous **{bot.user.name}** has graced your ~~lowly~~ server!
 
 Please look at my `!help`
 
 **!create** to start your Empire adventure!
-
 **!quest** to view your quests (hint: buy **!units** with a power rating to increase your success rate)
-
 Play a game of **!hangman** (view the leaderboard **!hlb**)
-
 **Moderation** commands require a `Mod` role.
-
 Buy Crypto using **!c** and **!c buy/sell**
 
 __Join the **NEW** support server__

@@ -8,6 +8,14 @@ from src.common.converters import DiscordUser
 
 class Bank(commands.Cog):
 
+	@staticmethod
+	def calculate_money_lost(bank):
+		extra = (bank.get("usd", 0) / 75_000) * 0.025
+
+		min_val, max_val = int(bank.get("usd", 0) * 0.025), int(bank.get("usd", 0) * 0.075)
+
+		return random.randint(max(1, min_val + extra), max(1, max_val + extra))
+
 	@commands.cooldown(1, 3_600 * 24, commands.BucketType.user)
 	@commands.command(name="daily")
 	async def daily(self, ctx):
@@ -37,15 +45,9 @@ class Bank(commands.Cog):
 		""" Attempt to steal from another user. """
 
 		# - Get data
-		author_bank = await ctx.bot.mongo.find_one("bank", {"_id": ctx.author.id})
 		target_bank = await ctx.bot.mongo.find_one("bank", {"_id": target.id})
 
-		# - Calculate stolen amount
-		min_money, max_money = int(target_bank.get("usd", 0) * 0.025), int(target_bank.get("usd", 0) * 0.075)
-
-		stolen_amount = random.randint(max(1, min_money), max(1, max_money))
-
-		stolen_amount = min(author_bank.get("usd", 0), stolen_amount)
+		stolen_amount = self.calculate_money_lost(target_bank)
 
 		thief_tax = int(stolen_amount // random.uniform(2.0, 8.0)) if stolen_amount >= 2_500 else 0
 
