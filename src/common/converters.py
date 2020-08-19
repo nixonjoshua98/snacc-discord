@@ -119,7 +119,10 @@ class EmpireUnit(commands.Converter):
 			val = int(argument)
 
 		except ValueError:
-			raise commands.UserInputError(f"Units should be referenced by their IDs")
+			unit = Workers.get(key=argument.lower()) or Military.get(key=argument.lower())
+
+			if unit is None:
+				raise commands.UserInputError(f"A unit with the name `{argument}` could not be found.")
 
 		else:
 			unit = Workers.get(id=val) or Military.get(id=val)

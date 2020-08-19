@@ -19,7 +19,7 @@ class Arena(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 	def __init__(self, bot):
 		self.bot = bot
 
-		self.start_shame_users()
+		#self.start_shame_users()
 
 	async def cog_check(self, ctx):
 		if ctx.guild.id != MainServer.ID:
@@ -120,7 +120,7 @@ class Arena(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 
 			message += "**__Lacking__** - No recent stat updates\n" + ", ".join(ls)
 
-		return message if message is not None else "Everyone is up-to-date!"
+		return message
 
 	@tasks.loop(hours=12.0)
 	async def shame_users_loop(self):
@@ -128,9 +128,8 @@ class Arena(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 
 		channel = self.bot.get_channel(MainServer.ABO_CHANNEL)
 
-		message = await self.create_shame_message()
-
-		await channel.send(message)
+		if (message := await self.create_shame_message()) is not None:
+			await channel.send(message)
 
 	@checks.snaccman_only()
 	@checks.main_server_only()
@@ -138,9 +137,11 @@ class Arena(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 	async def shame(self, ctx):
 		""" Posts the shame message. """
 
-		message = await self.create_shame_message()
+		if (message := await self.create_shame_message()) is not None:
+			await ctx.send(message)
 
-		await ctx.send(message)
+		else:
+			await ctx.send("Everyone is up-to-date!")
 
 	@commands.cooldown(1, 60 * 60 * 3, commands.BucketType.user)
 	@commands.command(name="set", aliases=["s"])
