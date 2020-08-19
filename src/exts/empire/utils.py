@@ -1,4 +1,3 @@
-import random
 import itertools
 
 from src.data import Military, Workers
@@ -13,11 +12,14 @@ async def calculate_units_lost(units, levels):
 	units_lost_cost = 0
 
 	hourly_income = max(0, Workers.get_total_hourly_income(units, levels))
+
 	hourly_upkeep = max(0, Military.get_total_hourly_upkeep(units, levels))
 
 	hourly_income = hourly_income - hourly_upkeep
 
-	available_units = list(itertools.filterfalse(lambda u: units.get(u.key, 0) == 0, Military.units))
+	all_units = Military.units + Workers.units
+
+	available_units = list(itertools.filterfalse(lambda u: units.get(u.key, 0) == 0, all_units))
 
 	available_units.sort(key=lambda u: u.calc_price(units.get(u.key, 0), 1), reverse=False)
 
@@ -33,11 +35,3 @@ async def calculate_units_lost(units, levels):
 			units_lost_cost = sum([unit.calc_price(owned - n, n) for u, n in units_lost.items()])
 
 	return units_lost
-
-
-async def calculate_money_lost(bank):
-	extra = (bank.get("usd", 0) / 75_000) * 0.025
-
-	min_val, max_val = int(bank.get("usd", 0) * (0.025 + extra)), int(bank.get("usd", 0) * (0.075 + extra))
-
-	return random.randint(max(1, min_val), max(1, max_val))

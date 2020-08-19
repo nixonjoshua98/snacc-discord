@@ -7,15 +7,6 @@ from src.common.converters import DiscordUser
 
 
 class Bank(commands.Cog):
-
-	@staticmethod
-	def calculate_money_lost(bank):
-		extra = (bank.get("usd", 0) / 75_000) * 0.025
-
-		min_val, max_val = int(bank.get("usd", 0) * (0.025 + extra)), int(bank.get("usd", 0) * (0.075 + extra))
-
-		return random.randint(max(1, min_val), max(1, max_val))
-
 	@commands.cooldown(1, 3_600 * 24, commands.BucketType.user)
 	@commands.command(name="daily")
 	async def daily(self, ctx):
@@ -44,12 +35,19 @@ class Bank(commands.Cog):
 	async def steal_coins(self, ctx, *, target: DiscordUser()):
 		""" Attempt to steal from another user. """
 
+		def calculate_money_lost(bank):
+			extra = (bank.get("usd", 0) / 75_000) * 0.025
+
+			min_val, max_val = int(bank.get("usd", 0) * (0.025 + extra)), int(bank.get("usd", 0) * (0.075 + extra))
+
+			return random.randint(max(1, min_val), max(1, max_val))
+
 		# - Get data
 		target_bank = await ctx.bot.mongo.find_one("bank", {"_id": target.id})
 
-		stolen_amount = self.calculate_money_lost(target_bank)
+		stolen_amount = calculate_money_lost(target_bank)
 
-		thief_tax = int(stolen_amount // random.uniform(2.0, 8.0)) if stolen_amount >= 2_500 else 0
+		thief_tax = int(stolen_amount // random.uniform(2.0, 6.0)) if stolen_amount >= 2_500 else 0
 
 		# - Update database
 		await ctx.bot.mongo.increment_one("bank", {"_id": ctx.author.id}, {"usd": stolen_amount - thief_tax})

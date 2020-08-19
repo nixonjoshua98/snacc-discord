@@ -154,37 +154,49 @@ class Empire(commands.Cog):
 	async def attack(self, ctx, *, target: EmpireTargetUser()):
 		""" Attack a rival empire. """
 
-		# - Load the populations of each empire
-		target_units = await ctx.bot.mongo.find_one("units", {"_id": target.id})
+		# - Load author data
 		author_units = await ctx.bot.mongo.find_one("units", {"_id": ctx.author.id})
+		author_bank = await ctx.bot.mongo.find_one("bank", {"_id": ctx.author.id})
+
+		# - Load target data
+		target_bank = await ctx.bot.mongo.find_one("bank", {"_id": target.id})
+		target_units = await ctx.bot.mongo.find_one("units", {"_id": target.id})
+		target_empire = await ctx.bot.mongo.find_one("empires", {"_id": target.id})
+		target_levels = await ctx.bot.mongo.find_one("levels", {"_id": target.id})
 
 		# - Power ratings of each empire which is used to calculate the win chance for the author (attacker)
 		target_power = Military.get_total_power(target_units)
 		author_power = Military.get_total_power(author_units)
 
+		# - Author chance of winning against the target
 		win_chance = utils.get_win_chance(author_power, target_power)
 
 		# - Author won the attack
 		if win_chance >= random.uniform(0.0, 1.0):
 
-			# - Load target data since the author won the attack
-			target_bank = await ctx.bot.mongo.find_one("bank", {"_id": target.id})
-			target_empire = await ctx.bot.mongo.find_one("empires", {"_id": target.id})
-			target_levels = await ctx.bot.mongo.find_one("levels", {"_id": target.id})
+			# - Calculate pillage amount
+			extra = (target_bank.get("usd", 0) / 75_000) * 0.025
 
-			# - Amount stolen
-			money_stolen = await utils.calculate_money_lost(target_bank)
+			min_val = int(target_bank.get("usd", 0) * (0.025 + extra))
+			max_val = int(target_bank.get("usd", 0) * (0.075 + extra))
+
+			money_stolen = random.randint(max(0, min_val), max(0, max_val))
+
+			# - Add a bonus pillage amount if the chance of winning is less than 50%
+			bonus_money = int((money_stolen * 2.0) * (1.0 - win_chance) if win_chance <= 0.50 else 0)
+
+			# - Increment and decrement the balances of the two users
+			await ctx.bot.mongo.increment_one("bank", {"_id": ctx.author.id}, {"usd": money_stolen + bonus_money})
+			await ctx.bot.mongo.decrement_one("bank", {"_id": target.id}, {"usd": money_stolen + bonus_money})
 
 			# - Units killed
 			units_lost = await utils.calculate_units_lost(target_units, target_levels)
 
-			bonus_money = int((money_stolen * 2.0) * (1.0 - win_chance) if win_chance <= 0.5 else 0)
-
-			await ctx.bot.mongo.increment_one("bank", {"_id": ctx.author.id}, {"usd": money_stolen + bonus_money})
-			await ctx.bot.mongo.decrement_one("bank", {"_id": target.id}, {"usd": money_stolen + bonus_money})
-
+			# - Deduct the units killed from the target
 			if units_lost:
-				await ctx.bot.mongo.decrement_one("units", {"_id": target.id}, {k.key: v for k, v in units_lost.items()})
+				units_lost_keys = {k.key: v for k, v in units_lost.items()}
+
+				await ctx.bot.mongo.decrement_one("units", {"_id": target.id}, units_lost_keys)
 
 			# - Put the target empire into a 'cooldown' so they cannot get attacked for a period of time
 			await ctx.bot.mongo.update_one("empires", {"_id": target.id}, {"last_attack": dt.datetime.utcnow()})
@@ -206,9 +218,11 @@ class Empire(commands.Cog):
 			await ctx.send(embed=embed)
 
 		else:
-			author_bank = await ctx.bot.mongo.find_one("bank", {"_id": ctx.author.id})
+			# - Calculate pillage amount
+			min_val = min(2_500, int(author_bank.get("usd", 0) * 0.025))
+			max_val = min(10_000, int(author_bank.get("usd", 0) * 0.050))
 
-			money_lost = await utils.calculate_money_lost(author_bank)
+			money_lost = random.randint(max(0, min_val), max(0, max_val))
 
 			await ctx.bot.mongo.decrement_one("bank", {"_id": ctx.author.id}, {"usd": money_lost})
 
