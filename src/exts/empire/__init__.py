@@ -175,10 +175,10 @@ class Empire(commands.Cog):
 		if win_chance >= random.uniform(0.0, 1.0):
 
 			# - Calculate pillage amount
-			extra = (target_bank.get("usd", 0) / 75_000) * 0.025
+			extra = (target_bank.get("usd", 0) // 100_000) * 0.025
 
 			min_val = int(target_bank.get("usd", 0) * (0.025 + extra))
-			max_val = int(target_bank.get("usd", 0) * (0.075 + extra))
+			max_val = int(target_bank.get("usd", 0) * (0.050 + extra))
 
 			money_stolen = random.randint(max(0, min_val), max(0, max_val))
 
