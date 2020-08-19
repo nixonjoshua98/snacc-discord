@@ -3,7 +3,6 @@ from discord.ext import commands
 
 from src import inputs
 from src.common import checks, EmpireConstants
-from src.structs import TextPage
 
 from src.common.converters import EmpireUnit, Range, MergeableUnit
 
@@ -24,62 +23,14 @@ class Units(commands.Cog):
 
 		pages = []
 
-		for group in [Workers, Military]:
-			headers = ["ID", "Unit", "Lvl", "Owned"]
+		for group in (Workers, Military):
+			if len((page := group.shop_page(units, levels)).rows) > 0:
+				pages.append(page.get())
 
-			for attr in ("_power", "_hourly_income", "_hourly_upkeep"):
-				if all(map(lambda u: hasattr(u, attr), group.units)):
-					headers.append(attr.split("_")[-1].title())
+		if pages:
+			return await inputs.send_pages(ctx, pages)
 
-			headers.append("Price")
-
-			page = TextPage(title=group.__name__, headers=headers)
-
-			for unit in group.units:
-				unit_level = levels.get(unit.key, 0)
-				units_owned = units.get(unit.key, 0)
-
-				max_units = unit.calc_max_amount(unit_level)
-
-				row = [unit.id, unit.display_name, unit_level]
-
-				if units_owned >= max_units:
-					if unit_level >= EmpireConstants.MAX_UNIT_MERGE:
-						continue
-
-					row.append("Mergeable")
-
-				else:
-					# - Calculate price from <units_owned> to <units_owned + 1>
-					price = unit.calc_price(units_owned, 1)
-
-					row.append(f"{units_owned}/{max_units}")
-
-					if "Power" in headers:
-						power = unit.calc_power(1)
-
-						row.append(power)
-
-					if "Income" in headers:
-						income = unit.calc_hourly_income(1, unit_level)
-
-						row.append(f"${income:,}")
-
-					if "Upkeep" in headers:
-						upkeep = unit.calc_hourly_upkeep(1, unit_level)
-
-						row.append(f"${upkeep:,}")
-
-					row.append(f"${price:,}")
-
-				page.add(row)
-
-			if len(page.rows) == 0:
-				page.set_footer("No units available to hire")
-
-			pages.append(page.get())
-
-		await inputs.send_pages(ctx, pages)
+		return await ctx.send("No units available to hire.")
 
 	@checks.has_empire()
 	@show_units.command(name="hire", aliases=["buy"])

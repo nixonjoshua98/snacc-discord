@@ -16,10 +16,11 @@ from src.structs import MongoClient
 EXTENSIONS = [
     "errorhandler", "arena",        "empire",
     "quests",       "shop",         "units",
-    "hangman",      "gambling",     "bank",
-    "crypto",       "darkness",     "moderator",
-    "misc",         "reminder",     "autorole",
-    "serverdoor",   "settings",     "vote",
+    "battles",      "hangman",      "gambling",
+    "bank",         "crypto",       "darkness",
+    "moderator",    "misc",         "reminder",
+    "autorole",     "serverdoor",   "vote",
+    "settings",
 ]
 
 

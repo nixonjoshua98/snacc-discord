@@ -3,7 +3,6 @@ import random
 from discord.ext import commands
 
 from src import inputs
-from src.common.converters import DiscordUser
 
 
 class Bank(commands.Cog):
@@ -29,36 +28,6 @@ class Bank(commands.Cog):
 		msg = f"You have **${usd:,}** and **{btc:,}** BTC"
 
 		await ctx.send(msg)
-
-	@commands.cooldown(1, 3_600, commands.BucketType.user)
-	@commands.command(name="steal", cooldown_after_parsing=True)
-	async def steal_coins(self, ctx, *, target: DiscordUser()):
-		""" Attempt to steal from another user. """
-
-		def calculate_money_lost(bank):
-			extra = (bank.get("usd", 0) // 100_000) * 0.025
-
-			min_val, max_val = int(bank.get("usd", 0) * (0.025 + extra)), int(bank.get("usd", 0) * (0.05 + extra))
-
-			return random.randint(max(1, min_val), max(1, max_val))
-
-		# - Get data
-		target_bank = await ctx.bot.mongo.find_one("bank", {"_id": target.id})
-
-		stolen_amount = calculate_money_lost(target_bank)
-
-		thief_tax = int(stolen_amount // random.uniform(2.0, 6.0)) if stolen_amount >= 2_500 else 0
-
-		# - Update database
-		await ctx.bot.mongo.increment_one("bank", {"_id": ctx.author.id}, {"usd": stolen_amount - thief_tax})
-		await ctx.bot.mongo.decrement_one("bank", {"_id": target.id}, {"usd": stolen_amount})
-
-		s = f"You stole **${stolen_amount:,}** from **{target.display_name}!**"
-
-		if thief_tax > 0:
-			s = s[0:-3] + f" **but the thief you hired took a cut of **${thief_tax:,}**."
-
-		await ctx.send(s)
 
 	@commands.command(name="richest")
 	async def show_richest_leaderboard(self, ctx):

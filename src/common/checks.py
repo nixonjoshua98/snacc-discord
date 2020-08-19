@@ -9,6 +9,8 @@ from src.common.errors import (
 
 from src.common import SNACCMAN, MainServer
 
+from src.data import Military
+
 
 def snaccman_only():
 	async def predicate(ctx):
@@ -16,6 +18,34 @@ def snaccman_only():
 			raise SnaccmanOnly("You do not have access to this command.")
 
 		return ctx.author.id == SNACCMAN
+
+	return commands.check(predicate)
+
+
+def has_unit(unit, amount):
+	async def predicate(ctx):
+		units = await ctx.bot.mongo.find_one("units", {"_id": ctx.author.id})
+
+		num_units = units.get(unit.key, 0)
+
+		if num_units < amount:
+			raise commands.CommandError(f"You need at least **{amount}x {unit.display_name}** to do that")
+
+		return True
+
+	return commands.check(predicate)
+
+
+def has_power(amount):
+	async def predicate(ctx):
+		units = await ctx.bot.mongo.find_one("units", {"_id": ctx.author.id})
+
+		power = Military.get_total_power(units)
+
+		if power < amount:
+			raise commands.CommandError(f"You need at least **{amount}** power to do that")
+
+		return True
 
 	return commands.check(predicate)
 
