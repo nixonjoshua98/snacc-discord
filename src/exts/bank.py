@@ -12,9 +12,9 @@ class Bank(commands.Cog):
 	def calculate_money_lost(bank):
 		extra = (bank.get("usd", 0) / 75_000) * 0.025
 
-		min_val, max_val = int(bank.get("usd", 0) * 0.025), int(bank.get("usd", 0) * 0.075)
+		min_val, max_val = int(bank.get("usd", 0) * (0.025 + extra)), int(bank.get("usd", 0) * (0.075 + extra))
 
-		return random.randint(max(1, min_val + extra), max(1, max_val + extra))
+		return random.randint(max(1, min_val), max(1, max_val))
 
 	@commands.cooldown(1, 3_600 * 24, commands.BucketType.user)
 	@commands.command(name="daily")
