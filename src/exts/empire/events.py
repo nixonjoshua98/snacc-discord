@@ -14,11 +14,11 @@ async def assassinated_event(ctx):
 
 	if len(units_owned) > 0:
 
-		# - Select the cheapest unit to replace for the user
-		unit_killed = min(units_owned, key=lambda u: u.calc_price(units.get(u.key, 0), 1))
+		# - Select the most expensive unit to kill
+		unit_killed = max(units_owned, key=lambda u: u.calc_price(units.get(u.key, 0), 1))
 
 		# - Remove the unit from the empire
-		await ctx.bot.mongo.decrement_one("military", {"_id": ctx.author.id}, {unit_killed.key: 1})
+		await ctx.bot.mongo.decrement_one("units", {"_id": ctx.author.id}, {unit_killed.key: 1})
 
 		await ctx.send(f"One of your **{unit_killed.display_name}** was assassinated.")
 
@@ -85,7 +85,7 @@ async def recruit_unit(ctx):
 	if available:
 		unit_recruited = min(available, key=lambda u: u.calc_price(units.get(u.key, 0), 1))
 
-		await ctx.bot.mongo.increment_one("military", {"_id": ctx.author.id}, {unit_recruited.key: 1})
+		await ctx.bot.mongo.increment_one("units", {"_id": ctx.author.id}, {unit_recruited.key: 1})
 
 		await ctx.send(f"You recruited a rogue **{unit_recruited.display_name}!**")
 
