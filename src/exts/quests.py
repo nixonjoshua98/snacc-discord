@@ -22,6 +22,7 @@ class Quests(commands.Cog):
 		return 1 + upgrades.get("extra_quest_slots", 0)
 
 	@checks.has_empire()
+	@checks.has_power(50)
 	@commands.max_concurrency(1, commands.BucketType.user)
 	@commands.command(name="quest", aliases=["q"], invoke_without_command=True)
 	async def quest_group(self, ctx, quest: EmpireQuest()):

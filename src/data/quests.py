@@ -34,7 +34,7 @@ class _EmpireQuests(type):
 		_Quest(id=7, 	name="Kill the Traitors", 		power=230, 	reward=7_000, 	duration=7),
 		_Quest(id=8, 	name="Sabotage the Enemy", 		power=280, 	reward=8_250, 	duration=8),
 		_Quest(id=9, 	name="Search for Durandel", 	power=350, 	reward=9_500, 	duration=9),
-		_Quest(id=10, 	name="The Abyss Stares Back", 	power=400, reward=11_000, 	duration=10)
+		_Quest(id=10, 	name="The Abyss Stares Back", 	power=400, 	reward=11_000, 	duration=10)
 	]
 
 	def get(self, **kwargs): return discord.utils.get(self._QUESTS, **kwargs)

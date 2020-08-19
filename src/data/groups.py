@@ -53,8 +53,12 @@ class Workers(UnitGroup):
 			row = [unit.id, unit.display_name, unit_level]
 
 			if owned >= max_units:
-				if unit_level < EmpireConstants.MAX_UNIT_MERGE:
-					row.append("Mergeable")
+				if unit_level >= EmpireConstants.MAX_UNIT_MERGE:
+					continue
+
+				row.append("Mergeable")
+
+				page.add(row)
 
 				continue
 
@@ -72,7 +76,7 @@ class Military(UnitGroup):
 	units = (
 			MilitaryUnit(upkeep_hour=25, 	key="peasant"),
 			MilitaryUnit(upkeep_hour=35, 	key="soldier"),
-			MilitaryUnit(upkeep_hour=40, 	key="thief"),
+			MilitaryUnit(upkeep_hour=40, 	key="thief", exponent=1.10),
 			MilitaryUnit(upkeep_hour=50, 	key="spearman"),
 			MilitaryUnit(upkeep_hour=60, 	key="cavalry"),
 			MilitaryUnit(upkeep_hour=75, 	key="warrior"),
@@ -107,8 +111,12 @@ class Military(UnitGroup):
 			row = [unit.id, unit.display_name, unit_level]
 
 			if owned >= max_units:
-				if unit_level < EmpireConstants.MAX_UNIT_MERGE:
-					row.append("Mergeable")
+				if unit_level >= EmpireConstants.MAX_UNIT_MERGE:
+					continue
+
+				row.append("Mergeable")
+
+				page.add(row)
 
 				continue
 
