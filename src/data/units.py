@@ -20,6 +20,9 @@ class Unit:
 
 		self.display_name = kwargs.get("display_name", self.key.title().replace("_", " "))
 
+		if key == "scout":
+			print(self._base_cost)
+
 		Unit.__unit_id += 1
 
 		if self.key in Unit.__unit_keys:

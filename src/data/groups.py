@@ -74,14 +74,15 @@ class Workers(UnitGroup):
 
 class Military(UnitGroup):
 	units = (
-			MilitaryUnit(upkeep_hour=25, 	key="peasant"),
-			MilitaryUnit(upkeep_hour=35, 	key="soldier"),
-			MilitaryUnit(upkeep_hour=40, 	key="thief", exponent=1.10),
-			MilitaryUnit(upkeep_hour=50, 	key="spearman"),
-			MilitaryUnit(upkeep_hour=60, 	key="cavalry"),
-			MilitaryUnit(upkeep_hour=75, 	key="warrior"),
-			MilitaryUnit(upkeep_hour=85, 	key="archer"),
-			MilitaryUnit(upkeep_hour=100,	key="knight"),
+		MilitaryUnit(upkeep_hour=10, 	key="scout", exponent=1.10),
+		MilitaryUnit(upkeep_hour=25, 	key="peasant"),
+		MilitaryUnit(upkeep_hour=35, 	key="soldier"),
+		MilitaryUnit(upkeep_hour=40, 	key="thief", exponent=1.10),
+		MilitaryUnit(upkeep_hour=50, 	key="spearman"),
+		MilitaryUnit(upkeep_hour=60, 	key="cavalry"),
+		MilitaryUnit(upkeep_hour=75, 	key="warrior"),
+		MilitaryUnit(upkeep_hour=85, 	key="archer"),
+		MilitaryUnit(upkeep_hour=100,	key="knight"),
 	)
 
 	@classmethod

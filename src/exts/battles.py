@@ -14,6 +14,7 @@ from src.data import Military, Workers
 
 
 THIEF_UNIT = Military.get(key="thief")
+SCOUT_UNIT = Military.get(key="scout")
 
 
 class Battles(commands.Cog):
@@ -86,6 +87,7 @@ class Battles(commands.Cog):
 
 	@checks.has_empire()
 	@checks.has_power(25)
+	@checks.has_unit(SCOUT_UNIT, 1)
 	@commands.cooldown(1, 15, commands.BucketType.user)
 	@commands.command(name="scout", cooldown_after_parsing=True)
 	async def scout(self, ctx, *, target: EmpireTargetUser()):
