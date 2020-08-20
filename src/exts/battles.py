@@ -75,13 +75,16 @@ class Battles(commands.Cog):
 		await ctx.bot.mongo.increment_one("bank", {"_id": ctx.author.id}, {"usd": stolen_amount - thief_tax})
 		await ctx.bot.mongo.decrement_one("bank", {"_id": target.id}, {"usd": stolen_amount})
 
-		# - Perform unit deductions
-		await ctx.bot.mongo.decrement_one("units", {"_id": ctx.author.id}, {THIEF_UNIT.key: 1})
-
 		s = f"You stole **${stolen_amount:,}** from **{target.display_name}!**"
 
 		if thief_tax > 0:
-			s = s[0:-3] + f" **but the thief you hired stole and escaped with **${thief_tax:,}**."
+			if random.random() <= 0.25:
+				await ctx.bot.mongo.decrement_one("units", {"_id": ctx.author.id}, {THIEF_UNIT.key: 1})
+
+				s = s[0:-3] + f" **but the thief you hired stole and escaped with **${thief_tax:,}**."
+
+			else:
+				s = s[0:-3] + f" **but the thief you hired took a cut of **${thief_tax:,}**."
 
 		await ctx.send(s)
 
