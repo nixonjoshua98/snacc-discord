@@ -37,7 +37,7 @@ class Empire(commands.Cog):
 	@checks.no_empire()
 	@commands.command(name="create")
 	@commands.max_concurrency(1, commands.BucketType.user)
-	async def create_empire(self, ctx, empire_name: str):
+	async def create_empire(self, ctx, *, empire_name: str):
 		""" Establish an empire under your name. """
 
 		now = dt.datetime.utcnow()

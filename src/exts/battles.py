@@ -46,7 +46,7 @@ class Battles(commands.Cog):
 			for i in range(1, owned + 1):
 				price = unit.calc_price(owned - i, i)
 
-				if (price + units_lost_cost) < hourly_income:
+				if (price + units_lost_cost) < hourly_income or (units_lost_cost == 0):
 					units_lost[unit] = i
 
 				units_lost_cost = sum([unit.calc_price(owned - n, n) for u, n in units_lost.items()])

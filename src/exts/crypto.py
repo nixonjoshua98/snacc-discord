@@ -1,6 +1,5 @@
 import httpx
 import discord
-import asyncio
 
 from discord.ext import commands, tasks
 
@@ -41,7 +40,7 @@ class Crypto(commands.Cog):
 		await ctx.send(file=file, embed=embed)
 
 	@crypto_group.command(name="buy")
-	async def buy_coin(self, ctx, amount: Range(1, 100)):
+	async def buy_coin(self, ctx, amount: Range(1, 100) = 1):
 		""" Buy Bitcoin(s). """
 
 		bank = await ctx.bot.mongo.find_one("bank", {"_id": ctx.author.id})
@@ -58,7 +57,7 @@ class Crypto(commands.Cog):
 			await ctx.send(f"You bought **{amount}** Bitcoin(s) for **${price:,}**!")
 
 	@crypto_group.command(name="sell")
-	async def sell_coin(self, ctx, amount: Range(1, 100)):
+	async def sell_coin(self, ctx, amount: Range(1, 100) = 1):
 		""" Sell Bitcoin(s). """
 
 		price = self._price_cache["current"] * amount
@@ -113,6 +112,8 @@ class Crypto(commands.Cog):
 		plt.grid(True)
 
 		plt.savefig('graph.png', facecolor=fig.get_facecolor(), transparent=True)
+
+		plt.close("all")
 
 	@tasks.loop(minutes=5.0)
 	async def update_prices_loop(self):

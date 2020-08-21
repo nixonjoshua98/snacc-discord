@@ -30,13 +30,13 @@ class Miscellaneous(commands.Cog):
 		await ctx.send(f"I am made up of **{lines:,}** lines of code.")
 
 	@commands.command(name="whatis")
-	async def what_is_this(self, ctx, word: str):
+	async def what_is_this(self, ctx, *, word: str):
 		""" Look for a word definition. """
 
 		word = word.lower()
 
 		async with httpx.AsyncClient() as client:
-			r = await client.get(f"http://dictionary.reference.com/browse/{word}?s=t")
+			r = await client.get(f"http://dictionary.reference.com/browse/{word.replace(' ', '_')}?s=t")
 
 		if r.status_code != httpx.codes.OK:
 			return await ctx.send(f"I failed to lookup your query. Status Code: {r.status_code}")
