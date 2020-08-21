@@ -88,8 +88,6 @@ class Battles(commands.Cog):
 
 		await ctx.send(s)
 
-	@checks.has_empire()
-	@checks.has_power(25)
 	@checks.has_unit(SCOUT_UNIT, 1)
 	@commands.cooldown(1, 15, commands.BucketType.user)
 	@commands.command(name="scout", cooldown_after_parsing=True)
@@ -112,7 +110,6 @@ class Battles(commands.Cog):
 			f"chance of winning against **{str(target)}**."
 		)
 
-	@checks.has_empire()
 	@checks.has_power(25)
 	@commands.cooldown(1, 60 * 120, commands.BucketType.user)
 	@commands.command(name="attack", cooldown_after_parsing=True)

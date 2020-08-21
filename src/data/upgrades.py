@@ -40,6 +40,6 @@ class EmpireUpgrades:
 
 	@classmethod
 	def get(cls, **kwargs):
-		upgrades = [upgrade for title, ls in cls.groups for upgrade in ls]
+		upgrades = [upgrade for title, ls in cls.groups.items() for upgrade in ls]
 
 		return discord.utils.get(upgrades, **kwargs)
