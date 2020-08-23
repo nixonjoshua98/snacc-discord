@@ -105,7 +105,7 @@ class Darkness(commands.Cog):
             await m.remove_roles(event_role)
 
         if user is None:
-            return ctx.send("Event role has been removed from all users.")
+            return await ctx.send("Event role has been removed from all users.")
 
         await user.add_roles(event_role)
 
