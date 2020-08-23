@@ -11,24 +11,24 @@ from discord.ext import commands, tasks
 from pymongo import InsertOne, DeleteMany
 
 from src import inputs
-from src.common import MainServer, checks
+from src.common import DarknessServer, checks
 from src.common.converters import Range
 
 
-class Arena(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
+class ABO(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
 		#self.start_shame_users()
 
 	async def cog_check(self, ctx):
-		if ctx.guild.id != MainServer.ID:
+		if ctx.guild.id != DarknessServer.ID:
 			raise commands.DisabledCommand("This command is disabled in this server")
 
 		return True
 
 	async def get_member_rows(self):
-		role = self.bot.get_guild(MainServer.ID).get_role(MainServer.ABO_ROLE)
+		role = self.bot.get_guild(DarknessServer.ID).get_role(DarknessServer.ABO_ROLE)
 
 		ids = tuple(member.id for member in role.members)
 
@@ -79,7 +79,7 @@ class Arena(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 	async def create_shame_message(self):
 		""" Create the shame message for the guild (attached to `destination`). """
 
-		server = self.bot.get_guild(MainServer.ID)
+		server = self.bot.get_guild(DarknessServer.ID)
 
 		rows = await self.get_member_rows()
 
@@ -89,7 +89,7 @@ class Arena(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 
 		now = dt.datetime.utcnow()
 
-		role = server.get_role(MainServer.ABO_ROLE)
+		role = server.get_role(DarknessServer.ABO_ROLE)
 
 		for member in role.members:
 
@@ -126,7 +126,7 @@ class Arena(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 	async def shame_users_loop(self):
 		""" Background tasks which posts to the main server. """
 
-		channel = self.bot.get_channel(MainServer.ABO_CHANNEL)
+		channel = self.bot.get_channel(DarknessServer.ABO_CHANNEL)
 
 		if (message := await self.create_shame_message()) is not None:
 			await channel.send(message)
@@ -144,7 +144,7 @@ class Arena(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 			await ctx.send("Everyone is up-to-date!")
 
 	@commands.cooldown(1, 60 * 60 * 3, commands.BucketType.user)
-	@commands.command(name="set", aliases=["s"])
+	@commands.command(name="set", aliases=["s"], cooldown_after_parsing=True)
 	async def set_stats(self, ctx, level: Range(1, 125), trophies: Range(1, 10_000)):
 		""" Update your arena stats. Stats are used to track activity and are displayed on the trophy leaderboard. """
 
@@ -201,4 +201,4 @@ class Arena(commands.Cog, command_attrs=(dict(cooldown_after_parsing=True))):
 
 
 def setup(bot):
-	bot.add_cog(Arena(bot))
+	bot.add_cog(ABO(bot))

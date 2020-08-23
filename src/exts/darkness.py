@@ -5,7 +5,7 @@ from discord.ext import commands
 from datetime import datetime
 
 from src import inputs
-from src.common import MainServer, checks
+from src.common import DarknessServer, checks
 
 
 class Arguments:
@@ -81,7 +81,7 @@ class Darkness(commands.Cog):
 
         #  - - - LOG RESULTS - - - #
 
-        channel = ctx.bot.get_channel(MainServer.APP_CHANNEL)
+        channel = ctx.bot.get_channel(DarknessServer.APP_CHANNEL)
 
         embed = discord.Embed(title="Guild Application", colour=discord.Color.orange())
 
@@ -93,6 +93,30 @@ class Darkness(commands.Cog):
         embed.set_footer(text=f"{str(ctx.author)}", icon_url=ctx.author.avatar_url)
 
         await channel.send(embed=embed)
+
+    @checks.snaccman_only()
+    @checks.main_server_only()
+    @commands.command(name="champ")
+    async def event_champion(self, ctx, user: discord.Member = None):
+        event_role = discord.utils.get(user.guild.roles, id=DarknessServer.EVENT_ROLE)
+        event_chnl = discord.utils.get(user.guild.channels, id=DarknessServer.FAME_CHANNEL)
+
+        for m in event_role.members:
+            await m.remove_roles(event_role)
+
+        if user is None:
+            return ctx.send("Event role has been removed from all users.")
+
+        await user.add_roles(event_role)
+
+        await ctx.send(
+            f"Congratulations **{str(user)}** on winning the event! "
+            f"You have been given the {event_role.mention} role, "
+            f"which allows you to send a few messages in {event_chnl.mention} "
+            f"for everyone to see."
+        )
+
+
 
 
 def setup(bot):

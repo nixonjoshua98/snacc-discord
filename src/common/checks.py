@@ -7,7 +7,7 @@ from src.common.errors import (
 	HasEmpire,
 )
 
-from src.common import SNACCMAN, MainServer
+from src.common import SNACCMAN, DarknessServer
 
 from src.data import Military
 
@@ -76,9 +76,9 @@ def no_empire():
 
 def main_server_only():
 	async def predicate(ctx):
-		if ctx.guild.id != MainServer.ID:
+		if ctx.guild.id != DarknessServer.ID:
 			raise MainServerOnly("This command can only be used in the main server.")
 
-		return ctx.guild.id == MainServer.ID
+		return ctx.guild.id == DarknessServer.ID
 
 	return commands.check(predicate)

@@ -8,7 +8,7 @@ import datetime as dt
 from discord.ext import tasks, commands
 
 from src import inputs
-from src.common import MainServer, checks
+from src.common import DarknessServer, checks
 from src.common.converters import AnyoneWithEmpire
 
 from src.data import Military, Workers
@@ -28,8 +28,8 @@ class Empire(commands.Cog):
 		self.income_loop.start()
 
 	async def cog_before_invoke(self, ctx):
-		if ctx.guild.id == MainServer.ID:
-			await ctx.author.add_roles(discord.utils.get(ctx.guild.roles, id=MainServer.EMPIRE_ROLE))
+		if ctx.guild.id == DarknessServer.ID:
+			await ctx.author.add_roles(discord.utils.get(ctx.guild.roles, id=DarknessServer.EMPIRE_ROLE))
 
 	async def cog_after_invoke(self, ctx):
 		await ctx.bot.mongo.update_one("empires", {"_id": ctx.author.id}, {"last_login": dt.datetime.utcnow()})
