@@ -180,6 +180,7 @@ class Empire(commands.Cog):
 				continue
 
 			# - Query the database
+			bank = await self.bot.mongo.find_one("bank", {"_id": empire["_id"]})
 			units = await self.bot.mongo.find_one("units", {"_id": empire["_id"]})
 			levels = await self.bot.mongo.find_one("levels", {"_id": empire["_id"]})
 
@@ -192,6 +193,10 @@ class Empire(commands.Cog):
 
 			# - Overall money gained/lost per hour
 			money_change = int((total_hourly_income - total_hourly_upkeep) * hours)
+
+			# - [Temporary] Tax
+			if money_change > 0 and (bank.get("usd", 0) >= 250_000 or bank.get("btc", 0) >= 250):
+				money_change = int(money_change * 0.4)
 
 			if money_change > 0:
 				await self.bot.mongo.increment_one("bank", {"_id": empire["_id"]}, {"usd": money_change})
