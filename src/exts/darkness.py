@@ -98,8 +98,8 @@ class Darkness(commands.Cog):
     @checks.main_server_only()
     @commands.command(name="champ")
     async def event_champion(self, ctx, user: discord.Member = None):
-        event_role = discord.utils.get(user.guild.roles, id=DarknessServer.EVENT_ROLE)
-        event_chnl = discord.utils.get(user.guild.channels, id=DarknessServer.FAME_CHANNEL)
+        event_role = discord.utils.get(ctx.guild.roles, id=DarknessServer.EVENT_ROLE)
+        event_chnl = discord.utils.get(ctx.guild.channels, id=DarknessServer.FAME_CHANNEL)
 
         for m in event_role.members:
             await m.remove_roles(event_role)
