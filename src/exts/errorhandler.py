@@ -31,7 +31,7 @@ class ErrorHandler(commands.Cog):
             print(esc)
 
         elif isinstance(esc, MaxConcurrencyReached):
-            await ctx.send("You are doing that too fast.")
+            await ctx.send(f"{str(ctx.author)}, slow down")
 
         elif isinstance(esc, CommandOnCooldown):
             seconds = float(esc.args[0].split(" ")[-1][0:-1])

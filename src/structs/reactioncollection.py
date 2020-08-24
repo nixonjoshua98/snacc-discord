@@ -1,6 +1,7 @@
-import time
-import discord
 import asyncio
+import discord
+
+import datetime as dt
 
 from src.common.emoji import Emoji
 
@@ -29,28 +30,16 @@ class ReactionCollection:
 
 		self.members = set()
 
-	@classmethod
-	async def from_existing(cls, bot, msg, chnl_id, msg_id, react=Emoji.CHECK_MARK, **kwargs):
-		inst = cls(bot, msg, react=react, **kwargs)
+	async def get_users(self):
+		self.message = await self.message.channel.fetch_message(self.message.id)
 
-		chnl = bot.get_channel(chnl_id)
+		for react in self.message.reactions:
+			if react.emoji == Emoji.CHECK_MARK:
+				users = [u for u in await react.users().flatten() if not u.bot and isinstance(u, discord.Member)]
 
-		if chnl is None:
-			return None
+				return users
 
-		message = await chnl.fetch_message(msg_id)
-
-		if message is None:
-			return None
-
-		inst.message = message
-
-		for react in message.reactions:
-			if react.emoji == react:
-				inst.members = await react.users().flatten()
-				break
-
-		return inst
+		return []
 
 	async def send_initial_message(self, destination):
 		if isinstance(self.msg, str):
@@ -73,30 +62,13 @@ class ReactionCollection:
 		await self.message.add_reaction(self.react)
 
 	async def _loop(self):
-		def wait_for(r, u):
-			return not u.bot and r.message.id == self.message.id and r.emoji == self.react and u not in self.members
+		now = dt.datetime.utcnow()
 
-		start = time.time()
+		end = now + dt.timedelta(seconds=self.duration)
 
-		timeout = self.duration
+		seconds = (end - now).total_seconds()
 
-		while self._running:
-			try:
-				react, user = await self.bot.wait_for("reaction_add", timeout=timeout, check=wait_for)
-
-			except asyncio.TimeoutError:
-				return await self.on_end()
-
-			else:
-				if react.emoji == self.react:
-					await self.on_react(react, user)
-
-			# - Update timeout
-			timeout -= time.time() - start
-
-			start = time.time()
-
-		return await self.on_end()
+		await asyncio.sleep(seconds)
 
 	async def prompt(self, destination):
 		self.message = await self.send_initial_message(destination)
@@ -105,5 +77,9 @@ class ReactionCollection:
 
 		await self._loop()
 
-		return list(self.members)
+		users = await self.get_users()
+
+		await self.on_end()
+
+		return users
 
