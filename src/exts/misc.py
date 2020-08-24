@@ -35,9 +35,7 @@ class Miscellaneous(commands.Cog):
 	async def urban_dict(self, ctx, *, term):
 		""" Look up a term in urbandictionary.com """
 
-		url = "https://mashape-community-urban-dictionary.p.rapidapi.com/define"
-
-		querystring = {"term": term}
+		url = f"https://mashape-community-urban-dictionary.p.rapidapi.com/define?term={term}"
 
 		headers = {
 			'x-rapidapi-host': "mashape-community-urban-dictionary.p.rapidapi.com",
@@ -45,7 +43,7 @@ class Miscellaneous(commands.Cog):
 		}
 
 		async with httpx.AsyncClient() as client:
-			r = await client.get(url, headers=headers, params=querystring)
+			r = await client.get(url, headers=headers)
 
 		if r.status_code != httpx.codes.OK:
 			return await ctx.send(f"I failed to lookup your query. Status Code: {r.status_code}")
@@ -58,7 +56,7 @@ class Miscellaneous(commands.Cog):
 			def_ = d['definition'].strip().replace("[", "").replace("]", "").replace("\n", "")
 			exa = d['example'].strip().replace("[", "").replace("]", "").replace("\n", "")
 
-			value = f"{def_}\n\n{exa}"[:1024]
+			value = f"{def_}\n\n{exa}"
 			value = value[:1021] + "..." if len(value) > 1024 else value
 
 			embed.add_field(name="Definition & Example", value=value, inline=False)
