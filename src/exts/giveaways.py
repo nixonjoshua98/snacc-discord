@@ -32,12 +32,11 @@ class Giveaways(commands.Cog):
 		self.giveaway_loop.change_interval(hours=random.randint(6, 12))
 
 	@checks.snaccman_only()
-	@checks.support_server_only()
 	@commands.command(name="giveaway")
 	async def giveaway_command(self, ctx):
 		""" Start a giveaway in the support server. """
 
-		await ctx.send("Started a giveaway")
+		await ctx.send("I have started a giveaway in the support server!")
 
 		await self.giveaway()
 

@@ -9,6 +9,10 @@ class MainServerOnly(CommandError):
 	""" Command can only be used in the main server. """
 
 
+class SupportServerOnly(CommandError):
+	""" Support server only command. """
+
+
 class MissingEmpire(CommandError):
 	""" User does not have a empire yet. """
 

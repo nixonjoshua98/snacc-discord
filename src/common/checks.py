@@ -5,6 +5,7 @@ from src.common.errors import (
 	MainServerOnly,
 	MissingEmpire,
 	HasEmpire,
+	SupportServerOnly
 )
 
 from src.common import SNACCMAN, DarknessServer, SupportServer
@@ -87,7 +88,7 @@ def main_server_only():
 def support_server_only():
 	async def predicate(ctx):
 		if ctx.guild.id != SupportServer.ID:
-			raise MainServerOnly("This command can only be used in the support server.")
+			raise SupportServerOnly("This command can only be used in the support server.")
 
 		return True
 
