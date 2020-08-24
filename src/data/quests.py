@@ -23,10 +23,10 @@ class _Quest:
 	def success_rate(self, author_power): return round(max(0.01, min(author_power / self.power, 0.99)), 2)
 
 
-class _EmpireQuests(type):
-	_QUESTS = [
-		_Quest(id=1, 	name="Herb Collection", 		power=20, 	reward=500, 	duration=1),
-		_Quest(id=2, 	name="Spider Cave", 			power=40, 	reward=1_250, 	duration=2),
+class EmpireQuests:
+	quests = [
+		_Quest(id=1, 	name="Herb Collection", 		power=10, 	reward=500, 	duration=1),
+		_Quest(id=2, 	name="Spider Cave", 			power=35, 	reward=1_250, 	duration=2),
 		_Quest(id=3, 	name="Enemy Empire Raid", 		power=66, 	reward=2_000, 	duration=3),
 		_Quest(id=4, 	name="Ogre Subjugation", 		power=110, 	reward=3_000, 	duration=4),
 		_Quest(id=5, 	name="Enemy Empire Raid", 		power=140, 	reward=4_500, 	duration=5),
@@ -37,12 +37,5 @@ class _EmpireQuests(type):
 		_Quest(id=10, 	name="The Abyss Stares Back", 	power=400, 	reward=11_000, 	duration=10)
 	]
 
-	def get(self, **kwargs): return discord.utils.get(self._QUESTS, **kwargs)
-
-	@property
-	def quests(self): return self._QUESTS
-
-
-class EmpireQuests(metaclass=_EmpireQuests):
-	pass
+	def get(self, **kwargs): return discord.utils.get(self.quests, **kwargs)
 

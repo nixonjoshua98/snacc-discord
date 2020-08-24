@@ -4,9 +4,7 @@ from discord.ext import commands
 
 import datetime as dt
 
-from src.common import checks
-
-from src.structs.confirm import Confirm
+from src.inputs.confirm import Confirm
 from src.structs.question import Question
 
 
@@ -40,11 +38,12 @@ class Questionnaire(commands.Cog):
 			if questionnaire:
 				await self.send_questionnaire(message.channel, message.author, questionnaire)
 
+	@commands.has_permissions(administrator=True)
 	@commands.group(name="questionnaire", aliases=["qu"], hidden=True)
 	async def group(self, ctx):
 		""" Group command. """
 
-	@commands.check_any(commands.has_permissions(administrator=True), checks.snaccman_only())
+	@commands.has_permissions(administrator=True)
 	@group.command(name="create")
 	async def create_questionnaire(self, ctx):
 		""" Create a questionnaire for your server. """
@@ -60,9 +59,9 @@ class Questionnaire(commands.Cog):
 
 		await ctx.send("Questionnaire created!")
 
-	@commands.check_any(commands.has_permissions(administrator=True), checks.snaccman_only())
+	@commands.has_permissions(administrator=True)
 	@group.command(name="delete")
-	async def delete_questionnaire(self, ctx, comm: str):
+	async def delete_questionnaire(self, ctx, comm):
 		""" Delete a questionnaire from your server. """
 
 		comm = comm.lower()
@@ -71,11 +70,13 @@ class Questionnaire(commands.Cog):
 
 		existing = await ctx.bot.mongo.find_one("questionnaires", query)
 
+		# - Existing questionnaire so we remove it
 		if existing:
 			await ctx.bot.mongo.delete_one("questionnaires", query)
 
 			await ctx.send(f"Questionnaire **{comm}** has been deleted.")
 
+		# - Questionnaire was not found
 		else:
 			await ctx.send(f"I could not find the questionnaire **{comm}**")
 

@@ -30,6 +30,9 @@ class MongoClient(AsyncIOMotorClient):
 	async def increment_one(self, col, query, kwargs):
 		return await self.db[col].update_one(query, {"$inc": kwargs}, upsert=True)
 
+	async def increment_many(self, col, query, kwargs):
+		return await self.db[col].update_many(query, {"$inc": kwargs}, upsert=True)
+
 	async def update_one(self, col, query, kwargs):
 		return await self.db[col].update_one(query, {"$set": kwargs}, upsert=True)
 

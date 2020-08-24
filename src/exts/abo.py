@@ -4,8 +4,6 @@ import discord
 
 from discord.ext import commands
 
-from src.structs.confirm import Confirm
-
 from src.common import DarknessServer, checks
 
 

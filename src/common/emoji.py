@@ -1,9 +1,7 @@
 
 
 class Emoji:
-    TICK, CROSS = "<:tick:730456072715894795>", "<:cross:730456273652416582>"
-
-    BTC = "<:BTC:737233367560355890>"
+    CHECK_MARK = "\U00002705"
 
     A, B, C, D, E = "\U0001f1e6", "\U0001f1e7", "\U0001f1e8", "\U0001f1e9", "\U0001f1ea"
     F, G, H, I, J = "\U0001f1eb", "\U0001f1ec", "\U0001f1ed", "\U0001f1ee", "\U0001f1ef"

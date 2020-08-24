@@ -17,6 +17,8 @@ class DarknessServer:
 class SupportServer:
 	ID = 693550889352560693
 
+	SPAM_CHANNEL = 741303705130762323
+
 
 class EmpireConstants:
 	MAX_UNIT_MERGE = 10

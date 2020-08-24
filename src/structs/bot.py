@@ -19,8 +19,9 @@ EXTENSIONS = [
     "battles",      "hangman",      "gambling",
     "bank",         "crypto",       "questionnaire",
     "darkness",     "moderator",    "misc",
-    "abo",          "reminder",     "autorole",
-    "serverdoor",   "vote",         "settings",
+    "abo",          "reminder",     "giveaways",
+    "autorole",     "serverdoor",   "vote",
+    "settings",
 ]
 
 
