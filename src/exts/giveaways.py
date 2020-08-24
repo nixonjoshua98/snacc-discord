@@ -43,7 +43,7 @@ class Giveaways(commands.Cog):
 	async def giveaway(self):
 		support_server = self.bot.get_guild(SupportServer.ID)
 
-		chnl = support_server.get_channel(693550889956540502)
+		chnl = support_server.get_channel(SupportServer.GIVEAWAY_CHANNEL)
 
 		giveaway = random.choice(("giveaway_bitcoin", "giveaway_money"))
 
