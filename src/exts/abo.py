@@ -15,6 +15,8 @@ class ABO(commands.Cog):
 	@checks.main_server_only()
 	@commands.command(name="event")
 	async def event(self, ctx):
+		""" Give the Event rewards. """
+
 		attachments = ctx.message.attachments
 
 		# - Check a JSON file has been attached to the message
