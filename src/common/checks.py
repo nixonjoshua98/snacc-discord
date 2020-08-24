@@ -11,6 +11,8 @@ from src.common.errors import (
 
 from src.common import SNACCMAN, DarknessServer, SupportServer
 
+from src.data import Military
+
 
 def snaccman_only():
 	async def predicate(ctx):
@@ -84,6 +86,20 @@ def nsfw_only():
 	async def predicate(ctx):
 		if not ctx.channel.is_nsfw():
 			raise NSFWChannelOnly("This command is restricted to NSFW channels only.")
+
+		return True
+
+	return commands.check(predicate)
+
+
+def has_power(amount):
+	async def predicate(ctx):
+		units = await ctx.bot.mongo.find_one("units", {"_id": ctx.author.id})
+
+		power = Military.get_total_power(units)
+
+		if power < amount:
+			raise commands.CommandError(f"You need at least **{amount}** power to do that")
 
 		return True
 

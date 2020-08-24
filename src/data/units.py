@@ -90,10 +90,12 @@ class MilitaryUnit(Unit):
 
 		self._power = self._base_cost / max(450, (600 - ((MilitaryUnit.__military_id - 1) * 25)))
 
+		# - Military units are cheaper
+		self._exponent = 1.10
+
 		MilitaryUnit.__military_id += 1
 
 	def calc_hourly_upkeep(self, amount, level):
-
 		return math.ceil(self._hourly_upkeep * (1.0 - (level * 0.05)) * amount)
 
 	def calc_power(self, amount):

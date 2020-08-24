@@ -1,8 +1,6 @@
 import math
 import discord
 
-from discord.ext import commands
-
 from .units import MilitaryUnit, WorkerUnit
 
 from src.common import EmpireConstants
@@ -22,18 +20,18 @@ class UnitGroup:
 
 class Workers(UnitGroup):
 	units = (
-		WorkerUnit(hourly_income=10, key="farmer"),
-		WorkerUnit(hourly_income=15, key="stonemason"),
-		WorkerUnit(hourly_income=20, key="butcher"),
-		WorkerUnit(hourly_income=25, key="weaver"),
-		WorkerUnit(hourly_income=30, key="tailor"),
-		WorkerUnit(hourly_income=35, key="baker"),
-		WorkerUnit(hourly_income=40, key="blacksmith"),
-		WorkerUnit(hourly_income=45, key="cook"),
-		WorkerUnit(hourly_income=50, key="winemaker"),
-		WorkerUnit(hourly_income=55, key="shoemaker"),
-		WorkerUnit(hourly_income=60, key="falconer"),
-		WorkerUnit(hourly_income=65, key="carpenter"),
+		WorkerUnit(hourly_income=5, 	key="farmer"),
+		WorkerUnit(hourly_income=10, 	key="stonemason"),
+		WorkerUnit(hourly_income=15, 	key="butcher"),
+		WorkerUnit(hourly_income=20, 	key="weaver"),
+		WorkerUnit(hourly_income=25, 	key="tailor"),
+		WorkerUnit(hourly_income=30, 	key="baker"),
+		WorkerUnit(hourly_income=35, 	key="blacksmith"),
+		WorkerUnit(hourly_income=40, 	key="cook"),
+		WorkerUnit(hourly_income=45, 	key="winemaker"),
+		WorkerUnit(hourly_income=50, 	key="shoemaker"),
+		WorkerUnit(hourly_income=55, 	key="falconer"),
+		WorkerUnit(hourly_income=60, 	key="carpenter"),
 	)
 
 	@classmethod
@@ -74,15 +72,15 @@ class Workers(UnitGroup):
 
 class Military(UnitGroup):
 	units = (
-		MilitaryUnit(upkeep_hour=10, 	key="scout", exponent=1.10),
-		MilitaryUnit(upkeep_hour=25, 	key="peasant"),
-		MilitaryUnit(upkeep_hour=35, 	key="soldier"),
-		MilitaryUnit(upkeep_hour=40, 	key="thief", exponent=1.10),
-		MilitaryUnit(upkeep_hour=50, 	key="spearman"),
+		MilitaryUnit(upkeep_hour=10, 	key="scout"),
+		MilitaryUnit(upkeep_hour=15, 	key="peasant"),
+		MilitaryUnit(upkeep_hour=25, 	key="soldier"),
+		MilitaryUnit(upkeep_hour=40, 	key="thief"),
+		MilitaryUnit(upkeep_hour=45, 	key="spearman"),
 		MilitaryUnit(upkeep_hour=60, 	key="cavalry"),
-		MilitaryUnit(upkeep_hour=75, 	key="warrior"),
-		MilitaryUnit(upkeep_hour=85, 	key="archer"),
-		MilitaryUnit(upkeep_hour=100,	key="knight"),
+		MilitaryUnit(upkeep_hour=65, 	key="warrior"),
+		MilitaryUnit(upkeep_hour=80, 	key="archer"),
+		MilitaryUnit(upkeep_hour=90,	key="knight"),
 	)
 
 	@classmethod
