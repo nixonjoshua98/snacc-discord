@@ -38,9 +38,9 @@ class Server_multiple(commands.Cog):
 					validation=lambda s: s.isdigit())
 			),
 
-			"preferred world": (inputs.get_input, Arguments(ctx, "Do you know anyone in Apex?", send_dm=True)),
+			"Know anyone from Apex?": (inputs.get_input, Arguments(ctx, "Do you know anyone in Apex?", send_dm=True)),
 
-			"hear from": (
+			"Been in a Guild?": (
 				inputs.get_input,
 				Arguments(
 					ctx,
