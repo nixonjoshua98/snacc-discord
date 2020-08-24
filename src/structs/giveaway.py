@@ -18,7 +18,7 @@ class Giveaway:
 
 		embed = self.bot.embed(title="Giveaway!", description=f"React :white_check_mark: to enter")
 
-		members = await ReactionCollection(self.bot, embed, duration=5, max_reacts=None).prompt(chnl)
+		members = await ReactionCollection(self.bot, embed, duration=3_600, max_reacts=None).prompt(chnl)
 
 		if members >= 2:
 			await self.on_giveaway_end(members)
