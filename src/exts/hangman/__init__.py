@@ -36,7 +36,7 @@ class Hangman(commands.Cog):
             elif result == HangmanGuess.GAME_WON:
                 self.games[message.channel.id] = None
 
-                await self.bot.mongo.increment("hangman", {"_id": message.author.id}, {"wins": 1})
+                await self.bot.mongo.increment_one("hangman", {"_id": message.author.id}, {"wins": 1})
 
                 await message.channel.send(f"{message.author.mention} won! The word was `{inst.hidden_word}`")
 

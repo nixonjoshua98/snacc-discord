@@ -196,7 +196,7 @@ class EmpireQuest(ItemWithID):
 
 	async def convert(self, ctx, argument):
 		if not (quest := await super().convert(ctx, argument)):
-			raise commands.UserInputError(f"Quest with ID `{quest}` could not be found.")
+			raise commands.UserInputError(f"Quest with ID `{argument}` could not be found.")
 
 		return quest
 

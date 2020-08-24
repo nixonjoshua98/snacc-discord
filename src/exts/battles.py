@@ -101,8 +101,6 @@ class Battles(commands.Cog):
 		author_power = Military.get_total_power(author_units)
 		target_power = Military.get_total_power(target_units)
 
-		await ctx.bot.mongo.decrement_one("units", {"_id": ctx.author.id}, {SCOUT_UNIT.key: 1})
-
 		win_chance = self.get_win_chance(author_power, target_power)
 
 		await ctx.send(

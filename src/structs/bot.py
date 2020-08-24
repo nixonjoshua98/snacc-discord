@@ -17,10 +17,10 @@ EXTENSIONS = [
     "errorhandler", "arena",        "empire",
     "quests",       "shop",         "units",
     "battles",      "hangman",      "gambling",
-    "bank",         "crypto",       "darkness",
-    "moderator",    "misc",         "abo",
-    "reminder",     "autorole",     "serverdoor",
-    "vote",         "settings",
+    "bank",         "crypto",       "questionnaire",
+    "darkness",     "moderator",    "misc",
+    "abo",          "reminder",     "autorole",
+    "serverdoor",   "vote",         "settings",
 ]
 
 
@@ -96,7 +96,7 @@ class Bot(commands.Bot):
             raise GlobalCheckFail(f"I cannot message G: {str(ctx.guild)} C: {ctx.guild.name}")
 
         elif self.debug and ctx.author.id != SNACCMAN:
-            return False
+            raise GlobalCheckFail("Bot is in Debug mode")
 
         return True
 
