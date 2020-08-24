@@ -165,7 +165,7 @@ class Questionnaire(commands.Cog):
 			if comm is None:
 				raise commands.CommandError("Questionnaire creation has been aborted.")
 
-			elif comm.split(" ") > 0:
+			elif len(comm.split(" ")) > 1:
 				ctx.send("Commands must be a single word.")
 				continue
 
