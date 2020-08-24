@@ -23,11 +23,34 @@ class ReactionCollection:
 		self.max_reacts = kwargs.get("max_reacts", 100)
 		self.delete_after = kwargs.get("delete_after", True)
 
-		self.message = None
+		self.message: discord.Message = None
 
 		self._running = True
 
 		self.members = set()
+
+	@classmethod
+	async def from_existing(cls, bot, msg, chnl_id, msg_id, react=Emoji.CHECK_MARK, **kwargs):
+		inst = cls(bot, msg, react=react, **kwargs)
+
+		chnl = bot.get_channel(chnl_id)
+
+		if chnl is None:
+			return None
+
+		message = await chnl.fetch_message(msg_id)
+
+		if message is None:
+			return None
+
+		inst.message = message
+
+		for react in message.reactions:
+			if react.emoji == react:
+				inst.members = await react.users().flatten()
+				break
+
+		return inst
 
 	async def send_initial_message(self, destination):
 		if isinstance(self.msg, str):

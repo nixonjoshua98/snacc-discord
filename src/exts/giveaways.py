@@ -20,7 +20,7 @@ class Giveaways(commands.Cog):
 
 			await asyncio.sleep(3.0 * 3_600)
 
-			self.giveaway_loop.start()
+			#self.giveaway_loop.start()
 
 		if not self.bot.debug:
 			asyncio.create_task(start())
@@ -54,7 +54,7 @@ class Giveaways(commands.Cog):
 
 		embed = self.bot.embed(
 			title="Giveaway!",
-			description=f"React :white_check_mark: to enter. Winner will win **${bitcoins:,}** BTC."
+			description=f"React :white_check_mark: to enter. Winner will win **${bitcoins:,}** BTC"
 		)
 
 		members = await self.get_members(embed, chnl)
@@ -71,7 +71,7 @@ class Giveaways(commands.Cog):
 
 		embed = self.bot.embed(
 			title="Giveaway!",
-			description=f"React :white_check_mark: to enter. Winner will win **${money:,}**."
+			description=f"React :white_check_mark: to enter. Winner will win **${money:,}**"
 		)
 
 		members = await self.get_members(embed, chnl)
@@ -84,7 +84,7 @@ class Giveaways(commands.Cog):
 			await chnl.send(f"Congratulations **{str(members[0])}** for winning **${money:,}!**")
 
 	async def get_members(self, embed, chnl) -> list:
-		return await ReactionCollection(self.bot, embed, duration=1_800, max_reacts=None).prompt(chnl)
+		return await ReactionCollection(self.bot, embed, duration=3_600, max_reacts=None).prompt(chnl)
 
 
 def setup(bot):

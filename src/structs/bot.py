@@ -1,5 +1,6 @@
 import os
 import discord
+import random
 
 from discord.ext import commands, tasks
 
@@ -133,7 +134,27 @@ class Bot(commands.Bot):
         return commands.when_mentioned_or(prefix)(self, message)
 
     def embed(self, *, title=None, description=None, thumbnail=None):
-        embed = discord.Embed(title=title, description=description, colour=discord.Color.orange())
+        colours = (
+            "orange", "purple", "teal", "green",
+            "dark_green", "blue", "dark_blue", "dark_purple",
+            "magenta", "dark_magenta", "gold",
+        )
+
+        colours = list(getattr(discord.Color, col)() for col in colours)
+
+        colours.extend(
+            [
+                discord.Color.from_rgb(248, 255, 0),
+                discord.Color.from_rgb(179, 0, 255),
+                discord.Color.from_rgb(255, 29, 174),
+                discord.Color.from_rgb(179, 0, 255),
+                discord.Color.from_rgb(193, 255, 72),
+                discord.Color.from_rgb(74, 255, 1),
+                discord.Color.from_rgb(0, 246, 255)
+            ]
+        )
+
+        embed = discord.Embed(title=title, description=description, colour=random.choice(colours))
 
         embed.timestamp = dt.datetime.utcnow()
 
