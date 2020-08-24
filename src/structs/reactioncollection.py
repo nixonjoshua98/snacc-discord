@@ -50,7 +50,7 @@ class ReactionCollection:
 
 	async def _loop(self):
 		def wait_for(r, u):
-			return not u.bot and r.message.id == self.message.id and r.emoji == self.react
+			return not u.bot and r.message.id == self.message.id and r.emoji == self.react and u not in self.members
 
 		while self._running:
 			try:

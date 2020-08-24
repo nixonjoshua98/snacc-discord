@@ -58,7 +58,7 @@ class Battles(commands.Cog):
 		""" Attempt to steal from another user. """
 
 		def calculate_money_lost(bank):
-			min_val, max_val = int(bank.get("usd", 0) * 0.025), int(bank.get("usd", 0) * 0.05)
+			min_val, max_val = int(bank.get("usd", 0) * 0.015), int(bank.get("usd", 0) * 0.025)
 
 			return random.randint(max(1, min_val), max(1, max_val))
 
@@ -138,10 +138,8 @@ class Battles(commands.Cog):
 			hourly_income = max(0, hourly_income - hourly_upkeep)
 
 			# - Calculate pillage amount
-			extra = (target_bank.get("usd", 0) // 100_000) * 0.05
-
-			min_val = max(0, int(target_bank.get("usd", 0) * (0.025 + extra)))
-			max_val = max(0, int(target_bank.get("usd", 0) * (0.050 + extra)))
+			min_val = max(0, int(target_bank.get("usd", 0) * 0.025))
+			max_val = max(0, int(target_bank.get("usd", 0) * 0.050))
 
 			money_stolen = min(hourly_income, random.randint(min_val, max_val))
 

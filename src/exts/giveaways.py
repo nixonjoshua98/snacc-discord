@@ -50,7 +50,7 @@ class Giveaways(commands.Cog):
 		await getattr(self, giveaway)(chnl)
 
 	async def giveaway_bitcoin(self, chnl):
-		bitcoins = random.randint(1, 3)
+		bitcoins = random.randint(1, 2)
 
 		embed = self.bot.embed(title="Giveaway!", description=f"First reaction wins **{bitcoins:,}** BTC")
 

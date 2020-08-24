@@ -58,7 +58,10 @@ class Bot(commands.Bot):
 
     @tasks.loop(minutes=15.0)
     async def activity_loop(self):
-        activity = discord.Game(f"{len(self.users):,} users | {len(self.guilds):,} servers")
+        activity = discord.Activity(
+            type=discord.ActivityType.watching,
+            name=f"{len(self.users):,} users in {len(self.guilds):,} servers"
+        )
 
         await self.change_presence(status=discord.Status.online, activity=activity)
 
