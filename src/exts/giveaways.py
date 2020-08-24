@@ -43,7 +43,7 @@ class Giveaways(commands.Cog):
 	async def giveaway(self):
 		support_server = self.bot.get_guild(SupportServer.ID)
 
-		chnl = support_server.get_channel(SupportServer.GIVEAWAY_CHANNEL)
+		chnl = support_server.get_channel(693550889956540502)
 
 		giveaway = random.choice(("giveaway_bitcoin", "giveaway_money"))
 
@@ -52,37 +52,39 @@ class Giveaways(commands.Cog):
 	async def giveaway_bitcoin(self, chnl):
 		bitcoins = random.randint(1, 2)
 
-		embed = self.bot.embed(title="Giveaway!", description=f"First reaction wins **{bitcoins:,}** BTC")
+		embed = self.bot.embed(
+			title="Giveaway!",
+			description=f"React :white_check_mark: to enter. Winner will win **${bitcoins:,}** BTC."
+		)
 
 		members = await self.get_members(embed, chnl)
 
 		if len(members) > 0:
-			await self.bot.mongo.increment_many("bank", {"$or": [{"_id": m.id for m in members}]}, {"btc": bitcoins})
+			winner = random.choice(members)
 
-			await chnl.send(
-				f"Congratulations **{str(members[0])}**"
-				f"{f' and **{len(members) - 1}** other members' if len(members) > 1 else ''} "
-				f"for winning **{bitcoins:,}** BTC!"
-			)
+			await self.bot.mongo.increment_one("bank", {"_id": winner.id}, {"btc": bitcoins})
+
+			await chnl.send(f"Congratulations **{str(winner)}** for winning **{bitcoins:,}** BTC!")
 
 	async def giveaway_money(self, chnl):
 		money = random.randint(5_000, 10_000)
 
-		embed = self.bot.embed(title="Giveaway!", description=f"First reaction wins **${money:,}**")
+		embed = self.bot.embed(
+			title="Giveaway!",
+			description=f"React :white_check_mark: to enter. Winner will win **${money:,}**."
+		)
 
 		members = await self.get_members(embed, chnl)
 
 		if len(members) > 0:
-			await self.bot.mongo.increment_many("bank", {"$or": [{"_id": m.id for m in members}]}, {"usd": money})
+			winner = random.choice(members)
 
-			await chnl.send(
-				f"Congratulations **{str(members[0])}**"
-				f"{f' and **{len(members) - 1}** other members' if len(members) > 1 else ''} "
-				f"for winning **${money:,}!**"
-			)
+			await self.bot.mongo.increment_one("bank", {"_id": winner.id}, {"usd": money})
+
+			await chnl.send(f"Congratulations **{str(members[0])}** for winning **${money:,}!**")
 
 	async def get_members(self, embed, chnl) -> list:
-		return await ReactionCollection(self.bot, embed, timeout=1_800, max_reacts=1).prompt(chnl)
+		return await ReactionCollection(self.bot, embed, duration=1_800, max_reacts=None).prompt(chnl)
 
 
 def setup(bot):

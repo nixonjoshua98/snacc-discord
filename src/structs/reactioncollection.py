@@ -1,3 +1,4 @@
+import time
 import discord
 import asyncio
 
@@ -18,7 +19,7 @@ class ReactionCollection:
 		self.msg = msg
 		self.react = react
 
-		self.timeout = kwargs.get("timeout", 60.0)
+		self.duration = kwargs.get("duration", 60.0)
 		self.max_reacts = kwargs.get("max_reacts", 100)
 		self.delete_after = kwargs.get("delete_after", True)
 
@@ -52,9 +53,13 @@ class ReactionCollection:
 		def wait_for(r, u):
 			return not u.bot and r.message.id == self.message.id and r.emoji == self.react and u not in self.members
 
+		start = time.time()
+
+		timeout = self.duration
+
 		while self._running:
 			try:
-				react, user = await self.bot.wait_for("reaction_add", timeout=self.timeout, check=wait_for)
+				react, user = await self.bot.wait_for("reaction_add", timeout=timeout, check=wait_for)
 
 			except asyncio.TimeoutError:
 				return await self.on_end()
@@ -62,6 +67,11 @@ class ReactionCollection:
 			else:
 				if react.emoji == self.react:
 					await self.on_react(react, user)
+
+			# - Update timeout
+			timeout -= time.time() - start
+
+			start = time.time()
 
 		return await self.on_end()
 
