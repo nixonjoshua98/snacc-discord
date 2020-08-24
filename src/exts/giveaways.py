@@ -79,7 +79,7 @@ class Giveaways(commands.Cog):
 			await chnl.send(f"Congratulations **{winner.mention}** for winning **${money:,}!**")
 
 	async def get_members(self, embed, chnl) -> list:
-		return await ReactionCollection(self.bot, embed, duration=5, max_reacts=None).prompt(chnl)
+		return await ReactionCollection(self.bot, embed, duration=3_600, max_reacts=None).prompt(chnl)
 
 
 def setup(bot):
