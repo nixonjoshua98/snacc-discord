@@ -94,30 +94,6 @@ class Darkness(commands.Cog):
 
         await channel.send(embed=embed)
 
-    @checks.snaccman_only()
-    @checks.main_server_only()
-    @commands.command(name="champ")
-    async def event_champion(self, ctx, user: discord.Member = None):
-        event_role = discord.utils.get(ctx.guild.roles, id=DarknessServer.EVENT_ROLE)
-        event_chnl = discord.utils.get(ctx.guild.channels, id=DarknessServer.FAME_CHANNEL)
-
-        for m in event_role.members:
-            await m.remove_roles(event_role)
-
-        if user is None:
-            return await ctx.send("Event role has been removed from all users.")
-
-        await user.add_roles(event_role)
-
-        await ctx.send(
-            f"Congratulations **{str(user)}** on winning the event! "
-            f"You have been given the {event_role.mention} role, "
-            f"which allows you to send a few messages in {event_chnl.mention} "
-            f"for everyone to see."
-        )
-
-
-
 
 def setup(bot):
     bot.add_cog(Darkness())
