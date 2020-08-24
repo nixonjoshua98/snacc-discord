@@ -20,7 +20,7 @@ class Giveaway:
 
 		members = await ReactionCollection(self.bot, embed, duration=3_600, max_reacts=None).prompt(chnl)
 
-		if members >= 2:
+		if len(members) >= 2:
 			await self.on_giveaway_end(members)
 
 	async def on_giveaway_end(self, members):
