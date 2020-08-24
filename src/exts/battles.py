@@ -34,9 +34,7 @@ class Battles(commands.Cog):
 
 		hourly_income = hourly_income - hourly_upkeep
 
-		all_units = Military.units + Workers.units
-
-		available_units = list(itertools.filterfalse(lambda u: units.get(u.key, 0) == 0, all_units))
+		available_units = list(itertools.filterfalse(lambda u: units.get(u.key, 0) == 0, Military.units))
 
 		available_units.sort(key=lambda u: u.calc_price(units.get(u.key, 0), 1), reverse=False)
 
@@ -46,7 +44,7 @@ class Battles(commands.Cog):
 			for i in range(1, owned + 1):
 				price = unit.calc_price(owned - i, i)
 
-				if (price + units_lost_cost) < hourly_income or (units_lost_cost == 0):
+				if (price + units_lost_cost) < hourly_income:
 					units_lost[unit] = i
 
 				units_lost_cost = sum([unit.calc_price(owned - n, n) for u, n in units_lost.items()])

@@ -66,7 +66,7 @@ class Giveaways(commands.Cog):
 			)
 
 	async def giveaway_money(self, chnl):
-		money = random.randint(10_000, 25_000)
+		money = random.randint(5_000, 10_000)
 
 		embed = self.bot.embed(title="Giveaway!", description=f"First reaction wins **${money:,}**")
 

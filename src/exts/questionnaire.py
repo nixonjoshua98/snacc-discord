@@ -39,7 +39,7 @@ class Questionnaire(commands.Cog):
 				await self.send_questionnaire(message.channel, message.author, questionnaire)
 
 	@commands.has_permissions(administrator=True)
-	@commands.group(name="questionnaire", aliases=["qu"], hidden=True)
+	@commands.group(name="qu", hidden=True)
 	async def group(self, ctx):
 		""" Group command. """
 

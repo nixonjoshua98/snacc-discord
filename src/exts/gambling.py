@@ -15,7 +15,7 @@ class Gambling(commands.Cog):
 
 		bank = await ctx.bot.mongo.find_one("bank", {"_id": ctx.author.id})
 
-		# - User cannot affors the bet
+		# - User cannot afford the bet
 		if bank.get("usd", 0) < bet:
 			raise commands.CommandError("You do not have enough money.")
 
