@@ -3,11 +3,9 @@ import asyncio
 
 from discord.ext import commands, tasks
 
-from src.common import SupportServer
-
 from src.common import checks
 
-from src.structs.reactioncollection import ReactionCollection
+from src.structs.giveaway import Giveaway
 
 
 class Giveaways(commands.Cog):
@@ -29,9 +27,9 @@ class Giveaways(commands.Cog):
 
 	@tasks.loop(hours=3.0)
 	async def giveaway_loop(self):
-		await self.giveaway()
-
 		self.giveaway_loop.change_interval(hours=random.randint(6, 12))
+
+		asyncio.create_task(Giveaway(self.bot).send())
 
 	@checks.snaccman_only()
 	@commands.command(name="giveaway")
@@ -40,45 +38,7 @@ class Giveaways(commands.Cog):
 
 		await ctx.send("I have started a giveaway in the support server!")
 
-		await self.giveaway()
-
-	async def giveaway(self):
-		support_server = self.bot.get_guild(SupportServer.ID)
-
-		chnl = support_server.get_channel(SupportServer.GIVEAWAY_CHANNEL)
-
-		embed = self.bot.embed(
-			title="Giveaway!",
-			description=f"React :white_check_mark: to enter"
-		)
-
-		members = await self.get_members(embed, chnl)
-
-		if members >= 2:
-			giveaway = random.choice(("giveaway_bitcoin", "giveaway_money"))
-
-			await getattr(self, giveaway)(members, chnl)
-
-	async def giveaway_bitcoin(self, members, chnl):
-		bitcoins = random.randint(1, 1)
-
-		winner = random.choice(members)
-
-		await self.bot.mongo.increment_one("bank", {"_id": winner.id}, {"btc": bitcoins})
-
-		await chnl.send(f"Congratulations **{winner.mention}** for winning **{bitcoins:,}** BTC!")
-
-	async def giveaway_money(self, members, chnl):
-		money = random.randint(5_000, 7_500)
-
-		winner = random.choice(members)
-
-		await self.bot.mongo.increment_one("bank", {"_id": winner.id}, {"usd": money})
-
-		await chnl.send(f"Congratulations **{winner.mention}** for winning **${money:,}!**")
-
-	async def get_members(self, embed, chnl) -> list:
-		return await ReactionCollection(self.bot, embed, duration=3_600, max_reacts=None).prompt(chnl)
+		asyncio.create_task(Giveaway(self.bot).send())
 
 
 def setup(bot):
