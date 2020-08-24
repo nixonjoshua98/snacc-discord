@@ -17,7 +17,7 @@ class DarknessServer:
 class SupportServer:
 	ID = 693550889352560693
 
-	SPAM_CHANNEL = 741303705130762323
+	GIVEAWAY_CHANNEL = 741303705130762323
 
 
 class EmpireConstants:

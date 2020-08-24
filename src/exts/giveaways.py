@@ -5,6 +5,8 @@ from discord.ext import commands, tasks
 
 from src.common import SupportServer
 
+from src.common import checks
+
 from src.structs.reactioncollection import ReactionCollection
 
 
@@ -25,15 +27,28 @@ class Giveaways(commands.Cog):
 
 	@tasks.loop(hours=3.0)
 	async def giveaway_loop(self):
+		await self.giveaway()
+
+		self.giveaway_loop.change_interval(hours=random.randint(6, 12))
+
+	@checks.snaccman_only()
+	@checks.support_server_only()
+	@commands.command(name="giveaway")
+	async def giveaway_command(self, ctx):
+		""" Start a giveaway in the support server. """
+
+		await ctx.send("Started a giveaway")
+
+		await self.giveaway()
+
+	async def giveaway(self):
 		support_server = self.bot.get_guild(SupportServer.ID)
 
-		chnl = support_server.get_channel(SupportServer.SPAM_CHANNEL)
+		chnl = support_server.get_channel(SupportServer.GIVEAWAY_CHANNEL)
 
 		giveaway = random.choice(("giveaway_bitcoin", "giveaway_money"))
 
 		await getattr(self, giveaway)(chnl)
-
-		self.giveaway_loop.change_interval(hours=random.randint(6, 12))
 
 	async def giveaway_bitcoin(self, chnl):
 		bitcoins = random.randint(1, 3)
