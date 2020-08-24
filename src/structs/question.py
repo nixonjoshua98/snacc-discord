@@ -55,7 +55,9 @@ class Question:
 				message = await self.bot.wait_for("message", timeout=self.timeout, check=self.wait_for)
 
 			except asyncio.TimeoutError:
-				return await self.on_exit()
+				await self.on_exit()
+
+				return None
 
 			else:
 				await self.on_response(message.clean_content)

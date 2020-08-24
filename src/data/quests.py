@@ -37,5 +37,6 @@ class EmpireQuests:
 		_Quest(id=10, 	name="The Abyss Stares Back", 	power=400, 	reward=11_000, 	duration=10)
 	]
 
-	def get(self, **kwargs): return discord.utils.get(self.quests, **kwargs)
+	@classmethod
+	def get(cls, **kwargs): return discord.utils.get(cls.quests, **kwargs)
 

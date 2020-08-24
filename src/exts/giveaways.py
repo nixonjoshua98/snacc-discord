@@ -5,7 +5,7 @@ from discord.ext import commands, tasks
 
 from src.common import SupportServer
 
-from src.inputs.reactioncollection import ReactionCollection
+from src.structs.reactioncollection import ReactionCollection
 
 
 class Giveaways(commands.Cog):

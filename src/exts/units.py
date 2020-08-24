@@ -8,7 +8,7 @@ from src.common.converters import EmpireUnit, Range, MergeableUnit
 
 from src.data import Military, Workers
 
-from src.inputs.confirm import Confirm
+from src.structs.confirm import Confirm
 
 
 class Units(commands.Cog):

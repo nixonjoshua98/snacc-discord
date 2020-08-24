@@ -4,7 +4,7 @@ from discord.ext import commands
 
 import datetime as dt
 
-from src.inputs.confirm import Confirm
+from src.structs.confirm import Confirm
 from src.structs.question import Question
 
 

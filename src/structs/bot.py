@@ -18,8 +18,8 @@ EXTENSIONS = [
     "quests",       "shop",         "units",
     "battles",      "hangman",      "gambling",
     "bank",         "crypto",       "questionnaire",
-    "darkness",     "moderator",    "misc",
-    "abo",          "reminder",     "giveaways",
+    "moderator",    "misc",         "abo",
+    "reminder",     "giveaways",
     "autorole",     "serverdoor",   "vote",
     "settings",
 ]
