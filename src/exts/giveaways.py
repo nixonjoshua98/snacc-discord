@@ -62,7 +62,7 @@ class Giveaways(commands.Cog):
 			await chnl.send(
 				f"Congratulations **{str(members[0])}**"
 				f"{f' and **{len(members) - 1}** other members' if len(members) > 1 else ''} "
-				f"for winning **{bitcoins}** BTC!"
+				f"for winning **{bitcoins:,}** BTC!"
 			)
 
 	async def giveaway_money(self, chnl):
@@ -78,7 +78,7 @@ class Giveaways(commands.Cog):
 			await chnl.send(
 				f"Congratulations **{str(members[0])}**"
 				f"{f' and **{len(members) - 1}** other members' if len(members) > 1 else ''} "
-				f"for winning **{money}!**"
+				f"for winning **${money:,}!**"
 			)
 
 	async def get_members(self, embed, chnl) -> list:

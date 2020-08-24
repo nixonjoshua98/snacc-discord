@@ -108,7 +108,6 @@ class Battles(commands.Cog):
 			f"chance of winning against **{str(target)}**."
 		)
 
-	@checks.has_power(25)
 	@commands.cooldown(1, 60 * 120, commands.BucketType.user)
 	@commands.command(name="attack", cooldown_after_parsing=True)
 	async def attack(self, ctx, *, target: EmpireTargetUser()):

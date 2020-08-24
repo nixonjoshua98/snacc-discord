@@ -10,8 +10,6 @@ from src.common.errors import (
 
 from src.common import SNACCMAN, DarknessServer, SupportServer
 
-from src.data import Military
-
 
 def snaccman_only():
 	async def predicate(ctx):
@@ -31,20 +29,6 @@ def has_unit(unit, amount):
 
 		if num_units < amount:
 			raise commands.CommandError(f"You need at least **{amount}x {unit.display_name}** to do that")
-
-		return True
-
-	return commands.check(predicate)
-
-
-def has_power(amount):
-	async def predicate(ctx):
-		units = await ctx.bot.mongo.find_one("units", {"_id": ctx.author.id})
-
-		power = Military.get_total_power(units)
-
-		if power < amount:
-			raise commands.CommandError(f"You need at least **{amount}** power to do that")
 
 		return True
 
