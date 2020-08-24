@@ -5,7 +5,8 @@ from src.common.errors import (
 	MainServerOnly,
 	MissingEmpire,
 	HasEmpire,
-	SupportServerOnly
+	SupportServerOnly,
+	NSFWChannelOnly
 )
 
 from src.common import SNACCMAN, DarknessServer, SupportServer
@@ -73,6 +74,16 @@ def support_server_only():
 	async def predicate(ctx):
 		if ctx.guild.id != SupportServer.ID:
 			raise SupportServerOnly("This command can only be used in the support server.")
+
+		return True
+
+	return commands.check(predicate)
+
+
+def nsfw_only():
+	async def predicate(ctx):
+		if not ctx.channel.is_nsfw():
+			raise NSFWChannelOnly("This command is restricted to NSFW channels only.")
 
 		return True
 

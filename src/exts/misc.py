@@ -6,6 +6,7 @@ from discord.ext import commands
 import datetime as dt
 from bs4 import BeautifulSoup
 
+from src.common import checks
 from src.structs.textpage import TextPage
 
 
@@ -28,6 +29,41 @@ class Miscellaneous(commands.Cog):
 					lines += len(tuple(line for line in fh.read().splitlines() if line))
 
 		await ctx.send(f"I am made up of **{lines:,}** lines of code.")
+
+	@checks.nsfw_only()
+	@commands.command(name="urban")
+	async def urban_dict(self, ctx, *, term):
+		""" Look up a term in urbandictionary.com """
+
+		url = "https://mashape-community-urban-dictionary.p.rapidapi.com/define"
+
+		querystring = {"term": term}
+
+		headers = {
+			'x-rapidapi-host': "mashape-community-urban-dictionary.p.rapidapi.com",
+			'x-rapidapi-key': os.getenv("RAID_API_KEY")
+		}
+
+		async with httpx.AsyncClient() as client:
+			r = await client.get(url, headers=headers, params=querystring)
+
+		if r.status_code != httpx.codes.OK:
+			return await ctx.send(f"I failed to lookup your query. Status Code: {r.status_code}")
+
+		data = r.json()
+
+		embed = ctx.bot.embed(title=term)
+
+		for i, d in enumerate(data["list"][:5], start=1):
+			def_ = d['definition'].strip().replace("[", "").replace("]", "").replace("\n", "")
+			exa = d['example'].strip().replace("[", "").replace("]", "").replace("\n", "")
+
+			value = f"{def_}\n\n{exa}"[:1024]
+			value = value[:1021] + "..." if len(value) > 1024 else value
+
+			embed.add_field(name="Definition & Example", value=value, inline=False)
+
+		await ctx.send(embed=embed)
 
 	@commands.command(name="whatis")
 	async def what_is_this(self, ctx, *, word: str):

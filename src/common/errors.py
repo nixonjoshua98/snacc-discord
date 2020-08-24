@@ -23,3 +23,7 @@ class HasEmpire(CommandError):
 
 class GlobalCheckFail(CommandError):
 	""" Bot global check failed. """
+
+
+class NSFWChannelOnly(CommandError):
+	""" ... """
