@@ -54,29 +54,28 @@ class Giveaways(commands.Cog):
 
 		members = await self.get_members(embed, chnl)
 
-		giveaway = random.choice(("giveaway_bitcoin", "giveaway_money"))
+		if members >= 2:
+			giveaway = random.choice(("giveaway_bitcoin", "giveaway_money"))
 
-		await getattr(self, giveaway)(members, chnl)
+			await getattr(self, giveaway)(members, chnl)
 
 	async def giveaway_bitcoin(self, members, chnl):
-		if len(members) > 0:
-			bitcoins = random.randint(1, 1)
+		bitcoins = random.randint(1, 1)
 
-			winner = random.choice(members)
+		winner = random.choice(members)
 
-			await self.bot.mongo.increment_one("bank", {"_id": winner.id}, {"btc": bitcoins})
+		await self.bot.mongo.increment_one("bank", {"_id": winner.id}, {"btc": bitcoins})
 
-			await chnl.send(f"Congratulations **{winner.mention}** for winning **{bitcoins:,}** BTC!")
+		await chnl.send(f"Congratulations **{winner.mention}** for winning **{bitcoins:,}** BTC!")
 
 	async def giveaway_money(self, members, chnl):
-		if len(members) > 0:
-			money = random.randint(5_000, 7_500)
+		money = random.randint(5_000, 7_500)
 
-			winner = random.choice(members)
+		winner = random.choice(members)
 
-			await self.bot.mongo.increment_one("bank", {"_id": winner.id}, {"usd": money})
+		await self.bot.mongo.increment_one("bank", {"_id": winner.id}, {"usd": money})
 
-			await chnl.send(f"Congratulations **{winner.mention}** for winning **${money:,}!**")
+		await chnl.send(f"Congratulations **{winner.mention}** for winning **${money:,}!**")
 
 	async def get_members(self, embed, chnl) -> list:
 		return await ReactionCollection(self.bot, embed, duration=3_600, max_reacts=None).prompt(chnl)
