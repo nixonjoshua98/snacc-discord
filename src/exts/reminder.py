@@ -20,7 +20,7 @@ class Reminder(commands.Cog):
 
 	def create_reminder_task(self, row):
 		async def remind_task():
-			_id, user_id, chnl_id = row["_id"], row["_id"], row["channel"]
+			_id, user_id, chnl_id = row["_id"], row["user"], row["channel"]
 
 			note_text = row.get("note", "Reminder!")
 
@@ -45,68 +45,45 @@ class Reminder(commands.Cog):
 		if row["_id"] not in self.__set_reminders:
 			self.__set_reminders[row["_id"]] = asyncio.create_task(remind_task())
 
-	@commands.group(name="remind", invoke_without_command=True)
+	@commands.command(name="remind", aliases=["r"], invoke_without_command=True)
 	async def remind_me(self, ctx: commands.Context, period: TimePeriod() = None, *, note: str = None):
 		"""
 View your reminder or create a new one.
 e.g `!remind "2d 5m 17s" Make food`
 		"""
 
+		now = dt.datetime.utcnow()
+
 		note = "Reminder!" if note is None else note
 
-		reminder = await ctx.bot.mongo.find_one("reminders", {"_id": ctx.author.id})
+		reminders = await ctx.bot.mongo.find("reminders", {"user": ctx.author.id}).to_list(length=None)
 
-		if period is None and not reminder:
+		if period is None and not reminders:
 			await ctx.send("You do not have any active reminders")
 
 		elif "@" in note:
-			await ctx.send("Reminder note cannot contain `@` to avoid mass mention abuse.")
+			await ctx.send("Reminder note cannot contain **@** to avoid mention abuse.")
 
-		elif reminder:
-			seconds = (reminder["end"] - dt.datetime.utcnow()).total_seconds()
+		elif period is None:
+			embed = ctx.bot.embed(title=f"{str(ctx.author)}: Reminders")
 
-			delta = dt.timedelta(seconds=int(seconds))
+			for r in reminders:
+				delta = r["end"].timestamp() - now.timestamp()
 
-			await ctx.send(f"Time left on your current reminder: `{delta}`")
+				delta = dt.timedelta(seconds=int(delta))
 
-		elif period is not None and not reminder:
-			now = dt.datetime.utcnow()
+				embed.add_field(name=r["note"], value=f"`{delta}`")
 
-			row = dict(_id=ctx.author.id, channel=ctx.channel.id, start=now, end=now + period, note=note)
+			await ctx.send(embed=embed)
+
+		elif period is not None:
+			row = dict(user=ctx.author.id, channel=ctx.channel.id, end=now + period, note=note)
 
 			await ctx.bot.mongo.insert_one("reminders", row)
 
 			self.create_reminder_task(row)
 
-			await ctx.send(f"I will ping you in `{period}`. Cancel this with `{ctx.prefix}remind cancel`")
-
-	@remind_me.command(name="cancel")
-	async def cancel_reminder(self, ctx):
-		""" Cancel your current reminder. """
-
-		reminder = await ctx.bot.mongo.find_one("reminders", {"_id": ctx.author.id})
-
-		if not reminder:
-			await ctx.send("You do not have any active reminders")
-
-		else:
-			if reminder["_id"] in self.__set_reminders:
-				task = self.__set_reminders[reminder["_id"]]
-
-				task.cancel()
-
-				try:
-					await task
-
-				except asyncio.CancelledError:
-					self.__set_reminders.pop(reminder["_id"], None)
-
-				else:
-					return await ctx.send("I failed to cancel your reminder.")
-
-			await ctx.bot.mongo.delete_one("reminders", {"_id": ctx.author.id})
-
-			await ctx.send("Your reminder has been cancelled.")
+			await ctx.send(f"I will ping you in `{period}`.")
 
 	@tasks.loop(minutes=30.0)
 	async def remind_loop(self):

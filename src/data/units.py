@@ -60,7 +60,7 @@ class WorkerUnit(Unit):
 		WorkerUnit.__worker_id += 1
 
 	def calc_hourly_income(self, amount, level):
-		return math.floor(self._hourly_income * amount * (1.0 + (level * 0.05)))
+		return math.ceil(self._hourly_income * amount * (1.0 + (level * 0.05)))
 
 	def calc_next_merge_stats(self, amount, level):
 		income = self.calc_hourly_income(amount, level)
@@ -96,7 +96,7 @@ class MilitaryUnit(Unit):
 		MilitaryUnit.__military_id += 1
 
 	def calc_hourly_upkeep(self, amount, level):
-		return math.ceil(self._hourly_upkeep * (1.0 - (level * 0.05)) * amount)
+		return math.floor(self._hourly_upkeep * (1.0 - (level * 0.05)) * amount)
 
 	def calc_power(self, amount):
 		def round_up(n, decimals=0):
@@ -119,9 +119,9 @@ class MilitaryUnit(Unit):
 
 		return {
 			"Hourly Upkeep": f"${upkeep:,} -> ${new_upkeep:,}",
+			"Power": f"{power:,} -> {new_power:,}",
 			"Slots": f"{slots:,} -> {new_slots:,}",
 			"Unit Upkeep": f"${unit_upkeep:,} -> ${new_unit_upkeep:,}",
-			"Unit Power": f"{power:,} -> {new_power:,}"
 		}
 
 
