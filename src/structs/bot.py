@@ -25,6 +25,17 @@ EXTENSIONS = [
     "settings",
 ]
 
+COLOURS = (
+    discord.Color.orange(),     discord.Color.purple(),         discord.Color.teal(),       discord.Color.green(),
+    discord.Color.dark_green(), discord.Color.blue(),           discord.Color.dark_blue(),  discord.Color.dark_purple(),
+    discord.Color.magenta(),    discord.Color.dark_magenta(),   discord.Color.gold(),
+
+    discord.Color.from_rgb(248, 255, 0),    discord.Color.from_rgb(179, 0, 255),
+    discord.Color.from_rgb(255, 29, 174),   discord.Color.from_rgb(179, 0, 255),
+    discord.Color.from_rgb(193, 255, 72),   discord.Color.from_rgb(74, 255, 1),
+    discord.Color.from_rgb(0, 246, 255)
+)
+
 
 class Bot(commands.Bot):
     def __init__(self):
@@ -134,27 +145,7 @@ class Bot(commands.Bot):
         return commands.when_mentioned_or(prefix)(self, message)
 
     def embed(self, *, title=None, description=None, thumbnail=None):
-        colours = (
-            "orange", "purple", "teal", "green",
-            "dark_green", "blue", "dark_blue", "dark_purple",
-            "magenta", "dark_magenta", "gold",
-        )
-
-        colours = list(getattr(discord.Color, col)() for col in colours)
-
-        colours.extend(
-            [
-                discord.Color.from_rgb(248, 255, 0),
-                discord.Color.from_rgb(179, 0, 255),
-                discord.Color.from_rgb(255, 29, 174),
-                discord.Color.from_rgb(179, 0, 255),
-                discord.Color.from_rgb(193, 255, 72),
-                discord.Color.from_rgb(74, 255, 1),
-                discord.Color.from_rgb(0, 246, 255)
-            ]
-        )
-
-        embed = discord.Embed(title=title, description=description, colour=random.choice(colours))
+        embed = discord.Embed(title=title, description=description, colour=random.choice(COLOURS))
 
         embed.timestamp = dt.datetime.utcnow()
 

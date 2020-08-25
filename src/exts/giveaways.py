@@ -25,7 +25,7 @@ class Giveaways(commands.Cog):
 		if not self.bot.debug:
 			asyncio.create_task(start())
 
-	@tasks.loop(hours=3.0)
+	@tasks.loop(hours=6.0)
 	async def giveaway_loop(self):
 		self.giveaway_loop.change_interval(hours=random.randint(6, 12))
 
