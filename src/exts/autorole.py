@@ -37,7 +37,7 @@ class AutoRole(commands.Cog, name="Auto Role"):
 
 	@commands.group(name="role", invoke_without_command=True, hidden=True)
 	async def role_group(self, ctx):
-		await ctx.send(f"Use either `{ctx.prefix}role bot <role>` or `{ctx.prefix}role user <role>`")
+		""" Group. """
 
 	@role_group.command(name="user")
 	async def set_user_role(self, ctx, *, role: ServerAssignedRole() = None):

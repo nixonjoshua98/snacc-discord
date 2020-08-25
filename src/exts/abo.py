@@ -15,7 +15,18 @@ class ABO(commands.Cog):
 	async def event(self, ctx):
 		""" Give the Event rewards. """
 
-		attachments = ctx.message.attachments
+		async def give_event_winner_role(winner):
+			role = ctx.guild.get_role(DarknessServer.EVENT_ROLE)
+
+			for m in role.members:
+				await m.remove_roles(role)
+
+			if winner is not None:
+				await winner.add_roles(role)
+
+		_ = discord.utils.get(ctx.guild.channels, id=DarknessServer.FAME_CHANNEL)
+
+		_ = ctx.message.attachments
 
 		# - Check a JSON file has been attached to the message
 		"""		
@@ -25,18 +36,6 @@ class ABO(commands.Cog):
 
 		content = await attachments[0].read()
 		"""
-
-		top_performers = [(1, "Fanged"), (3, "Snaccman"), (4, "Lucaso7")]
-
-		s = []
-
-		role = ctx.guild.get_role(DarknessServer.EVENT_ROLE)
-
-		for rank, username in top_performers:
-			if rank == 1:
-				continue
-
-			print(rank, username)
 
 	@checks.snaccman_only()
 	@checks.main_server_only()

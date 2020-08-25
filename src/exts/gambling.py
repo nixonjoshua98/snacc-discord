@@ -38,7 +38,7 @@ class Gambling(commands.Cog):
 	async def bet(self, ctx, bet: Range(0, 50_000) = 0, sides: Range(6, 100) = 6, side: Range(1, 100) = 6):
 		""" Roll a dice and bet on which side the die lands on. """
 
-		bank = await ctx.bot.mongo.select_one("bank", {"_id": ctx.author.id})
+		bank = await ctx.bot.mongo.find_one("bank", {"_id": ctx.author.id})
 
 		# - User cannot afford the bet
 		if bank.get("usd", 0) < bet:
