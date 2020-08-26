@@ -7,7 +7,7 @@ from discord.ext import commands
 from src.common import DarknessServer, checks
 
 
-class ABO(commands.Cog):
+class ABOEvent(commands.Cog, name="ABO Event"):
 
 	@checks.snaccman_only()
 	@checks.main_server_only()
@@ -36,4 +36,4 @@ class ABO(commands.Cog):
 
 
 def setup(bot):
-	bot.add_cog(ABO(bot))
+	bot.add_cog(ABOEvent(bot))

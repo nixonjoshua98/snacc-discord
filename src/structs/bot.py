@@ -15,14 +15,14 @@ from src.structs import MongoClient
 
 
 EXTENSIONS = [
-    "errorhandler",     "arena",        "empire",
-    "quests",           "shop",         "units",
-    "battles",          "hangman",      "rewards",
-    "gambling",         "bank",         "noticeboard",
+    "errorhandler",     "abolevels",            "empire",
+    "quests",           "shop",                 "units",
+    "battles",          "hangman",              "rewards",
+    "gambling",         "bank",                 "noticeboard",
     "crypto",
-    "questionnaire",    "moderator",    "misc",
-    "abo",              "reminder",     "giveaways",
-    "autorole",         "serverdoor",   "vote",
+    "questionnaire",    "moderator",            "misc",
+    "aboevent",         "reminder",             "giveaways",
+    "autorole",         "serverdoor",           "vote",
     "settings",
 ]
 

@@ -15,11 +15,11 @@ from src.common import DarknessServer, checks
 from src.common.converters import Range
 
 
-class Arena(commands.Cog):
+class ABOLevels(commands.Cog, name="ABO Levels"):
 	def __init__(self, bot):
 		self.bot = bot
 
-		#self.start_shame_users()
+		self.start_shame_users()
 
 	async def cog_check(self, ctx):
 		if ctx.guild.id != DarknessServer.ID:
@@ -43,22 +43,21 @@ class Arena(commands.Cog):
 
 			entries.append(group[-1])
 
-		return sorted(entries, key=lambda e: e["trophies"], reverse=True)
+		return sorted(entries, key=lambda e: e["level"], reverse=True)
 
 	@staticmethod
-	async def set_users_stats(ctx, user: discord.Member, level, trophies):
+	async def set_users_stats(ctx, user: discord.Member, level):
 		"""
 		Add a new stat entry for the user and limit the number of stat entries for the user in the database.
 
 		:param ctx: Discord context, we get the bot from it.
 		:param user: The user whose stats we are updating
 		:param level: The level of the user
-		:param trophies: The amount of trophies they have
 		"""
 
 		six_months_ago = dt.datetime.utcnow() - dt.timedelta(weeks=26)
 
-		row = dict(user=user.id, date=dt.datetime.utcnow(), level=level, trophies=trophies)
+		row = dict(user=user.id, date=dt.datetime.utcnow(), level=level)
 
 		requests = [InsertOne(row), DeleteMany({"user": user.id, "date": {"$lt": six_months_ago}})]
 
@@ -108,7 +107,7 @@ class Arena(commands.Cog):
 		message = None
 
 		if missing:
-			message = f"**__Missing__** - Set your stats `!s <level> <trophies>`\n"
+			message = f"**__Missing__** - Set your stats `!s <level>`\n"
 			message += ", ".join(missing)
 
 		if lacking:
@@ -145,19 +144,19 @@ class Arena(commands.Cog):
 
 	@commands.cooldown(1, 60 * 60 * 3, commands.BucketType.user)
 	@commands.command(name="set", aliases=["s"], cooldown_after_parsing=True)
-	async def set_stats(self, ctx, level: Range(1, 125), trophies: Range(1, 10_000)):
-		""" Update your arena stats. Stats are used to track activity and are displayed on the trophy leaderboard. """
+	async def set_stats(self, ctx, level: Range(1, 250)):
+		""" Update your arena stats. Stats are used to track activity and are displayed on the leaderboard. """
 
-		await self.set_users_stats(ctx, ctx.author, level, trophies)
+		await self.set_users_stats(ctx, ctx.author, level)
 
 		await ctx.send(f"**{ctx.author.display_name}** :thumbsup:")
 
 	@commands.has_permissions(administrator=True)
 	@commands.command(name="setuser", aliases=["su"])
-	async def set_user_stats_command(self, ctx, level: int, trophies: int, *, target: discord.Member):
-		""" Set another users ABO stats. """
+	async def set_user_stats_command(self, ctx, level: int, *, target: discord.Member):
+		""" Set another users ABO level. """
 
-		await self.set_users_stats(ctx, target, level, trophies)
+		await self.set_users_stats(ctx, target, level)
 
 		await ctx.send(f"**{target.display_name}** :thumbsup:")
 
@@ -177,28 +176,19 @@ class Arena(commands.Cog):
 		for result in results:
 			date = result["date"].strftime("%d/%m/%Y")
 
-			level, trophies = f"{result['level']:,}", f"{result['trophies']:,}"
-
-			embed.add_field(name=date, value=f":trophy: {trophies}")
+			embed.add_field(name=date, value=f":trophy: {result['level']:,}")
 
 		await ctx.send(embed=embed)
 
-	@commands.command(name="trophies")
+	@commands.command(name="levels")
 	async def show_leaderboard(self, ctx: commands.Context):
-		""" Show the server trophy leaderboard. """
+		""" Show the server level leaderboard. """
 
 		async def query():
 			return await self.get_member_rows()
 
-		await inputs.show_leaderboard(
-			ctx,
-			"Trophy Leaderboard",
-			columns=["level", "trophies"],
-			order_by="trophies",
-			query_func=query,
-			max_rows=None
-		)
+		await inputs.show_leaderboard(ctx, "Level Leaderboard", columns=["level"], order_by="level", query_func=query)
 
 
 def setup(bot):
-	bot.add_cog(Arena(bot))
+	bot.add_cog(ABOLevels(bot))
