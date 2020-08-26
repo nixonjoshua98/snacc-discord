@@ -46,7 +46,7 @@ class ServerDoor(commands.Cog, name="Server Door"):
 
         display_joins = svr.get("display_joins", False)
 
-        await ctx.bot.mongo.update_one("servers", {"_id": ctx.guild.id}, {"display_joins": not display_joins})
+        await ctx.bot.mongo.set_one("servers", {"_id": ctx.guild.id}, {"display_joins": not display_joins})
 
         await ctx.send(f"Server door: {'`Hidden`' if display_joins else '`Shown`'}")
 

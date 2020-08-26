@@ -43,7 +43,7 @@ class AutoRole(commands.Cog, name="Auto Role"):
 	async def set_user_role(self, ctx, *, role: ServerAssignedRole() = None):
 		""" Set the role which is given to every user when they join the server. """
 
-		await ctx.bot.mongo.update_one("servers", {"_id": ctx.guild.id}, {"user_role": getattr(role, "id", 0)})
+		await ctx.bot.mongo.set_one("servers", {"_id": ctx.guild.id}, {"user_role": getattr(role, "id", 0)})
 
 		if role is None:
 			await ctx.send(f"User role has been removed")
@@ -55,7 +55,7 @@ class AutoRole(commands.Cog, name="Auto Role"):
 	async def set_bot_role(self, ctx, *, role: ServerAssignedRole() = None):
 		""" Set the role which is given to every bot account when they join the server. """
 
-		await ctx.bot.mongo.update_one("servers", {"_id": ctx.guild.id}, {"bot_role": getattr(role, "id", 0)})
+		await ctx.bot.mongo.set_one("servers", {"_id": ctx.guild.id}, {"bot_role": getattr(role, "id", 0)})
 
 		if role is None:
 			await ctx.send(f"Bot role has been removed")

@@ -63,7 +63,7 @@ class Rewards(commands.Cog):
 					reward_text.append(f"**{amount:,} BTC**")
 
 		# - Update the database
-		await ctx.bot.mongo.update_one(
+		await ctx.bot.mongo.set_one(
 			"players",
 			{"_id": ctx.author.id},
 			{"daily_streak": daily_streak, "last_daily": now}

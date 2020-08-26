@@ -9,7 +9,7 @@ class Settings(commands.Cog):
 	async def set_prefix(self, ctx: commands.Context, prefix: str):
 		""" Set the server-wide prefix. """
 
-		await ctx.bot.mongo.update_one("servers", {"_id": ctx.guild.id}, {"prefix": prefix})
+		await ctx.bot.mongo.set_one("servers", {"_id": ctx.guild.id}, {"prefix": prefix})
 
 		await ctx.send(f"Server prefix has been updated to `{prefix}`")
 

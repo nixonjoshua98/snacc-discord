@@ -24,7 +24,7 @@ class Giveaway:
 			await self.on_giveaway_end(members)
 
 	async def on_giveaway_end(self, members):
-		money = random.randint(5_000, 7_500)
+		money = random.randint(5_000, 10_000)
 
 		winner = random.choice(members)
 

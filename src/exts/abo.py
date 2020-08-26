@@ -11,34 +11,6 @@ class ABO(commands.Cog):
 
 	@checks.snaccman_only()
 	@checks.main_server_only()
-	@commands.command(name="event")
-	async def event(self, ctx):
-		""" Give the Event rewards. """
-
-		async def give_event_winner_role(winner):
-			role = ctx.guild.get_role(DarknessServer.EVENT_ROLE)
-
-			for m in role.members:
-				await m.remove_roles(role)
-
-			if winner is not None:
-				await winner.add_roles(role)
-
-		_ = discord.utils.get(ctx.guild.channels, id=DarknessServer.FAME_CHANNEL)
-
-		_ = ctx.message.attachments
-
-		# - Check a JSON file has been attached to the message
-		"""		
-		if not attachments:
-			if not attachments[0].filename.lower().endswith("json"):
-				return await ctx.send("A JSON file is required.")
-
-		content = await attachments[0].read()
-		"""
-
-	@checks.snaccman_only()
-	@checks.main_server_only()
 	@commands.command(name="champ")
 	async def event_champion(self, ctx, user: discord.Member = None):
 		async def give_event_winner_role(guild):
@@ -55,11 +27,9 @@ class ABO(commands.Cog):
 
 		await give_event_winner_role(ctx.guild)
 
-		await ctx.send(
-			f"Congratulations **{str(user)}** on winning the event! "
-			f"You have been given the {event_role.mention} role, "
-			f"which allows you to send a few messages in {event_chnl.mention} "
-			f"for everyone to see."
+		await event_chnl.send(
+			f"Congratulations **{user.mention}** on winning the event! "
+			f"You have been given the {event_role.mention} role!"
 		)
 
 

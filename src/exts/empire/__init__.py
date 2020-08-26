@@ -32,7 +32,7 @@ class Empire(commands.Cog):
 			await ctx.author.add_roles(discord.utils.get(ctx.guild.roles, id=DarknessServer.EMPIRE_ROLE))
 
 	async def cog_after_invoke(self, ctx):
-		await ctx.bot.mongo.update_one("empires", {"_id": ctx.author.id}, {"last_login": dt.datetime.utcnow()})
+		await ctx.bot.mongo.set_one("empires", {"_id": ctx.author.id}, {"last_login": dt.datetime.utcnow()})
 
 	@checks.no_empire()
 	@commands.command(name="create")
@@ -44,7 +44,7 @@ class Empire(commands.Cog):
 
 		row = dict(name=empire_name, last_login=now, last_income=now)
 
-		await ctx.bot.mongo.update_one("empires", {"_id": ctx.author.id}, row)
+		await ctx.bot.mongo.set_one("empires", {"_id": ctx.author.id}, row)
 
 		await ctx.send(f"Your empire has been established! You can rename your empire using `{ctx.prefix}rename`")
 
@@ -84,7 +84,7 @@ class Empire(commands.Cog):
 	async def rename_empire(self, ctx, *, new_name):
 		""" Rename your established empire. """
 
-		await self.bot.mongo.update_one("empires", {"_id": ctx.author.id}, {"name": new_name})
+		await self.bot.mongo.set_one("empires", {"_id": ctx.author.id}, {"name": new_name})
 
 		await ctx.send(f"Your empire has been renamed to `{new_name}`")
 
@@ -118,7 +118,7 @@ class Empire(commands.Cog):
 		else:
 			await ctx.send("Failed to collect. Try again")
 
-		await ctx.bot.mongo.update_one("empires", {"_id": empire["_id"]}, {"last_income": now})
+		await ctx.bot.mongo.set_one("empires", {"_id": empire["_id"]}, {"last_income": now})
 
 	@checks.has_empire()
 	@commands.cooldown(1, 60 * 90, commands.BucketType.user)
@@ -168,7 +168,7 @@ class Empire(commands.Cog):
 			now = dt.datetime.utcnow()
 
 			# - Set the last_income field which is used to calculate the income rate from the delta time
-			await self.bot.mongo.update_one("empires", {"_id": empire["_id"]}, {"last_income": now})
+			await self.bot.mongo.set_one("empires", {"_id": empire["_id"]}, {"last_income": now})
 
 			last_login = empire.get("last_login", now)
 			last_income = empire.get("last_income", now)

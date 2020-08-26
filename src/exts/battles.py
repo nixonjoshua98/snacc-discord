@@ -6,7 +6,7 @@ import datetime as dt
 
 from discord.ext import commands
 
-from src.common import checks
+from src.common import SNACCMAN, checks
 
 from src.common.converters import EmpireTargetUser, DiscordUser
 
@@ -18,6 +18,8 @@ SCOUT_UNIT = Military.get(key="scout")
 
 
 class Battles(commands.Cog):
+	def __init__(self, bot):
+		self.bot = bot
 
 	@staticmethod
 	def get_win_chance(atk_power, def_power):
@@ -51,10 +53,15 @@ class Battles(commands.Cog):
 
 		return units_lost
 
+	async def log_event(self, event, user, **kwargs):
+		log = dict(event=event, **kwargs)
+
+		await self.bot.mongo.update_one("players", {"_id": SNACCMAN}, {"$push": {"log": log}})
+
 	@checks.has_unit(THIEF_UNIT, 1)
 	@commands.cooldown(1, 3_600, commands.BucketType.user)
 	@commands.command(name="steal", cooldown_after_parsing=True)
-	async def steal_coins(self, ctx, *, target: DiscordUser()):
+	async def steal(self, ctx, *, target: DiscordUser()):
 		""" Attempt to steal from another user. """
 
 		def calculate_money_lost(bank):
@@ -85,6 +92,8 @@ class Battles(commands.Cog):
 				s = s[0:-3] + f" **but the thief you hired took a cut of **${thief_tax:,}**."
 
 		await ctx.send(s)
+
+		await self.log_event("steal", target, thief=str(ctx.author), stolen_amount=stolen_amount)
 
 	@checks.has_unit(SCOUT_UNIT, 1)
 	@commands.cooldown(1, 15, commands.BucketType.user)
@@ -133,23 +142,21 @@ class Battles(commands.Cog):
 		if win_chance >= random.uniform(0.0, 1.0):
 
 			hourly_income = max(0, Workers.get_total_hourly_income(target_units, target_levels))
-
 			hourly_upkeep = max(0, Military.get_total_hourly_upkeep(target_units, target_levels))
-
 			hourly_income = max(0, hourly_income - hourly_upkeep)
 
 			# - Calculate pillage amount
 			min_val = max(0, int(target_bank.get("usd", 0) * 0.025))
 			max_val = max(0, int(target_bank.get("usd", 0) * 0.050))
 
-			money_stolen = min(hourly_income, random.randint(min_val, max_val))
+			stolen_amount = min(hourly_income, random.randint(min_val, max_val))
 
 			# - Add a bonus pillage amount if the chance of winning is less than 50%
-			bonus_money = int((money_stolen * 2.0) * (1.0 - win_chance) if win_chance <= 0.50 else 0)
+			bonus_money = int((stolen_amount * 2.0) * (1.0 - win_chance) if win_chance <= 0.50 else 0)
 
 			# - Increment and decrement the balances of the two users
-			await ctx.bot.mongo.increment_one("bank", {"_id": ctx.author.id}, {"usd": money_stolen + bonus_money})
-			await ctx.bot.mongo.decrement_one("bank", {"_id": target.id}, {"usd": money_stolen + bonus_money})
+			await ctx.bot.mongo.increment_one("bank", {"_id": ctx.author.id}, {"usd": stolen_amount + bonus_money})
+			await ctx.bot.mongo.decrement_one("bank", {"_id": target.id}, {"usd": stolen_amount + bonus_money})
 
 			# - Units killed
 			units_lost = await self.calculate_units_lost(target_units, target_levels)
@@ -161,23 +168,32 @@ class Battles(commands.Cog):
 				await ctx.bot.mongo.decrement_one("units", {"_id": target.id}, units_lost_keys)
 
 			# - Put the target empire into a 'cooldown' so they cannot get attacked for a period of time
-			await ctx.bot.mongo.update_one("empires", {"_id": target.id}, {"last_attack": dt.datetime.utcnow()})
+			await ctx.bot.mongo.set_one("empires", {"_id": target.id}, {"last_attack": dt.datetime.utcnow()})
 
 			# - Create the message to return to Discord
-			val = f"${money_stolen:,} {f'**+ ${bonus_money:,} bonus**' if bonus_money > 0 else ''}"
+			val = f"${stolen_amount:,} {f'**+ ${bonus_money:,} bonus**' if bonus_money > 0 else ''}"
 
 			embed = ctx.bot.embed(
 				title=f"Attack on {str(target)}: {target_empire.get('name', target.display_name)}",
 				description=f"**Money Pillaged:** {val}"
 			)
 
+			# - Actually a list...
+			units_lost_text = list(map(lambda kv: f"{kv[1]}x {kv[0].display_name}", units_lost.items()))
+
 			if units_lost:
-				embed.add_field(
-					name="Units Killed",
-					value="\n".join(map(lambda kv: f"{kv[1]}x {kv[0].display_name}", units_lost.items()))
-				)
+				embed.add_field(name="Units Killed", value="\n".join(units_lost_text))
 
 			await ctx.send(embed=embed)
+
+			# - Log the attack
+			await self.log_event(
+				"attack",
+				target,
+				attacker=str(ctx.author),
+				stolen_amount=stolen_amount+bonus_money,
+				units_lost=", ".join(units_lost_text)
+			)
 
 		else:
 			# - Calculate pillage amount
@@ -193,8 +209,8 @@ class Battles(commands.Cog):
 		# - Take the author out of their cooldown
 		day_ago = dt.datetime.utcnow() - dt.timedelta(hours=24.0)
 
-		await ctx.bot.mongo.update_one("empires", {"_id": ctx.author.id}, {"last_attack": day_ago})
+		await ctx.bot.mongo.set_one("empires", {"_id": ctx.author.id}, {"last_attack": day_ago})
 
 
 def setup(bot):
-	bot.add_cog(Battles())
+	bot.add_cog(Battles(bot))
