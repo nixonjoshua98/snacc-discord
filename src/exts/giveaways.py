@@ -18,17 +18,15 @@ class Giveaways(commands.Cog):
 		async def start():
 			print("Starting loop: Giveaways")
 
-			await asyncio.sleep(3.0 * 3_600)
+			await asyncio.sleep(6.0 * 3_600)
 
 			self.giveaway_loop.start()
 
 		if not self.bot.debug:
 			asyncio.create_task(start())
 
-	@tasks.loop(hours=6.0)
+	@tasks.loop(hours=12.0)
 	async def giveaway_loop(self):
-		self.giveaway_loop.change_interval(hours=random.randint(6, 12))
-
 		asyncio.create_task(Giveaway(self.bot).send())
 
 	@checks.snaccman_only()

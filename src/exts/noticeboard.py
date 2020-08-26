@@ -10,7 +10,7 @@ class NoticeBoard(commands.Cog):
 
 		player = await ctx.bot.mongo.find_one("players", {"_id": ctx.author.id})
 
-		embed = ctx.bot.embed(title=f"{str(ctx.author)}: Battle Log", description="Battle log has been cleared")
+		embed = ctx.bot.embed(title=f"{str(ctx.author)}: Battle Log", description="Battle log is cleared after viewing")
 
 		log = []
 

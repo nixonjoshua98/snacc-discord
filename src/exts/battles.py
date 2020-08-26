@@ -56,7 +56,7 @@ class Battles(commands.Cog):
 	async def log_event(self, event, user, **kwargs):
 		log = dict(event=event, **kwargs)
 
-		await self.bot.mongo.update_one("players", {"_id": SNACCMAN}, {"$push": {"log": log}})
+		await self.bot.mongo.update_one("players", {"_id": user.id}, {"$push": {"log": log}})
 
 	@checks.has_unit(THIEF_UNIT, 1)
 	@commands.cooldown(1, 3_600, commands.BucketType.user)
