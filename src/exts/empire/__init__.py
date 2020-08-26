@@ -7,7 +7,7 @@ import datetime as dt
 
 from discord.ext import tasks, commands
 
-from src import inputs
+from src import inputs, utils
 from src.common import DarknessServer, checks
 from src.common.converters import AnyoneWithEmpire
 
@@ -50,11 +50,9 @@ class Empire(commands.Cog):
 		embed.add_field(
 			name="Getting started",
 			value=(
-				f"You can claim your daily reward every 24 hours by doing **{ctx.prefix}daily**. It is also a good idea "
-				f"to hire at least 1 thief military unit, which is used to **{ctx.prefix}steal** from other "
-				f"players. The amount you steal is determined by how much the target user has. You can view your "
-				f"hourly income and upkeep by doing **{ctx.prefix}e**. The top players generally have more workers than "
-				f"military units so their hourly income is considerably more than their upkeep. "
+				f"You can claim your daily reward every 24 hours by doing **{ctx.prefix}daily**. It is also a good "
+				f"idea to hire at least 1 thief military unit, which is used to **{ctx.prefix}steal** from other "
+				f"players. You should focus more on workers, than military at the start of your game."
 			),
 			inline=False
 		)
@@ -62,7 +60,7 @@ class Empire(commands.Cog):
 		embed.add_field(
 			name="Units (Workers)",
 			value=(
-				f"Worker units generate passive income which automatically is added to your bank account each hour. "
+				f"Worker units generate passive income which is automatically added to your bank account each hour. "
 				f"Hourly income can also be collected manually using **{ctx.prefix}collect**."
 			),
 			inline=False
@@ -90,8 +88,8 @@ class Empire(commands.Cog):
 		embed.add_field(
 			name="Final Notes",
 			value=(
-				f"Their are a lot of things to do, but this tutorial is supposed to be short. You can view all my "
-				f"commands using the **{ctx.prefix}help** command."
+				f"I am filled with lots of things to do, but this tutorial is supposed to be short. "
+				f"You can view all my commands using the **{ctx.prefix}help** command."
 			),
 			inline=False
 		)
@@ -251,22 +249,16 @@ class Empire(commands.Cog):
 			# - Total number of hours we need to credit the empire's bank
 			hours = (now - last_income).total_seconds() / 3600
 
-			# - Hourly income/keep
-			total_hourly_income = Workers.get_total_hourly_income(units, levels)
-			total_hourly_upkeep = Military.get_total_hourly_upkeep(units, levels)
+			hourly_income = max(0, int(utils.net_income(units, levels) * hours))
 
-			# - Overall money gained/lost per hour
-			money_change = int((total_hourly_income - total_hourly_upkeep) * hours)
+			if hourly_income > 0 and (bank.get("usd", 0) >= 250_000 or bank.get("btc", 0) >= 250):
+				hourly_income = int(hourly_income * 0.4)
 
-			# - [Temporary] Tax
-			if money_change > 0 and (bank.get("usd", 0) >= 250_000 or bank.get("btc", 0) >= 250):
-				money_change = int(money_change * 0.4)
+			if hourly_income > 0:
+				await self.bot.mongo.increment_one("bank", {"_id": empire["_id"]}, {"usd": hourly_income})
 
-			if money_change > 0:
-				await self.bot.mongo.increment_one("bank", {"_id": empire["_id"]}, {"usd": money_change})
-
-			elif money_change < 0:
-				await self.bot.mongo.decrement_one("bank", {"_id": empire["_id"]}, {"usd": abs(money_change)})
+			elif hourly_income < 0:
+				await self.bot.mongo.decrement_one("bank", {"_id": empire["_id"]}, {"usd": abs(hourly_income)})
 
 
 def setup(bot):

@@ -13,7 +13,7 @@ from src.common import checks
 from src.common.converters import EmpireTargetUser, DiscordUser
 
 
-from src.data import Military, Workers
+from src.data import Military
 
 
 THIEF_UNIT = Military.get(key="thief")
@@ -183,7 +183,7 @@ class Battles(commands.Cog):
 		min_val = max(0, int(bank.get("usd", 0) * 0.025))
 		max_val = max(0, int(bank.get("usd", 0) * 0.050))
 
-		stolen_amount = min(bank.get("usd", 0), hourly_income, random.randint(min_val, max_val) * multiplier)
+		stolen_amount = int(min(bank.get("usd", 0), hourly_income, random.randint(min_val, max_val) * multiplier))
 
 		# - Add a bonus pillage amount if the chance of winning is less than 50%
 		bonus_money = int((stolen_amount * 2.0) * (1.0 - win_chance) if win_chance < 0.50 else 0)
@@ -197,18 +197,14 @@ class Battles(commands.Cog):
 		min_val = min(2_500, int(bank.get("usd", 0) * 0.025))
 		max_val = min(10_000, int(bank.get("usd", 0) * 0.050))
 
-		return min(bank.get("usd", 0), hourly_income, random.randint(min_val, max_val))
+		return int(min(bank.get("usd", 0), hourly_income, random.randint(min_val, max_val)))
 
 	@staticmethod
 	async def calc_units_lost(units, levels):
 		units_lost = dict()
 		units_lost_cost = 0
 
-		hourly_income = max(0, Workers.get_total_hourly_income(units, levels))
-
-		hourly_upkeep = max(0, Military.get_total_hourly_upkeep(units, levels))
-
-		hourly_income = hourly_income - hourly_upkeep
+		hourly_income = max(0, utils.net_income(units, levels))
 
 		available_units = list(itertools.filterfalse(lambda u: units.get(u.key, 0) == 0, Military.units))
 
