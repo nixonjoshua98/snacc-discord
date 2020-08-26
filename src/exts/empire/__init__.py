@@ -34,6 +34,70 @@ class Empire(commands.Cog):
 	async def cog_after_invoke(self, ctx):
 		await ctx.bot.mongo.set_one("empires", {"_id": ctx.author.id}, {"last_login": dt.datetime.utcnow()})
 
+	@commands.command(name="tutorial")
+	async def show_tutorial(self, ctx):
+		""" Show the tutorial embed. """
+
+		embed = ctx.bot.embed(
+			title="Empire Tutorial",
+			description=(
+				f"Empire is a idle PvP/PvE gamemode which involves hiring units to generate passive income as well as "
+				f"hiring military units to attack other users, complete quests, steal from others users. More features "
+				f"are constantly being added. You can view your empire using **{ctx.prefix}e**."
+			)
+		)
+
+		embed.add_field(
+			name="Getting started",
+			value=(
+				f"You can claim your daily reward every 24 hours by doing **{ctx.prefix}daily**. It is also a good idea "
+				f"to hire at least 1 thief military unit, which is used to **{ctx.prefix}steal** from other "
+				f"players. The amount you steal is determined by how much the target user has. You can view your "
+				f"hourly income and upkeep by doing **{ctx.prefix}e**. The top players generally have more workers than "
+				f"military units so their hourly income is considerably more than their upkeep. "
+			),
+			inline=False
+		)
+
+		embed.add_field(
+			name="Units (Workers)",
+			value=(
+				f"Worker units generate passive income which automatically is added to your bank account each hour. "
+				f"Hourly income can also be collected manually using **{ctx.prefix}collect**."
+			),
+			inline=False
+		)
+
+		embed.add_field(
+			name="Units (Military)",
+			value=(
+				f"Military units, unlike Workers, need to be paid an upkeep every hour but they can be used to attack "
+				f"and steal from other players, complete quests, and more to come. You can view the most powerful "
+				f"empires using **{ctx.prefix}power**."
+			),
+			inline=False
+		)
+
+		embed.add_field(
+			name="Support Server",
+			value=(
+				f"The support server https://discord.gg/QExQuvE offers daily giveaways, support (obviously), and "
+				f"soon-to-be bosses and much more."
+			),
+			inline=False
+		)
+
+		embed.add_field(
+			name="Final Notes",
+			value=(
+				f"Their are a lot of things to do, but this tutorial is supposed to be short. You can view all my "
+				f"commands using the **{ctx.prefix}help** command."
+			),
+			inline=False
+		)
+
+		await ctx.send(embed=embed)
+
 	@checks.no_empire()
 	@commands.command(name="create")
 	@commands.max_concurrency(1, commands.BucketType.user)
@@ -48,7 +112,7 @@ class Empire(commands.Cog):
 
 		await ctx.send(f"Your empire has been established! You can rename your empire using `{ctx.prefix}rename`")
 
-		await self.show_empire(ctx)
+		await self.show_tutorial(ctx)
 
 	@checks.has_empire()
 	@commands.max_concurrency(1, commands.BucketType.user)

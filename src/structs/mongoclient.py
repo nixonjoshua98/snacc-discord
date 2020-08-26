@@ -21,6 +21,9 @@ class MongoClient(AsyncIOMotorClient):
 	async def find_one(self, col, kwargs):
 		return (await self.db[col].find_one(kwargs)) or dict()
 
+	async def find_one_many(self, cols: list, kwargs):
+		return [await self.find_one(col, kwargs) for col in cols]
+
 	async def delete_one(self, col, kwargs):
 		return await self.db[col].delete_one(kwargs)
 

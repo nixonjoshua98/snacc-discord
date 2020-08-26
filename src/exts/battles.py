@@ -4,11 +4,14 @@ import itertools
 
 import datetime as dt
 
+from src import utils
+
 from discord.ext import commands
 
-from src.common import SNACCMAN, checks
+from src.common import checks
 
 from src.common.converters import EmpireTargetUser, DiscordUser
+
 
 from src.data import Military, Workers
 
@@ -20,43 +23,6 @@ SCOUT_UNIT = Military.get(key="scout")
 class Battles(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
-
-	@staticmethod
-	def get_win_chance(atk_power, def_power):
-		return max(0.15, min(0.85, ((atk_power / max(1, def_power)) / 2.0)))
-
-	@staticmethod
-	async def calculate_units_lost(units, levels):
-		units_lost = dict()
-		units_lost_cost = 0
-
-		hourly_income = max(0, Workers.get_total_hourly_income(units, levels))
-
-		hourly_upkeep = max(0, Military.get_total_hourly_upkeep(units, levels))
-
-		hourly_income = hourly_income - hourly_upkeep
-
-		available_units = list(itertools.filterfalse(lambda u: units.get(u.key, 0) == 0, Military.units))
-
-		available_units.sort(key=lambda u: u.calc_price(units.get(u.key, 0), 1), reverse=False)
-
-		for unit in available_units:
-			owned = units.get(unit.key, 0)
-
-			for i in range(1, owned + 1):
-				price = unit.calc_price(owned - i, i)
-
-				if (price + units_lost_cost) < hourly_income:
-					units_lost[unit] = i
-
-				units_lost_cost = sum([unit.calc_price(owned - n, n) for u, n in units_lost.items()])
-
-		return units_lost
-
-	async def log_event(self, event, user, **kwargs):
-		log = dict(event=event, **kwargs)
-
-		await self.bot.mongo.update_one("players", {"_id": user.id}, {"$push": {"log": log}})
 
 	@checks.has_unit(THIEF_UNIT, 1)
 	@commands.cooldown(1, 3_600, commands.BucketType.user)
@@ -108,7 +74,7 @@ class Battles(commands.Cog):
 		author_power = Military.get_total_power(author_units)
 		target_power = Military.get_total_power(target_units)
 
-		win_chance = self.get_win_chance(author_power, target_power)
+		win_chance = self.calc_win_chance(author_power, target_power)
 
 		await ctx.send(
 			f"Your scout reports that you have a **{int(win_chance * 100)}%** "
@@ -121,51 +87,50 @@ class Battles(commands.Cog):
 	async def attack(self, ctx, *, target: EmpireTargetUser()):
 		""" Attack a rival empire. """
 
-		# - Load author data
-		author_units = await ctx.bot.mongo.find_one("units", {"_id": ctx.author.id})
-		author_bank = await ctx.bot.mongo.find_one("bank", {"_id": ctx.author.id})
-
-		# - Load target data
-		target_bank = await ctx.bot.mongo.find_one("bank", {"_id": target.id})
-		target_units = await ctx.bot.mongo.find_one("units", {"_id": target.id})
-		target_empire = await ctx.bot.mongo.find_one("empires", {"_id": target.id})
-		target_levels = await ctx.bot.mongo.find_one("levels", {"_id": target.id})
+		# - Load data
+		a_units = await ctx.bot.mongo.find_one("units", {"_id": ctx.author.id})
+		t_units = await ctx.bot.mongo.find_one("units", {"_id": target.id})
 
 		# - Power ratings of each empire which is used to calculate the win chance for the author (attacker)
-		target_power = Military.get_total_power(target_units)
-		author_power = Military.get_total_power(author_units)
+		target_power = Military.get_total_power(t_units)
+		author_power = Military.get_total_power(a_units)
 
 		# - Author chance of winning against the target
-		win_chance = self.get_win_chance(author_power, target_power)
+		win_chance = self.calc_win_chance(author_power, target_power)
 
 		# - Author won the attack
 		if win_chance >= random.uniform(0.0, 1.0):
+			event_log = dict(attacker=str(ctx.author))
 
-			hourly_income = max(0, Workers.get_total_hourly_income(target_units, target_levels))
-			hourly_upkeep = max(0, Military.get_total_hourly_upkeep(target_units, target_levels))
-			hourly_income = max(0, hourly_income - hourly_upkeep)
+			# - Load the targets data
+			t_bank, t_levels, t_empire = await ctx.bot.mongo.find_one_many(
+				["bank", "levels", "empires"],
+				{"_id": target.id}
+			)
 
-			# - Calculate pillage amount
-			min_val = max(0, int(target_bank.get("usd", 0) * 0.025))
-			max_val = max(0, int(target_bank.get("usd", 0) * 0.050))
+			# - Units killed
+			units_lost = await self.calc_units_lost(t_units, t_levels)
 
-			stolen_amount = min(hourly_income, random.randint(min_val, max_val))
+			if units_lost:
+				units_lost_keys = {k.key: v for k, v in units_lost.items()}
 
-			# - Add a bonus pillage amount if the chance of winning is less than 50%
-			bonus_money = int((stolen_amount * 2.0) * (1.0 - win_chance) if win_chance <= 0.50 else 0)
+				# - Deduct the units killed from the target
+				await ctx.bot.mongo.decrement_one("units", {"_id": target.id}, units_lost_keys)
+
+			# - Calculate the stolen/pillaged amount
+			stolen_amount, bonus_money = self.calc_pillaged_amount(
+				t_units,
+				t_levels,
+				t_bank,
+				win_chance,
+				1.0 if units_lost else 2.0
+			)
+
+			event_log["stolen_amount"] = stolen_amount + bonus_money
 
 			# - Increment and decrement the balances of the two users
 			await ctx.bot.mongo.increment_one("bank", {"_id": ctx.author.id}, {"usd": stolen_amount + bonus_money})
 			await ctx.bot.mongo.decrement_one("bank", {"_id": target.id}, {"usd": stolen_amount + bonus_money})
-
-			# - Units killed
-			units_lost = await self.calculate_units_lost(target_units, target_levels)
-
-			# - Deduct the units killed from the target
-			if units_lost:
-				units_lost_keys = {k.key: v for k, v in units_lost.items()}
-
-				await ctx.bot.mongo.decrement_one("units", {"_id": target.id}, units_lost_keys)
 
 			# - Put the target empire into a 'cooldown' so they cannot get attacked for a period of time
 			await ctx.bot.mongo.set_one("empires", {"_id": target.id}, {"last_attack": dt.datetime.utcnow()})
@@ -174,12 +139,14 @@ class Battles(commands.Cog):
 			val = f"${stolen_amount:,} {f'**+ ${bonus_money:,} bonus**' if bonus_money > 0 else ''}"
 
 			embed = ctx.bot.embed(
-				title=f"Attack on {str(target)}: {target_empire.get('name', target.display_name)}",
+				title=f"Attack on {str(target)}: {t_empire.get('name', target.display_name)}",
 				description=f"**Money Pillaged:** {val}"
 			)
 
 			# - Actually a list...
 			units_lost_text = list(map(lambda kv: f"{kv[1]}x {kv[0].display_name}", units_lost.items()))
+
+			event_log["units_lost"] = ", ".join(units_lost_text)
 
 			if units_lost:
 				embed.add_field(name="Units Killed", value="\n".join(units_lost_text))
@@ -187,20 +154,14 @@ class Battles(commands.Cog):
 			await ctx.send(embed=embed)
 
 			# - Log the attack
-			await self.log_event(
-				"attack",
-				target,
-				attacker=str(ctx.author),
-				stolen_amount=stolen_amount+bonus_money,
-				units_lost=", ".join(units_lost_text)
-			)
+			await self.log_event("attack", target, **event_log)
 
 		else:
-			# - Calculate pillage amount
-			min_val = min(2_500, int(author_bank.get("usd", 0) * 0.025))
-			max_val = min(10_000, int(author_bank.get("usd", 0) * 0.050))
+			# - Load author data
+			a_bank = await ctx.bot.mongo.find_one("bank", {"_id": ctx.author.id})
+			a_levels = await ctx.bot.mongo.find_one("levels", {"_id": ctx.author.id})
 
-			money_lost = random.randint(max(0, min_val), max(0, max_val))
+			money_lost = self.calc_failed_attack_lose(a_units, a_levels, a_bank)
 
 			await ctx.bot.mongo.decrement_one("bank", {"_id": ctx.author.id}, {"usd": money_lost})
 
@@ -210,6 +171,66 @@ class Battles(commands.Cog):
 		day_ago = dt.datetime.utcnow() - dt.timedelta(hours=24.0)
 
 		await ctx.bot.mongo.set_one("empires", {"_id": ctx.author.id}, {"last_attack": day_ago})
+
+	@staticmethod
+	def calc_win_chance(atk_power, def_power):
+		return max(0.15, min(0.85, ((atk_power / max(1, def_power)) / 2.0)))
+
+	@staticmethod
+	def calc_pillaged_amount(units, levels, bank, win_chance, multiplier: int = 1.0):
+		hourly_income = max(0, utils.net_income(units, levels))
+
+		min_val = max(0, int(bank.get("usd", 0) * 0.025))
+		max_val = max(0, int(bank.get("usd", 0) * 0.050))
+
+		stolen_amount = min(bank.get("usd", 0), hourly_income, random.randint(min_val, max_val) * multiplier)
+
+		# - Add a bonus pillage amount if the chance of winning is less than 50%
+		bonus_money = int((stolen_amount * 2.0) * (1.0 - win_chance) if win_chance < 0.50 else 0)
+
+		return stolen_amount, bonus_money
+
+	@staticmethod
+	def calc_failed_attack_lose(units, levels, bank):
+		hourly_income = max(0, utils.net_income(units, levels))
+
+		min_val = min(2_500, int(bank.get("usd", 0) * 0.025))
+		max_val = min(10_000, int(bank.get("usd", 0) * 0.050))
+
+		return min(bank.get("usd", 0), hourly_income, random.randint(min_val, max_val))
+
+	@staticmethod
+	async def calc_units_lost(units, levels):
+		units_lost = dict()
+		units_lost_cost = 0
+
+		hourly_income = max(0, Workers.get_total_hourly_income(units, levels))
+
+		hourly_upkeep = max(0, Military.get_total_hourly_upkeep(units, levels))
+
+		hourly_income = hourly_income - hourly_upkeep
+
+		available_units = list(itertools.filterfalse(lambda u: units.get(u.key, 0) == 0, Military.units))
+
+		available_units.sort(key=lambda u: u.calc_price(units.get(u.key, 0), 1), reverse=False)
+
+		for unit in available_units:
+			owned = units.get(unit.key, 0)
+
+			for i in range(1, owned + 1):
+				price = unit.calc_price(owned - i, i)
+
+				if (price + units_lost_cost) < hourly_income:
+					units_lost[unit] = i
+
+				units_lost_cost = sum([unit.calc_price(owned - n, n) for u, n in units_lost.items()])
+
+		return units_lost
+
+	async def log_event(self, event, user, **kwargs):
+		log = dict(event=event, **kwargs)
+
+		await self.bot.mongo.update_one("players", {"_id": user.id}, {"$push": {"log": log}})
 
 
 def setup(bot):

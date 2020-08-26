@@ -1,9 +1,10 @@
 import asyncio
-import discord
 
 import datetime as dt
 
 from discord.ext import commands, tasks
+
+from src import utils
 
 from src.common.converters import TimePeriod
 
@@ -32,11 +33,7 @@ class Reminder(commands.Cog):
 			user = self.bot.get_user(user_id)
 
 			if chnl is not None and user is not None:
-				try:
-					await chnl.send(f":alarm_clock: {user.mention} {note_text}")
-
-				except (discord.HTTPException, discord.Forbidden):
-					""" Failed """
+				await utils.send(chnl, f":alarm_clock: {user.mention} {note_text}")
 
 			await self.bot.mongo.delete_one("reminders", {"_id": _id})
 
