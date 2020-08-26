@@ -180,7 +180,7 @@ class ABOLevels(commands.Cog, name="ABO Levels"):
 
 		await ctx.send(embed=embed)
 
-	@commands.command(name="levels")
+	@commands.command(name="lvls")
 	async def show_leaderboard(self, ctx: commands.Context):
 		""" Show the server level leaderboard. """
 
