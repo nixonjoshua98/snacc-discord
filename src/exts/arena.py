@@ -46,7 +46,7 @@ class Arena(commands.Cog):
 
 			entries.append(group[-1])
 
-		return sorted(entries, key=lambda e: e["level"], reverse=True)
+		return sorted(entries, key=lambda e: e.get("rating", 0), reverse=True)
 
 	@staticmethod
 	async def set_users_stats(ctx, user: discord.Member, level, rating):

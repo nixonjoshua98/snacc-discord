@@ -6,7 +6,7 @@ from src.aboapi import API
 
 from src.common import checks
 
-from src.structs import TextPage, Confirm
+from src.structs import Confirm
 
 
 class ABO(commands.Cog):
