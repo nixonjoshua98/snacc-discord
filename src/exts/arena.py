@@ -129,18 +129,6 @@ class Arena(commands.Cog):
 		else:
 			await ctx.send("Everyone is up-to-date!")
 
-	@checks.snaccman_only()
-	@commands.command(name="setaboname")
-	async def set_abo_name(self, ctx, user: discord.Member, *, name):
-		embed = ctx.bot.embed(title="Auto Battles Online", description=f"{user.mention}'s username is `{name}`?")
-
-		if not await Confirm(embed).prompt(ctx):
-			return await ctx.send("Operation aborted.")
-
-		await ctx.bot.mongo.set_one("players", {"_id": user.id}, {"abo_name": name})
-
-		await ctx.send(f"Username has been set to `{name}`")
-
 	@commands.cooldown(1, 3_600, commands.BucketType.user)
 	@commands.command(name="set", aliases=["s"], cooldown_after_parsing=True, usage="<level> <rating>")
 	async def set_stats(self, ctx, level: Range(1, 250) = None, rating: Range(0, 10_000) = None):

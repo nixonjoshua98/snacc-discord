@@ -1,11 +1,29 @@
+import discord
+
 from discord.ext import commands
 
 from src.aboapi import API
 
-from src.structs.textpage import TextPage
+from src.common import checks
+
+from src.structs import TextPage, Confirm
 
 
 class ABO(commands.Cog):
+
+	@checks.snaccman_only()
+	@commands.command(name="setaboname")
+	async def set_abo_name(self, ctx, user: discord.Member, *, name):
+		""" Associate a Discord user to a user in ABO. """
+
+		embed = ctx.bot.embed(title="Auto Battles Online", description=f"{user.mention}'s username is `{name}`?")
+
+		if not await Confirm(embed).prompt(ctx):
+			return await ctx.send("Operation aborted.")
+
+		await ctx.bot.mongo.set_one("players", {"_id": user.id}, {"abo_name": name})
+
+		await ctx.send(f"Username has been set to `{name}`")
 
 	@commands.group(name="lb", hidden=True, invoke_without_command=True)
 	async def leaderboard_group(self, ctx):
