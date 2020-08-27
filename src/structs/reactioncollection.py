@@ -6,13 +6,6 @@ import datetime as dt
 from src.common.emoji import Emoji
 
 
-async def run_coro(coro):
-	try:
-		await coro
-	except (discord.Forbidden, discord.HTTPException):
-		""" Failed. """
-
-
 class ReactionCollection:
 	def __init__(self, bot, msg, react=Emoji.CHECK_MARK, **kwargs):
 
@@ -34,7 +27,7 @@ class ReactionCollection:
 		self.message = await self.message.channel.fetch_message(self.message.id)
 
 		for react in self.message.reactions:
-			if react.emoji == Emoji.CHECK_MARK:
+			if react.emoji == self.react:
 				users = [u for u in await react.users().flatten() if not u.bot and isinstance(u, discord.Member)]
 
 				return users
@@ -56,12 +49,13 @@ class ReactionCollection:
 
 	async def on_end(self):
 		if self.delete_after:
-			return await run_coro(self.message.delete())
+			return await self.message.delete()
 
-	async def _add_reactions(self):
+	async def _loop(self, destination):
+		self.message = await self.send_initial_message(destination)
+
 		await self.message.add_reaction(self.react)
 
-	async def _loop(self):
 		now = dt.datetime.utcnow()
 
 		end = now + dt.timedelta(seconds=self.duration)
@@ -71,11 +65,7 @@ class ReactionCollection:
 		await asyncio.sleep(seconds)
 
 	async def prompt(self, destination):
-		self.message = await self.send_initial_message(destination)
-
-		await self._add_reactions()
-
-		await self._loop()
+		await self._loop(destination)
 
 		users = await self.get_users()
 

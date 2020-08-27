@@ -15,7 +15,7 @@ from src.structs import MongoClient
 
 
 EXTENSIONS = [
-    "errorhandler",     "abo",              "abolevels",
+    "errorhandler",     "arena",            "abo",
     "aboevent",         "empire",
     "quests",           "shop",             "units",
     "battles",          "hangman",          "rewards",
@@ -88,7 +88,7 @@ class Bot(commands.Bot):
         print(f"Bot '{self.user.display_name}' is ready")
 
     def add_cog(self, cog):
-        print(f"Adding {cog.qualified_name}", end=": ")
+        print(f"Adding Cog: {cog.qualified_name}", end="...")
         super().add_cog(cog)
         print("OK")
 

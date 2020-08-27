@@ -62,7 +62,7 @@ class TextLeaderboard:
 
             user = self._get_user(ctx, user)
 
-            if prev_row is None or prev_row[self.order_col] > row[self.order_col]:
+            if prev_row is None or prev_row.get(self.order_col, 0) > row.get(self.order_col, 0):
                 prev_row, rank = row, rank + 1
 
             yield rank, user, row
@@ -94,7 +94,7 @@ class TextLeaderboard:
 
         entry = [f"#{rank:02d}", username]
 
-        entry.extend([str(row[col]) for col in self.columns])
+        entry.extend([str(row.get(col, '')) for col in self.columns])
 
         return entry
 

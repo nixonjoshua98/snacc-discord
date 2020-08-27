@@ -6,15 +6,15 @@ class NoticeBoard(commands.Cog):
 
 	@commands.command(name="log")
 	async def log(self, ctx):
-		""" Show your recent incoming attacks, steals etc. while uou was away. Logs are deleted after being viewed. """
+		""" Show your empire log. Logs are cleared after viewing. """
 
-		player = await ctx.bot.mongo.find_one("players", {"_id": ctx.author.id})
+		empire = await ctx.bot.mongo.find_one("empire", {"_id": ctx.author.id})
 
-		embed = ctx.bot.embed(title=f"{str(ctx.author)}: Battle Log", description="Battle log is cleared after viewing")
+		embed = ctx.bot.embed(title=f"{str(ctx.author)}: Empire Log", description="Empire log is cleared after viewing")
 
 		log = []
 
-		for entry in player.get("log", []):
+		for entry in empire.get("log", []):
 			event = entry.get('event')
 
 			if event == "steal":

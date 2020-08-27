@@ -27,3 +27,7 @@ class GlobalCheckFail(CommandError):
 
 class NSFWChannelOnly(CommandError):
 	""" ... """
+
+
+class IncorrectUsername(CommandError):
+	""" ..."""
