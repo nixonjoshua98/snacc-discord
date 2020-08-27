@@ -18,13 +18,13 @@ class NoticeBoard(commands.Cog):
 			event = entry.get('event')
 
 			if event == "steal":
-				value = f"{entry['thief']} stole ${entry['stolen_amount']:,}"
+				value = f"**{entry['thief']}** stole **${entry['stolen_amount']:,}**"
 
 			elif event == "attack":
-				value = f"{entry['attacker']} pillaged ${entry['stolen_amount']:,}"
+				value = f"**{entry['attacker']}** pillaged **${entry['stolen_amount']:,}**"
 
 				if units_lost := entry.get("units_lost"):
-					value += f" and killed {units_lost}"
+					value += f" and killed **{units_lost}**"
 
 			else:
 				continue

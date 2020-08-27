@@ -1,18 +1,21 @@
 from discord.ext import commands
 
-import datetime as dt
-
 from src.aboapi import API
 
 from src.structs.textpage import TextPage
 
 
 class ABO(commands.Cog):
-	@commands.command(name="guilds")
+
+	@commands.group(name="lb", hidden=True, invoke_without_command=True)
+	async def leaderboard_group(self, ctx):
+		""" ... """
+
+	@leaderboard_group.command(name="guilds")
 	async def get_guilds(self, ctx):
 		""" Show the top 15 entries on the guild leaderboard. """
 
-		guilds = await API.get_guilds(pos=0, count=15)
+		guilds = await API.leaderboard.get_guilds(pos=0, count=15)
 
 		page = TextPage(title="Guilds", headers=["Rank", "Name", "Rating"])
 
@@ -23,11 +26,11 @@ class ABO(commands.Cog):
 
 		await ctx.send(page.get())
 
-	@commands.command(name="players")
+	@leaderboard_group.command(name="players")
 	async def get_players(self, ctx):
 		""" Show the top 15 entries on the player leaderboard. """
 
-		players = await API.get_players(pos=0, count=15)
+		players = await API.leaderboard.get_players(pos=0, count=15)
 
 		page = TextPage(title="Players", headers=["Rank", "Name", "Rating"])
 
@@ -38,17 +41,14 @@ class ABO(commands.Cog):
 
 		await ctx.send(page.get())
 
-	@commands.command(name="player")
+	@leaderboard_group.command(name="player")
 	async def get_player(self, ctx, *, name):
 		""" Show information about a player. """
 
-		player = await API.get_player(name)
+		player = await API.leaderboard.get_player(name)
 
 		if player is None:
 			return await ctx.send(f"I found no player named `{name}`")
-
-		last_match = (dt.datetime.utcnow() - player.last_match)
-		last_match = dt.timedelta(seconds=int(last_match.total_seconds()))
 
 		embed = ctx.bot.embed(title=f"{player.name} [Guild: {player.guild if player.guild is not None else 'N/A'}]")
 
@@ -58,15 +58,13 @@ class ABO(commands.Cog):
 			f"Rating: **{player.rating:,}**\n"
 		)
 
-		embed.add_field(name="Last Arena Match", value=last_match)
-
 		await ctx.send(embed=embed)
 
-	@commands.command(name="guild")
+	@leaderboard_group.command(name="guild")
 	async def get_guild(self, ctx, *, name):
 		""" Show information about a guild. """
 
-		guild = await API.get_guild(name)
+		guild = await API.leaderboard.get_guild(name)
 
 		if guild is None:
 			return await ctx.send(f"I found no guild named `{name}`")

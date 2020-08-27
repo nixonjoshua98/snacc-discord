@@ -2,7 +2,7 @@ from discord.ext import commands
 
 from src.common.errors import (
 	SnaccmanOnly,
-	MainServerOnly,
+	DarknessServerOnly,
 	MissingEmpire,
 	HasEmpire,
 	SupportServerOnly,
@@ -65,7 +65,7 @@ def no_empire():
 def main_server_only():
 	async def predicate(ctx):
 		if ctx.guild.id != DarknessServer.ID:
-			raise MainServerOnly("This command can only be used in the main server.")
+			raise DarknessServerOnly("This command can only be used in the main server.")
 
 		return ctx.guild.id == DarknessServer.ID
 
