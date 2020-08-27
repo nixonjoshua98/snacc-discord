@@ -21,7 +21,7 @@ EXTENSIONS = [
     "battles",          "hangman",          "rewards",
     "gambling",         "bank",             "noticeboard",
     "crypto",           "questionnaire",    "moderator",
-    "misc",             "reminder",         "giveaways",
+    "misc",             "reminder",         "support",
     "autorole",         "serverdoor",       "vote",
     "settings",
 ]
