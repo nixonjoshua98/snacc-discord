@@ -75,6 +75,7 @@ class TextLeaderboard:
         results = await self.query_func()
 
         async for rank, user, row in self._filter_results(ctx, results):
+
             num_entries = len(entries)
 
             if (self.max_rows is not None and num_entries >= self.max_rows) and author_row is not None:

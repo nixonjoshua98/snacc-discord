@@ -17,8 +17,6 @@ from src.common import DarknessServer, checks
 from src.common.errors import IncorrectUsername
 from src.common.converters import Range
 
-from src.structs import Confirm
-
 
 class Arena(commands.Cog):
 	def __init__(self, bot):
@@ -129,7 +127,6 @@ class Arena(commands.Cog):
 		else:
 			await ctx.send("Everyone is up-to-date!")
 
-	@commands.cooldown(1, 3_600, commands.BucketType.user)
 	@commands.command(name="set", aliases=["s"], cooldown_after_parsing=True, usage="<level> <rating>")
 	async def set_stats(self, ctx, level: Range(1, 250) = None, rating: Range(0, 10_000) = None):
 		""" Update your arena stats. Stats are used to track activity and are displayed on the leaderboard. """
@@ -140,7 +137,7 @@ class Arena(commands.Cog):
 			player_inst = await API.leaderboard.get_player(player["abo_name"])
 
 			if player_inst is not None:
-				await self.set_users_stats(ctx, ctx.author, level, rating)
+				await self.set_users_stats(ctx, ctx.author, player_inst.level, player_inst.rating)
 
 				await ctx.send(f"**{player['abo_name']}** :thumbsup:")
 
@@ -155,9 +152,9 @@ class Arena(commands.Cog):
 
 			await ctx.send(f"**{str(ctx.author)}** :thumbsup:")
 
-	@commands.command(name="lvls")
+	@commands.command(name="trophies")
 	async def show_leaderboard(self, ctx: commands.Context):
-		""" Show the server level leaderboard. """
+		""" Show the server ABO leaderboard. """
 
 		async def query():
 			return await self.get_member_rows()

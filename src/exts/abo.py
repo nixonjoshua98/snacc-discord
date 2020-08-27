@@ -29,36 +29,6 @@ class ABO(commands.Cog):
 	async def leaderboard_group(self, ctx):
 		""" ... """
 
-	@leaderboard_group.command(name="guilds")
-	async def get_guilds(self, ctx):
-		""" Show the top 15 entries on the guild leaderboard. """
-
-		guilds = await API.leaderboard.get_guilds(pos=0, count=15)
-
-		page = TextPage(title="Guilds", headers=["Rank", "Name", "Rating"])
-
-		for guild in guilds:
-			row = [f"#{guild.rank:02d}", guild.name, f"{guild.rating:,}"]
-
-			page.add(row)
-
-		await ctx.send(page.get())
-
-	@leaderboard_group.command(name="players")
-	async def get_players(self, ctx):
-		""" Show the top 15 entries on the player leaderboard. """
-
-		players = await API.leaderboard.get_players(pos=0, count=15)
-
-		page = TextPage(title="Players", headers=["Rank", "Name", "Rating"])
-
-		for player in players:
-			row = [f"#{player.rank:02d}", player.name, f"{player.rating:,}"]
-
-			page.add(row)
-
-		await ctx.send(page.get())
-
 	@leaderboard_group.command(name="player")
 	async def get_player(self, ctx, *, name):
 		""" Show information about a player. """

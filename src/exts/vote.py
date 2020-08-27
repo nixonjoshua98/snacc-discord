@@ -4,7 +4,6 @@ import discord
 
 from discord.ext import commands, tasks
 
-from src import inputs
 from src.common import SupportServer
 
 
@@ -60,15 +59,6 @@ class Vote(commands.Cog):
 			"\n"
 			"https://top-bots.xyz/bot/666616515436478473"
 		)
-
-	@commands.command(name="voters")
-	async def show_voters(self, ctx):
-		""" Show the top voters (love you all) """
-
-		async def query():
-			return await ctx.bot.mongo.find("players").sort("votes", -1).to_list(length=100)
-
-		await inputs.show_leaderboard(ctx, "Top Voters", columns=["votes"], order_by="votes", query_func=query)
 
 
 def setup(bot):

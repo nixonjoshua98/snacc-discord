@@ -13,7 +13,7 @@ from discord.ext.commands import (
 )
 
 from src.common.errors import (
-    GlobalCheckFail
+    GlobalCheckFail,
 )
 
 
