@@ -141,6 +141,7 @@ class Arena(commands.Cog):
 
 		await ctx.send(f"Username has been set to `{name}`")
 
+	@commands.cooldown(1, 3_600, commands.BucketType.user)
 	@commands.command(name="set", aliases=["s"], cooldown_after_parsing=True, usage="<level> <rating>")
 	async def set_stats(self, ctx, level: Range(1, 250) = None, rating: Range(0, 10_000) = None):
 		""" Update your arena stats. Stats are used to track activity and are displayed on the leaderboard. """
