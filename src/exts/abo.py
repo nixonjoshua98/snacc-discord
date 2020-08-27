@@ -1,5 +1,7 @@
 from discord.ext import commands
 
+import datetime as dt
+
 from src.aboapi import API
 
 from src.structs.textpage import TextPage
@@ -45,13 +47,18 @@ class ABO(commands.Cog):
 		if player is None:
 			return await ctx.send(f"I found no player named `{name}`")
 
+		last_match = (dt.datetime.utcnow() - player.last_match)
+		last_match = dt.timedelta(seconds=int(last_match.total_seconds()))
+
 		embed = ctx.bot.embed(title=f"{player.name} [Guild: {player.guild if player.guild is not None else 'N/A'}]")
 
 		embed.description = (
 			f"Rank: **#{player.rank:02d}**\n"
 			f"Level: **{player.level:,}**\n"
-			f"Rating: **{player.rating:,}**"
+			f"Rating: **{player.rating:,}**\n"
 		)
+
+		embed.add_field(name="Last Arena Match", value=last_match)
 
 		await ctx.send(embed=embed)
 

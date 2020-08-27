@@ -3,6 +3,8 @@ import httpx
 import gzip
 import base64
 
+import datetime as dt
+
 
 class _Object:
 	__slots__ = ()
@@ -12,15 +14,18 @@ class _Object:
 
 
 class Player(_Object):
-	__slots__ = ("name", "rank", "level", "rating", "guild")
+	__slots__ = ("name", "rank", "level", "rating", "guild", "last_match")
 
 	def __init__(self, **kwargs):
+
 		self.name = kwargs["name"]
 		self.rank = kwargs["position"] + 1
 		self.level = kwargs["level"]
 		self.rating = kwargs["rating"]
 
 		self.guild = kwargs.get("guildName")
+
+		self.last_match = dt.datetime.fromtimestamp(kwargs["lastMatch"])
 
 
 class Guild(_Object):
