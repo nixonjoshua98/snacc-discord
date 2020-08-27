@@ -9,7 +9,7 @@ from src.common import SupportServer, checks
 from src.structs.reactioncollection import ReactionCollection
 
 
-class Giveaways(commands.Cog):
+class Support(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
@@ -39,6 +39,12 @@ class Giveaways(commands.Cog):
 		await ctx.send("I have started a giveaway in the support server!")
 
 		asyncio.create_task(Giveaway(self.bot).send())
+
+	@commands.command(name="support")
+	async def support(self, ctx):
+		""" Link to the support server. """
+
+		await ctx.send("https://discord.gg/QExQuvE")
 
 
 class Giveaway:
@@ -74,4 +80,4 @@ class Giveaway:
 
 
 def setup(bot):
-	bot.add_cog(Giveaways(bot))
+	bot.add_cog(Support(bot))

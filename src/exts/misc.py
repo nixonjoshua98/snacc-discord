@@ -109,12 +109,6 @@ class Miscellaneous(commands.Cog):
 
 		await ctx.send(f"Pong! {round(ctx.bot.latency * 1000, 3)}ms")
 
-	@commands.command(name="support")
-	async def support(self, ctx):
-		""" Link to the support server. """
-
-		await ctx.send("https://discord.gg/QExQuvE")
-
 	@commands.command(name="uptime")
 	async def show_uptime(self, ctx):
 		""" Display the bot uptime """
