@@ -45,7 +45,7 @@ class ABO(commands.Cog):
 		if player is None:
 			return await ctx.send(f"I found no player named `{name}`")
 
-		embed = ctx.bot.embed(title=f"{player.name} [{player.guild if player.guild is not None else 'N/A'}]")
+		embed = ctx.bot.embed(title=f"{player.name} [Guild: {player.guild if player.guild is not None else 'N/A'}]")
 
 		embed.description = (
 			f"Rank: **#{player.rank:02d}**\n"
@@ -64,7 +64,7 @@ class ABO(commands.Cog):
 		if guild is None:
 			return await ctx.send(f"I found no guild named `{name}`")
 
-		embed = ctx.bot.embed(title=f"{guild.name} [{guild.leader}]")
+		embed = ctx.bot.embed(title=f"{guild.name} [Leader: {guild.leader}]")
 
 		embed.description = (
 			f"Rank: **#{guild.rank:02d}**\n"
