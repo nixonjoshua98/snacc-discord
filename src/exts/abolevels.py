@@ -142,7 +142,6 @@ class ABOLevels(commands.Cog, name="ABO Levels"):
 		else:
 			await ctx.send("Everyone is up-to-date!")
 
-	@commands.cooldown(1, 60 * 60 * 3, commands.BucketType.user)
 	@commands.command(name="set", aliases=["s"], cooldown_after_parsing=True)
 	async def set_stats(self, ctx, level: Range(1, 250)):
 		""" Update your arena stats. Stats are used to track activity and are displayed on the leaderboard. """

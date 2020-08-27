@@ -15,14 +15,14 @@ from src.structs import MongoClient
 
 
 EXTENSIONS = [
-    "errorhandler",     "abolevels",            "empire",
-    "quests",           "shop",                 "units",
-    "battles",          "hangman",              "rewards",
-    "gambling",         "bank",                 "noticeboard",
-    "crypto",
-    "questionnaire",    "moderator",            "misc",
-    "aboevent",         "reminder",             "giveaways",
-    "autorole",         "serverdoor",           "vote",
+    "errorhandler",     "abo",              "abolevels",
+    "aboevent",         "empire",
+    "quests",           "shop",             "units",
+    "battles",          "hangman",          "rewards",
+    "gambling",         "bank",             "noticeboard",
+    "crypto",           "questionnaire",    "moderator",
+    "misc",             "reminder",         "giveaways",
+    "autorole",         "serverdoor",       "vote",
     "settings",
 ]
 
@@ -45,8 +45,6 @@ class Bot(commands.Bot):
         self.mongo = MongoClient()
 
         self.exts_loaded = False
-
-        self.server_cache = dict()
 
         self._bot_started = None
 
