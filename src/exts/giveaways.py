@@ -1,4 +1,3 @@
-import random
 import asyncio
 
 from discord.ext import commands, tasks
@@ -15,19 +14,20 @@ class Giveaways(commands.Cog):
 		self.start_giveaway_loop()
 
 	def start_giveaway_loop(self):
+
+		@tasks.loop(hours=12.0)
+		async def giveaway_loop():
+			asyncio.create_task(Giveaway(self.bot).send())
+
 		async def start():
 			print("Starting loop: Giveaways")
 
 			await asyncio.sleep(6.0 * 3_600)
 
-			self.giveaway_loop.start()
+			giveaway_loop.start()
 
 		if not self.bot.debug:
 			asyncio.create_task(start())
-
-	@tasks.loop(hours=12.0)
-	async def giveaway_loop(self):
-		asyncio.create_task(Giveaway(self.bot).send())
 
 	@checks.snaccman_only()
 	@commands.command(name="giveaway")

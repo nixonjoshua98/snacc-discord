@@ -14,9 +14,13 @@ class Giveaway:
 	async def send(self):
 		support_server = self.bot.get_guild(SupportServer.ID)
 
+		giveaway_role = support_server.get_role(SupportServer.GIVEAWAY_ROLE)
+
 		self.destination = chnl = support_server.get_channel(SupportServer.GIVEAWAY_CHANNEL)
 
 		embed = self.bot.embed(title="Giveaway!", description=f"React :white_check_mark: to enter")
+
+		await chnl.send(giveaway_role.mention, delete_after=60)
 
 		members = await ReactionCollection(self.bot, embed, duration=3_600, max_reacts=None).prompt(chnl)
 
