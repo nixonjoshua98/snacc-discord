@@ -31,6 +31,50 @@ class Arena(commands.Cog):
 
 		return True
 
+	@tasks.loop(hours=8.0)
+	async def background_loop(self):
+		await asyncio.sleep(60 * 60 * 4)
+
+		channel = self.bot.get_channel(DarknessServer.ABO_CHANNEL)
+
+		if missing := await self.update_members():
+			await channel.send(f"Missing username: {', '.join(missing)}")
+
+		await channel.send("Updated stats :thumbsup:")
+
+	@checks.snaccman_only()
+	@commands.command(name="update")
+	async def update_stats(self, ctx):
+		""" Update the users history. Pulls from the API. """
+
+		await ctx.send("Updating users data.")
+
+		if missing := await self.update_members():
+			await ctx.send(f"Missing username: {', '.join(missing)}")
+
+	@commands.command(name="stats", aliases=["s"])
+	async def stats(self, ctx):
+		""" View the stats of the entire guild. """
+
+		pages = await self.create_history(include_discord=not ctx.author.is_on_mobile())
+
+		await inputs.send_pages(ctx, pages)
+
+	@commands.command(name="trophies", aliases=["rating"])
+	async def show_leaderboard(self, ctx: commands.Context):
+		""" Show the guild leaderboard. """
+
+		async def query():
+			return await self.get_member_rows()
+
+		await inputs.show_leaderboard(
+			ctx,
+			"Guild Leaderboard",
+			columns=["level", "rating"],
+			order_by="rating",
+			query_func=query
+		)
+
 	async def get_member_rows(self):
 		role = self.bot.get_guild(DarknessServer.ID).get_role(DarknessServer.ABO_ROLE)
 
@@ -49,7 +93,24 @@ class Arena(commands.Cog):
 
 		return sorted(entries, key=lambda e: (e.get("rating", 0), e["level"]), reverse=True)
 
-	async def create_history(self):
+	async def create_history(self, *, include_discord: bool = True):
+		async def create_history_row(user):
+			stats = await self.bot.mongo.find("arena", query).to_list(length=None)
+
+			if stats:
+				for i in range(len(stats)):
+					stats[i]["rating"] = stats[i].get("rating", stats[i].get("trophies", 0))
+
+				oldest, newest = stats[0], stats[-1]
+
+				r = dict(name=str(user), abo_name=abo_name, level=newest["level"], rating=newest["rating"])
+
+				r.update(rating_gained=newest['rating']-oldest['rating'], levels_gained=newest['level']-oldest['level'])
+
+				return r
+
+			return None
+
 		svr = self.bot.get_guild(DarknessServer.ID)
 
 		role = svr.get_role(DarknessServer.ABO_ROLE)
@@ -67,31 +128,14 @@ class Arena(commands.Cog):
 
 			query = {"user": member.id, "date": {"$gte": one_week_ago}}
 
-			stats = await self.bot.mongo.find("arena", query).to_list(length=None)
-
-			if stats:
-				for i in range(len(stats)):
-					stats[i]["rating"] = stats[i].get("rating", stats[i].get("trophies", 0))
-
-				oldest, newest = stats[0], stats[-1]
-
-				data.append(
-					dict(
-						name=str(member),
-						abo_name=abo_name,
-						level=newest["level"],
-						rating=newest["rating"],
-						rating_gained=newest['rating'] - oldest['rating'],
-						levels_gained=newest['level'] - oldest['level']
-					)
-				)
+			if (row := await create_history_row(member)) is not None:
+				data.append(row)
 
 		data = sorted(data, key=lambda e: e["rating_gained"], reverse=True)
 
-		chunks = [data[i:i + 15] for i in range(0, len(data), 15)]
+		pages, chunks = [], [data[i:i + 15] for i in range(0, len(data), 15)]
 
-		pages = []
-
+		# - Create pages for the history
 		for chunk in chunks:
 			page = TextPage(title="Darkness Arena History", headers=["Name", "Discord", "Level", "Rating"])
 
@@ -99,7 +143,10 @@ class Arena(commands.Cog):
 				lvl = f"{ele['level']}({ele['levels_gained']})"
 				rating = f"{ele['rating']}({ele['rating_gained']})"
 
-				row = [ele["abo_name"], ele["name"], lvl, rating]
+				row = [ele["abo_name"], lvl, rating]
+
+				if include_discord:
+					row.insert(1, ele["name"])
 
 				page.add(row)
 
@@ -138,50 +185,6 @@ class Arena(commands.Cog):
 			await asyncio.sleep(1)
 
 		return missing
-
-	@tasks.loop(hours=8.0)
-	async def background_loop(self):
-		await asyncio.sleep(60 * 60 * 4)
-
-		channel = self.bot.get_channel(DarknessServer.ABO_CHANNEL)
-
-		if missing := await self.update_members():
-			await channel.send(f"Missing username: {', '.join(missing)}")
-
-		await channel.send("Updated stats :thumbsups:")
-
-	@checks.snaccman_only()
-	@commands.command(name="update")
-	async def update_stats(self, ctx):
-		""" Update the users history. Pulls from the API. """
-
-		await ctx.send("Updating users data.")
-
-		if missing := await self.update_members():
-			await ctx.send(f"Missing username: {', '.join(missing)}")
-
-	@commands.command(name="stats", aliases=["s"])
-	async def stats(self, ctx):
-		""" View the stats of the entire guild. """
-
-		pages = await self.create_history()
-
-		await inputs.send_pages(ctx, pages)
-
-	@commands.command(name="trophies", aliases=["rating"])
-	async def show_leaderboard(self, ctx: commands.Context):
-		""" Show the guild leaderboard. """
-
-		async def query():
-			return await self.get_member_rows()
-
-		await inputs.show_leaderboard(
-			ctx,
-			"Guild Leaderboard",
-			columns=["level", "rating"],
-			order_by="rating",
-			query_func=query
-		)
 
 
 def setup(bot):
