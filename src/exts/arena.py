@@ -159,7 +159,7 @@ class Arena(commands.Cog):
 		if missing := await self.update_members():
 			await ctx.send(f"Missing username: {', '.join(missing)}")
 
-	@commands.command(name="stats")
+	@commands.command(name="stats", aliases=["s"])
 	async def stats(self, ctx):
 		""" View the stats of the entire guild. """
 
