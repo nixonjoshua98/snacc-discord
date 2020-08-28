@@ -87,7 +87,7 @@ class Arena(commands.Cog):
 				)
 			)
 
-		data = sorted(data, key=lambda e: e["rating_gained"])
+		data = sorted(data, key=lambda e: e["rating_gained"], reverse=True)
 
 		chunks = [data[i:i + 15] for i in range(0, len(data), 15)]
 
@@ -146,10 +146,10 @@ class Arena(commands.Cog):
 
 		channel = self.bot.get_channel(DarknessServer.ABO_CHANNEL)
 
-		await channel.send("Updating users data...")
-
 		if missing := await self.update_members():
 			await channel.send(f"Missing username: {', '.join(missing)}")
+
+		await channel.send("Updated stats :thumbsups:")
 
 	@checks.snaccman_only()
 	@commands.command(name="update")
