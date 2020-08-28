@@ -154,6 +154,8 @@ class Arena(commands.Cog):
 	@checks.snaccman_only()
 	@commands.command(name="update")
 	async def update_stats(self, ctx):
+		""" Update the users history. Pulls from the API. """
+
 		await ctx.send("Updating users data.")
 
 		if missing := await self.update_members():
