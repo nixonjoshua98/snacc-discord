@@ -18,11 +18,11 @@ class ABO(commands.Cog):
 		return True
 
 	@checks.snaccman_only()
-	@commands.command(name="setaboname")
+	@commands.command(name="aboname")
 	async def set_abo_name(self, ctx, user: discord.Member, *, name):
 		""" Associate a Discord user to a user in ABO. """
 
-		embed = ctx.bot.embed(title="Auto Battles Online", description=f"{user.mention}'s username is `{name}`?")
+		embed = ctx.bot.embed(title="Auto Battles Online", description=f"{user.mention} username is `{name}`?")
 
 		if not await Confirm(embed).prompt(ctx):
 			return await ctx.send("Operation aborted.")

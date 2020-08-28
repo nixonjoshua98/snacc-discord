@@ -1,8 +1,7 @@
 
 
-import discord
-import asyncio
 import itertools
+import asyncio
 
 import datetime as dt
 
@@ -13,16 +12,20 @@ from pymongo import InsertOne, DeleteMany
 from src.aboapi import API
 
 from src import inputs
-from src.common import DarknessServer, checks
-from src.common.errors import IncorrectUsername
-from src.common.converters import Range
+from src.structs import TextPage
+from src.common import DarknessServer
 
 
 class Arena(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-		self.start_shame_users()
+		self.background_loop.start()
+
+		if not self.bot.debug:
+			print("Starting loop: Arena")
+
+			self.background_loop.start()
 
 	async def cog_check(self, ctx):
 		if ctx.guild.id != DarknessServer.ID:
@@ -48,115 +51,115 @@ class Arena(commands.Cog):
 
 		return sorted(entries, key=lambda e: (e.get("rating", 0), e["level"]), reverse=True)
 
-	@staticmethod
-	async def set_users_stats(ctx, user: discord.Member, level, rating):
-		one_month_ago = dt.datetime.utcnow() - dt.timedelta(days=31)
+	async def create_history(self):
+		svr = self.bot.get_guild(DarknessServer.ID)
 
-		row = dict(user=user.id, date=dt.datetime.utcnow(), level=level)
+		one_week_ago = dt.datetime.utcnow() - dt.timedelta(days=7)
 
-		if rating is not None:
-			row["rating"] = rating
+		players = await self.bot.mongo.find("players", {"abo_name": {"$exists": True}}).to_list(length=None)
 
-		requests = [InsertOne(row), DeleteMany({"user": user.id, "date": {"$lt": one_month_ago}})]
+		data = []
 
-		await ctx.bot.mongo.bulk_write("arena", requests)
+		for p in players:
+			discord_id = p["_id"]
 
-	def start_shame_users(self):
+			user = svr.get_member(discord_id)
 
-		async def predicate():
-			if not self.bot.debug:
-				print("Starting loop: Shame")
+			abo_name = p["abo_name"]
 
-				await asyncio.sleep(60 * 60 * 6)
+			name = str(user) if user is not None else ""
 
-				self.shame_users_loop.start()
+			query = {"user": discord_id, "date": {"$gte": one_week_ago}}
 
-		asyncio.create_task(predicate())
+			stats = await self.bot.mongo.find("arena", query).to_list(length=None)
 
-	async def create_shame_message(self):
-		now = dt.datetime.utcnow()
+			for i in range(len(stats)):
+				stats[i]["rating"] = stats[i].get("rating", stats[i].get("trophies", 0))
 
-		rows = await self.get_member_rows()
+			oldest, newest = stats[0], stats[-1]
 
-		data = {row["user"]: row for row in rows}
+			data.append(
+				dict(
+					name=name,
+					abo_name=abo_name,
+					level=newest["level"],
+					rating=newest["rating"],
+					rating_gained=newest['rating'] - oldest['rating'],
+					levels_gained=newest['level'] - oldest['level']
+				)
+			)
 
-		shamed_members = []
+		data = sorted(data, key=lambda e: e["rating_gained"])
 
-		darkness_server = self.bot.get_guild(DarknessServer.ID)
+		chunks = [data[i:i + 10] for i in range(0, len(data), 10)]
 
-		darkness_role = darkness_server.get_role(DarknessServer.ABO_ROLE)
+		pages = []
 
-		for member in darkness_role.members:
-			user_data = data.get(member.id)
+		for chunk in chunks:
+			page = TextPage(title="Darkness Arena History", headers=["Name", "Discord", "Level", "Rating"])
 
-			if user_data is None:
-				shamed_members.append((member.mention, None))
+			for ele in chunk:
+				lvl = f"{ele['level']}({ele['levels_gained']})"
+				rating = f"{ele['rating']}({ele['rating_gained']})"
 
-			elif (last_update := (now - user_data["date"]).days) >= 7:
-				shamed_members.append((member.mention, last_update))
+				row = [ele["abo_name"], ele["name"], lvl, rating]
 
-		if shamed_members:
-			shamed_members.sort(key=lambda row: row[1] or -1, reverse=True)
+				page.add(row)
 
-			ls = []
+			pages.append(page.get())
 
-			for m in shamed_members:
-				ls.append(f"{m[0]}" + (f"**({m[1]})**" if m[1] is not None else ""))
+		return pages
 
-			return "**__Lacking__** - No recent stat updates\n" + ", ".join(ls)
+	async def update_members(self):
+		svr = self.bot.get_guild(DarknessServer.ID)
 
-		return None
+		role = svr.get_role(DarknessServer.ABO_ROLE)
+
+		missing = []
+
+		for member in role.members:
+			player_entry = await self.bot.mongo.find_one("players", {"_id": member.id})
+
+			if (abo_name := player_entry.get("abo_name")) is not None:
+				player = await API.leaderboard.get_player(abo_name)
+
+				if player is not None:
+					one_month_ago = dt.datetime.utcnow() - dt.timedelta(days=31)
+
+					row = dict(user=member.id, date=dt.datetime.utcnow(), level=player.level, rating=player.rating)
+
+					requests = [InsertOne(row), DeleteMany({"user": member.id, "date": {"$lt": one_month_ago}})]
+
+					await self.bot.mongo.bulk_write("arena", requests)
+
+				else:
+					print(f"Failed to look up user {abo_name} with the API")
+
+			else:
+				missing.append(member.mention)
+
+			await asyncio.sleep(1)
+
+		return missing
 
 	@tasks.loop(hours=12.0)
-	async def shame_users_loop(self):
-		""" Background tasks which posts to the main server. """
+	async def background_loop(self):
+		await asyncio.sleep(60 * 60 * 6)
 
 		channel = self.bot.get_channel(DarknessServer.ABO_CHANNEL)
 
-		if (message := await self.create_shame_message()) is not None:
-			await channel.send(message)
+		await channel.send("Updating users data...", delete_after=120.0)
 
-	@checks.snaccman_only()
-	@commands.command(name="shame")
-	async def shame(self, ctx):
-		""" Posts the shame message. """
+		if missing := await self.update_members():
+			await channel.send(f"Missing username: {', '.join(missing)}")
 
-		if (message := await self.create_shame_message()) is not None:
-			await ctx.send(message)
+	@commands.command(name="stats")
+	async def stats(self, ctx):
+		""" View the stats of the entire guild. """
 
-		else:
-			await ctx.send("Everyone is up-to-date!")
+		pages = await self.create_history()
 
-	@commands.cooldown(1, 1_800, commands.BucketType.user)
-	@commands.command(name="set", aliases=["s"], cooldown_after_parsing=True)
-	async def set_stats(self, ctx, level: Range(1, 250) = None, rating: Range(0, 10_000) = None):
-		""" Update your arena stats. Stats are used to track activity and are displayed on the leaderboard. """
-
-		player = await ctx.bot.mongo.find_one("players", {"_id": ctx.author.id})
-
-		if player.get("abo_name") is not None:
-			player_inst = await API.leaderboard.get_player(player["abo_name"])
-
-			if player_inst is not None:
-				await self.set_users_stats(ctx, ctx.author, player_inst.level, player_inst.rating)
-
-				await ctx.send(f"**{player['abo_name']}** :thumbsup:")
-
-			elif level is not None:
-				await self.set_users_stats(ctx, ctx.author, level, rating)
-
-				raise IncorrectUsername("I could not find you in the game. Contact my owner")
-
-			else:
-				raise IncorrectUsername("I failed to pull your data from the game. Contact my owner")
-
-		elif level is None:
-			await ctx.send("Trying to automate your stats? Talk to my owner")
-
-		else:
-			await self.set_users_stats(ctx, ctx.author, level, rating)
-
-			await ctx.send(f"**{str(ctx.author)}** :thumbsup:")
+		await inputs.send_pages(ctx, pages)
 
 	@commands.command(name="trophies")
 	async def show_leaderboard(self, ctx: commands.Context):
