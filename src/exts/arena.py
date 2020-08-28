@@ -13,7 +13,7 @@ from src.aboapi import API
 
 from src import inputs
 from src.structs import TextPage
-from src.common import DarknessServer
+from src.common import DarknessServer, checks
 
 
 class Arena(commands.Cog):
@@ -142,16 +142,24 @@ class Arena(commands.Cog):
 
 		return missing
 
-	@tasks.loop(hours=12.0)
+	@tasks.loop(hours=8.0)
 	async def background_loop(self):
-		await asyncio.sleep(60 * 60 * 6)
+		await asyncio.sleep(60 * 60 * 4)
 
 		channel = self.bot.get_channel(DarknessServer.ABO_CHANNEL)
 
-		await channel.send("Updating users data...", delete_after=120.0)
+		await channel.send("Updating users data...")
 
 		if missing := await self.update_members():
 			await channel.send(f"Missing username: {', '.join(missing)}")
+
+	@checks.snaccman_only()
+	@commands.command(name="update")
+	async def update_stats(self, ctx):
+		await ctx.send("Updating users data.")
+
+		if missing := await self.update_members():
+			await ctx.send(f"Missing username: {', '.join(missing)}")
 
 	@commands.command(name="stats")
 	async def stats(self, ctx):
