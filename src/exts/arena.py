@@ -89,7 +89,7 @@ class Arena(commands.Cog):
 
 		data = sorted(data, key=lambda e: e["rating_gained"])
 
-		chunks = [data[i:i + 10] for i in range(0, len(data), 10)]
+		chunks = [data[i:i + 15] for i in range(0, len(data), 15)]
 
 		pages = []
 
@@ -169,7 +169,7 @@ class Arena(commands.Cog):
 
 		await inputs.send_pages(ctx, pages)
 
-	@commands.command(name="trophies")
+	@commands.command(name="trophies", aliases=["rating"])
 	async def show_leaderboard(self, ctx: commands.Context):
 		""" Show the guild leaderboard. """
 
