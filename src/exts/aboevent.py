@@ -13,7 +13,7 @@ class ABOEvent(commands.Cog, name="ABO Event"):
 	@checks.main_server_only()
 	@commands.command(name="champ")
 	async def event_champion(self, ctx, user: discord.Member = None):
-		""" Assign the Winner role to a user. """
+		""" Assign the champion role to the winner. """
 
 		async def give_event_winner_role():
 			role = ctx.guild.get_role(DarknessServer.EVENT_ROLE)

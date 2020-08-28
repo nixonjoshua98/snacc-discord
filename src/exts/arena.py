@@ -127,7 +127,8 @@ class Arena(commands.Cog):
 		else:
 			await ctx.send("Everyone is up-to-date!")
 
-	@commands.command(name="set", aliases=["s"], cooldown_after_parsing=True, usage="<level> <rating>")
+	@commands.cooldown(1, 1_800, commands.BucketType.user)
+	@commands.command(name="set", aliases=["s"], cooldown_after_parsing=True)
 	async def set_stats(self, ctx, level: Range(1, 250) = None, rating: Range(0, 10_000) = None):
 		""" Update your arena stats. Stats are used to track activity and are displayed on the leaderboard. """
 
@@ -141,11 +142,16 @@ class Arena(commands.Cog):
 
 				await ctx.send(f"**{player['abo_name']}** :thumbsup:")
 
+			elif level is not None:
+				await self.set_users_stats(ctx, ctx.author, level, rating)
+
+				raise IncorrectUsername("I could not find you in the game. Contact my owner")
+
 			else:
 				raise IncorrectUsername("I failed to pull your data from the game. Contact my owner")
 
 		elif level is None:
-			await ctx.send("Trying to automate your stats? Talk to my owner.")
+			await ctx.send("Trying to automate your stats? Talk to my owner")
 
 		else:
 			await self.set_users_stats(ctx, ctx.author, level, rating)
@@ -154,7 +160,7 @@ class Arena(commands.Cog):
 
 	@commands.command(name="trophies")
 	async def show_leaderboard(self, ctx: commands.Context):
-		""" Show the server ABO leaderboard. """
+		""" Show the guild leaderboard. """
 
 		async def query():
 			return await self.get_member_rows()

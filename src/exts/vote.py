@@ -47,7 +47,7 @@ class Vote(commands.Cog):
 
 	@commands.command(name="vote")
 	async def vote(self, ctx):
-		""" Link to the vote sites. """
+		""" Link to the vote site. """
 
 		await ctx.send(
 			"Vote for me! You will be rewarded shortly after! :heart:"

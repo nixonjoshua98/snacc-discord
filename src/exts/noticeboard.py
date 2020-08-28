@@ -2,7 +2,7 @@
 from discord.ext import commands
 
 
-class NoticeBoard(commands.Cog):
+class NoticeBoard(commands.Cog, name="Notice Board"):
 
 	@commands.command(name="log")
 	async def log(self, ctx):
@@ -10,7 +10,7 @@ class NoticeBoard(commands.Cog):
 
 		empire = await ctx.bot.mongo.find_one("empire", {"_id": ctx.author.id})
 
-		embed = ctx.bot.embed(title=f"{str(ctx.author)}: Empire Log", description="Empire log is cleared after viewing")
+		embed = ctx.bot.embed(title=f"{str(ctx.author)}: Empire Log", description="Log is cleared after viewing")
 
 		log = []
 

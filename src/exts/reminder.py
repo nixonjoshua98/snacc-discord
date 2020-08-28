@@ -45,10 +45,7 @@ class Reminder(commands.Cog):
 
 	@commands.command(name="remind", aliases=["r"], invoke_without_command=True)
 	async def remind_me(self, ctx: commands.Context, period: TimePeriod() = None, *, note: str = None):
-		"""
-View your reminder or create a new one.
-e.g `!remind "2d 5m 17s" Make food`
-		"""
+		""" Create a new reminder. e.g `!remind "2d 5m 17s" Make food` or view your current reminders `!r` """
 
 		now = dt.datetime.utcnow()
 

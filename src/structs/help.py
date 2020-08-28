@@ -37,7 +37,7 @@ class Help(commands.HelpCommand):
 				embed = bot.embed(title=title, description=(cog.__doc__ or "").strip())
 
 				embed.set_thumbnail(url=bot.user.avatar_url)
-				embed.set_footer(text=f"{bot.user.name} | Module {i + 1}/{len(mapping)}", icon_url=bot.user.avatar_url)
+				embed.set_footer(text=f"{str(bot.user)} | Module {i + 1}/{len(mapping)}", icon_url=bot.user.avatar_url)
 
 				for ii, cmd in enumerate(chunk):
 					if not cmd.hidden:
