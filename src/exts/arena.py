@@ -20,8 +20,6 @@ class Arena(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-		self.background_loop.start()
-
 		if not self.bot.debug:
 			print("Starting loop: Arena")
 
@@ -133,7 +131,7 @@ class Arena(commands.Cog):
 					await self.bot.mongo.bulk_write("arena", requests)
 
 				else:
-					print(f"Failed to look up user {abo_name} with the API")
+					missing.append(member.mention)
 
 			else:
 				missing.append(member.mention)
