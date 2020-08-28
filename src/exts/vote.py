@@ -50,13 +50,7 @@ class Vote(commands.Cog):
 		""" Link to the vote site. """
 
 		await ctx.send(
-			"Vote for me! You will be rewarded shortly after! :heart:"
-			"\n"
-			"https://top.gg/bot/666616515436478473 (not verified yet)"
-			"\n"
-			"\n"
 			"https://discord.boats/bot/666616515436478473"
-			"\n"
 			"https://top-bots.xyz/bot/666616515436478473"
 		)
 

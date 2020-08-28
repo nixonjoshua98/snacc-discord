@@ -52,40 +52,39 @@ class Arena(commands.Cog):
 	async def create_history(self):
 		svr = self.bot.get_guild(DarknessServer.ID)
 
-		one_week_ago = dt.datetime.utcnow() - dt.timedelta(days=7)
+		role = svr.get_role(DarknessServer.ABO_ROLE)
 
-		players = await self.bot.mongo.find("players", {"abo_name": {"$exists": True}}).to_list(length=None)
+		one_week_ago = dt.datetime.utcnow() - dt.timedelta(days=7)
 
 		data = []
 
-		for p in players:
-			discord_id = p["_id"]
+		for member in role.members:
 
-			user = svr.get_member(discord_id)
+			player_entry = await self.bot.mongo.find_one("players", {"_id": member.id})
 
-			abo_name = p["abo_name"]
+			if (abo_name := player_entry.get("abo_name")) is None:
+				continue
 
-			name = str(user) if user is not None else ""
-
-			query = {"user": discord_id, "date": {"$gte": one_week_ago}}
+			query = {"user": member.id, "date": {"$gte": one_week_ago}}
 
 			stats = await self.bot.mongo.find("arena", query).to_list(length=None)
 
-			for i in range(len(stats)):
-				stats[i]["rating"] = stats[i].get("rating", stats[i].get("trophies", 0))
+			if stats:
+				for i in range(len(stats)):
+					stats[i]["rating"] = stats[i].get("rating", stats[i].get("trophies", 0))
 
-			oldest, newest = stats[0], stats[-1]
+				oldest, newest = stats[0], stats[-1]
 
-			data.append(
-				dict(
-					name=name,
-					abo_name=abo_name,
-					level=newest["level"],
-					rating=newest["rating"],
-					rating_gained=newest['rating'] - oldest['rating'],
-					levels_gained=newest['level'] - oldest['level']
+				data.append(
+					dict(
+						name=str(member),
+						abo_name=abo_name,
+						level=newest["level"],
+						rating=newest["rating"],
+						rating_gained=newest['rating'] - oldest['rating'],
+						levels_gained=newest['level'] - oldest['level']
+					)
 				)
-			)
 
 		data = sorted(data, key=lambda e: e["rating_gained"], reverse=True)
 
