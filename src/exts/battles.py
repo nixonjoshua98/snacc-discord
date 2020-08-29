@@ -226,7 +226,7 @@ class Battles(commands.Cog):
 	async def log_event(self, event, user, **kwargs):
 		log = dict(event=event, **kwargs)
 
-		await self.bot.mongo.update_one("players", {"_id": user.id}, {"$push": {"log": log}})
+		await self.bot.mongo.update_one("empires", {"_id": user.id}, {"$push": {"log": log}})
 
 
 def setup(bot):

@@ -27,6 +27,7 @@ class Vote(commands.Cog):
 		if data["type"] == "upvote" and data["bot"] == self.bot.user.id:
 			user_id = data["user"]
 
+			# - isWeekend or is_weekend?
 			num_votes = 1 if not data["isWeekend"] else 2
 
 			user = self.bot.get_user(user_id)
