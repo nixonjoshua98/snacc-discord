@@ -5,6 +5,8 @@ import discord
 
 import datetime as dt
 
+from pymongo import UpdateOne
+
 from discord.ext import tasks, commands
 
 from src import inputs, utils
@@ -26,10 +28,6 @@ class Empire(commands.Cog):
 		print("Starting loop: Income")
 
 		self.income_loop.start()
-
-	async def cog_before_invoke(self, ctx):
-		if ctx.guild.id == DarknessServer.ID:
-			await ctx.author.add_roles(discord.utils.get(ctx.guild.roles, id=DarknessServer.EMPIRE_ROLE))
 
 	async def cog_after_invoke(self, ctx):
 		await ctx.bot.mongo.set_one("empires", {"_id": ctx.author.id}, {"last_login": dt.datetime.utcnow()})
@@ -61,7 +59,6 @@ class Empire(commands.Cog):
 			name="Units (Workers)",
 			value=(
 				f"Worker units generate passive income which is automatically added to your bank account each hour. "
-				f"Hourly income can also be collected manually using **{ctx.prefix}collect**."
 			),
 			inline=False
 		)
@@ -151,38 +148,6 @@ class Empire(commands.Cog):
 		await ctx.send(f"Your empire has been renamed to `{new_name}`")
 
 	@checks.has_empire()
-	@commands.max_concurrency(1, commands.BucketType.user)
-	@commands.command(name="collect")
-	async def collect_income(self, ctx):
-		""" Collect your hourly income. """
-
-		now = dt.datetime.utcnow()
-
-		# - Load data from database
-		empire = await ctx.bot.mongo.find_one("empires", {"_id": ctx.author.id})
-		levels = await ctx.bot.mongo.find_one("levels", {"_id": ctx.author.id})
-		units = await ctx.bot.mongo.find_one("units", {"_id": ctx.author.id})
-
-		# - Calculate passive income
-		if empire.get("last_income") is not None:
-			hours = min(MAX_HOURS_OFFLINE, (now - empire["last_income"]).total_seconds() / 3600)
-
-			hourly_income = Workers.get_total_hourly_income(units, levels)
-			hourly_upkeep = Military.get_total_hourly_upkeep(units, levels)
-
-			money_change = int((hourly_income + hourly_upkeep) * hours)
-
-			# - Update database
-			await ctx.bot.mongo.increment_one("bank", {"_id": empire["_id"]}, {"usd": money_change})
-
-			await ctx.send(f"You received **${money_change:,}**")
-
-		else:
-			await ctx.send("Failed to collect. Try again")
-
-		await ctx.bot.mongo.set_one("empires", {"_id": empire["_id"]}, {"last_income": now})
-
-	@checks.has_empire()
 	@commands.cooldown(1, 60 * 90, commands.BucketType.user)
 	@commands.command(name="empireevent", aliases=["ee"])
 	async def empire_event(self, ctx):
@@ -219,6 +184,8 @@ class Empire(commands.Cog):
 
 		empires = await self.bot.mongo.find("empires").to_list(length=None)
 
+		requests = []
+
 		for empire in empires:
 			now = dt.datetime.utcnow()
 
@@ -243,11 +210,14 @@ class Empire(commands.Cog):
 
 			hourly_income = int(utils.net_income(units, levels) * hours)
 
-			if hourly_income > 0:
-				await self.bot.mongo.increment_one("bank", {"_id": empire["_id"]}, {"usd": hourly_income})
+			requests.extend(
+				[
+					UpdateOne({"_id": empire["_id"]}, {"$inc": {"usd": hourly_income}}, upsert=True),
+					UpdateOne({"_id": empire["_id"], "usd": {"$lt": 0}}, {"$set": {"usd": 0}})
+				]
+			)
 
-			elif hourly_income < 0:
-				await self.bot.mongo.decrement_one("bank", {"_id": empire["_id"]}, {"usd": abs(hourly_income)})
+		await self.bot.mongo.bulk_write("bank", requests)
 
 
 def setup(bot):
