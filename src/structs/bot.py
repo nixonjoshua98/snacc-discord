@@ -19,7 +19,7 @@ EXTENSIONS = [
     "aboevent",         "empire",
     "quests",           "shop",             "units",
     "battles",          "hangman",          "rewards",
-    "gambling",         "bank",             "noticeboard",
+    "gambling",         "bank",
     "crypto",           "questionnaire",    "moderator",
     "misc",             "reminder",         "support",
     "autorole",         "serverdoor",       "vote",

@@ -59,8 +59,6 @@ class Battles(commands.Cog):
 
 		await ctx.send(s)
 
-		await self.log_event("steal", target, thief=str(ctx.author), stolen_amount=stolen_amount)
-
 	@checks.has_unit(SCOUT_UNIT, 1)
 	@commands.cooldown(1, 15, commands.BucketType.user)
 	@commands.command(name="scout", cooldown_after_parsing=True)
@@ -100,8 +98,6 @@ class Battles(commands.Cog):
 
 		# - Author won the attack
 		if win_chance >= random.uniform(0.0, 1.0):
-			event_log = dict(attacker=str(ctx.author))
-
 			# - Load the targets data
 			t_bank, t_levels, t_empire = await ctx.bot.mongo.find_one_many(
 				["bank", "levels", "empires"],
@@ -126,8 +122,6 @@ class Battles(commands.Cog):
 				1.0 if units_lost else 2.0
 			)
 
-			event_log["stolen_amount"] = stolen_amount + bonus_money
-
 			# - Increment and decrement the balances of the two users
 			await ctx.bot.mongo.increment_one("bank", {"_id": ctx.author.id}, {"usd": stolen_amount + bonus_money})
 			await ctx.bot.mongo.decrement_one("bank", {"_id": target.id}, {"usd": stolen_amount + bonus_money})
@@ -146,15 +140,10 @@ class Battles(commands.Cog):
 			# - Actually a list...
 			units_lost_text = list(map(lambda kv: f"{kv[1]}x {kv[0].display_name}", units_lost.items()))
 
-			event_log["units_lost"] = ", ".join(units_lost_text)
-
 			if units_lost:
 				embed.add_field(name="Units Killed", value="\n".join(units_lost_text))
 
 			await ctx.send(embed=embed)
-
-			# - Log the attack
-			await self.log_event("attack", target, **event_log)
 
 		else:
 			# - Load author data
@@ -222,11 +211,6 @@ class Battles(commands.Cog):
 				units_lost_cost = sum([unit.calc_price(owned - n, n) for u, n in units_lost.items()])
 
 		return units_lost
-
-	async def log_event(self, event, user, **kwargs):
-		log = dict(event=event, **kwargs)
-
-		await self.bot.mongo.update_one("empires", {"_id": user.id}, {"$push": {"log": log}})
 
 
 def setup(bot):

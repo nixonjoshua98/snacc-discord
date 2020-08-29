@@ -23,14 +23,7 @@ class Bank(commands.Cog):
 		async def query():
 			return await ctx.bot.mongo.find("bank").sort("usd", -1).to_list(length=100)
 
-		await inputs.show_leaderboard(
-			ctx,
-			"Richest Players",
-			columns=["usd"],
-			order_by="usd",
-			headers=["Money"],
-			query_func=query
-		)
+		await inputs.show_leaderboard(ctx, "Richest Players", columns=["usd"], order_by="usd", query_func=query)
 
 
 def setup(bot):

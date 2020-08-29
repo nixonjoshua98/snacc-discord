@@ -205,20 +205,13 @@ class Empire(commands.Cog):
 			empires = await ctx.bot.mongo.find("units").to_list(length=100)
 
 			for i, row in enumerate(empires):
-				empires[i] = dict(**row, __power__=Military.get_total_power(row))
+				empires[i] = dict(_id=row["_id"], power=Military.get_total_power(row))
 
-			empires.sort(key=lambda ele: ele["__power__"], reverse=True)
+			empires.sort(key=lambda ele: ele["power"], reverse=True)
 
 			return empires
 
-		await inputs.show_leaderboard(
-			ctx,
-			"Most Powerful Empires",
-			columns=["__power__"],
-			order_by="__power__",
-			query_func=query,
-			headers=["Power"]
-		)
+		await inputs.show_leaderboard(ctx, "Top Empires", columns=["power"], order_by="power", query_func=query,)
 
 	@tasks.loop(hours=1.0)
 	async def income_loop(self):
@@ -242,17 +235,13 @@ class Empire(commands.Cog):
 				continue
 
 			# - Query the database
-			bank = await self.bot.mongo.find_one("bank", {"_id": empire["_id"]})
 			units = await self.bot.mongo.find_one("units", {"_id": empire["_id"]})
 			levels = await self.bot.mongo.find_one("levels", {"_id": empire["_id"]})
 
 			# - Total number of hours we need to credit the empire's bank
 			hours = (now - last_income).total_seconds() / 3600
 
-			hourly_income = max(0, int(utils.net_income(units, levels) * hours))
-
-			if hourly_income > 0 and (bank.get("usd", 0) >= 250_000 or bank.get("btc", 0) >= 250):
-				hourly_income = int(hourly_income * 0.4)
+			hourly_income = int(utils.net_income(units, levels) * hours)
 
 			if hourly_income > 0:
 				await self.bot.mongo.increment_one("bank", {"_id": empire["_id"]}, {"usd": hourly_income})
