@@ -26,15 +26,12 @@ class _Quest:
 	def get_loot(self, success_rate):
 		loot_chance = max(0.25, min(1.0 - success_rate, 0.65))
 
-		min_val, max_val = self.power * 10, self.power * 25
+		min_val, max_val = self.power * 10, self.power * 15
 
-		loot = dict()
+		if loot_chance >= random.uniform(0.0, 1.0):
+			return {utils.get_random_name():  max(10, random.randint(min_val, max_val))}
 
-		for i in range(3):
-			if loot_chance >= random.uniform(0.0, 1.0):
-				loot[utils.get_random_name()] = max(10, random.randint(min_val, max_val))
-
-		return loot
+		return dict()
 
 	def get_duration(self, upgrades):
 		if upgrades is None:

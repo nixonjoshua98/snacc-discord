@@ -47,10 +47,12 @@ class Arena(commands.Cog):
 	async def update_stats(self, ctx):
 		""" Update the users history. Pulls from the API. """
 
-		await ctx.send("Updating users data.")
+		message = await ctx.send("Updating users data...")
 
 		if missing := await self.update_members():
 			await ctx.send(f"Missing username: {', '.join(missing)}")
+
+		await message.edit(content="Updated stats :thumbsup:")
 
 	@commands.command(name="stats", aliases=["s"])
 	async def stats(self, ctx):
