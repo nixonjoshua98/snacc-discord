@@ -38,7 +38,7 @@ class Inventory(commands.Cog):
 
 		# - Create the embed description
 		desc = [f"`{item['owned']:02d}x` `{item['name']: <16}`" for item in loot]
-		desc = f"React :moneybag: to sell. Total Value: ${total_value:,}\n\n" + "\n".join(desc)
+		desc = f"React :moneybag: to sell. Total Value: **${total_value:,}**\n\n" + "\n".join(desc)
 
 		embed = ctx.bot.embed(title="Loot", description=desc)
 
@@ -61,7 +61,7 @@ class Inventory(commands.Cog):
 				await ctx.send(f"You sold your loot and gained **${total_value:,}**")
 
 			# - Remove the reactions if we have permission
-			if ctx.bot.has_permission(ctx.channel, mnanage_messages=True):
+			if ctx.bot.has_permission(ctx.channel, manage_messages=True):
 				await message.clear_reactions()
 
 
