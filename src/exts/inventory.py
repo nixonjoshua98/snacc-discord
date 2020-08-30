@@ -37,7 +37,7 @@ class Inventory(commands.Cog):
 		total_value = sum((item["total_value"] for item in loot))
 
 		# - Create the embed description
-		desc = [f"`{item['owned']:02d}x` `{item['name']: <16}`" for item in loot]
+		desc = [f"`{item['owned']:02d}x` `{item['name']}`" for item in loot]
 		desc = f"React :moneybag: to sell. Total Value: **${total_value:,}**\n\n" + "\n".join(desc)
 
 		embed = ctx.bot.embed(title="Loot", description=desc)

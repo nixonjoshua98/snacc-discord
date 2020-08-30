@@ -168,6 +168,7 @@ class Questionnaire(commands.Cog):
 
 			elif len(comm.split(" ")) > 1:
 				ctx.send("Commands must be a single word.")
+
 				continue
 
 			existing = await ctx.bot.mongo.find_one("questionnaires", {"server": ctx.guild.id, "command": comm})

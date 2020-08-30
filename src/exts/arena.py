@@ -139,7 +139,9 @@ class Arena(commands.Cog):
 
 		# - Create pages for the history
 		for chunk in chunks:
-			page = TextPage(title="Darkness Arena History", headers=["Name", "Discord", "Level", "Rating"])
+			headers = ["Name", "Discord", "Level", "Rating"] if include_discord else ["Name", "Level", "Rating"]
+
+			page = TextPage(title="Darkness Arena History", headers=headers)
 
 			for ele in chunk:
 				lvl = f"{ele['level']}({ele['levels_gained']})"
@@ -161,7 +163,9 @@ class Arena(commands.Cog):
 
 		role = svr.get_role(DarknessServer.ABO_ROLE)
 
-		missing = []
+		missing, requests = [], []
+
+		one_month_ago = dt.datetime.utcnow() - dt.timedelta(days=31)
 
 		for member in role.members:
 			player_entry = await self.bot.mongo.find_one("players", {"_id": member.id})
@@ -170,21 +174,19 @@ class Arena(commands.Cog):
 				player = await API.leaderboard.get_player(abo_name)
 
 				if player is not None:
-					one_month_ago = dt.datetime.utcnow() - dt.timedelta(days=31)
-
 					row = dict(user=member.id, date=dt.datetime.utcnow(), level=player.level, rating=player.rating)
 
-					requests = [InsertOne(row), DeleteMany({"user": member.id, "date": {"$lt": one_month_ago}})]
+					requests.append(InsertOne(row))
 
-					await self.bot.mongo.bulk_write("arena", requests)
+					continue
 
-				else:
-					missing.append(member.mention)
-
-			else:
-				missing.append(member.mention)
+			missing.append(member.mention)
 
 			await asyncio.sleep(1)
+
+		requests.append(DeleteMany({"date": {"$lt": one_month_ago}}))
+
+		await self.bot.mongo.bulk_write("arena", requests)
 
 		return missing
 

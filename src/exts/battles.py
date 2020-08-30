@@ -63,7 +63,7 @@ class Battles(commands.Cog):
 	@commands.cooldown(1, 15, commands.BucketType.user)
 	@commands.command(name="scout", cooldown_after_parsing=True)
 	async def scout(self, ctx, *, target: EmpireTargetUser()):
-		""" Pay to scout an empire to recieve valuable information. """
+		""" Send a scout to a rival empire to search for information """
 
 		# - Load data from database
 		author_units = await ctx.bot.mongo.find_one("units", {"_id": ctx.author.id})
