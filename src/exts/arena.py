@@ -182,7 +182,7 @@ class Arena(commands.Cog):
 
 			missing.append(member.mention)
 
-			await asyncio.sleep(1)
+			await asyncio.sleep(2.5)
 
 		requests.append(DeleteMany({"date": {"$lt": one_month_ago}}))
 

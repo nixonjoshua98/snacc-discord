@@ -15,7 +15,10 @@ async def _send_request(path, data) -> dict:
 	put_data = base64.b64encode(data_compressed).decode("utf-8")
 
 	async with httpx.AsyncClient() as client:
-		r = await client.put(url, data=put_data)
+		try:
+			r = await client.put(url, data=put_data)
+		except httpx.ReadTimeout as e:
+			print(e)
 
 	if r.status_code == httpx.codes.ok:
 		resp = base64.b64decode(r.content)
