@@ -33,8 +33,7 @@ class EmpireUpgrades:
 	groups = {
 		"Quest Upgrades": [
 			Upgrade(key="quicker_quests", 		base_cost=15_000),
-			Upgrade(key="more_quest_money", 	base_cost=15_000),
-			Upgrade(key="extra_quest_slots", 	base_cost=750_000, max_amount=1),
+			Upgrade(key="more_quest_money", 	base_cost=15_000)
 		]
 	}
 

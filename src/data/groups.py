@@ -8,6 +8,12 @@ from src.common import EmpireConstants
 from src.structs import TextPage
 
 
+def round_up(n, decimals=0):
+	multiplier = 10 ** decimals
+
+	return math.ceil(n * multiplier) / multiplier
+
+
 class UnitGroup:
 	units = tuple()
 
@@ -88,11 +94,9 @@ class Military(UnitGroup):
 		return sum(map(lambda u: u.calc_hourly_upkeep(units.get(u.key, 0), levels.get(u.key, 0)), cls.units))
 
 	@classmethod
-	def get_total_power(cls, units: dict):
-		def round_up(n, decimals=0):
-			multiplier = 10 ** decimals
-
-			return math.ceil(n * multiplier) / multiplier
+	def calc_total_power(cls, units: dict):
+		if units is None:
+			return 0.0
 
 		return round_up(sum(map(lambda u: u.calc_power(units.get(u.key, 0)), cls.units)), 1)
 

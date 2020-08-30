@@ -19,7 +19,7 @@ EXTENSIONS = [
     "aboevent",         "empire",
     "quests",           "shop",             "units",
     "battles",          "hangman",          "rewards",
-    "gambling",         "bank",
+    "gambling",         "bank",             "inventory",
     "crypto",           "questionnaire",    "moderator",
     "misc",             "reminder",         "support",
     "autorole",         "serverdoor",       "vote",
@@ -105,7 +105,7 @@ class Bot(commands.Bot):
             raise GlobalCheckFail("Bot not ready")
 
         elif not self.has_permission(ctx.channel, send_messages=True):
-            raise GlobalCheckFail(f"I cannot message G: {str(ctx.guild)} C: {ctx.guild.name}")
+            raise GlobalCheckFail(f"I cannot message G: {str(ctx.guild)} C: {ctx.channel.name}")
 
         elif self.debug and ctx.author.id != SNACCMAN:
             raise GlobalCheckFail("Bot is in Debug mode")
@@ -143,7 +143,7 @@ class Bot(commands.Bot):
 
         return commands.when_mentioned_or(prefix)(self, message)
 
-    def embed(self, *, title=None, description=None, thumbnail=None):
+    def embed(self, *, title=None, description=None, thumbnail=None, footer=None):
         embed = discord.Embed(title=title, description=description, colour=random.choice(COLOURS))
 
         embed.timestamp = dt.datetime.utcnow()
@@ -151,7 +151,7 @@ class Bot(commands.Bot):
         if thumbnail is not None:
             embed.set_thumbnail(url=thumbnail)
 
-        embed.set_footer(text=f"{str(self.user)}", icon_url=self.user.avatar_url)
+        embed.set_footer(text=footer or f"{str(self.user)}", icon_url=self.user.avatar_url)
 
         return embed
 

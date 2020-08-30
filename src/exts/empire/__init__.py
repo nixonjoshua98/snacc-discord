@@ -125,7 +125,7 @@ class Empire(commands.Cog):
 		hourly_income = Workers.get_total_hourly_income(units, levels)
 		hourly_upkeep = Military.get_total_hourly_upkeep(units, levels)
 
-		total_power = Military.get_total_power(units)
+		total_power = Military.calc_total_power(units)
 
 		name = empire.get('name', target.display_name)
 
@@ -170,7 +170,7 @@ class Empire(commands.Cog):
 			empires = await ctx.bot.mongo.find("units").to_list(length=100)
 
 			for i, row in enumerate(empires):
-				empires[i] = dict(_id=row["_id"], power=Military.get_total_power(row))
+				empires[i] = dict(_id=row["_id"], power=Military.calc_total_power(row))
 
 			empires.sort(key=lambda ele: ele["power"], reverse=True)
 
@@ -208,11 +208,11 @@ class Empire(commands.Cog):
 			# - Total number of hours we need to credit the empire's bank
 			hours = (now - last_income).total_seconds() / 3600
 
-			hourly_income = int(utils.net_income(units, levels) * hours)
+			income = int(utils.net_income(units, levels) * hours)
 
 			requests.extend(
 				[
-					UpdateOne({"_id": empire["_id"]}, {"$inc": {"usd": hourly_income}}, upsert=True),
+					UpdateOne({"_id": empire["_id"]}, {"$inc": {"usd": income}}, upsert=True),
 					UpdateOne({"_id": empire["_id"], "usd": {"$lt": 0}}, {"$set": {"usd": 0}})
 				]
 			)

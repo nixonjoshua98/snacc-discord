@@ -3,6 +3,8 @@ import discord
 import random
 import dataclasses
 
+from src import utils
+
 
 @dataclasses.dataclass(frozen=True)
 class _Quest:
@@ -13,14 +15,35 @@ class _Quest:
 	duration: int
 
 	def get_avg_reward(self, upgrades):
+		if upgrades is None:
+			return self.reward
+
 		return math.floor(self.reward * (1.0 + (upgrades.get("more_quest_money", 0) * 0.01)))
 
-	def get_reward(self, upgrades): return math.floor(random.uniform(0.9, 1.1) * self.get_avg_reward(upgrades))
+	def get_reward(self, upgrades):
+		return math.floor(random.uniform(0.9, 1.1) * self.get_avg_reward(upgrades))
+
+	def get_loot(self, success_rate):
+		loot_chance = max(0.25, min(1.0 - success_rate, 0.75))
+
+		min_val, max_val = self.power * 10, self.power * 25
+
+		loot = dict()
+
+		for i in range(3):
+			if loot_chance >= random.uniform(0.0, 1.0):
+				loot[utils.get_random_name()] = max(10, random.randint(min_val, max_val))
+
+		return loot
 
 	def get_duration(self, upgrades):
+		if upgrades is None:
+			return self.duration
+
 		return self.duration * (1.0 - (upgrades.get("quicker_quests", 0) * 0.01))
 
-	def success_rate(self, author_power): return round(max(0.01, min(author_power / self.power, 0.99)), 2)
+	def success_rate(self, author_power):
+		return round(max(0.01, min(author_power / self.power, 0.99)), 2)
 
 
 class EmpireQuests:

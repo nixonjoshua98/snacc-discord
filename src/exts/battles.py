@@ -69,8 +69,8 @@ class Battles(commands.Cog):
 		author_units = await ctx.bot.mongo.find_one("units", {"_id": ctx.author.id})
 		target_units = await ctx.bot.mongo.find_one("units", {"_id": target.id})
 
-		author_power = Military.get_total_power(author_units)
-		target_power = Military.get_total_power(target_units)
+		author_power = Military.calc_total_power(author_units)
+		target_power = Military.calc_total_power(target_units)
 
 		win_chance = self.calc_win_chance(author_power, target_power)
 
@@ -90,8 +90,8 @@ class Battles(commands.Cog):
 		t_units = await ctx.bot.mongo.find_one("units", {"_id": target.id})
 
 		# - Power ratings of each empire which is used to calculate the win chance for the author (attacker)
-		target_power = Military.get_total_power(t_units)
-		author_power = Military.get_total_power(a_units)
+		target_power = Military.calc_total_power(t_units)
+		author_power = Military.calc_total_power(a_units)
 
 		# - Author chance of winning against the target
 		win_chance = self.calc_win_chance(author_power, target_power)

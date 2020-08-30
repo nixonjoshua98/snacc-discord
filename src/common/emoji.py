@@ -3,6 +3,8 @@
 class Emoji:
     CHECK_MARK = "\U00002705"
 
+    MONEY_BAG = "\U0001f4b0"
+
     A, B, C, D, E = "\U0001f1e6", "\U0001f1e7", "\U0001f1e8", "\U0001f1e9", "\U0001f1ea"
     F, G, H, I, J = "\U0001f1eb", "\U0001f1ec", "\U0001f1ed", "\U0001f1ee", "\U0001f1ef"
     K, L, M, N, O = "\U0001f1f0", "\U0001f1f1", "\U0001f1f2", "\U0001f1f3", "\U0001f1f4"

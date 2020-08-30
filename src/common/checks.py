@@ -96,7 +96,7 @@ def has_power(amount):
 	async def predicate(ctx):
 		units = await ctx.bot.mongo.find_one("units", {"_id": ctx.author.id})
 
-		power = Military.get_total_power(units)
+		power = Military.calc_total_power(units)
 
 		if power < amount:
 			raise commands.CommandError(f"You need at least **{amount}** power to do that")

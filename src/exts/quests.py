@@ -1,6 +1,8 @@
 import math
 import random
 
+from pymongo import InsertOne
+
 import datetime as dt
 
 from discord.ext import commands
@@ -17,37 +19,32 @@ class Quests(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-	@staticmethod
-	def get_max_quests(upgrades):
-		return 1 + upgrades.get("extra_quest_slots", 0)
-
 	@checks.has_empire()
 	@commands.max_concurrency(1, commands.BucketType.user)
 	@commands.command(name="quest", aliases=["q"], invoke_without_command=True)
 	async def quest_group(self, ctx, quest: EmpireQuest()):
 		""" Embark on a new quest. """
 
-		# - Query the database
-		quests = await ctx.bot.mongo.find("quests", {"user": ctx.author.id}).to_list(length=100)
+		current_quest = await ctx.bot.mongo.snacc["quests"].find_one({"_id": ctx.author.id})
 
-		upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": ctx.author.id})
-		units = await ctx.bot.mongo.find_one("units", {"_id": ctx.author.id})
+		if current_quest is None:
+			upgrades = await ctx.bot.mongo.snacc["upgrades"].find_one({"_id": ctx.author.id})
+			units = await ctx.bot.mongo.snacc["units"].find_one({"_id": ctx.author.id})
 
-		if len(quests) < self.get_max_quests(upgrades):
-			power = Military.get_total_power(units)
+			empire_power = Military.calc_total_power(units)
 
 			duration = dt.timedelta(hours=quest.get_duration(upgrades))
 
-			sucess_rate = quest.success_rate(power)
+			sucess_rate = quest.success_rate(empire_power)
 
-			row = dict(user=ctx.author.id, quest=quest.id, success_rate=sucess_rate, start=dt.datetime.utcnow())
+			row = dict(_id=ctx.author.id, quest=quest.id, success_rate=sucess_rate, start=dt.datetime.utcnow())
 
-			await ctx.bot.mongo.insert_one("quests", row)
+			await ctx.bot.mongo.snacc["quests"].insert_one(row)
 
 			await ctx.send(f"You have embarked on **- {quest.name} -** quest! Check back in **{duration}**")
 
 		else:
-			await ctx.send("You have already embarked on your maximum number of quests.")
+			await self.show_status(ctx)
 
 	@checks.has_empire()
 	@commands.command(name="quests")
@@ -55,10 +52,10 @@ class Quests(commands.Cog):
 		""" Show all of the available quests to embark on. """
 
 		# - Query the database
-		upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": ctx.author.id})
-		units = await ctx.bot.mongo.find_one("units", {"_id": ctx.author.id})
+		upgrades = await ctx.bot.mongo.snacc["upgrades"].find_one({"_id": ctx.author.id})
+		units = await ctx.bot.mongo.snacc["units"].find_one({"_id": ctx.author.id})
 
-		power = Military.get_total_power(units)
+		power = Military.calc_total_power(units)
 
 		embeds = []
 
@@ -84,47 +81,70 @@ class Quests(commands.Cog):
 	@checks.has_empire()
 	@commands.max_concurrency(1, commands.BucketType.user)
 	@commands.command(name="status")
-	async def status(self, ctx):
+	async def show_status(self, ctx):
 		""" Show the status of your current quests and collect your rewards from your completed quests. """
 
+		current_quest = await ctx.bot.mongo.snacc["quests"].find_one({"_id": ctx.author.id})
+
+		# - User is not on a quest
+		if current_quest is None:
+			return await ctx.send("You are not currently embarked on a quest.")
+
 		# - Query the database
-		quests = await ctx.bot.mongo.find("quests", {"user": ctx.author.id}).to_list(length=100)
-		upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": ctx.author.id})
+		upgrades = await ctx.bot.mongo.snacc["quests"].find_one({"_id": ctx.author.id})
 
-		embed = ctx.bot.embed(title=f"Ongoing Quests {len(quests)}/{self.get_max_quests(upgrades)}")
+		quest_instance = EmpireQuests.get(id=current_quest["quest"])
 
-		for quest in quests:
-			inst = EmpireQuests.get(id=quest["quest"])
+		embed = ctx.bot.embed(title=quest_instance.name)
 
-			duration = inst.get_duration(upgrades)
+		quest_duration = quest_instance.get_duration(upgrades)
 
-			time_since_start = dt.datetime.utcnow() - quest["start"]
+		time_since_start = dt.datetime.utcnow() - current_quest["start"]
 
-			# - Quest has ended
-			if (time_since_start.total_seconds() / 3600) >= duration:
-				upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": ctx.author.id})
+		# - Quest has ended
+		if (time_since_start.total_seconds() / 3600) >= quest_duration:
 
-				quest_completed = quest["success_rate"] >= random.uniform(0.0, 1.0)
+			# = Quest success
+			if current_quest["success_rate"] >= random.uniform(0.0, 1.0):
 
-				money_reward = inst.get_reward(upgrades)
+				reward = quest_instance.get_reward(upgrades)
 
-				if quest_completed:
-					await ctx.bot.mongo.increment_one("bank", {"_id": ctx.author.id}, {"usd": money_reward})
+				# - Add the reward money to the account
+				await ctx.bot.mongo.snacc["bank"].update_one(
+					{"_id": ctx.author.id},
+					{"$inc": {"usd": reward}},
+					upsert=True
+				)
 
-					embed.add_field(name=f"{inst.name}", value=f"`Reward: ${money_reward:,}`")
+				loot = quest_instance.get_loot(current_quest["success_rate"])
 
-				else:
-					embed.add_field(name=f"{inst.name}", value="`Quest failed`")
+				requests, loot_field = [], []
 
-				await ctx.bot.mongo.delete_one("quests", {"_id": quest["_id"]})
+				for name, value in loot.items():
+					requests.append(InsertOne({"user": ctx.author.id, "name": name, "value": value}))
+
+					loot_field.append(f"{name} **${value:,}**")
+
+				await ctx.bot.mongo.snacc["quests"].delete_one({"_id": ctx.author.id})
+
+				embed.description = f"Quest completed! You have been rewarded **${reward:,}**"
+
+				if loot:
+					await ctx.bot.mongo.snacc["loot"].bulk_write(requests)
+
+					embed.add_field(name="Loot", value="\n".join(loot_field))
 
 			else:
-				timedelta = dt.timedelta(seconds=int(duration * 3_600 - time_since_start.total_seconds()))
+				embed.description = "Quest failed"
 
-				embed.add_field(name=inst.name, value=f"`{timedelta}`")
+		else:
+			timedelta = dt.timedelta(seconds=int(quest_duration * 3_600 - time_since_start.total_seconds()))
+
+			embed.add_field(name="Time", value=timedelta)
 
 		await ctx.send(embed=embed)
 
 
 def setup(bot):
 	bot.add_cog(Quests(bot))
+
