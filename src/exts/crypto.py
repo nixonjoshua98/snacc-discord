@@ -80,9 +80,11 @@ class Crypto(commands.Cog):
 
 		async with httpx.AsyncClient() as client:
 			r = await client.get(
-				f"https://api.coindesk.com/v1/bpi/historical/close.json?"
-				f"start={date_start.strftime('%Y-%m-%d')}&"
-				f"end={date_end.strftime('%Y-%m-%d')}"
+				f"https://api.coindesk.com/v1/bpi/historical/close.json?",
+				params=dict(
+					start=date_start.strftime('%Y-%m-%d'),
+					end=date_end.strftime('%Y-%m-%d')
+				)
 			)
 
 			data = r.json()

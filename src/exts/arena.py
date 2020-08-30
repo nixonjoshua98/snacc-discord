@@ -33,7 +33,7 @@ class Arena(commands.Cog):
 
 	@tasks.loop(hours=8.0)
 	async def background_loop(self):
-		await asyncio.sleep(60 * 60 * 4)
+		await asyncio.sleep(60 * 60 * 8.0)
 
 		channel = self.bot.get_channel(DarknessServer.ABO_CHANNEL)
 

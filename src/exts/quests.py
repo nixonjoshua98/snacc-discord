@@ -104,6 +104,8 @@ class Quests(commands.Cog):
 		# - Quest has ended
 		if (time_since_start.total_seconds() / 3600) >= quest_duration:
 
+			await ctx.bot.mongo.snacc["quests"].delete_one({"_id": ctx.author.id})
+
 			# = Quest success
 			if current_quest["success_rate"] >= random.uniform(0.0, 1.0):
 
@@ -125,9 +127,7 @@ class Quests(commands.Cog):
 
 					loot_field.append(f"{name} **${value:,}**")
 
-				await ctx.bot.mongo.snacc["quests"].delete_one({"_id": ctx.author.id})
-
-				embed.description = f"Quest completed! You have been rewarded **${reward:,}**"
+				embed.description = f"Quest completed! \nYou have been rewarded **${reward:,}**"
 
 				if loot:
 					await ctx.bot.mongo.snacc["loot"].bulk_write(requests)
@@ -135,7 +135,7 @@ class Quests(commands.Cog):
 					embed.add_field(name="Loot", value="\n".join(loot_field))
 
 			else:
-				embed.description = "Quest failed"
+				embed.description = "Your squad died while on the quest!"
 
 		else:
 			timedelta = dt.timedelta(seconds=int(quest_duration * 3_600 - time_since_start.total_seconds()))
