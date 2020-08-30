@@ -91,7 +91,7 @@ class Quests(commands.Cog):
 			return await ctx.send("You are not currently embarked on a quest.")
 
 		# - Query the database
-		upgrades = await ctx.bot.mongo.snacc["quests"].find_one({"_id": ctx.author.id})
+		upgrades = await ctx.bot.mongo.snacc["upgrades"].find_one({"_id": ctx.author.id})
 
 		quest_instance = EmpireQuests.get(id=current_quest["quest"])
 
