@@ -178,7 +178,10 @@ class Arena(commands.Cog):
 
 					requests.append(InsertOne(row))
 
-					continue
+				else:
+					print(f"Warning: User {abo_name} could not be updated.")
+
+				continue
 
 			missing.append(member.mention)
 

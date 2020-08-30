@@ -17,8 +17,8 @@ async def _send_request(path, data) -> dict:
 	async with httpx.AsyncClient() as client:
 		try:
 			r = await client.put(url, data=put_data)
-		except httpx.ReadTimeout as e:
-			print(e)
+		except httpx.ReadTimeout:
+			return None
 
 	if r.status_code == httpx.codes.ok:
 		resp = base64.b64decode(r.content)
