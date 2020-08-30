@@ -1,6 +1,8 @@
 
 
 class Emoji:
+    TADA = "\U0001f389"
+
     CHECK_MARK = "\U00002705"
 
     MONEY_BAG = "\U0001f4b0"

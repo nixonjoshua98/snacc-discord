@@ -1,8 +1,9 @@
 import asyncio
 import random
 
-
 from discord.ext import commands, tasks
+
+from src import utils
 
 from src.common import SupportServer, checks
 
@@ -60,7 +61,7 @@ class Giveaway:
 
 		self.destination = chnl = support_server.get_channel(SupportServer.GIVEAWAY_CHANNEL)
 
-		embed = self.bot.embed(title="Giveaway!", description=f"React :white_check_mark: to enter")
+		embed = self.bot.embed(title="Giveaway!", description=f"React :tada: to enter")
 
 		await chnl.send(giveaway_role.mention, delete_after=300.0)
 
@@ -70,13 +71,16 @@ class Giveaway:
 			await self.on_giveaway_end(members)
 
 	async def on_giveaway_end(self, members):
-		money = random.randint(5_000, 10_000)
+		name = utils.get_random_name()
+		value = random.randint(5_000, 10_000)
 
 		winner = random.choice(members)
 
-		await self.bot.mongo.increment_one("bank", {"_id": winner.id}, {"usd": money})
+		await self.bot.mongo.snacc["loot"].insert_one({"user": winner.id, "name": name, "value": value})
 
-		await self.destination.send(f"Congratulations **{winner.mention}** for winning **${money:,}!**")
+		await self.destination.send(
+			f"Congratulations **{winner.mention}** for winning **- {name} -** worth **${value:,}!**"
+		)
 
 
 def setup(bot):

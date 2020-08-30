@@ -47,8 +47,10 @@ class Inventory(commands.Cog):
 		if loot:
 			await message.add_reaction(Emoji.MONEY_BAG)
 
+			# - Wait for the money bag reaction from the targeted user
 			react, user = await utils.wait_for_reaction(bot=ctx.bot, check=check, timeout=60.0)
 
+			# - Reaction was given by the user? Sell the loot
 			if react is not None and user is not None:
 				all_ids = [_id for item in loot for _id in item["ids"]]
 

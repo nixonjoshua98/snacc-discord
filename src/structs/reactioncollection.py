@@ -7,7 +7,7 @@ from src.common.emoji import Emoji
 
 
 class ReactionCollection:
-	def __init__(self, bot, msg, react=Emoji.CHECK_MARK, **kwargs):
+	def __init__(self, bot, msg, react=Emoji.TADA, **kwargs):
 
 		self.bot = bot
 		self.msg = msg
