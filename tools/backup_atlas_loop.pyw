@@ -60,4 +60,4 @@ while True:
 
     write_data_to_json(data)
 
-    time.sleep(1_800)
+    time.sleep(3_600)

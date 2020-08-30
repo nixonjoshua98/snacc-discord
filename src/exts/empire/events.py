@@ -1,5 +1,7 @@
 import random
 
+from src import utils
+
 from src.data import Military, Workers
 
 
@@ -51,27 +53,18 @@ async def stolen_event(ctx):
 async def loot_event(ctx):
 	""" Empire finds loot event. """
 
-	items = (
-		"tiny ruby", 		"pink diamond", 	"small emerald",
-		"holy sword", 		"demon sword", 		"iron shield",
-		"wooden sword",		"dragon scale",		"golden egg",
-		"treasure map",		"rare scroll",		"recursive bow"
-	)
-
 	# - Query the database
 	levels = await ctx.bot.mongo.find_one("levels", {"_id": ctx.author.id})
 	units = await ctx.bot.mongo.find_one("units", {"_id": ctx.author.id})
 
-	hourly_income = max(0, Workers.get_total_hourly_income(units, levels))
-	hourly_upkeep = max(0, Military.get_total_hourly_upkeep(units, levels))
+	income = utils.net_income(units, levels)
 
-	hourly_income = hourly_income - hourly_upkeep
+	name = utils.get_random_name()
+	value = random.randint(max(500, income // 2), max(1_000, int(income * 0.75)))
 
-	money_gained = random.randint(max(500, hourly_income // 2), max(1_000, int(hourly_income * 0.75)))
+	await ctx.bot.mongo.snacc["loot"].insert_one({"user": ctx.author.id, "name": name, "value": value})
 
-	await ctx.bot.mongo.increment_one("bank", {"_id": ctx.author.id}, {"usd": money_gained})
-
-	await ctx.send(f"You found **- {random.choice(items)} -** which sold for **${money_gained:,}**")
+	await ctx.send(f"You found **- {name} -** while out adventuring.")
 
 
 async def recruit_unit(ctx):

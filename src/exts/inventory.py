@@ -8,7 +8,7 @@ from src.common.emoji import Emoji
 
 class Inventory(commands.Cog):
 
-	@commands.bot_has_permissions(add_reactions=True, manage_messages=True)
+	@commands.bot_has_permissions(add_reactions=True)
 	@commands.max_concurrency(1, commands.BucketType.user)
 	@commands.command(name="loot")
 	async def show_loot(self, ctx):
@@ -60,7 +60,9 @@ class Inventory(commands.Cog):
 
 				await ctx.send(f"You sold your loot and gained **${total_value:,}**")
 
-			await message.clear_reactions()
+			# - Remove the reactions if we have permission
+			if ctx.bot.has_permission(ctx.channel, mnanage_messages=True):
+				await message.clear_reactions()
 
 
 def setup(bot):
