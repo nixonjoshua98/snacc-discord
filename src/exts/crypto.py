@@ -74,8 +74,11 @@ class Crypto(commands.Cog):
 			await ctx.send(f"You are trying to sell more Bitcoin than you currently own.")
 
 		else:
-			await ctx.bot.mongo.increment_one("bank", {"_id": ctx.author.id}, {"usd": price})
-			await ctx.bot.mongo.decrement_one("bank", {"_id": ctx.author.id}, {"btc": amount})
+			await ctx.bot.mongo.snacc["bank"].update_one(
+				{"_id": ctx.author.id},
+				{"$inc": {"usd": price, "btc": -amount}},
+				upsert=True
+			)
 
 			await ctx.send(f"You sold **{amount}** Bitcoin(s) for **${price:,}**!")
 

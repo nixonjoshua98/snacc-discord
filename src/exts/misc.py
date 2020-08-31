@@ -7,7 +7,6 @@ import datetime as dt
 from bs4 import BeautifulSoup
 
 from src.common import checks
-from src.structs.textpage import TextPage
 
 
 class Miscellaneous(commands.Cog):
@@ -123,9 +122,11 @@ class Miscellaneous(commands.Cog):
 	async def cooldowns(self, ctx):
 		""" Display your command cooldowns. """
 
-		page = TextPage(title="Your Cooldowns", headers=("Command", "Cooldown"))
+		embed = ctx.bot.embed(title="Cooldowns", author=ctx.author)
 
 		for name, inst in ctx.bot.cogs.items():
+			cooldowns = []
+
 			for cmd in inst.walk_commands():
 
 				if cmd._buckets._cooldown:
@@ -142,12 +143,12 @@ class Miscellaneous(commands.Cog):
 					if bucket._tokens == 0:
 						retry_after = bucket.per - (current - bucket._window)
 
-						page.add((cmd.name, dt.timedelta(seconds=int(retry_after))))
+						cooldowns.append(f"`{cmd.name: <12} {dt.timedelta(seconds=int(retry_after))}`")
 
-		if len(page.rows) == 0:
-			page.set_footer("You have no active cooldowns")
+			if cooldowns:
+				embed.add_field(name=inst.qualified_name, value="\n".join(cooldowns))
 
-		await ctx.send(page.get())
+		await ctx.send(embed=embed)
 
 
 def setup(bot):
