@@ -150,7 +150,7 @@ class Questionnaire(commands.Cog):
 			if channel is None:
 				await ctx.send(f"I could not a find channel with the name **{channel_name}**")
 
-			elif not ctx.bot.has_permission(channel, send_messages=True):
+			elif not ctx.bot.has_permissions(channel, send_messages=True):
 				await ctx.send(f"I do not have write permissions in {channel.mention}")
 
 			else:

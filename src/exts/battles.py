@@ -146,15 +146,7 @@ class Battles(commands.Cog):
 			await ctx.send(embed=embed)
 
 		else:
-			# - Load author data
-			a_bank = await ctx.bot.mongo.find_one("bank", {"_id": ctx.author.id})
-			a_levels = await ctx.bot.mongo.find_one("levels", {"_id": ctx.author.id})
-
-			money_lost = self.calc_failed_attack_lose(a_units, a_levels, a_bank)
-
-			await ctx.bot.mongo.decrement_one("bank", {"_id": ctx.author.id}, {"usd": money_lost})
-
-			await ctx.send(f"Your attack on **{target.display_name}** failed and you lost **${money_lost:,}**")
+			await ctx.send(f"You failed your attack on **{target.display_name}**!")
 
 		# - Take the author out of their cooldown
 		day_ago = dt.datetime.utcnow() - dt.timedelta(hours=24.0)

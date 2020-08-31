@@ -56,7 +56,7 @@ class Bot(commands.Bot):
     def debug(self):
         return int(os.getenv("DEBUG", 0))
 
-    def has_permission(self, chnl, **perms):
+    def has_permissions(self, chnl, **perms):
         permissions = chnl.permissions_for(chnl.guild.me)
 
         return not [perm for perm, value in perms.items() if getattr(permissions, perm) != value]
@@ -109,7 +109,7 @@ class Bot(commands.Bot):
         if not self.exts_loaded or ctx.guild is None or ctx.author.bot:
             raise GlobalCheckFail("Bot not ready")
 
-        elif not self.has_permission(ctx.channel, send_messages=True):
+        elif not self.has_permissions(ctx.channel, send_messages=True):
             raise GlobalCheckFail(f"I cannot message G: {str(ctx.guild)} C: {ctx.channel.name}")
 
         elif self.debug and ctx.author.id != SNACCMAN:
@@ -145,7 +145,7 @@ class Bot(commands.Bot):
 
         return commands.when_mentioned_or(prefix)(self, message)
 
-    def embed(self, *, title=None, description=None, author: discord.User = None, thumbnail=None, footer=None):
+    def embed(self, *, title=None, description=None, author: discord.User = None, thumbnail=None):
         embed = discord.Embed(title=title, description=description, colour=random.choice(COLOURS))
 
         embed.timestamp = dt.datetime.utcnow()
@@ -156,7 +156,7 @@ class Bot(commands.Bot):
         if author is not None:
             embed.set_author(name=author.display_name, icon_url=author.avatar_url)
 
-        embed.set_footer(text=footer or f"{str(self.user)}", icon_url=self.user.avatar_url)
+        embed.set_footer(text=f"{str(self.user)}", icon_url=self.user.avatar_url)
 
         return embed
 

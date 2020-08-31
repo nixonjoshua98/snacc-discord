@@ -37,7 +37,7 @@ class Reminder(commands.Cog):
 			if chnl is not None and user is not None:
 
 				# - I can message the channel
-				if self.bot.has_permission(chnl, send_messages=True):
+				if self.bot.has_permissions(chnl, send_messages=True):
 					await chnl.send(f":alarm_clock: {user.mention} {note_text}")
 
 			await self.bot.mongo.delete_one("reminders", {"_id": _id})

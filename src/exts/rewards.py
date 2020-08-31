@@ -43,8 +43,7 @@ class Rewards(commands.Cog):
 		# - Update the player with the new streak and daily claim time
 		await ctx.bot.mongo.snacc["players"].update_one(
 			{"_id": ctx.author.id},
-			{"$inc": {"daily_streak": 1}},
-			{"$set": {"last_daily": now}},
+			{"$inc": {"daily_streak": 1}, "$set": {"last_daily": now}},
 			upsert=True
 		)
 

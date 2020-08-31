@@ -79,7 +79,7 @@ class Units(commands.Cog):
 		async def confirm():
 			resp = True
 
-			if ctx.bot.has_permission(ctx.channel, add_reactions=True):
+			if ctx.bot.has_permissions(ctx.channel, add_reactions=True):
 				resp = await Confirm(embed).prompt(ctx)
 
 			return resp
