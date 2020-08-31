@@ -25,12 +25,14 @@ class Empire(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
+	async def cog_after_invoke(self, ctx):
+		await ctx.bot.mongo.set_one("empires", {"_id": ctx.author.id}, {"last_login": dt.datetime.utcnow()})
+
+	@commands.Cog.listener("on_startup")
+	async def on_startup(self):
 		print("Starting loop: Income")
 
 		self.income_loop.start()
-
-	async def cog_after_invoke(self, ctx):
-		await ctx.bot.mongo.set_one("empires", {"_id": ctx.author.id}, {"last_login": dt.datetime.utcnow()})
 
 	@commands.command(name="tutorial")
 	async def show_tutorial(self, ctx):

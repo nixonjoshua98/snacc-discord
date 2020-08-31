@@ -15,14 +15,20 @@ class Crypto(commands.Cog):
 
 		self._price_cache = dict()
 
+	async def cog_before_invoke(self, ctx):
+		if self._price_cache.get("history") is None:
+			await self.update_prices()
+
+	@commands.Cog.listener("on_startup")
+	async def on_startup(self):
 		if not self.bot.debug:
 			print("Starting loop: Crpyto")
 
 			self.update_prices_loop.start()
 
-	async def cog_before_invoke(self, ctx):
-		if self._price_cache.get("history") is None:
-			await self.update_prices()
+	@tasks.loop(minutes=5.0)
+	async def update_prices_loop(self):
+		await self.update_prices()
 
 	@commands.group(name="crpto", aliases=["c"], invoke_without_command=True)
 	async def crypto_group(self, ctx):
@@ -116,10 +122,6 @@ class Crypto(commands.Cog):
 		plt.savefig('graph.png', facecolor=fig.get_facecolor(), transparent=True)
 
 		plt.close("all")
-
-	@tasks.loop(minutes=5.0)
-	async def update_prices_loop(self):
-		await self.update_prices()
 
 	async def update_prices(self):
 		self._price_cache["current"] = await self.get_current()

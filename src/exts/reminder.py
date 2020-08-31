@@ -13,8 +13,12 @@ class Reminder(commands.Cog):
 
 		self.__set_reminders = dict()
 
+	@commands.Cog.listener("on_startup")
+	async def on_startup(self):
 		if not self.bot.debug:
+
 			print("Starting Loop: Reminders")
+
 			self.remind_loop.start()
 
 	def create_reminder_task(self, row):

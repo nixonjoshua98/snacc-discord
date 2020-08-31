@@ -50,6 +50,8 @@ class Bot(commands.Bot):
 
         self.add_check(self.bot_check)
 
+        self.load_extensions()
+
     @property
     def debug(self):
         return int(os.getenv("DEBUG", 0))
@@ -76,16 +78,19 @@ class Bot(commands.Bot):
     async def on_ready(self):
         """ Invoked once the bot is connected and ready to use. """
 
+        if self._bot_started is None:
+            self.dispatch("startup")
+
         self._bot_started = dt.datetime.utcnow()
 
-        self.load_extensions()
+        print(f"Bot '{self.user.display_name}' is ready")
 
+    @commands.Cog.listener("on_startup")
+    async def on_startup(self):
         if not self.debug:
             print("Starting loop: Bot Activity")
 
             self.activity_loop.start()
-
-        print(f"Bot '{self.user.display_name}' is ready")
 
     def add_cog(self, cog):
         print(f"Adding Cog: {cog.qualified_name}", end="...")

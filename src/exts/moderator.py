@@ -10,7 +10,7 @@ from typing import Optional
 class Moderator(commands.Cog):
 
 	@commands.has_role("Mod")
-	@commands.max_concurrency(1, commands.BucketType.guild)
+	@commands.max_concurrency(1, commands.BucketType.channel)
 	@commands.cooldown(1, 15, commands.BucketType.member)
 	@commands.command(name="purge", usage="<target=None> <limit=0>", cooldown_after_parsing=True)
 	async def purge(self, ctx, target: Optional[discord.Member] = None, limit: Range(0, 100) = 0):

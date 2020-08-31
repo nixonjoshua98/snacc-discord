@@ -20,16 +20,18 @@ class Arena(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-		if not self.bot.debug:
-			print("Starting loop: Arena")
-
-			self.background_loop.start()
-
 	async def cog_check(self, ctx):
 		if ctx.guild.id != DarknessServer.ID:
 			raise commands.DisabledCommand("This command is disabled in this server")
 
 		return True
+
+	@commands.Cog.listener("on_startup")
+	async def on_startup(self):
+		if not self.bot.debug:
+			print("Starting loop: Arena")
+
+			self.background_loop.start()
 
 	@tasks.loop(hours=8.0)
 	async def background_loop(self):
