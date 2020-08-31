@@ -9,7 +9,15 @@ from typing import Optional
 
 class Moderator(commands.Cog):
 
-	@commands.has_role("Mod")
+	async def cog_check(self, ctx):
+		role = discord.utils.get(ctx.author.roles, name="Mod")
+
+		if role is None:
+			raise commands.MissingRole("Mod")
+
+		return True
+
+	@commands.bot_has_permissions(manage_messages=True)
 	@commands.max_concurrency(1, commands.BucketType.channel)
 	@commands.cooldown(1, 15, commands.BucketType.member)
 	@commands.command(name="purge", usage="<target=None> <limit=0>", cooldown_after_parsing=True)

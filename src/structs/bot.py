@@ -88,7 +88,7 @@ class Bot(commands.Bot):
     @commands.Cog.listener("on_startup")
     async def on_startup(self):
         if not self.debug:
-            print("Starting loop: Bot Activity")
+            print("Starting loop: Activity")
 
             self.activity_loop.start()
 
@@ -132,10 +132,7 @@ class Bot(commands.Bot):
         exts.extend(EXTENSIONS)
 
         for ext in exts:
-            try:
-                self.load_extension(f"src.exts.{ext}")
-            except commands.ExtensionAlreadyLoaded:
-                continue
+            self.load_extension(f"src.exts.{ext}")
 
         self.exts_loaded = True
 
@@ -148,13 +145,16 @@ class Bot(commands.Bot):
 
         return commands.when_mentioned_or(prefix)(self, message)
 
-    def embed(self, *, title=None, description=None, thumbnail=None, footer=None):
+    def embed(self, *, title=None, description=None, author: discord.User = None, thumbnail=None, footer=None):
         embed = discord.Embed(title=title, description=description, colour=random.choice(COLOURS))
 
         embed.timestamp = dt.datetime.utcnow()
 
         if thumbnail is not None:
             embed.set_thumbnail(url=thumbnail)
+
+        if author is not None:
+            embed.set_author(name=author.display_name, icon_url=author.avatar_url)
 
         embed.set_footer(text=footer or f"{str(self.user)}", icon_url=self.user.avatar_url)
 

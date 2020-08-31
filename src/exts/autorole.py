@@ -9,14 +9,16 @@ class AutoRole(commands.Cog, name="Auto Role"):
 	def __init__(self, bot):
 		self.bot = bot
 
-		if not bot.debug:
-			self.bot.add_listener(self.on_member_join, "on_member_join")
-
 	def cog_check(self, ctx):
 		if not ctx.author.guild_permissions.administrator:
 			raise commands.MissingPermissions(("Administrator",))
 
 		return True
+
+	@commands.Cog.listener("on_startup")
+	async def on_startup(self):
+		if not self.bot.debug:
+			self.bot.add_listener(self.on_member_join, "on_member_join")
 
 	async def on_member_join(self, member):
 		""" Called when a member joins a server. """

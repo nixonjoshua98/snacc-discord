@@ -138,7 +138,7 @@ class Battles(commands.Cog):
 			)
 
 			# - Actually a list...
-			units_lost_text = list(map(lambda kv: f"{kv[1]}x {kv[0].display_name}", units_lost.items()))
+			units_lost_text = list(map(lambda kv: f"`{kv[1]}x {kv[0].display_name}`", units_lost.items()))
 
 			if units_lost:
 				embed.add_field(name="Units Killed", value="\n".join(units_lost_text))

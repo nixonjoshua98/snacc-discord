@@ -1,4 +1,4 @@
-import discord
+import math
 
 import datetime as dt
 
@@ -19,24 +19,22 @@ from src.common.errors import (
 
 class ErrorHandler(commands.Cog):
     def __init__(self, bot):
-        self.bot = bot
-
-        self.bot.on_command_error = self.on_command_error
+        bot.on_command_error = self.on_command_error
 
     async def on_command_error(self, ctx, esc):
         if isinstance(esc, CommandNotFound):
             return None
 
         elif isinstance(esc, GlobalCheckFail):
-            print(esc)
+            print("Global Check Fail:", esc)
 
         elif isinstance(esc, MaxConcurrencyReached):
-            await ctx.send(f"{str(ctx.author)}, slow down")
+            await ctx.send(f"Slow down **{str(ctx.author)}**, you are doing that too fast.")
 
         elif isinstance(esc, CommandOnCooldown):
             seconds = float(esc.args[0].split(" ")[-1][0:-1])
 
-            cd = dt.timedelta(seconds=int(seconds))
+            cd = dt.timedelta(seconds=math.ceil(seconds))
 
             await ctx.send(f"You are on cooldown. Try again in `{cd}`")
 

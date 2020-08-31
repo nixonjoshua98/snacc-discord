@@ -136,6 +136,7 @@ class Miscellaneous(commands.Cog):
 						continue
 
 					current = ctx.message.created_at.replace(tzinfo=dt.timezone.utc).timestamp()
+
 					bucket = cmd._buckets.get_bucket(ctx.message, current)
 
 					if bucket._tokens == 0:

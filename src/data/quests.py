@@ -26,10 +26,8 @@ class _Quest:
 	def get_loot(self, success_rate):
 		loot_chance = max(0.25, min(1.0 - success_rate, 0.65))
 
-		min_val, max_val = self.power * 10, self.power * 15
-
 		if loot_chance >= random.uniform(0.0, 1.0):
-			return {utils.get_random_name():  max(10, random.randint(min_val, max_val))}
+			return {utils.get_random_name():  math.floor(self.power * random.uniform(5.0, 10.0))}
 
 		return dict()
 
