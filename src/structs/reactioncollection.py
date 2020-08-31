@@ -64,7 +64,7 @@ class ReactionCollection:
 		users = await self.get_users()
 
 		if self.delete_after:
-			return await self.message.delete()
+			await self.message.delete()
 
 		return users
 

@@ -146,7 +146,7 @@ class Miscellaneous(commands.Cog):
 						cooldowns.append(f"`{cmd.name: <12} {dt.timedelta(seconds=int(retry_after))}`")
 
 			if cooldowns:
-				embed.add_field(name=inst.qualified_name, value="\n".join(cooldowns))
+				embed.add_field(name=name, value="\n".join(cooldowns))
 
 		await ctx.send(embed=embed)
 
