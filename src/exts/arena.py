@@ -35,12 +35,10 @@ class Arena(commands.Cog):
 	async def background_loop(self):
 		await asyncio.sleep(60 * 60 * 8.0)
 
-		channel = self.bot.get_channel(DarknessServer.ABO_CHANNEL)
-
 		if missing := await self.update_members():
-			await channel.send(f"Missing username: {', '.join(missing)}")
+			channel = self.bot.get_channel(DarknessServer.ABO_CHANNEL)
 
-		await channel.send("Updated stats :thumbsup:")
+			await channel.send(f"Missing usernames: {', '.join(missing)}")
 
 	@checks.snaccman_only()
 	@commands.command(name="update")
@@ -113,9 +111,7 @@ class Arena(commands.Cog):
 
 			return None
 
-		svr = self.bot.get_guild(DarknessServer.ID)
-
-		role = svr.get_role(DarknessServer.ABO_ROLE)
+		role = self.bot.get_guild(DarknessServer.ID).get_role(DarknessServer.ABO_ROLE)
 
 		one_week_ago = dt.datetime.utcnow() - dt.timedelta(days=7)
 
@@ -159,9 +155,7 @@ class Arena(commands.Cog):
 		return pages
 
 	async def update_members(self):
-		svr = self.bot.get_guild(DarknessServer.ID)
-
-		role = svr.get_role(DarknessServer.ABO_ROLE)
+		role = self.bot.get_guild(DarknessServer.ID).get_role(DarknessServer.ABO_ROLE)
 
 		missing, requests = [], []
 

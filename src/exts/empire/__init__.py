@@ -192,8 +192,7 @@ class Empire(commands.Cog):
 			# - Set the last_income field which is used to calculate the income rate from the delta time
 			await self.bot.mongo.set_one("empires", {"_id": empire["_id"]}, {"last_income": now})
 
-			last_login = empire.get("last_login", now)
-			last_income = empire.get("last_income", now)
+			last_login, last_income = empire.get("last_login", now), empire.get("last_income", now)
 
 			hours_since_login = (now - last_login).total_seconds() / 3600
 

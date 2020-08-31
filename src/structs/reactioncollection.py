@@ -28,9 +28,7 @@ class ReactionCollection:
 
 		for react in self.message.reactions:
 			if react.emoji == self.react:
-				users = [u for u in await react.users().flatten() if not u.bot and isinstance(u, discord.Member)]
-
-				return users
+				return [u for u in await react.users().flatten() if not u.bot and isinstance(u, discord.Member)]
 
 		return []
 
@@ -46,10 +44,6 @@ class ReactionCollection:
 
 		if self.max_reacts is not None and len(self.members) >= self.max_reacts:
 			self._running = False
-
-	async def on_end(self):
-		if self.delete_after:
-			return await self.message.delete()
 
 	async def _loop(self, destination):
 		self.message = await self.send_initial_message(destination)
@@ -69,7 +63,8 @@ class ReactionCollection:
 
 		users = await self.get_users()
 
-		await self.on_end()
+		if self.delete_after:
+			return await self.message.delete()
 
 		return users
 

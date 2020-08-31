@@ -219,8 +219,8 @@ class TimePeriod(commands.Converter):
 	async def convert(self, ctx, argument):
 		seconds = self.get_seconds(argument)
 
-		if seconds < 5 or seconds > 604_800:
-			raise commands.UserInputError("Time period must be between `5s` and `7d`")
+		if seconds < 900 or seconds > 604_800:
+			raise commands.UserInputError("Time period must be between `15m` and `7d`")
 
 		return dt.timedelta(seconds=seconds)
 
