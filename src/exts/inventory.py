@@ -56,7 +56,11 @@ class Inventory(commands.Cog):
 
 				await ctx.bot.mongo.snacc["loot"].delete_many({"user": ctx.author.id, "_id": {"$in": all_ids}})
 
-				await ctx.bot.mongo.snacc["bank"].update_one({"user": "ctx.author.id"}, {"$inc": {"usd": total_value}})
+				await ctx.bot.mongo.snacc["bank"].update_one(
+					{"user": ctx.author.id},
+					{"$inc": {"usd": total_value}},
+					upsert=True
+				)
 
 				await ctx.send(f"You sold your loot and gained **${total_value:,}**")
 
