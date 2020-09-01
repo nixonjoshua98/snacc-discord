@@ -51,12 +51,12 @@ def write_to_local_database(atlas_data):
                 client[db][col].drop()
 
                 client[db][col].insert_many(atlas_data[col])
-    
+
 
 while True:
     data = get_data_from_atlas()
 
-    write_to_local_database(data)
+    # write_to_local_database(data)
 
     write_data_to_json(data)
 
