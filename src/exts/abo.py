@@ -21,14 +21,14 @@ class ABO(commands.Cog):
 	@commands.is_owner()
 	@commands.command(name="aboname")
 	async def set_abo_name(self, ctx, user: discord.Member, *, name):
-		""" Associate a Discord user to a user in ABO. """
+		""" Associate a discord user to a user in ABO. """
 
 		embed = ctx.bot.embed(title="Auto Battles Online", description=f"{user.mention} username is `{name}`?")
 
 		if not await Confirm(embed).prompt(ctx):
 			return await ctx.send("Operation aborted.")
 
-		await ctx.bot.mongo.set_one("players", {"_id": user.id}, {"abo_name": name})
+		await ctx.bot.db["players"].update_one({"_id": user.id}, {"$set": {"abo_name": name}}, upsert=True)
 
 		await ctx.send(f"Username has been set to `{name}`")
 

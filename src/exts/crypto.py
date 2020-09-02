@@ -56,7 +56,7 @@ class Crypto(commands.Cog):
 			await ctx.send(f"You can't afford to buy **{amount}** Bitcoin(s).")
 
 		else:
-			await ctx.bot.mongo.snacc["bank"].update_one(
+			await ctx.bot.db["bank"].update_one(
 				{"_id": ctx.author.id},
 				{"$inc": {"btc": amount, "usd": -price}},
 				upsert=True
@@ -76,7 +76,7 @@ class Crypto(commands.Cog):
 			await ctx.send(f"You are trying to sell more Bitcoin than you currently own.")
 
 		else:
-			await ctx.bot.mongo.snacc["bank"].update_one(
+			await ctx.bot.db["bank"].update_one(
 				{"_id": ctx.author.id},
 				{"$inc": {"usd": price, "btc": -amount}},
 				upsert=True

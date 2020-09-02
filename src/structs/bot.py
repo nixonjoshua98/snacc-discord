@@ -31,9 +31,7 @@ class Bot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix=self.get_prefix, case_insensitive=True, help_command=Help())
 
-        self.mongo = MongoClient()
-
-        self.db = self.mongo.snaccV2
+        self.db = MongoClient().snaccV2
 
         self.exts_loaded = False
 
@@ -87,14 +85,6 @@ class Bot(commands.Bot):
         print(f"Adding Cog: {cog.qualified_name}", end="...")
         super().add_cog(cog)
         print("OK")
-
-    async def is_snacc_owner(self) -> bool:
-        if self.owner_id is None:
-            app = await self.application_info()
-
-            self.owner_id = app.owner.id
-
-        return self.owner_id == SNACCMAN
 
     async def bot_check(self, ctx) -> bool:
         if not self.exts_loaded or ctx.guild is None or ctx.author.bot:
