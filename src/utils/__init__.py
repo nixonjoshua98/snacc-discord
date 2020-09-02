@@ -1,7 +1,6 @@
 import discord
 import asyncio
 import random
-import math
 
 from src.common.population import Military, Workers
 
@@ -20,13 +19,14 @@ def get_random_name() -> str:
 
 def random_colour() -> discord.Color:
 	COLOURS = (
-		discord.Color.orange(), discord.Color.purple(), discord.Color.teal(), discord.Color.green(),
-		discord.Color.dark_green(), discord.Color.blue(), discord.Color.dark_blue(), discord.Color.dark_purple(),
-		discord.Color.magenta(), discord.Color.dark_magenta(), discord.Color.gold(),
+		discord.Color.orange(), 		discord.Color.purple(), 		discord.Color.teal(),
+		discord.Color.green(),			discord.Color.dark_green(), 	discord.Color.blue(),
+		discord.Color.dark_blue(), 		discord.Color.dark_purple(),	discord.Color.magenta(),
+		discord.Color.dark_magenta(), 	discord.Color.gold(),
 
-		discord.Color.from_rgb(248, 255, 0), discord.Color.from_rgb(179, 0, 255),
-		discord.Color.from_rgb(255, 29, 174), discord.Color.from_rgb(179, 0, 255),
-		discord.Color.from_rgb(193, 255, 72), discord.Color.from_rgb(74, 255, 1),
+		discord.Color.from_rgb(248, 255, 0), 	discord.Color.from_rgb(179, 0, 255),
+		discord.Color.from_rgb(255, 29, 174), 	discord.Color.from_rgb(179, 0, 255),
+		discord.Color.from_rgb(193, 255, 72), 	discord.Color.from_rgb(74, 255, 1),
 		discord.Color.from_rgb(0, 246, 255)
 	)
 

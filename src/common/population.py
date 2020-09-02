@@ -88,7 +88,7 @@ class MilitaryUnit(Unit):
 
 		super(MilitaryUnit, self).__init__(key=key, base_cost=base_cost, **kwargs)
 
-		self._power = self._base_cost / max(450, (600 - ((MilitaryUnit.__military_id - 1) * 25)))
+		self.power_per_unit = self._base_cost / max(450, (600 - ((MilitaryUnit.__military_id - 1) * 25)))
 
 		# - Military units are cheaper
 		self._exponent = 1.10
@@ -99,7 +99,7 @@ class MilitaryUnit(Unit):
 		return math.floor(self._upkeep * (1.0 - (unit_entry.get("level", 0) * 0.05)) * unit_entry.get("owned", 0))
 
 	def calc_power(self, unit_entry):
-		return round(self._power * unit_entry.get("owned", 0), 1)
+		return round(self.power_per_unit * unit_entry.get("owned", 0), 1)
 
 
 class Workers(UnitGroup):
@@ -218,10 +218,9 @@ class Military(UnitGroup):
 				continue
 
 			price = unit.calc_price(owned, 1)
-			power = unit.calc_power(unit_entry)
 			upkeep = unit.calc_hourly_upkeep(unit_entry)
 
-			row.extend([f"{owned}/{max_units}", power, f"${upkeep:,}", f"${price:,}"])
+			row.extend([f"{owned}/{max_units}", unit.power_per_unit, f"${upkeep:,}", f"${price:,}"])
 
 			page.add(row)
 

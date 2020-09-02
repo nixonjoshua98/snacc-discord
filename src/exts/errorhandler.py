@@ -26,7 +26,7 @@ class ErrorHandler(commands.Cog):
             return None
 
         elif isinstance(esc, NotOwner):
-            await ctx.send("This command is only accessible by my owned.")
+            await ctx.send("This command is only accessible by my owner.")
 
         elif isinstance(esc, GlobalCheckFail):
             print("Global Check Fail:", esc)

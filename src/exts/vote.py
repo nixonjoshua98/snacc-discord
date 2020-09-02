@@ -45,7 +45,7 @@ class Vote(commands.Cog):
 		""" Link to the vote site. """
 
 		await ctx.send(
-			"https://discord.boats/bot/666616515436478473"
+			"https://discord.boats/bot/666616515436478473\n"
 			"https://top-bots.xyz/bot/666616515436478473"
 		)
 
