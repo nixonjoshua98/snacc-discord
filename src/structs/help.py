@@ -5,13 +5,40 @@ from src.structs.displaypages import DisplayPages
 
 class Help(commands.HelpCommand):
 	def __init__(self):
-		super(Help, self).__init__(verify_checks=True, show_hidden=True)
+		super(Help, self).__init__(verify_checks=False, show_hidden=True)
 
 	async def update_bot_mapping(self, mapping):
 		for k, v in mapping.items():
 			mapping[k] = await self.filter_commands(v)
 
 		return {k: v for k, v in mapping.items() if k is not None and v}
+
+	async def filter_commands(self, cmds, *, sort=False, key=None):
+		if sort and key is None:
+			key = lambda c: c.name
+
+		iterator = cmds if self.show_hidden else filter(lambda c: not c.hidden, cmds)
+
+		async def predicate(cmd):
+			try:
+				return await cmd.can_run(self.context)
+			except commands.CommandError:
+				return False
+
+		ret = []
+		for cmd in iterator:
+			if getattr(cmd.cog, "__help_verify_checks__", self.verify_checks):
+				valid = await predicate(cmd)
+
+				if valid:
+					ret.append(cmd)
+			else:
+				ret.append(cmd)
+
+		if sort:
+			ret.sort(key=key)
+
+		return ret
 
 	async def create_embeds(self, mapping):
 		def get_cmd_title(cmd_, *, signature: bool = True):
@@ -48,11 +75,9 @@ class Help(commands.HelpCommand):
 
 					if isinstance(cmd, commands.Group):
 						for sub in cmd.commands:
-							embed.add_field(
-								name=f"{get_cmd_title(sub.parent, signature=False)} {get_cmd_title(sub)}",
-								value=str(sub.callback.__doc__).strip(),
-								inline=False
-							)
+							name = f"{get_cmd_title(sub.parent, signature=False)} {get_cmd_title(sub)}"
+
+							embed.add_field(name=name, value=str(sub.callback.__doc__).strip(),inline=False)
 
 				embeds.append(embed)
 

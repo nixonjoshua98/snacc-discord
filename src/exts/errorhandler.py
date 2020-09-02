@@ -9,7 +9,6 @@ from discord.ext.commands import (
     CommandOnCooldown,
     MissingRequiredArgument,
     MissingRole,
-    MaxConcurrencyReached,
     NotOwner
 )
 
@@ -31,9 +30,6 @@ class ErrorHandler(commands.Cog):
 
         elif isinstance(esc, GlobalCheckFail):
             print("Global Check Fail:", esc)
-
-        elif isinstance(esc, MaxConcurrencyReached):
-            await ctx.send(f"Slow down **{str(ctx.author)}**, you are doing that too fast.")
 
         elif isinstance(esc, CommandOnCooldown):
             seconds = float(esc.args[0].split(" ")[-1][0:-1])

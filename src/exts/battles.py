@@ -95,7 +95,7 @@ class Battles(commands.Cog):
 
 		thief_tax = int(stolen_amount // random.uniform(2.0, 6.0)) if stolen_amount >= 3_000 else 0
 
-		await ctx.bot.db["bank"].bulk_Write(
+		await ctx.bot.db["bank"].bulk_write(
 			[
 				UpdateOne({"_id": ctx.author.id}, {"$inc": {"usd": stolen_amount - thief_tax}}, upsert=True),
 				UpdateOne({"_id": target.id}, {"$inc": {"usd": -stolen_amount}}, upsert=True)

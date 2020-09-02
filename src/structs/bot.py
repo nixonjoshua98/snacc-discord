@@ -113,16 +113,7 @@ class Bot(commands.Bot):
 
         self.exts_loaded = False
 
-        exts = []
-
-        if not self.debug:
-            path = os.path.join(os.getcwd(), "src", "exts", "serverspecific")
-
-            exts = [f"serverspecific.{f[:-3]}" for f in os.listdir(path) if not f.startswith("__")]
-
-        exts.extend(EXTENSIONS)
-
-        for ext in exts:
+        for ext in EXTENSIONS:
             self.load_extension(f"src.exts.{ext}")
 
         self.exts_loaded = True
@@ -130,9 +121,9 @@ class Bot(commands.Bot):
     async def get_prefix(self, message):
         """ Get the prefix for the server/guild from the database/cache. """
 
-        svr = self.db["servers"].find_one({"_id": message.guild.id})
+        svr = await self.db["servers"].find_one({"_id": message.guild.id}) or dict()
 
-        prefix = "." if self.debug else svr.get("prefix", "!") if svr is not None else "!"
+        prefix = "." if self.debug else svr.get("prefix", "!")
 
         return commands.when_mentioned_or(prefix)(self, message)
 

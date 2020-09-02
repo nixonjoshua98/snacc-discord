@@ -19,6 +19,8 @@ from src.structs.textleaderboard import TextLeaderboard
 
 
 class Arena(commands.Cog):
+	__help_verify_checks__ = True
+
 	def __init__(self, bot):
 		self.bot = bot
 
@@ -122,7 +124,7 @@ class Arena(commands.Cog):
 
 		for member in role.members:
 
-			player_entry = await self.bot.mongo.find_one("players", {"_id": member.id}) or dict()
+			player_entry = await self.bot.db["players"].find_one({"_id": member.id}) or dict()
 
 			if (abo_name := player_entry.get("abo_name")) is None:
 				continue

@@ -56,7 +56,7 @@ def write_to_local_database(atlas_data):
 while True:
     data = get_data_from_atlas()
 
-    # write_to_local_database(data)
+    write_to_local_database(data)
 
     write_data_to_json(data)
 

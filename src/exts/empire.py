@@ -284,10 +284,16 @@ async def recruit_unit(ctx):
 
 	units = empire.get("units", dict())
 
-	available = list(filter(lambda u: units.get(u.key, 0) < u.calc_max_amount(units.get(u.key, dict())), Military.units))
+	# - Get available units
+	avail_units = []
+	for u in Military.units:
+		unit_entry = units.get(u.key, dict())
 
-	if available:
-		unit_recruited = min(available, key=lambda u: u.calc_price(units.get(u.key, dict()).get("owned", 0), 1))
+		if unit_entry.get("owned", 0) > 0:
+			avail_units.append(u)
+
+	if avail_units:
+		unit_recruited = min(avail_units, key=lambda u: u.calc_price(units.get(u.key, dict()).get("owned", 0), 1))
 
 		await ctx.bot.db["empires"].update_one(
 			{"_id": ctx.author.id},

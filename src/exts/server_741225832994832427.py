@@ -13,7 +13,7 @@ class Server_741225832994832427(commands.Cog):
 	@commands.Cog.listener("on_startup")
 	async def on_startup(self):
 		if not self.bot.debug:
-			print("Server 741225832994832427: Adding listeners")
+			print("Server 741225832994832427: Added listeners")
 
 			self.bot.add_listener(self.on_message, "on_message")
 

@@ -1,19 +1,11 @@
-import discord
-
 from discord.ext import commands
 
 from src.common.errors import (
-	SnaccmanOnly,
-	DarknessServerOnly,
 	MissingEmpire,
 	HasEmpire,
-	SupportServerOnly,
-	NSFWChannelOnly
 )
 
 from src.common.population import Military
-
-from src.common import SNACCMAN, DarknessServer, SupportServer
 
 
 def has_empire():
@@ -36,20 +28,6 @@ def no_empire():
 			raise HasEmpire(f"You already have an established empire. View your empire using `{ctx.prefix}empire`")
 
 		return True
-
-	return commands.check(predicate)
-
-
-def role_or_permission(role: str, **permissions):
-	async def predicate(ctx):
-		chnl_perms = ctx.channel.permissions_for(ctx.author)
-
-		has_perms = not [perm for perm, value in chnl_perms.items() if getattr(permissions, perm) != value]
-
-		if has_perms or discord.utils.get(ctx.author.roles, name=role) is not None:
-			return True
-
-		raise commands.CommandError("You do not have access to this command.")
 
 	return commands.check(predicate)
 

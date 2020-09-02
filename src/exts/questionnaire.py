@@ -37,9 +37,9 @@ class Questionnaire(commands.Cog):
 		args = message.content[len(prefix):].split(" ")
 
 		if len(args) > 0:
-			query = {"server": message.guild.id, "command": args[0]}
-
-			questionnaire = await self.bot.mongo.find_one("questionnaires", query)
+			questionnaire = await self.bot.db["questionnaires"].find_one(
+				{"server": message.guild.id, "command": args[0]}
+			)
 
 			if questionnaire:
 				await self.send_questionnaire(message.channel, message.author, questionnaire)

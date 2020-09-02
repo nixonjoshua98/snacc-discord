@@ -67,30 +67,8 @@ class Units(commands.Cog):
 			await ctx.send(f"Bought **{amount}x {unit.display_name}** for **${price:,}**!")
 
 	@checks.has_empire()
-	@show_units.command(name="fire")
-	async def fire_unit(self, ctx, unit: EmpireUnit(), amount: Range(1, None) = 1):
-		""" Fire a unit. You get no money back from firing. """
-
-		empire = await ctx.bot.db["empires"].find_one({"_id": ctx.author.id})
-
-		# - Get the data for the entry the user wants to buy
-		unit_entry = empire.get("units", dict()).get(unit.key, dict()) if empire is not None else dict()
-
-		if unit_entry.get("owned", 0) - amount < 0:
-			await ctx.send(f"You do not have **{amount:,}x {unit.key}** available to fire.")
-
-		else:
-			await ctx.bot.db["empires"].update_one(
-				{"_id": ctx.author.id},
-				{"$inc": {f"units.{unit.key}.owned": -amount}},
-				upsert=True
-			)
-
-			await ctx.send(f"Fired **{amount}x {unit.display_name}**!")
-
-	@checks.has_empire()
-	@show_units.command(name="merge")
 	@commands.max_concurrency(1, commands.BucketType.user)
+	@show_units.command(name="merge")
 	async def merge_unit(self, ctx, unit: MergeableUnit()):
 		""" Merge your units to upgrade their level. """
 

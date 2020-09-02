@@ -4,10 +4,19 @@ from discord.ext import commands
 
 from src.aboapi import API
 
+from src.common import DarknessServer
+
 from src.structs.confirm import Confirm
 
 
 class ABO(commands.Cog):
+	__help_verify_checks__ = True
+
+	async def cog_check(self, ctx):
+		if ctx.guild.id != DarknessServer.ID:
+			raise commands.DisabledCommand("This command is disabled in this server")
+
+		return True
 
 	@commands.is_owner()
 	@commands.command(name="aboname")

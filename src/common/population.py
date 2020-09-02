@@ -116,6 +116,7 @@ class Workers(UnitGroup):
 		WorkerUnit(income=50, 	key="shoemaker"),
 		WorkerUnit(income=55, 	key="falconer"),
 		WorkerUnit(income=60, 	key="carpenter"),
+		WorkerUnit(income=65, 	key="merchant"),
 	)
 
 	@classmethod
@@ -150,7 +151,7 @@ class Workers(UnitGroup):
 
 				continue
 
-			price = unit.calc_price(unit_entry, 1)
+			price = unit.calc_price(owned, 1)
 			income = unit.calc_hourly_income(unit_entry)
 
 			row.extend([f"{owned}/{max_units}", f"${income:,}", f"${price:,}"])
@@ -216,7 +217,7 @@ class Military(UnitGroup):
 
 				continue
 
-			price = unit.calc_price(unit_entry, 1)
+			price = unit.calc_price(owned, 1)
 			power = unit.calc_power(unit_entry)
 			upkeep = unit.calc_hourly_upkeep(unit_entry)
 
