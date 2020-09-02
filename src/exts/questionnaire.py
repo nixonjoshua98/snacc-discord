@@ -13,7 +13,13 @@ class Questionnaire(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-	@commands.Cog.listener("on_message")
+	@commands.Cog.listener("on_startup")
+	async def on_startup(self):
+		if not self.bot.debug:
+			print("Questionnaire: Added listeners")
+
+			self.bot.add_listener(self.on_message, "on_message")
+
 	async def on_message(self, message):
 		async def get_prefix():
 			for pre in await self.bot.get_prefix(message):
@@ -55,7 +61,7 @@ class Questionnaire(commands.Cog):
 
 		row = dict(title=title, server=ctx.guild.id, command=comm, log_channel=log_channel.id, questions=questions)
 
-		await ctx.bot.mongo.insert_one("questionnaires", row)
+		await ctx.bot.db["questionnaires"].insert_one(row)
 
 		await ctx.send("Questionnaire created!")
 
@@ -68,11 +74,11 @@ class Questionnaire(commands.Cog):
 
 		query = {"server": ctx.guild.id, "command": comm}
 
-		existing = await ctx.bot.mongo.find_one("questionnaires", query)
+		existing = await ctx.bot.db["questionnaires"].find_one(query)
 
 		# - Existing questionnaire so we remove it
 		if existing:
-			await ctx.bot.mongo.delete_one("questionnaires", query)
+			await ctx.bot.db["questionnaires"].delete_one(query)
 
 			await ctx.send(f"Questionnaire **{comm}** has been deleted.")
 
@@ -171,7 +177,7 @@ class Questionnaire(commands.Cog):
 
 				continue
 
-			existing = await ctx.bot.mongo.find_one("questionnaires", {"server": ctx.guild.id, "command": comm})
+			existing = await ctx.bot.db["questionnaires"].find_one({"server": ctx.guild.id, "command": comm})
 
 			if existing:
 				await ctx.send(f"You already have a questionnaire attached to **{ctx.prefix}{comm}**")

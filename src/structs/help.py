@@ -1,6 +1,6 @@
 from discord.ext import commands
 
-from src import inputs
+from src.structs.displaypages import DisplayPages
 
 
 class Help(commands.HelpCommand):
@@ -36,7 +36,6 @@ class Help(commands.HelpCommand):
 
 				embed = bot.embed(title=title, description=(cog.__doc__ or "").strip())
 
-				embed.set_thumbnail(url=bot.user.avatar_url)
 				embed.set_footer(text=f"{str(bot.user)} | Module {i + 1}/{len(mapping)}", icon_url=bot.user.avatar_url)
 
 				for ii, cmd in enumerate(chunk):
@@ -63,7 +62,7 @@ class Help(commands.HelpCommand):
 		embeds = await self.create_embeds(mapping)
 
 		if embeds:
-			await inputs.send_pages(self.context, embeds)
+			await DisplayPages(embeds, timeout=180.0).send(self.context)
 
 		else:
 			await self.context.send("You do not have access to help for this command.")

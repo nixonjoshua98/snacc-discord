@@ -20,9 +20,9 @@ class Rewards(commands.Cog):
 
 		now = dt.datetime.utcnow()
 
-		player_row = await ctx.bot.mongo.snacc["players"].find_one({"_id": ctx.author.id})
+		player_row = await ctx.bot.db["players"].find_one({"_id": ctx.author.id}) or dict()
 
-		streak = player_row["daily_streak"] + 1 if player_row is not None else 1
+		streak = player_row.get("daily_streak", 0) + 1
 
 		last_daily = player_row.get("last_daily", now)
 
@@ -38,10 +38,10 @@ class Rewards(commands.Cog):
 		reward = 3_000 + (500 * min(streak, 14))
 
 		# - Add the reward to the user bank balance
-		await ctx.bot.mongo.snacc["bank"].update_one({"_id": ctx.author.id}, {"$inc": {"usd": reward}}, upsert=True)
+		await ctx.bot.db["bank"].update_one({"_id": ctx.author.id}, {"$inc": {"usd": reward}}, upsert=True)
 
 		# - Update the player with the new streak and daily claim time
-		await ctx.bot.mongo.snacc["players"].update_one(
+		await ctx.bot.db["players"].update_one(
 			{"_id": ctx.author.id},
 			{"$inc": {"daily_streak": 1}, "$set": {"last_daily": now}},
 			upsert=True

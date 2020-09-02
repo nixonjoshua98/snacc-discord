@@ -9,7 +9,8 @@ from discord.ext.commands import (
     CommandOnCooldown,
     MissingRequiredArgument,
     MissingRole,
-    MaxConcurrencyReached
+    MaxConcurrencyReached,
+    NotOwner
 )
 
 from src.common.errors import (
@@ -24,6 +25,9 @@ class ErrorHandler(commands.Cog):
     async def on_command_error(self, ctx, esc):
         if isinstance(esc, CommandNotFound):
             return None
+
+        elif isinstance(esc, NotOwner):
+            await ctx.send("This command is only accessible by my owned.")
 
         elif isinstance(esc, GlobalCheckFail):
             print("Global Check Fail:", esc)

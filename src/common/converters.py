@@ -1,12 +1,12 @@
-import discord
-
-import datetime as dt
 
 from discord.ext import commands
 
-from src.common import EmpireConstants
+import datetime as dt
 
-from src.data import EmpireQuests, EmpireUpgrades, Military, Workers
+from src.common import EmpireConstants
+from src.common.quests import EmpireQuests
+from src.common.upgrades import EmpireUpgrades
+from src.common.population import Military, Workers
 
 
 class DiscordUser(commands.Converter):
@@ -23,7 +23,7 @@ class DiscordUser(commands.Converter):
 
 		return user
 
-	async def convert(self, ctx, argument) -> discord.Member:
+	async def convert(self, ctx, argument):
 		try:
 			member = await self._convert(ctx, argument)
 
@@ -39,35 +39,15 @@ class DiscordUser(commands.Converter):
 		return member
 
 
-class ItemWithID(commands.Converter):
-	def __init__(self, collection):
-		self.collection = collection
-
-	async def convert(self, _, argument):
-		try:
-			val = int(argument)
-
-		except ValueError:
-			return False
-
-		else:
-			item = self.collection.get(id=val)
-
-			if item is None:
-				return False
-
-		return item
-
-
-class EmpireTargetUser(DiscordUser):
+class EmpireAttackTarget(DiscordUser):
 	ATTACK_COOLDOWN = 2.0 * 3_600
 
 	async def convert(self, ctx, argument):
 		user = await super().convert(ctx, argument)
 
-		empire = await ctx.bot.mongo.find_one("empires", {"_id": user.id})
+		empire = await ctx.bot.db["empires"].find_one({"_id": user.id})
 
-		if not empire:
+		if empire is None:
 			raise commands.CommandError(f"Target does not have an empire.")
 
 		if empire.get("last_attack") is None:
@@ -76,7 +56,6 @@ class EmpireTargetUser(DiscordUser):
 		else:
 			time_since_attack = (dt.datetime.utcnow() - empire['last_attack']).total_seconds()
 
-		# - Target is in cooldown period
 		if time_since_attack < self.ATTACK_COOLDOWN:
 			delta = dt.timedelta(seconds=int(self.ATTACK_COOLDOWN - time_since_attack))
 
@@ -86,7 +65,7 @@ class EmpireTargetUser(DiscordUser):
 
 
 class Range(commands.Converter):
-	def __init__(self, min_: int, max_: int):
+	def __init__(self, min_: int, max_: int = None):
 		self.min_ = min_
 		self.max_ = max_
 
@@ -94,8 +73,11 @@ class Range(commands.Converter):
 		try:
 			val = int(argument)
 
-			if val > self.max_ or val < self.min_:
+			if (self.max_ is not None and val > self.max_) or val < self.min_:
 				raise commands.UserInputError(f"Argument should be within **{self.min_:,} - {self.max_:,}**")
+
+			elif self.max_ is None and val < self.min_:
+				raise commands.UserInputError(f"Argument should be greater than **{self.min_:,}")
 
 		except ValueError:
 			raise commands.UserInputError(f"You attempted to use an invalid argument.")
@@ -103,14 +85,16 @@ class Range(commands.Converter):
 		return val
 
 
-class CoinSide(commands.Converter):
+class AnyoneWithEmpire(DiscordUser):
 	async def convert(self, ctx, argument):
-		argument = argument.lower()
+		user = await self._convert(ctx, argument)
 
-		if argument not in ["tails", "heads"]:
-			raise commands.CommandError(f"`{argument}` is not a valid coin side.")
+		empire = await ctx.bot.db["empires"].find_one({"_id": user.id})
 
-		return argument
+		if not empire:
+			raise commands.CommandError(f"Target does not have an empire.")
+
+		return user
 
 
 class EmpireUnit(commands.Converter):
@@ -137,68 +121,67 @@ class MergeableUnit(EmpireUnit):
 	async def convert(self, ctx, argument):
 		unit = await super().convert(ctx, argument)
 
-		units = await ctx.bot.mongo.find_one("units", {"_id": ctx.author.id})
-		levels = await ctx.bot.mongo.find_one("levels", {"_id": ctx.author.id})
+		empire = await ctx.bot.db["empires"].find_one({"_id": ctx.author.id})
 
-		if units.get(unit.key, 0) < unit.calc_max_amount(levels.get(unit.key, 0)):
+		# - Get the data for the entry the user wants to buy
+		unit_entry = empire.get("units", dict()).get(unit.key, dict()) if empire is not None else dict()
+
+		owned, level = unit_entry.get("owned", 0), unit_entry.get("level", 0)
+
+		if owned < unit.calc_max_amount(unit_entry):
 			raise commands.CommandError(f"Merging requires you reach the owned limit first.")
 
-		elif units.get(unit.key, 0) < EmpireConstants.MERGE_COST:
+		elif owned < EmpireConstants.MERGE_COST:
 			raise commands.CommandError(f"Merging consumes **{EmpireConstants.MERGE_COST}** units")
 
-		levels = await ctx.bot.mongo.find_one("levels", {"_id": ctx.author.id})
-
-		if levels.get(unit.key, 0) >= EmpireConstants.MAX_UNIT_MERGE:
+		if level >= EmpireConstants.MAX_UNIT_MERGE:
 			raise commands.CommandError(f"**{unit.display_name}** has already reached the maximum merge level.")
 
 		return unit
 
 
-class AnyoneWithEmpire(DiscordUser):
-	async def _convert(self, ctx, argument):
+class EmpireUpgrade(commands.Converter):
+	async def convert(self, ctx, argument):
 		try:
-			user = await commands.MemberConverter().convert(ctx, argument)
+			val = int(argument)
 
-		except commands.BadArgument:
-			try:
-				user = await commands.UserConverter().convert(ctx, argument)
+		except ValueError:
+			raise commands.UserInputError(f"Upgrade with ID `{argument}` could not be found")
 
-			except commands.BadArgument:
-				raise commands.CommandError(f"User '{argument}' could not be found")
+		else:
+			item = EmpireUpgrades.get(id=val)
 
-		return user
+			if item is None:
+				raise commands.UserInputError(f"Upgrade with ID `{argument}` could not be found")
 
-	async def convert(self, ctx, argument) -> discord.Member:
-		user = await self._convert(ctx, argument)
-
-		empire = await ctx.bot.mongo.find_one("empires", {"_id": user.id})
-
-		if not empire:
-			raise commands.CommandError(f"Target does not have an empire.")
-
-		return user
+		return item
 
 
-class EmpireUpgrade(ItemWithID):
-	def __init__(self):
-		super(EmpireUpgrade, self).__init__(EmpireUpgrades)
-
+class EmpireQuest(commands.Converter):
 	async def convert(self, ctx, argument):
-		if not (upgrade := await super().convert(ctx, argument)):
-			raise commands.UserInputError(f"Upgrade with ID `{upgrade}` could not be found.")
+		try:
+			val = int(argument)
 
-		return upgrade
+		except ValueError:
+			raise commands.UserInputError(f"Upgrade with ID `{argument}` could not be found")
+
+		else:
+			item = EmpireQuests.get(id=val)
+
+			if item is None:
+				raise commands.UserInputError(f"Quest with ID `{argument}` could not be found.")
+
+		return item
 
 
-class EmpireQuest(ItemWithID):
-	def __init__(self):
-		super(EmpireQuest, self).__init__(EmpireQuests)
-
+class CoinSide(commands.Converter):
 	async def convert(self, ctx, argument):
-		if not (quest := await super().convert(ctx, argument)):
-			raise commands.UserInputError(f"Quest with ID `{argument}` could not be found.")
+		argument = argument.lower()
 
-		return quest
+		if argument not in ["tails", "heads"]:
+			raise commands.CommandError(f"`{argument}` is not a valid coin side.")
+
+		return argument
 
 
 class ServerAssignedRole(commands.RoleConverter):
@@ -210,41 +193,6 @@ class ServerAssignedRole(commands.RoleConverter):
 			raise commands.CommandError("Role not recognised. Remove a role by not specifying a role.")
 
 		if role > ctx.guild.me.top_role:
-			return await ctx.send(f"I cannot use that role. It is higher than me in the hierachy.")
+			raise commands.CommandError("I cannot use that role. It is higher than me in the hierachy.")
 
 		return role
-
-
-class TimePeriod(commands.Converter):
-	async def convert(self, ctx, argument):
-		seconds = self.get_seconds(argument)
-
-		if seconds < 900 or seconds > 604_800:
-			raise commands.UserInputError("Time period must be between `15m` and `7d`")
-
-		return dt.timedelta(seconds=seconds)
-
-	def get_seconds(self, argument):
-		lookup = {"s": lambda n: n, "m": lambda n: n * 60, "h": lambda n: 3600 * n, "d": lambda n: (3600 * n) * 24}
-
-		ls = argument.split()
-
-		seconds = 0
-
-		if len(ls) == 1 and ls[0].isdigit():
-			seconds = int(ls[0])
-
-		else:
-			for i, ele in enumerate(ls):
-				if len(ele) > 1 and ele[:-1].isdigit():
-					num = int(ele[:-1])
-
-					func = lookup.get(ele[-1].lower())
-
-					if func is None:
-						continue
-
-					seconds += func(num)
-
-		return seconds
-

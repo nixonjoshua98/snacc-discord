@@ -1,7 +1,6 @@
 import discord
 
-from src import inputs
-
+from src.structs.displaypages import DisplayPages
 from src.structs.textpage import TextPage
 
 
@@ -27,7 +26,10 @@ class TextLeaderboard:
         pages = await self._create_pages(ctx)
 
         if pages:
-            await inputs.send_pages(ctx, pages)
+            if len(pages) == 1:
+                return await ctx.send(pages[0])
+
+            await DisplayPages(pages, timeout=180.0).send(ctx)
 
         else:
             await ctx.send("No records yet.")
@@ -61,6 +63,9 @@ class TextLeaderboard:
             user = row.get("user", row.get("_id"))
 
             user = self._get_user(ctx, user)
+
+            if isinstance(user, int):
+                continue
 
             if prev_row is None or prev_row.get(self.order_col, 0) > row.get(self.order_col, 0):
                 prev_row, rank = row, rank + 1

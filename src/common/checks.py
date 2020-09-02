@@ -1,3 +1,5 @@
+import discord
+
 from discord.ext import commands
 
 from src.common.errors import (
@@ -9,41 +11,17 @@ from src.common.errors import (
 	NSFWChannelOnly
 )
 
+from src.common.population import Military
+
 from src.common import SNACCMAN, DarknessServer, SupportServer
-
-from src.data import Military
-
-
-def snaccman_only():
-	async def predicate(ctx):
-		if ctx.author.id != SNACCMAN:
-			raise SnaccmanOnly("You do not have access to this command.")
-
-		return ctx.author.id == SNACCMAN
-
-	return commands.check(predicate)
-
-
-def has_unit(unit, amount):
-	async def predicate(ctx):
-		units = await ctx.bot.mongo.find_one("units", {"_id": ctx.author.id})
-
-		num_units = units.get(unit.key, 0)
-
-		if num_units < amount:
-			raise commands.CommandError(f"You need at least **{amount}x {unit.display_name}** to do that")
-
-		return True
-
-	return commands.check(predicate)
 
 
 def has_empire():
 	async def predicate(ctx):
-		empire = await ctx.bot.mongo.find_one("empires", {"_id": ctx.author.id})
+		empire = await ctx.bot.db["empires"].find_one({"_id": ctx.author.id})
 
-		if not empire:
-			raise MissingEmpire(f"You do not have an empire yet. You can establish one using `{ctx.prefix}create`")
+		if empire is None:
+			raise MissingEmpire(f"You do not have an empire. You can establish one using `{ctx.prefix}create`")
 
 		return True
 
@@ -52,9 +30,9 @@ def has_empire():
 
 def no_empire():
 	async def predicate(ctx):
-		empire = await ctx.bot.mongo.find_one("empires", {"_id": ctx.author.id})
+		empire = await ctx.bot.db["empires"].find_one({"_id": ctx.author.id})
 
-		if empire:
+		if empire is not None:
 			raise HasEmpire(f"You already have an established empire. View your empire using `{ctx.prefix}empire`")
 
 		return True
@@ -62,30 +40,28 @@ def no_empire():
 	return commands.check(predicate)
 
 
-def main_server_only():
+def role_or_permission(role: str, **permissions):
 	async def predicate(ctx):
-		if ctx.guild.id != DarknessServer.ID:
-			raise DarknessServerOnly("This command can only be used in the main server.")
+		chnl_perms = ctx.channel.permissions_for(ctx.author)
 
-		return ctx.guild.id == DarknessServer.ID
+		has_perms = not [perm for perm, value in chnl_perms.items() if getattr(permissions, perm) != value]
+
+		if has_perms or discord.utils.get(ctx.author.roles, name=role) is not None:
+			return True
+
+		raise commands.CommandError("You do not have access to this command.")
 
 	return commands.check(predicate)
 
 
-def support_server_only():
+def has_unit(unit, amount):
 	async def predicate(ctx):
-		if ctx.guild.id != SupportServer.ID:
-			raise SupportServerOnly("This command can only be used in the support server.")
+		empire = await ctx.bot.db["empires"].find_one({"_id": ctx.author.id}) or dict()
 
-		return True
+		owned = empire.get("units", dict()).get(unit.key, dict()).get("owned", 0)
 
-	return commands.check(predicate)
-
-
-def nsfw_only():
-	async def predicate(ctx):
-		if not ctx.channel.is_nsfw():
-			raise NSFWChannelOnly("This command is restricted to NSFW channels only.")
+		if owned < amount:
+			raise commands.CommandError(f"You need at least **{amount}x {unit.display_name}** to do that")
 
 		return True
 
@@ -94,9 +70,9 @@ def nsfw_only():
 
 def has_power(amount):
 	async def predicate(ctx):
-		units = await ctx.bot.mongo.find_one("units", {"_id": ctx.author.id})
+		empire = await ctx.bot.db["empires"].find_one({"_id": ctx.author.id}) or dict()
 
-		power = Military.calc_total_power(units)
+		power = Military.calc_total_power(empire)
 
 		if power < amount:
 			raise commands.CommandError(f"You need at least **{amount}** power to do that")

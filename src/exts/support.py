@@ -5,7 +5,7 @@ from discord.ext import commands, tasks
 
 from src import utils
 
-from src.common import SupportServer, checks
+from src.common import SupportServer
 
 from src.structs.reactioncollection import ReactionCollection
 
@@ -27,7 +27,7 @@ class Support(commands.Cog):
 	async def giveaway_loop(self):
 		await Giveaway(self.bot).send()
 
-	@checks.snaccman_only()
+	@commands.is_owner()
 	@commands.command(name="giveaway")
 	async def giveaway_command(self, ctx):
 		""" Start a giveaway in the support server. """
@@ -71,7 +71,7 @@ class Giveaway:
 
 		winner = random.choice(members)
 
-		await self.bot.mongo.snacc["loot"].insert_one({"user": winner.id, "name": name, "value": value})
+		await self.bot.db["loot"].insert_one({"user": winner.id, "name": name, "value": value})
 
 		await self.destination.send(
 			f"Congratulations **{winner.mention}** for winning **- {name} -** worth **${value:,}!**"

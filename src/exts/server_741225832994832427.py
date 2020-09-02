@@ -10,7 +10,13 @@ class Server_741225832994832427(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-	@commands.Cog.listener(name="on_message")
+	@commands.Cog.listener("on_startup")
+	async def on_startup(self):
+		if not self.bot.debug:
+			print("Server 741225832994832427: Adding listeners")
+
+			self.bot.add_listener(self.on_message, "on_message")
+
 	async def on_message(self, message):
 		if (
 				message.guild is None or

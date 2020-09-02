@@ -11,9 +11,11 @@ from pymongo import InsertOne, DeleteMany
 
 from src.aboapi import API
 
-from src import inputs
+from src.common import DarknessServer
+
 from src.structs import TextPage
-from src.common import DarknessServer, checks
+from src.structs.displaypages import DisplayPages
+from src.structs.textleaderboard import TextLeaderboard
 
 
 class Arena(commands.Cog):
@@ -42,7 +44,7 @@ class Arena(commands.Cog):
 
 			await channel.send(f"Missing usernames: {', '.join(missing)}")
 
-	@checks.snaccman_only()
+	@commands.is_owner()
 	@commands.command(name="update")
 	async def update_stats(self, ctx):
 		""" Update the users history. Pulls from the API. """
@@ -60,7 +62,7 @@ class Arena(commands.Cog):
 
 		pages = await self.create_history(include_discord=not ctx.author.is_on_mobile())
 
-		await inputs.send_pages(ctx, pages)
+		await DisplayPages(pages).send(ctx)
 
 	@commands.command(name="trophies", aliases=["rating"])
 	async def show_leaderboard(self, ctx: commands.Context):
@@ -69,20 +71,19 @@ class Arena(commands.Cog):
 		async def query():
 			return await self.get_member_rows()
 
-		await inputs.show_leaderboard(
-			ctx,
-			"Guild Leaderboard",
+		await TextLeaderboard(
+			title="Guild Leaderboard",
 			columns=["level", "rating"],
 			order_by="rating",
 			query_func=query
-		)
+		).send(ctx)
 
 	async def get_member_rows(self):
 		role = self.bot.get_guild(DarknessServer.ID).get_role(DarknessServer.ABO_ROLE)
 
 		ids = tuple(member.id for member in role.members)
 
-		rows = await self.bot.mongo.find("arena", {"user": {"$in": ids}}).to_list(length=None)
+		rows = await self.bot.db["arena"].find({"user": {"$in": ids}}).to_list(length=None)
 
 		rows.sort(key=lambda r: (r["user"], r["date"]))
 
@@ -97,7 +98,7 @@ class Arena(commands.Cog):
 
 	async def create_history(self, *, include_discord: bool = True):
 		async def create_history_row(user):
-			stats = await self.bot.mongo.find("arena", query).to_list(length=None)
+			stats = await self.bot.db["arena"].find(query).to_list(length=None)
 
 			if stats:
 				for i in range(len(stats)):
@@ -121,7 +122,7 @@ class Arena(commands.Cog):
 
 		for member in role.members:
 
-			player_entry = await self.bot.mongo.find_one("players", {"_id": member.id})
+			player_entry = await self.bot.mongo.find_one("players", {"_id": member.id}) or dict()
 
 			if (abo_name := player_entry.get("abo_name")) is None:
 				continue
@@ -164,7 +165,7 @@ class Arena(commands.Cog):
 		one_month_ago = dt.datetime.utcnow() - dt.timedelta(days=31)
 
 		for member in role.members:
-			player_entry = await self.bot.mongo.find_one("players", {"_id": member.id})
+			player_entry = await self.bot.db["players"].find_one({"_id": member.id}) or dict()
 
 			if (abo_name := player_entry.get("abo_name")) is not None:
 				player = await API.leaderboard.get_player(abo_name)
@@ -185,7 +186,7 @@ class Arena(commands.Cog):
 
 		requests.append(DeleteMany({"date": {"$lt": one_month_ago}}))
 
-		await self.bot.mongo.bulk_write("arena", requests)
+		await self.bot.db["arena"].bulk_write(requests)
 
 		return missing
 

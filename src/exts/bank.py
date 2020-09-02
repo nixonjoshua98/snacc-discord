@@ -1,7 +1,7 @@
 
 from discord.ext import commands
 
-from src import inputs
+from src.structs.textleaderboard import TextLeaderboard
 
 
 class Bank(commands.Cog):
@@ -10,7 +10,7 @@ class Bank(commands.Cog):
 	async def balance(self, ctx):
 		""" Show your bank balance(s). """
 
-		bank = await ctx.bot.mongo.find_one("bank", {"_id": ctx.author.id})
+		bank = await ctx.bot.db["bank"].find_one({"_id": ctx.author.id}) or dict()
 
 		usd, btc = bank.get("usd", 0), bank.get("btc", 0)
 
@@ -21,9 +21,9 @@ class Bank(commands.Cog):
 		""" Display the richest players. """
 
 		async def query():
-			return await ctx.bot.mongo.find("bank").sort("usd", -1).to_list(length=100)
+			return await ctx.bot.db["bank"].find({}).sort("usd", -1).to_list(length=100)
 
-		await inputs.show_leaderboard(ctx, "Richest Players", columns=["usd"], order_by="usd", query_func=query)
+		await TextLeaderboard(title="Richest Players", columns=["usd"], order_by="usd", query_func=query).send(ctx)
 
 
 def setup(bot):

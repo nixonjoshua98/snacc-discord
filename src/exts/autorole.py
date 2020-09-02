@@ -18,15 +18,19 @@ class AutoRole(commands.Cog, name="Auto Role"):
 	@commands.Cog.listener("on_startup")
 	async def on_startup(self):
 		if not self.bot.debug:
+			print("Auto Role: Added listeners")
+
 			self.bot.add_listener(self.on_member_join, "on_member_join")
 
 	async def on_member_join(self, member):
 		""" Called when a member joins a server. """
 
-		svr = await self.bot.mongo.find_one("servers", {"_id": member.guild.id})
+		svr = await self.bot.db["servers"].find_one({"_id": member.guild.id}) or dict()
 
 		try:
-			role = svr.get("bot_role" if member.bot else "user_role")
+			roles = svr.get("roles", dict())
+
+			role = roles.get("bot_role" if member.bot else "user_role")
 
 			if role is not None:
 				role = member.guild.get_role(role)
@@ -45,7 +49,11 @@ class AutoRole(commands.Cog, name="Auto Role"):
 	async def set_user_role(self, ctx, *, role: ServerAssignedRole() = None):
 		""" Set the role which is given to every user when they join the server. """
 
-		await ctx.bot.mongo.set_one("servers", {"_id": ctx.guild.id}, {"user_role": getattr(role, "id", 0)})
+		await self.bot.db["servers"].update_one(
+			{"_id": ctx.guild.id},
+			{"$set": {"roles.user": getattr(role, "id", 0)}},
+			upsert=True
+		)
 
 		if role is None:
 			await ctx.send(f"User role has been removed")
@@ -57,7 +65,11 @@ class AutoRole(commands.Cog, name="Auto Role"):
 	async def set_bot_role(self, ctx, *, role: ServerAssignedRole() = None):
 		""" Set the role which is given to every bot account when they join the server. """
 
-		await ctx.bot.mongo.set_one("servers", {"_id": ctx.guild.id}, {"bot_role": getattr(role, "id", 0)})
+		await self.bot.db["servers"].update_one(
+			{"_id": ctx.guild.id},
+			{"$set": {"roles.bot": getattr(role, "id", 0)}},
+			upsert=True
+		)
 
 		if role is None:
 			await ctx.send(f"Bot role has been removed")

@@ -9,7 +9,7 @@ from bson import ObjectId
 
 BACKUP_PATH = "D:\\Program Files\\OneDrive\\Databases\\atlas\\snacc"
 
-db = "snacc"
+db = "snaccV2"
 
 
 def get_data_from_atlas():

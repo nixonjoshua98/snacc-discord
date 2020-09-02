@@ -16,7 +16,7 @@ async def _send_request(path, data) -> dict:
 
 	async with httpx.AsyncClient() as client:
 		try:
-			r = await client.put(url, data=put_data)
+			r = await client.put(url, data=put_data, timeout=10.0)
 		except httpx.ReadTimeout:
 			return None
 

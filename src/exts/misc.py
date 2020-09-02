@@ -29,7 +29,7 @@ class Miscellaneous(commands.Cog):
 
 		await ctx.send(f"I am made up of **{lines:,}** lines of code.")
 
-	@checks.nsfw_only()
+	@commands.is_nsfw()
 	@commands.command(name="urban")
 	async def urban_dict(self, ctx, *, term):
 		""" Look up a term in urbandictionary.com """
@@ -143,7 +143,8 @@ class Miscellaneous(commands.Cog):
 					if bucket._tokens == 0:
 						retry_after = bucket.per - (current - bucket._window)
 
-						cooldowns.append(f"`{cmd.name: <12} {dt.timedelta(seconds=int(retry_after))}`")
+						if retry_after > 0:
+							cooldowns.append(f"`{cmd.name: <12} {dt.timedelta(seconds=int(retry_after))}`")
 
 			if cooldowns:
 				embed.add_field(name=name, value="\n".join(cooldowns))

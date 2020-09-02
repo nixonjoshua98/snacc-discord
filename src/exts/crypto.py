@@ -13,18 +13,17 @@ class Crypto(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-		self._price_cache = dict()
+		self.__cache = dict()
 
 	async def cog_before_invoke(self, ctx):
-		if self._price_cache.get("history") is None:
+		if self.__cache.get("history") is None:
 			await self.update_prices()
 
 	@commands.Cog.listener("on_startup")
 	async def on_startup(self):
-		if not self.bot.debug:
-			print("Starting loop: Crpyto")
+		print("Starting loop: Crpyto")
 
-			self.update_prices_loop.start()
+		self.update_prices_loop.start()
 
 	@tasks.loop(minutes=5.0)
 	async def update_prices_loop(self):
@@ -34,7 +33,7 @@ class Crypto(commands.Cog):
 	async def crypto_group(self, ctx):
 		""" Show the current price of Bitcoin. """
 
-		current_price = self._price_cache['current']
+		current_price = self.__cache['current']
 
 		embed = ctx.bot.embed(title="Cryptocurrency", description=f":moneybag: **Current Price: ${current_price:,}**")
 
@@ -46,31 +45,34 @@ class Crypto(commands.Cog):
 		await ctx.send(file=file, embed=embed)
 
 	@crypto_group.command(name="buy")
-	async def buy_coin(self, ctx, amount: Range(1, 100) = 1):
+	async def buy_coin(self, ctx, amount: Range(1, None) = 1):
 		""" Buy Bitcoin(s). """
 
-		bank = await ctx.bot.mongo.find_one("bank", {"_id": ctx.author.id})
+		bank = await ctx.bot.db["bank"].find_one({"_id": ctx.author.id})
 
-		price = self._price_cache["current"] * amount
+		price = self.__cache["current"] * amount
 
-		if price > bank.get("usd", 0):
+		if bank is None or price > bank.get("usd", 0):
 			await ctx.send(f"You can't afford to buy **{amount}** Bitcoin(s).")
 
 		else:
-			await ctx.bot.mongo.increment_one("bank", {"_id": ctx.author.id}, {"btc": amount})
-			await ctx.bot.mongo.decrement_one("bank", {"_id": ctx.author.id}, {"usd": price})
+			await ctx.bot.mongo.snacc["bank"].update_one(
+				{"_id": ctx.author.id},
+				{"$inc": {"btc": amount, "usd": -price}},
+				upsert=True
+			)
 
 			await ctx.send(f"You bought **{amount}** Bitcoin(s) for **${price:,}**!")
 
 	@crypto_group.command(name="sell")
-	async def sell_coin(self, ctx, amount: Range(1, 100) = 1):
+	async def sell_coin(self, ctx, amount: Range(1, None) = 1):
 		""" Sell Bitcoin(s). """
 
-		price = self._price_cache["current"] * amount
+		price = self.__cache["current"] * amount
 
-		bank = await ctx.bot.mongo.find_one("bank", {"_id": ctx.author.id})
+		bank = await ctx.bot.db["bank"].find_one({"_id": ctx.author.id})
 
-		if amount > bank.get("btc", 0):
+		if bank is None or amount > bank.get("btc", 0):
 			await ctx.send(f"You are trying to sell more Bitcoin than you currently own.")
 
 		else:
@@ -110,7 +112,7 @@ class Crypto(commands.Cog):
 		return int(data["bpi"]["USD"]["rate_float"])
 
 	def create_graph(self):
-		data = self._price_cache["history"]
+		data = self.__cache["history"]
 
 		fig, ax = plt.subplots(facecolor="#2f3136")
 
@@ -127,10 +129,10 @@ class Crypto(commands.Cog):
 		plt.close("all")
 
 	async def update_prices(self):
-		self._price_cache["current"] = await self.get_current()
-		self._price_cache["history"] = await self.get_history()
+		self.__cache["current"] = await self.get_current()
+		self.__cache["history"] = await self.get_history()
 
-		self._price_cache["history"]["current"] = self._price_cache["current"]
+		self.__cache["history"]["current"] = self.__cache["current"]
 
 		self.create_graph()
 

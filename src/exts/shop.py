@@ -2,26 +2,33 @@
 
 from discord.ext import commands
 
-from src import inputs
 from src.common import checks
 from src.common.converters import EmpireUpgrade, Range
 
 from src.structs.textpage import TextPage
+from src.structs.displaypages import DisplayPages
 
-from src.data import EmpireUpgrades
+from src.common.upgrades import EmpireUpgrades
 
 
 class Shop(commands.Cog):
 
-	@staticmethod
-	def create_pages(user_upgrades):
+	@checks.has_empire()
+	@commands.group(name="shop", invoke_without_command=True)
+	async def shop_group(self, ctx):
+		""" Display your shop. """
+
+		empire = await ctx.bot.db["empires"].find_one({"_id": ctx.author.id})
+
+		all_upgrades = empire.get("upgrades", dict()) if empire is not None else dict()
+
 		pages = []
 
 		for title, upgrades in EmpireUpgrades.groups.items():
 			page = TextPage(title=title, headers=["ID", "Name", "Owned", "Cost"])
 
 			for upgrade in upgrades:
-				owned = user_upgrades.get(upgrade.key, 0)
+				owned = all_upgrades.get(upgrade.key, 0)
 
 				if owned < upgrade.max_amount:
 					price = f"${upgrade.calc_price(owned, 1):,}"
@@ -33,32 +40,27 @@ class Shop(commands.Cog):
 
 			pages.append(page.get())
 
-		return pages
-
-	@checks.has_empire()
-	@commands.group(name="shop", invoke_without_command=True)
-	async def shop_group(self, ctx):
-		""" Display your shop. """
-
-		upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": ctx.author.id})
-
-		await inputs.send_pages(ctx, self.create_pages(upgrades))
+		await DisplayPages(pages, timeout=180.0).send(ctx)
 
 	@checks.has_empire()
 	@commands.max_concurrency(1, commands.BucketType.user)
 	@shop_group.command(name="buy")
-	async def buy_upgrade(self, ctx, upgrade: EmpireUpgrade(), amount: Range(1, 100) = 1):
+	async def buy_upgrade(self, ctx, upgrade: EmpireUpgrade(), amount: Range(1, None) = 1):
 		""" Buy a new upgrade. """
 
-		# - Get data from database
-		bank = await ctx.bot.mongo.find_one("bank", {"_id": ctx.author.id})
-		upgrades = await ctx.bot.mongo.find_one("upgrades", {"_id": ctx.author.id})
+		# - Query the database
+		empire = await ctx.bot.db["empires"].find_one({"_id": ctx.author.id}) or dict()
 
-		price = upgrade.calc_price(upgrades.get(upgrade.key, 0), amount)
+		bank = await ctx.bot.db["bank"].find_one({"_id": ctx.author.id}) or dict()
+
+		all_upgrades = empire.get("upgrades", dict())
+
+		owned = all_upgrades.get(upgrade.key, 0)
+		price = upgrade.calc_price(owned, amount)
 
 		# - Reached the owned limit
-		if upgrades.get(upgrade.key, 0) + amount > upgrade.max_amount:
-			await ctx.send(f"**{upgrade.display_name}** have an owned limit of **{upgrade.max_amount}**.")
+		if owned + amount > upgrade.max_amount:
+			await ctx.send(f"**{upgrade.display_name}** have an owned limit of **{upgrade.max_amount}**")
 
 		# - User cannot afford upgrade
 		elif price > bank.get("usd", 0):
@@ -66,8 +68,13 @@ class Shop(commands.Cog):
 
 		else:
 			# - Update database
-			await ctx.bot.mongo.decrement_one("bank", {"_id": ctx.author.id}, {"usd": price})
-			await ctx.bot.mongo.increment_one("upgrades", {"_id": ctx.author.id}, {upgrade.key: amount})
+			await ctx.bot.db["bank"].update_one({"_id": ctx.author.id}, {"$inc": {"usd": -price}}, upsert=True)
+
+			await ctx.bot.db["empires"].update_one(
+				{"_id": ctx.author.id},
+				{"$inc": {f"upgrades.{upgrade.key}": amount}},
+				upsert=True
+			)
 
 			await ctx.send(f"Bought **{amount}x {upgrade.display_name}** for **${price:,}**!")
 

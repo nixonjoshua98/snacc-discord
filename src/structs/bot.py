@@ -1,41 +1,30 @@
 import os
 import discord
-import random
 
 from discord.ext import commands, tasks
 
 import datetime as dt
 
+from src import utils
 from src.common import SNACCMAN
-
-from src.structs.help import Help
 from src.common.errors import GlobalCheckFail
 
-from src.structs import MongoClient
+from src.structs.help import Help
+from src.structs.mongoclient import MongoClient
 
 
 EXTENSIONS = [
+    "server_741225832994832427",
+
     "errorhandler",     "arena",            "abo",
-    "aboevent",         "empire",
-    "quests",           "shop",             "units",
-    "battles",          "hangman",          "rewards",
-    "gambling",         "bank",             "inventory",
-    "crypto",           "questionnaire",    "moderator",
-    "misc",             "reminder",         "support",
+    "empire",           "quests",           "shop",
+    "units",            "battles",          "hangman",
+    "rewards",          "gambling",         "bank",
+    "inventory",        "crypto",           "questionnaire",
+    "moderator",        "misc",             "support",
     "autorole",         "serverdoor",       "vote",
-    "settings",
+    "settings"
 ]
-
-COLOURS = (
-    discord.Color.orange(),     discord.Color.purple(),         discord.Color.teal(),       discord.Color.green(),
-    discord.Color.dark_green(), discord.Color.blue(),           discord.Color.dark_blue(),  discord.Color.dark_purple(),
-    discord.Color.magenta(),    discord.Color.dark_magenta(),   discord.Color.gold(),
-
-    discord.Color.from_rgb(248, 255, 0),    discord.Color.from_rgb(179, 0, 255),
-    discord.Color.from_rgb(255, 29, 174),   discord.Color.from_rgb(179, 0, 255),
-    discord.Color.from_rgb(193, 255, 72),   discord.Color.from_rgb(74, 255, 1),
-    discord.Color.from_rgb(0, 246, 255)
-)
 
 
 class Bot(commands.Bot):
@@ -43,6 +32,8 @@ class Bot(commands.Bot):
         super().__init__(command_prefix=self.get_prefix, case_insensitive=True, help_command=Help())
 
         self.mongo = MongoClient()
+
+        self.db = self.mongo.snaccV2
 
         self.exts_loaded = False
 
@@ -139,14 +130,14 @@ class Bot(commands.Bot):
     async def get_prefix(self, message):
         """ Get the prefix for the server/guild from the database/cache. """
 
-        svr = await self.mongo.find_one("servers", {"_id": message.guild.id})
+        svr = self.db["servers"].find_one({"_id": message.guild.id})
 
-        prefix = "." if self.debug else svr.get("prefix", "!")
+        prefix = "." if self.debug else svr.get("prefix", "!") if svr is not None else "!"
 
         return commands.when_mentioned_or(prefix)(self, message)
 
     def embed(self, *, title=None, description=None, author: discord.User = None, thumbnail=None):
-        embed = discord.Embed(title=title, description=description, colour=random.choice(COLOURS))
+        embed = discord.Embed(title=title, description=description, colour=utils.random_colour())
 
         embed.timestamp = dt.datetime.utcnow()
 

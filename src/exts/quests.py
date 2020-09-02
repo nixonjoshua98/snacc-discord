@@ -7,12 +7,12 @@ import datetime as dt
 
 from discord.ext import commands
 
-from src import inputs
-
 from src.common import checks
+from src.common.quests import EmpireQuests
+from src.common.population import Military
 from src.common.converters import EmpireQuest
 
-from src.data import EmpireQuests, Military
+from src.structs.displaypages import DisplayPages
 
 
 class Quests(commands.Cog):
@@ -25,13 +25,14 @@ class Quests(commands.Cog):
 	async def quest_group(self, ctx, quest: EmpireQuest()):
 		""" Embark on a new quest. """
 
-		current_quest = await ctx.bot.mongo.snacc["quests"].find_one({"_id": ctx.author.id})
+		current_quest = await ctx.bot.db["quests"].find_one({"_id": ctx.author.id})
 
 		if current_quest is None:
-			upgrades = await ctx.bot.mongo.snacc["upgrades"].find_one({"_id": ctx.author.id})
-			units = await ctx.bot.mongo.snacc["units"].find_one({"_id": ctx.author.id})
+			empire = await ctx.bot.db["empires"].find_one({"_id": ctx.author.id})
 
-			empire_power = Military.calc_total_power(units)
+			upgrades = empire.get("upgrades", dict())
+
+			empire_power = Military.calc_total_power(empire)
 
 			duration = dt.timedelta(hours=quest.get_duration(upgrades))
 
@@ -39,7 +40,7 @@ class Quests(commands.Cog):
 
 			row = dict(_id=ctx.author.id, quest=quest.id, success_rate=sucess_rate, start=dt.datetime.utcnow())
 
-			await ctx.bot.mongo.snacc["quests"].insert_one(row)
+			await ctx.bot.db["quests"].insert_one(row)
 
 			await ctx.send(f"You have embarked on **- {quest.name} -** quest! Check back in **{duration}**")
 
@@ -51,11 +52,11 @@ class Quests(commands.Cog):
 	async def quests(self, ctx):
 		""" Show all of the available quests to embark on. """
 
-		# - Query the database
-		upgrades = await ctx.bot.mongo.snacc["upgrades"].find_one({"_id": ctx.author.id})
-		units = await ctx.bot.mongo.snacc["units"].find_one({"_id": ctx.author.id})
+		empire = await ctx.bot.db["empires"].find_one({"_id": ctx.author.id})
 
-		power = Military.calc_total_power(units)
+		upgrades = empire.get("upgrades", dict())
+
+		power = Military.calc_total_power(empire)
 
 		embeds = []
 
@@ -76,7 +77,7 @@ class Quests(commands.Cog):
 
 			embeds.append(embed)
 
-		await inputs.send_pages(ctx, embeds)
+		await DisplayPages(embeds).send(ctx)
 
 	@checks.has_empire()
 	@commands.max_concurrency(1, commands.BucketType.user)
@@ -84,14 +85,15 @@ class Quests(commands.Cog):
 	async def show_status(self, ctx):
 		""" Show the status of your current quests and collect your rewards from your completed quests. """
 
-		current_quest = await ctx.bot.mongo.snacc["quests"].find_one({"_id": ctx.author.id})
+		current_quest = await ctx.bot.db["quests"].find_one({"_id": ctx.author.id})
 
 		# - User is not on a quest
 		if current_quest is None:
 			return await ctx.send("You are not currently embarked on a quest.")
 
-		# - Query the database
-		upgrades = await ctx.bot.mongo.snacc["upgrades"].find_one({"_id": ctx.author.id})
+		empire = await ctx.bot.db["empires"].find_one({"_id": ctx.author.id})
+
+		upgrades = empire.get("upgrades", dict())
 
 		quest_instance = EmpireQuests.get(id=current_quest["quest"])
 
@@ -104,7 +106,7 @@ class Quests(commands.Cog):
 		# - Quest has ended
 		if (time_since_start.total_seconds() / 3600) >= quest_duration:
 
-			await ctx.bot.mongo.snacc["quests"].delete_one({"_id": ctx.author.id})
+			await ctx.bot.db["quests"].delete_one({"_id": ctx.author.id})
 
 			# = Quest success
 			if current_quest["success_rate"] >= random.uniform(0.0, 1.0):
@@ -112,11 +114,7 @@ class Quests(commands.Cog):
 				reward = quest_instance.get_reward(upgrades)
 
 				# - Add the reward money to the account
-				await ctx.bot.mongo.snacc["bank"].update_one(
-					{"_id": ctx.author.id},
-					{"$inc": {"usd": reward}},
-					upsert=True
-				)
+				await ctx.bot.db["bank"].update_one({"_id": ctx.author.id}, {"$inc": {"usd": reward}}, upsert=True)
 
 				loot = quest_instance.get_loot(current_quest["success_rate"])
 
@@ -130,7 +128,7 @@ class Quests(commands.Cog):
 				embed.description = f"Quest completed! \nYou have been rewarded **${reward:,}**"
 
 				if loot:
-					await ctx.bot.mongo.snacc["loot"].bulk_write(requests)
+					await ctx.bot.db["loot"].bulk_write(requests)
 
 					embed.add_field(name="Loot", value="\n".join(loot_field))
 
@@ -147,4 +145,3 @@ class Quests(commands.Cog):
 
 def setup(bot):
 	bot.add_cog(Quests(bot))
-

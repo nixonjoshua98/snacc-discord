@@ -24,61 +24,57 @@ class ServerDoor(commands.Cog, name="Server Door"):
     def __init__(self, bot):
         self.bot = bot
 
-    @staticmethod
-    async def send_message(guild, message):
-        channels = [guild.system_channel] + guild.text_channels
+    @commands.Cog.listener("on_startup")
+    async def on_startup(self):
+        if not self.bot.debug:
+            print("Server Door: Added listeners")
 
-        for c in channels:
-            try:
-                await c.send(message)
+            self.bot.add_listener(self.on_guild_join, "on_guild_join")
+            self.bot.add_listener(self.on_member_join, "on_member_join")
+            self.bot.add_listener(self.on_member_remove, "on_member_remove")
 
-            except (discord.Forbidden, discord.HTTPException):
-                continue
-
-            break
+    async def send_system(self, guild, message):
+        if guild.system_channel is not None and self.bot.has_permissions(guild.system_channel, send_messages=True):
+            await guild.system_channel.send(message)
 
     @commands.has_permissions(administrator=True)
     @commands.command(name="toggledoor")
     async def toggle_door(self, ctx):
         """ Toggle the messages posted when a member joins or leaves the server. """
 
-        svr = await self.bot.mongo.find_one("servers", {"_id": ctx.guild.id})
+        svr = await ctx.bot.db["servers"].find_one({"_id": ctx.guild.id})
 
-        display_joins = svr.get("display_joins", False)
+        display_joins = svr.get("display_joins", False) if svr is not None else False
 
-        await ctx.bot.mongo.set_one("servers", {"_id": ctx.guild.id}, {"display_joins": not display_joins})
+        await ctx.bot.db["servers"].update_one({"_id": ctx.guild.id}, {"$set": {"display_joins": not display_joins}})
 
-        await ctx.send(f"Server door: {'`Hidden`' if display_joins else '`Shown`'}")
+        await ctx.send(f"Join and leave messages: `{'Hidden' if display_joins else 'Shown'}`")
 
-    @commands.Cog.listener("on_guild_join")
     async def on_guild_join(self, guild):
         """ Called when the bot joins a new server. """
 
         msg = GUILD_JOIN_MESSAGE.format(bot=self.bot, guild=guild)
 
-        await self.send_message(guild, msg)
+        await self.send_system(guild, msg)
 
-    @commands.Cog.listener("on_member_join")
     async def on_member_join(self, member):
         """ Called when a member joins a server. """
 
-        svr = await self.bot.mongo.find_one("servers", {"_id": member.guild.id})
+        svr = await self.bot.db["servers"].find_one({"_id": member.guild.id})
 
         if svr.get("display_joins"):
-            await self.send_message(member.guild, f"Welcome {member.mention} to {member.guild.name}!")
+            await self.send_system(member.guild, f"Welcome {member.mention} to {member.guild.name}!")
 
-    @commands.Cog.listener("on_member_remove")
     async def on_member_remove(self, member):
         """ Called when a member leaves a server. """
 
-        svr = await self.bot.mongo.find_one("servers", {"_id": member.guild.id})
+        svr = await self.bot.db["servers"].find_one({"_id": member.guild.id})
 
         if svr.get("display_joins"):
             msg = f"**{str(member)}** " + (f"({member.nick}) " if member.nick else "") + "has left the server"
 
-            await self.send_message(member.guild, msg)
+            await self.send_system(member.guild, msg)
 
 
 def setup(bot):
-    if not bot.debug:
-        bot.add_cog(ServerDoor(bot))
+    bot.add_cog(ServerDoor(bot))

@@ -4,20 +4,12 @@ from discord.ext import commands
 
 from src.aboapi import API
 
-from src.common import DarknessServer, checks
-
-from src.structs import Confirm
+from src.structs.confirm import Confirm
 
 
 class ABO(commands.Cog):
 
-	async def cog_check(self, ctx):
-		if ctx.guild.id != DarknessServer.ID:
-			raise commands.DisabledCommand("This command is disabled in this server")
-
-		return True
-
-	@checks.snaccman_only()
+	@commands.is_owner()
 	@commands.command(name="aboname")
 	async def set_abo_name(self, ctx, user: discord.Member, *, name):
 		""" Associate a Discord user to a user in ABO. """

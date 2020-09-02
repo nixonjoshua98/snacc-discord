@@ -1,14 +1,12 @@
 
 from discord.ext import commands
 
-from src import inputs
-from src.common import checks, EmpireConstants
-
+from src.common import EmpireConstants, checks
 from src.common.converters import EmpireUnit, Range, MergeableUnit
-
-from src.data import Military, Workers
+from src.common.population import Workers, Military
 
 from src.structs.confirm import Confirm
+from src.structs.displaypages import DisplayPages
 
 
 class Units(commands.Cog):
@@ -18,40 +16,38 @@ class Units(commands.Cog):
 	async def show_units(self, ctx):
 		""" Show all the possible units which you can buy. """
 
-		units = await ctx.bot.mongo.find_one("units", {"_id": ctx.author.id})
-		levels = await ctx.bot.mongo.find_one("levels", {"_id": ctx.author.id})
+		empire = await ctx.bot.db["empires"].find_one({"_id": ctx.author.id})
 
 		pages = []
 
 		for group in (Workers, Military):
-			if len((page := group.shop_page(units, levels)).rows) > 0:
-				pages.append(page.get())
+			page = group.shop_page(empire)
 
-		if pages:
-			return await inputs.send_pages(ctx, pages)
+			pages.append(page.get())
 
-		return await ctx.send("No units available to hire.")
+		await DisplayPages(pages).send(ctx)
 
 	@checks.has_empire()
 	@show_units.command(name="hire", aliases=["buy"])
-	@commands.max_concurrency(1, commands.BucketType.user)
-	async def hire_unit(self, ctx, unit: EmpireUnit(), amount: Range(1, 100) = 1):
+	async def hire_unit(self, ctx, unit: EmpireUnit(), amount: Range(1, None) = 1):
 		""" Hire a new unit to serve your empire. """
 
-		# - Load the data
-		bank = await ctx.bot.mongo.find_one("bank", {"_id": ctx.author.id})
-		units = await ctx.bot.mongo.find_one("units", {"_id": ctx.author.id})
-		levels = await ctx.bot.mongo.find_one("levels", {"_id": ctx.author.id})
+		bank = await ctx.bot.db["bank"].find_one({"_id": ctx.author.id})
+		empire = await ctx.bot.db["empires"].find_one({"_id": ctx.author.id})
 
-		# - Cost of upgrading from current -> (current + amount)
-		price = unit.calc_price(units.get(unit.key, 0), amount)
+		# - Get the data for the entry the user wants to buy
+		unit_entry = empire.get("units", dict()).get(unit.key, dict()) if empire is not None else dict()
 
-		# - Max owned number of the unit
-		max_units = unit.calc_max_amount(levels.get(unit.key, 0))
+		# - Bank
+		bank = bank if bank is not None else dict()
+
+		# - Calculate values about the unit
+		price = unit.calc_price(unit_entry.get("owned", 0), amount)
+		max_owned = unit.calc_max_amount(unit_entry)
 
 		# - Buying the unit will surpass the owned limit of that particular unit
-		if units.get(unit.key, 0) + amount > max_units:
-			await ctx.send(f"**{unit.display_name}** have a limit of **{max_units}** units.")
+		if unit_entry.get("owned", 0) + amount > max_owned:
+			await ctx.send(f"**{unit.display_name}** have a limit of **{max_owned}** units.")
 
 		# - Author cannot afford to buy the unit
 		elif price > bank.get("usd", 0):
@@ -60,21 +56,43 @@ class Units(commands.Cog):
 			await ctx.send(f"You need an extra **${missing:,}** to hire **{amount}x {unit.display_name}**")
 
 		else:
-			# - Deduct the money from the authors bank
-			await ctx.bot.mongo.decrement_one("bank", {"_id": ctx.author.id}, {"usd": price})
+			await ctx.bot.db["bank"].update_one({"_id": ctx.author.id}, {"$inc": {"usd": -price}}, upsert=True)
 
-			await ctx.bot.mongo.increment_one("units", {"_id": ctx.author.id}, {unit.key: amount})
+			await ctx.bot.db["empires"].update_one(
+				{"_id": ctx.author.id},
+				{"$inc": {f"units.{unit.key}.owned": amount}},
+				upsert=True
+			)
 
 			await ctx.send(f"Bought **{amount}x {unit.display_name}** for **${price:,}**!")
+
+	@checks.has_empire()
+	@show_units.command(name="fire")
+	async def fire_unit(self, ctx, unit: EmpireUnit(), amount: Range(1, None) = 1):
+		""" Fire a unit. You get no money back from firing. """
+
+		empire = await ctx.bot.db["empires"].find_one({"_id": ctx.author.id})
+
+		# - Get the data for the entry the user wants to buy
+		unit_entry = empire.get("units", dict()).get(unit.key, dict()) if empire is not None else dict()
+
+		if unit_entry.get("owned", 0) - amount < 0:
+			await ctx.send(f"You do not have **{amount:,}x {unit.key}** available to fire.")
+
+		else:
+			await ctx.bot.db["empires"].update_one(
+				{"_id": ctx.author.id},
+				{"$inc": {f"units.{unit.key}.owned": -amount}},
+				upsert=True
+			)
+
+			await ctx.send(f"Fired **{amount}x {unit.display_name}**!")
 
 	@checks.has_empire()
 	@show_units.command(name="merge")
 	@commands.max_concurrency(1, commands.BucketType.user)
 	async def merge_unit(self, ctx, unit: MergeableUnit()):
 		""" Merge your units to upgrade their level. """
-
-		units = await ctx.bot.mongo.find_one("units", {"_id": ctx.author.id})
-		levels = await ctx.bot.mongo.find_one("levels", {"_id": ctx.author.id})
 
 		async def confirm():
 			resp = True
@@ -84,23 +102,27 @@ class Units(commands.Cog):
 
 			return resp
 
-		num_units = units.get(unit.key, 0)
-		unit_level = levels.get(unit.key, 0)
+		embed = ctx.bot.embed(title="Unit Merge", author=ctx.author)
 
-		embed = ctx.bot.embed(
-			title="Unit Merge",
-			description=f"Level up **{unit.display_name}** by consuming **{EmpireConstants.MERGE_COST}** units?"
+		embed.add_field(
+			name="WARNING",
+			value=f"Level up **{unit.display_name}** by consuming **{EmpireConstants.MERGE_COST}** units?"
 		)
 
-		vale = [f"{k}: **{v}**" for k, v in unit.calc_next_merge_stats(num_units, unit_level).items()]
-
-		embed.add_field(name="WARNING", value="\n".join(vale))
-
+		# - Double check that this is what the user wants to do
 		if not await confirm():
 			return await ctx.send("Merge cancelled.")
 
-		await ctx.bot.mongo.increment_one("levels", {"_id": ctx.author.id}, {unit.key: 1})
-		await ctx.bot.mongo.decrement_one("units", {"_id": ctx.author.id}, {unit.key: EmpireConstants.MERGE_COST})
+		await ctx.bot.db["empires"].update_one(
+			{"_id": ctx.author.id},
+			{
+				"$inc": {
+					f"units.{unit.key}.owned": -EmpireConstants.MERGE_COST,
+					f"units.{unit.key}.level": 1
+				}
+			},
+			upsert=True
+		)
 
 		await ctx.send(f"**{unit.display_name}** has levelled up!")
 
