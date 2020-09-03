@@ -1,8 +1,6 @@
 import math
 import discord
 
-from src import utils
-
 from src.structs import TextPage
 
 from src.common import EmpireConstants
@@ -66,16 +64,23 @@ class WorkerUnit(Unit):
 	__worker_id = 1
 
 	def __init__(self, *, key, **kwargs):
-		self._income = kwargs.get("income", 0)
+		self.income_per_unit = kwargs.get("income", 0)
 
-		base_cost = math.floor(self._income * max(16.0, (24.0 + (0.5 * (WorkerUnit.__worker_id - 1)))))
+		base_cost = math.floor(self.income_per_unit * max(16.0, (24.0 + (0.5 * (WorkerUnit.__worker_id - 1)))))
 
 		super(WorkerUnit, self).__init__(key=key, base_cost=base_cost, **kwargs)
 
 		WorkerUnit.__worker_id += 1
 
+	def calc_income_per_unit(self, unit_entry: dict):
+		level = unit_entry.get("level", 0)
+
+		return math.ceil(self.income_per_unit * (1.0 + (level * 0.05)))
+
 	def calc_hourly_income(self, unit_entry: dict):
-		return math.ceil(self._income * unit_entry.get("owned", 0) * (1.0 + (unit_entry.get("level", 0) * 0.05)))
+		owned, level = unit_entry.get("owned", 0), unit_entry.get("level", 0)
+
+		return math.ceil(self.income_per_unit * owned * (1.0 + (level * 0.05)))
 
 
 class MilitaryUnit(Unit):
@@ -98,8 +103,14 @@ class MilitaryUnit(Unit):
 	def calc_hourly_upkeep(self, unit_entry):
 		return math.floor(self._upkeep * (1.0 - (unit_entry.get("level", 0) * 0.05)) * unit_entry.get("owned", 0))
 
+	def calc_power_per_unit(self, _: dict):
+		return round(self.power_per_unit, 1)
+
 	def calc_power(self, unit_entry):
 		return round(self.power_per_unit * unit_entry.get("owned", 0), 1)
+
+	def calc_hourly_upkeep_per_unit(self, unit_entry: dict):
+		return math.floor(self._upkeep * (1.0 - (unit_entry.get("level", 0) * 0.05)))
 
 
 class Workers(UnitGroup):
@@ -152,9 +163,10 @@ class Workers(UnitGroup):
 				continue
 
 			price = unit.calc_price(owned, 1)
-			income = unit.calc_hourly_income(unit_entry)
 
-			row.extend([f"{owned}/{max_units}", f"${income:,}", f"${price:,}"])
+			income_per_unit = unit.calc_income_per_unit(unit_entry)
+
+			row.extend([f"{owned}/{max_units}", f"${income_per_unit:,}", f"${price:,}"])
 
 			page.add(row)
 
@@ -218,9 +230,11 @@ class Military(UnitGroup):
 				continue
 
 			price = unit.calc_price(owned, 1)
-			upkeep = unit.calc_hourly_upkeep(unit_entry)
 
-			row.extend([f"{owned}/{max_units}", unit.power_per_unit, f"${upkeep:,}", f"${price:,}"])
+			upkeep_per_unit = unit.calc_hourly_upkeep_per_unit(unit_entry)
+			power_per_unit = unit.calc_power_per_unit(unit_entry)
+
+			row.extend([f"{owned}/{max_units}", power_per_unit, f"${upkeep_per_unit:,}", f"${price:,}"])
 
 			page.add(row)
 

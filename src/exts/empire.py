@@ -135,13 +135,11 @@ class Empire(commands.Cog):
 
 		total_power = Military.calc_total_power(empire)
 
-		name = empire.get('name', target.display_name)
-
 		# - Create the Embed message which will be sent back to Discord
 		embed = ctx.bot.embed(
 			title=empire.get('name', target.display_name),
 			thumbnail=target.avatar_url,
-			author=ctx.author
+			author=target
 		)
 
 		embed.add_field(name="General", value=f"**Power Rating:** `{total_power:,}`")

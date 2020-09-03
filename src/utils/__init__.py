@@ -1,5 +1,6 @@
 import discord
 import asyncio
+import itertools
 import random
 
 from src.common.population import Military, Workers
@@ -49,3 +50,9 @@ def net_income(empire) -> int:
 	hourly_upkeep = Military.get_total_hourly_upkeep(empire)
 
 	return hourly_income - hourly_upkeep
+
+
+def grouper(iterable, n, fill=None):
+	args = [iter(iterable)] * n
+
+	return itertools.zip_longest(*args, fillvalue=fill)

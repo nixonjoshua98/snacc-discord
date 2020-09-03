@@ -83,7 +83,7 @@ class Quests(commands.Cog):
 	@commands.max_concurrency(1, commands.BucketType.user)
 	@commands.command(name="status")
 	async def show_status(self, ctx):
-		""" Show the status of your current quests and collect your rewards from your completed quests. """
+		""" Show the status of your current quest. """
 
 		current_quest = await ctx.bot.db["quests"].find_one({"_id": ctx.author.id})
 

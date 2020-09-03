@@ -1,3 +1,4 @@
+import itertools
 
 from discord.ext import commands
 
@@ -35,8 +36,18 @@ class Inventory(commands.Cog):
 
 		total_value = sum((item["total_value"] for item in loot))
 
-		# - Create the embed description
-		desc = "\n".join([f"`{item['owned']:02d}x {item['name']}`" for item in loot])
+		desc = []
+
+		# - Create the loot listings
+		for x, y in utils.grouper(loot, 2, None):
+			s = f"{x['owned']:02d}x {x['name']: <13} "
+
+			if y is not None:
+				s += f"{y['owned']:02d}x {y['name']: <13}"
+
+			desc.append(f"`{s}`")
+
+		desc = "\n".join(desc)
 
 		if loot and ctx.bot.has_permissions(ctx.channel, add_reactions=True):
 			desc = f"React :moneybag: to sell. Total Value: **${total_value:,}**\n\n" + desc
