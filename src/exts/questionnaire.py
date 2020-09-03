@@ -16,7 +16,7 @@ class Questionnaire(commands.Cog):
 	@commands.Cog.listener("on_startup")
 	async def on_startup(self):
 		if not self.bot.debug:
-			print("Questionnaire: Added listeners")
+			print("Added listeners: Questionnaire")
 
 			self.bot.add_listener(self.on_message, "on_message")
 

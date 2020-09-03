@@ -27,7 +27,7 @@ class ServerDoor(commands.Cog, name="Server Door"):
     @commands.Cog.listener("on_startup")
     async def on_startup(self):
         if not self.bot.debug:
-            print("Server Door: Added listeners")
+            print("Added listeners: Server Door")
 
             self.bot.add_listener(self.on_guild_join, "on_guild_join")
             self.bot.add_listener(self.on_member_join, "on_member_join")

@@ -18,7 +18,7 @@ class AutoRole(commands.Cog, name="Auto Role"):
 	@commands.Cog.listener("on_startup")
 	async def on_startup(self):
 		if not self.bot.debug:
-			print("Auto Role: Added listeners")
+			print("Added listeners: Auto Role")
 
 			self.bot.add_listener(self.on_member_join, "on_member_join")
 
@@ -30,7 +30,7 @@ class AutoRole(commands.Cog, name="Auto Role"):
 		try:
 			roles = svr.get("roles", dict())
 
-			role = roles.get("bot_role" if member.bot else "user_role")
+			role = roles.get("bot" if member.bot else "user")
 
 			if role is not None:
 				role = member.guild.get_role(role)
