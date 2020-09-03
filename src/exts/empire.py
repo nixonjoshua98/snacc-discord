@@ -194,15 +194,17 @@ class Empire(commands.Cog):
 			# - Set the last_income field which is used to calculate the income rate from the delta time
 			await self.bot.db["empires"].update_one({"_id": empire["_id"]}, {"$set": {"last_income": now}})
 
-			last_login, last_income = player_row.get("last_login", now), empire.get("last_income", now)
+			# - No login? No income
+			if (last_login := player_row.get("last_login")) is None:
+				continue
+
+			last_income = empire.get("last_income", now)
 
 			hours_since_login = (now - last_login).total_seconds() / 3600
 
 			# - User must have logged in the past 8 hours in order to get passive income
 			if hours_since_login >= MAX_HOURS_OFFLINE:
 				continue
-
-			# - Query the database
 
 			# - Total number of hours we need to credit the empire's bank
 			hours = (now - last_income).total_seconds() / 3600
