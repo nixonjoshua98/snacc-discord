@@ -60,9 +60,9 @@ class Hero:
 		return config.get("icons", self.name, fallback=None)
 
 	def _get_grade(self):
-		grades = {"A": 90, "B": 75, "C": 60, "D": 50}
+		grades = {"A": 600, "B": 500, "C": 400, "D": 300}
 
-		self.rating = rating = (self.base_attack * 5) + self.base_health
+		self.rating = rating = self.base_attack + self.base_health
 
 		for k, v in grades.items():
 			if rating >= v:
@@ -73,24 +73,24 @@ class Hero:
 
 class ChestHeroes:
 	ALL_HEROES = (
-		Hero(name="Light Yagami", 		weight=55, 	attack=3.0, 	health=35.0),
-		Hero(name="Kirigaya Kazuto", 	weight=55, 	attack=4.0, 	health=35.0),
-		Hero(name="Edward Elric", 		weight=55, 	attack=4.0, 	health=35.0),
-		Hero(name="Levi Ackerman", 		weight=55, 	attack=4.5, 	health=35.0),
+		Hero(name="Light Yagami", 		weight=45, 	attack=30.0, 	health=350.0),
+		Hero(name="Kirigaya Kazuto", 	weight=45, 	attack=40.0, 	health=350.0),
+		Hero(name="Edward Elric", 		weight=45, 	attack=40.0, 	health=350.0),
+		Hero(name="Levi Ackerman", 		weight=45, 	attack=40.5, 	health=350.0),
 
-		Hero(name="Rias Gremory", 		weight=45, 	attack=5.0, 	health=40.0),
-		Hero(name="Death The Kid", 		weight=45, 	attack=4.5, 	health=45.0),
-		Hero(name="Natsu Dragneel", 	weight=45, 	attack=6.0, 	health=43.0),
+		Hero(name="Rias Gremory", 		weight=35, 	attack=50.0, 	health=400.0),
+		Hero(name="Death The Kid", 		weight=35, 	attack=40.5, 	health=450.0),
+		Hero(name="Natsu Dragneel", 	weight=35, 	attack=60.0, 	health=430.0),
 
-		Hero(name="Killua Zoldyck", 	weight=30, 	attack=6.0, 	health=50.0),
-		Hero(name="Itachi Uchiha", 		weight=30, 	attack=7.5, 	health=45.0),
-		Hero(name="Yato", 				weight=30, 	attack=6.0, 	health=50.0),
-		Hero(name="Saitama", 			weight=30, 	attack=8.5, 	health=45.0),
-		Hero(name="Shoto Todoroki", 	weight=30, 	attack=7.0, 	health=50.0),
+		Hero(name="Killua Zoldyck", 	weight=30, 	attack=60.0, 	health=500.0),
+		Hero(name="Itachi Uchiha", 		weight=30, 	attack=70.5, 	health=450.0),
+		Hero(name="Yato", 				weight=30, 	attack=60.0, 	health=500.0),
+		Hero(name="Saitama", 			weight=30, 	attack=80.5, 	health=450.0),
+		Hero(name="Shoto Todoroki", 	weight=30, 	attack=70.0, 	health=500.0),
 
-		Hero(name="Ichigo Kurosaki",	weight=20, 	attack=7.0, 	health=55.0),
-		Hero(name="Naruto", 			weight=20, 	attack=7.5, 	health=60.0),
-		Hero(name="Monkey D. Luffy", 	weight=20, 	attack=7.5, 	health=60.0),
+		Hero(name="Ichigo Kurosaki",	weight=15, 	attack=70.0, 	health=550.0),
+		Hero(name="Naruto", 			weight=15, 	attack=70.5, 	health=600.0),
+		Hero(name="Monkey D. Luffy", 	weight=15, 	attack=70.5, 	health=600.0),
 	)
 
 	ALL_HEROES = sorted(ALL_HEROES, key=lambda h: h.rating, reverse=True)

@@ -26,67 +26,6 @@ class Empire(commands.Cog):
 
 		self.income_loop.start()
 
-	@commands.command(name="tutorial")
-	async def show_tutorial(self, ctx):
-		""" Show the tutorial embed. """
-
-		embed = ctx.bot.embed(
-			title="Empire Tutorial",
-			description=(
-				f"Empire is a idle PvP/PvE gamemode which involves hiring units to generate passive income as well as "
-				f"hiring military units to attack other users, complete quests, steal from others users. More features "
-				f"are constantly being added. You can view your empire using **{ctx.prefix}e**."
-			)
-		)
-
-		embed.add_field(
-			name="Getting started",
-			value=(
-				f"You can claim your daily reward every 24 hours by doing **{ctx.prefix}daily**. It is also a good "
-				f"idea to hire at least 1 thief military unit, which is used to **{ctx.prefix}steal** from other "
-				f"players. You should focus more on workers, than military at the start of your game."
-			),
-			inline=False
-		)
-
-		embed.add_field(
-			name="Units (Workers)",
-			value=(
-				f"Worker units generate passive income which is automatically added to your bank account each hour. "
-			),
-			inline=False
-		)
-
-		embed.add_field(
-			name="Units (Military)",
-			value=(
-				f"Military units, unlike Workers, need to be paid an upkeep every hour but they can be used to attack "
-				f"and steal from other players, complete quests, and more to come. You can view the most powerful "
-				f"empires using **{ctx.prefix}power**."
-			),
-			inline=False
-		)
-
-		embed.add_field(
-			name="Support Server",
-			value=(
-				f"The support server https://discord.gg/QExQuvE offers daily giveaways, support (obviously), and "
-				f"soon-to-be bosses and much more."
-			),
-			inline=False
-		)
-
-		embed.add_field(
-			name="Final Notes",
-			value=(
-				f"I am filled with lots of things to do, but this tutorial is supposed to be short. "
-				f"You can view all my commands using the **{ctx.prefix}help** command."
-			),
-			inline=False
-		)
-
-		await ctx.send(embed=embed)
-
 	@checks.no_empire()
 	@commands.command(name="create")
 	@commands.max_concurrency(1, commands.BucketType.user)
@@ -101,7 +40,7 @@ class Empire(commands.Cog):
 
 		await ctx.send(f"Your empire has been established! You can rename your empire using `{ctx.prefix}rename`")
 
-		await self.show_tutorial(ctx)
+		await self.show_empire(ctx)
 
 	@checks.has_empire()
 	@commands.command(name="rename")
