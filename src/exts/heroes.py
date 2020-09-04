@@ -66,15 +66,10 @@ class Heroes(commands.Cog):
 
 		desc = f"You pulled **#{hero.id:02d} {hero.name} [{hero.grade}]**"
 
-		embed = ctx.bot.embed(title=chest.name, description=desc, author=ctx.author, thumbnail=hero.icon)
+		embed = ctx.bot.embed(title=chest.name, description=desc, author=ctx.author)
 
-		embed.add_field(
-			name="Stats",
-			value=(
-				f"**HP:** {hero.base_health}\n"
-				f"**ATK:**: {hero.base_attack}\n"
-			)
-		)
+		if hero.icon is not None:
+			embed.set_image(url=hero.icon)
 
 		await ctx.send(embed=embed)
 

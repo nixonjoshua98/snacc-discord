@@ -123,7 +123,7 @@ class Bot(commands.Bot):
 
         return commands.when_mentioned_or(prefix)(self, message)
 
-    def embed(self, *, title=None, description=None, author: discord.User = None, thumbnail=None):
+    def embed(self, *, title=None, description=None, author=None, thumbnail=None):
         embed = discord.Embed(title=title, description=description, colour=utils.random_colour())
 
         embed.timestamp = dt.datetime.utcnow()

@@ -93,7 +93,7 @@ class Battles(commands.Cog):
 
 		stolen_amount = calculate_money_lost(target_bank)
 
-		thief_tax = int(stolen_amount // random.uniform(2.0, 6.0)) if stolen_amount >= 3_000 else 0
+		thief_tax = int(stolen_amount // random.uniform(2.0, 6.0)) if stolen_amount >= 2_500 else 0
 
 		await ctx.bot.db["bank"].bulk_write(
 			[
