@@ -31,7 +31,7 @@ class Inventory(commands.Cog):
 				},
 				{"$project": {"_id": 0}}
 			]
-		).to_list(length=100)
+		).to_list(length=None)
 
 		total_value = sum((item["total_value"] for item in loot))
 

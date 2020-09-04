@@ -65,13 +65,20 @@ class Arena(commands.Cog):
 
 		await message.edit(content=msg)
 
-	@commands.command(name="stats", aliases=["s"])
+	@commands.command(name="stats", aliases=["s"], usage="")
 	async def stats(self, ctx, *, role: discord.Role = None):
-		""" View the stats of the entire guild. """
+		""" View the history of the guild, or narrow it down to a single role. """
 
 		pages = await self.create_history(include_discord=not ctx.author.is_on_mobile(), role=role)
 
-		await DisplayPages(pages).send(ctx)
+		if pages is None:
+			return await ctx.send("Found no user records.")
+
+		elif len(pages) > 1:
+			await DisplayPages(pages).send(ctx)
+
+		else:
+			await ctx.send(pages[0])
 
 	@commands.command(name="trophies", aliases=["rating"])
 	async def show_leaderboard(self, ctx: commands.Context):
@@ -110,9 +117,6 @@ class Arena(commands.Cog):
 			stats = await self.bot.db["arena"].find(query).to_list(length=None)
 
 			if stats:
-				for i in range(len(stats)):
-					stats[i]["rating"] = stats[i].get("rating", stats[i].get("trophies", 0))
-
 				oldest, newest = stats[0], stats[-1]
 
 				r = dict(name=str(user), abo_name=abo_name, level=newest["level"], rating=newest["rating"])
@@ -131,7 +135,6 @@ class Arena(commands.Cog):
 		data = []
 
 		for member in role.members:
-
 			player_entry = await self.bot.db["players"].find_one({"_id": member.id}) or dict()
 
 			if (abo_name := player_entry.get("abo_name")) is None:
@@ -141,6 +144,10 @@ class Arena(commands.Cog):
 
 			if (row := await create_history_row(member)) is not None:
 				data.append(row)
+
+		# - We have no stored data so just return None
+		if len(data) == 0:
+			return None
 
 		data = sorted(data, key=lambda e: e["rating_gained"], reverse=True)
 

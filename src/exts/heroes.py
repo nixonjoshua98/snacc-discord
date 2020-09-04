@@ -1,4 +1,3 @@
-import discord
 
 from src.common.heroes import HeroChests, ChestHeroes
 
@@ -12,10 +11,8 @@ class Heroes(commands.Cog):
 		self.bot = bot
 
 	@commands.group(name="heroes", invoke_without_command=True)
-	async def show_heroes(self, ctx, target: discord.User = None):
+	async def show_heroes(self, ctx):
 		""" View your owned heroes. """
-
-		target = ctx.author if target is None else target
 
 		heroes = await ctx.bot.db["heroes"].find({"user": ctx.author.id}).to_list(length=None)
 
@@ -29,7 +26,7 @@ class Heroes(commands.Cog):
 
 			desc.append(f"`{s}`")
 
-		embed = ctx.bot.embed(title="Your Heroes", author=target, description="\n".join(desc))
+		embed = ctx.bot.embed(title="Your Heroes", author=ctx.author, description="\n".join(desc))
 
 		await ctx.send(embed=embed)
 

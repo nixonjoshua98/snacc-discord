@@ -24,7 +24,7 @@ class NormalHeroChest(HeroChest):
 
 class HeroChests:
 	_ALL = (
-		NormalHeroChest(name="Normal Hero Chest", cost=20_000),
+		NormalHeroChest(name="Normal Hero Chest", cost=15_000),
 	)
 
 	@classmethod
