@@ -61,10 +61,20 @@ class Heroes(commands.Cog):
 			upsert=True
 		)
 
-		embed = ctx.bot.embed(title=chest.name, description=f"You pulled **{hero.name}**!")
+		embed = ctx.bot.embed(
+			title=chest.name,
+			description=f"You pulled **{hero.name}**!",
+			author=ctx.author,
+			thumbnail=hero.icon
+		)
 
-		embed.add_field(name="Health", value=hero.base_health)
-		embed.add_field(name="Attack", value=hero.base_attack)
+		embed.add_field(
+			name="Stats",
+			value=(
+				f"**HP:** {hero.base_health}\n"
+				f"**ATK:**: {hero.base_attack}\n"
+			)
+		)
 
 		await ctx.send(embed=embed)
 

@@ -243,15 +243,21 @@ async def stolen_event(ctx):
 
 	empire = await ctx.bot.db["empires"].find_one({"_id": ctx.author.id})
 
-	income = utils.net_income(empire)
+	bank = await ctx.bot.db["bank"].find_one({"_id": ctx.author.id})
 
-	money_stolen = random.randint(max(250, income // 2), max(1_000, income))
+	if bank.get("usd", 0) == 0:
+		await loot_event(ctx)
 
-	await ctx.bot.db["bank"].update_one({"_id": ctx.author.id}, {"$inc": {"usd": -money_stolen}}, upsert=True)
+	else:
+		income = utils.net_income(empire)
 
-	s = f"${money_stolen:,}" if money_stolen > 0 else "nothing"
+		money_stolen = min(bank.get("usd", 0), random.randint(max(250, income // 2), max(1_000, income)))
 
-	await ctx.send(f"A thief broke into your empire and stole **{s}**")
+		await ctx.bot.db["bank"].update_one({"_id": ctx.author.id}, {"$inc": {"usd": -money_stolen}}, upsert=True)
+
+		s = f"${money_stolen:,}" if money_stolen > 0 else "nothing"
+
+		await ctx.send(f"A thief broke into your empire and stole **{s}**")
 
 
 async def loot_event(ctx):

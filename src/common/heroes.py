@@ -1,6 +1,8 @@
 import discord
 import random
-import math
+import os
+
+from configparser import ConfigParser
 
 
 class HeroChest:
@@ -43,22 +45,31 @@ class Hero:
 		self.base_attack = attack
 		self.base_health = health
 
+		self.icon = self._get_icon()
+
 		Hero.__hero_id += 1
+
+	def _get_icon(self):
+		config = ConfigParser()
+
+		config.read(os.path.join(os.getcwd(), "data", "heroes.ini"))
+
+		return config.get("icons", self.name, fallback=None)
 
 
 class ChestHeroes:
 	ALL_HEROES = (
-		Hero(name="Light Yagami", 		weight=75, 	attack=3.0, 	health=50.0),
+		Hero(name="Light Yagami", 		weight=65, 	attack=3.0, 	health=45.0),
 		Hero(name="Itachi Uchiha", 		weight=25, 	attack=7.5, 	health=45.0),
 		Hero(name="Killua Zoldyck", 	weight=25, 	attack=6.0, 	health=55.0),
 		Hero(name="Naruto", 			weight=20, 	attack=7.0, 	health=60.0),
 		Hero(name="Levi Ackerman", 		weight=45, 	attack=4.5, 	health=50.0),
 		Hero(name="Monkey D. Luffy", 	weight=25, 	attack=7.0, 	health=60.0),
-		Hero(name="Saitama", 			weight=65, 	attack=9.0, 	health=40.0),
+		Hero(name="Saitama", 			weight=45, 	attack=9.0, 	health=40.0),
 		Hero(name="Edward Elric", 		weight=55, 	attack=6.5, 	health=35.0),
 		Hero(name="Natsu Dragneel", 	weight=55, 	attack=7.0, 	health=45.0),
 		Hero(name="Kirigaya Kazuto",	weight=65, 	attack=3.5, 	health=30.0),
-		Hero(name="Death The Kid", 		weight=35, 	attack=5.0, 	health=40.0),
+		Hero(name="Death The Kid", 		weight=35, 	attack=5.0, 	health=45.0),
 		Hero(name="Ichigo Kurosaki",	weight=20, 	attack=7.0, 	health=55.0),
 		Hero(name="Yato", 				weight=30, 	attack=5.5, 	health=45.0),
 		Hero(name="Shoto Todoroki", 	weight=40, 	attack=5.0, 	health=50.0),
@@ -69,13 +80,11 @@ class ChestHeroes:
 	def get(cls, **kwargs): return discord.utils.get(cls.ALL_HEROES, **kwargs)
 
 
-"""
 weights = sum([hero.weight for hero in ChestHeroes.ALL_HEROES])
 
 for hero in ChestHeroes.ALL_HEROES:
 	print(
 		f"{hero.name: <16} "
-		f"Pull Chance: {str(round((hero.weight / weights) * 100, 1)) + '%': <6} "
+		f"{str(round((hero.weight / weights) * 100, 2)) + '%': <6} "
 		f"Rating: {hero.base_health + hero.base_attack}"
 	)
-"""
