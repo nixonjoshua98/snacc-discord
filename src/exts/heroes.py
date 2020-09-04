@@ -16,17 +16,16 @@ class Heroes(commands.Cog):
 
 		heroes = await ctx.bot.db["heroes"].find({"user": ctx.author.id}).to_list(length=None)
 
-		desc = []
+		embed = ctx.bot.embed(title="Your Heroes", author=ctx.author)
+
 		for hero in heroes:
 			hero_inst = ChestHeroes.get(id=hero["hero"])
 
-			name = f"{hero['owned']:02d}x {hero_inst.name: <15}"
+			name = f"{hero_inst.name} | Owned {hero['owned']}"
 
-			s = f"{name} HP {hero_inst.base_health} ATK {hero_inst.base_attack}"
+			value = f"HP {hero_inst.base_health} | ATK {hero_inst.base_attack}"
 
-			desc.append(f"`{s}`")
-
-		embed = ctx.bot.embed(title="Your Heroes", author=ctx.author, description="\n".join(desc))
+			embed.add_field(name=name, value=value)
 
 		await ctx.send(embed=embed)
 
@@ -61,12 +60,9 @@ class Heroes(commands.Cog):
 			upsert=True
 		)
 
-		embed = ctx.bot.embed(
-			title=chest.name,
-			description=f"You pulled **{hero.name}**!",
-			author=ctx.author,
-			thumbnail=hero.icon
-		)
+		desc = f"You pulled **{hero.name}**!"
+
+		embed = ctx.bot.embed(title=chest.name, description=desc, author=ctx.author, thumbnail=hero.icon)
 
 		embed.add_field(
 			name="Stats",
