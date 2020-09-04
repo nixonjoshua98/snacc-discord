@@ -18,7 +18,7 @@ class _Quest:
 		if upgrades is None:
 			return self.reward
 
-		return math.floor(self.reward * (1.0 + (upgrades.get("more_quest_money", 0) * 0.01)))
+		return math.floor(self.reward * (1.0 + (upgrades.get("more_quest_money", 0) * 0.025)))
 
 	def get_reward(self, upgrades):
 		return math.floor(random.uniform(0.9, 1.1) * self.get_avg_reward(upgrades))
@@ -35,7 +35,7 @@ class _Quest:
 		if upgrades is None:
 			return self.duration
 
-		return self.duration * (1.0 - (upgrades.get("quicker_quests", 0) * 0.01))
+		return self.duration * (1.0 - (upgrades.get("quicker_quests", 0) * 0.025))
 
 	def success_rate(self, author_power):
 		return round(max(0.01, min(author_power / self.power, 0.99)), 2)

@@ -73,19 +73,19 @@ class Hero:
 
 class ChestHeroes:
 	ALL_HEROES = (
-		Hero(name="Light Yagami", 		weight=45, 	attack=30.0, 	health=350.0),
-		Hero(name="Kirigaya Kazuto", 	weight=45, 	attack=40.0, 	health=350.0),
+		Hero(name="Light Yagami", 		weight=45, 	attack=30.0, 	health=300.0),
+		Hero(name="Kirigaya Kazuto", 	weight=45, 	attack=40.0, 	health=325.0),
 		Hero(name="Edward Elric", 		weight=45, 	attack=40.0, 	health=350.0),
-		Hero(name="Levi Ackerman", 		weight=45, 	attack=40.5, 	health=350.0),
+		Hero(name="Levi Ackerman", 		weight=45, 	attack=35.0, 	health=350.0),
 
 		Hero(name="Rias Gremory", 		weight=35, 	attack=50.0, 	health=400.0),
-		Hero(name="Death The Kid", 		weight=35, 	attack=40.5, 	health=450.0),
-		Hero(name="Natsu Dragneel", 	weight=35, 	attack=60.0, 	health=430.0),
+		Hero(name="Death The Kid", 		weight=35, 	attack=45.0, 	health=375.0),
+		Hero(name="Natsu Dragneel", 	weight=35, 	attack=50.0, 	health=425.0),
 
-		Hero(name="Killua Zoldyck", 	weight=30, 	attack=60.0, 	health=500.0),
-		Hero(name="Itachi Uchiha", 		weight=30, 	attack=70.5, 	health=450.0),
+		Hero(name="Killua Zoldyck", 	weight=30, 	attack=60.0, 	health=450.0),
+		Hero(name="Itachi Uchiha", 		weight=30, 	attack=70.0, 	health=450.0),
 		Hero(name="Yato", 				weight=30, 	attack=60.0, 	health=500.0),
-		Hero(name="Saitama", 			weight=30, 	attack=80.5, 	health=450.0),
+		Hero(name="Saitama", 			weight=30, 	attack=80.0, 	health=450.0),
 		Hero(name="Shoto Todoroki", 	weight=30, 	attack=70.0, 	health=500.0),
 
 		Hero(name="Ichigo Kurosaki",	weight=15, 	attack=70.0, 	health=550.0),

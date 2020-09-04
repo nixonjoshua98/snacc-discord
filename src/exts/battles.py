@@ -23,7 +23,7 @@ class Battles(commands.Cog):
 
 	@staticmethod
 	def calc_win_chance(atk_power, def_power):
-		return max(0.15, min(0.85, ((atk_power / max(1, def_power)) / 2.0)))
+		return max(0.15, min(0.85, ((atk_power / max(1, def_power)) + 0.15 / 2.0)))
 
 	@staticmethod
 	async def calc_units_lost(empire):
