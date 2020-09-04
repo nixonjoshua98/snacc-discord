@@ -1,5 +1,4 @@
 import random
-import discord
 
 import datetime as dt
 
@@ -8,7 +7,7 @@ from pymongo import UpdateOne, UpdateMany
 from discord.ext import tasks, commands
 
 from src import utils
-from src.common import DarknessServer, checks
+from src.common import checks
 from src.common.converters import AnyoneWithEmpire
 from src.common.population import Workers, Military
 
@@ -20,13 +19,6 @@ MAX_HOURS_OFFLINE = 8
 class Empire(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
-
-	async def cog_after_invoke(self, ctx):
-		await ctx.bot.db["players"].update_one(
-			{"_id": ctx.author.id},
-			{"$set": {"last_login": dt.datetime.utcnow()}},
-			upsert=True
-		)
 
 	@commands.Cog.listener("on_startup")
 	async def on_startup(self):
@@ -103,7 +95,7 @@ class Empire(commands.Cog):
 
 		now = dt.datetime.utcnow()
 
-		row = dict(_id=ctx.author.id, name=empire_name, last_login=now, last_income=now)
+		row = dict(_id=ctx.author.id, name=empire_name, last_income=now, last_attack=now)
 
 		await ctx.bot.db["empires"].insert_one(row)
 
@@ -127,7 +119,7 @@ class Empire(commands.Cog):
 
 		target = ctx.author if target is None else target
 
-		empire = await ctx.bot.db["empires"].find_one({"_id": ctx.author.id})
+		empire = await ctx.bot.db["empires"].find_one({"_id": target.id}) or dict()
 
 		# - Calculate the values used in the Embed message
 		hourly_income = Workers.get_total_hourly_income(empire)
@@ -286,11 +278,11 @@ async def recruit_unit(ctx):
 
 	# - Get available units
 	avail_units = []
-	for u in Military.units:
-		unit_entry = units.get(u.key, dict())
+	for unit in Military.units:
+		unit_entry = units.get(unit.key, dict())
 
 		if unit_entry.get("owned", 0) > 0:
-			avail_units.append(u)
+			avail_units.append(unit)
 
 	if avail_units:
 		unit_recruited = min(avail_units, key=lambda u: u.calc_price(units.get(u.key, dict()).get("owned", 0), 1))

@@ -1,4 +1,3 @@
-import itertools
 
 from discord.ext import commands
 
@@ -60,7 +59,7 @@ class Inventory(commands.Cog):
 			await message.add_reaction(Emoji.MONEY_BAG)
 
 			# - Wait for the money bag reaction from the targeted user
-			react, user = await utils.wait_for_reaction(bot=ctx.bot, check=check, timeout=60.0)
+			react, user = await utils.wait_for_reaction(bot=ctx.bot, check=check, timeout=30.0)
 
 			# - Reaction was given by the user? Sell the loot
 			if react is not None and user is not None:

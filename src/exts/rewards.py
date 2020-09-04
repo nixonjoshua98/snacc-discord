@@ -14,6 +14,7 @@ DAILY_REWARDS = [
 class Rewards(commands.Cog):
 
 	@commands.cooldown(1, 3_600 * 24, commands.BucketType.user)
+	@commands.max_concurrency(1, commands.BucketType.user)
 	@commands.command(name="daily")
 	async def daily(self, ctx):
 		""" Collect your rewards every 24 hours. """
@@ -43,7 +44,7 @@ class Rewards(commands.Cog):
 		# - Update the player with the new streak and daily claim time
 		await ctx.bot.db["players"].update_one(
 			{"_id": ctx.author.id},
-			{"$inc": {"daily_streak": 1}, "$set": {"last_daily": now}},
+			{"$set": {"last_daily": now, "daily_streak": streak}},
 			upsert=True
 		)
 

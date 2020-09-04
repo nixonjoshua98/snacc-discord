@@ -21,12 +21,12 @@ class Support(commands.Cog):
 		if not self.bot.debug:
 			print("Starting loop: Giveaways")
 
-			await asyncio.sleep(6.0 * 3_600)
-
 			self.giveaway_loop.start()
 
 	@tasks.loop(hours=12.0)
 	async def giveaway_loop(self):
+		await asyncio.sleep(6.0 * 3_600)
+
 		await Giveaway(self.bot).send()
 
 	@commands.is_owner()

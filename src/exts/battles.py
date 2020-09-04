@@ -160,12 +160,9 @@ class Battles(commands.Cog):
 
 			# - Create the message to return to Discord
 			val = f"${pillaged:,} {f'**+ ${bonus:,} bonus**' if bonus > 0 else ''}"
+			title = f"Attack on {target_empire.get('name', target.display_name)}"
 
-			embed = ctx.bot.embed(
-				title=target_empire.get('name', target.display_name),
-				author=ctx.author,
-				description=f"**Money Pillaged:** {val}"
-			)
+			embed = ctx.bot.embed(title=title,author=ctx.author, description=f"**Money Pillaged:** {val}")
 
 			if units_lost:
 				units_lost_text = list(map(lambda kv: f"`{kv[1]}x {kv[0].display_name}`", units_lost.items()))

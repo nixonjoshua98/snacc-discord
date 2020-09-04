@@ -41,22 +41,28 @@ class Arena(commands.Cog):
 	async def background_loop(self):
 		await asyncio.sleep(60 * 60 * 8.0)
 
-		if missing := await self.update_members():
-			channel = self.bot.get_channel(DarknessServer.ABO_CHANNEL)
+		channel = self.bot.get_channel(DarknessServer.ABO_CHANNEL)
 
-			await channel.send(f"Missing usernames: {', '.join(missing)}")
+		msg = "Updated Stats :thumbsup:"
+
+		if missing := await self.update_members():
+			msg += "\n\n" + f"**Missing usernames:** {', '.join(missing)}"
+
+		await channel.send(msg)
 
 	@commands.is_owner()
 	@commands.command(name="update")
 	async def update_stats(self, ctx):
 		""" Update the users history. Pulls from the API. """
 
+		msg = "Updated Stats :thumbsup:"
+
 		message = await ctx.send("Updating users data...")
 
 		if missing := await self.update_members():
-			await ctx.send(f"Missing username: {', '.join(missing)}")
+			msg += "\n\n" + f"**Missing usernames:** {', '.join(missing)}"
 
-		await message.edit(content="Updated stats :thumbsup:")
+		await message.edit(content=msg)
 
 	@commands.command(name="stats", aliases=["s"])
 	async def stats(self, ctx):
