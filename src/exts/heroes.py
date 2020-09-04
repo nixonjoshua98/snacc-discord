@@ -41,7 +41,7 @@ class Heroes(commands.Cog):
 
 		chest = HeroChests.get(id=1)
 
-		desc = f"Buy and open a **{chest.name}** for **${chest.cost:,}** (25% discount)?"
+		desc = f"Buy and open a **{chest.name}** for **${chest.cost:,}**?"
 
 		embed = ctx.bot.embed(title="Hero Chests", description=desc, author=ctx.author)
 

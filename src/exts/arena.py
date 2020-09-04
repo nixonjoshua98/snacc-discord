@@ -2,6 +2,7 @@
 
 import itertools
 import asyncio
+import discord
 
 import datetime as dt
 
@@ -65,10 +66,10 @@ class Arena(commands.Cog):
 		await message.edit(content=msg)
 
 	@commands.command(name="stats", aliases=["s"])
-	async def stats(self, ctx):
+	async def stats(self, ctx, *, role: discord.Role = None):
 		""" View the stats of the entire guild. """
 
-		pages = await self.create_history(include_discord=not ctx.author.is_on_mobile())
+		pages = await self.create_history(include_discord=not ctx.author.is_on_mobile(), role=role)
 
 		await DisplayPages(pages).send(ctx)
 
@@ -104,7 +105,7 @@ class Arena(commands.Cog):
 
 		return sorted(entries, key=lambda e: (e.get("rating", 0), e["level"]), reverse=True)
 
-	async def create_history(self, *, include_discord: bool = True):
+	async def create_history(self, *, include_discord: bool = True, role=None):
 		async def create_history_row(user):
 			stats = await self.bot.db["arena"].find(query).to_list(length=None)
 
@@ -122,7 +123,8 @@ class Arena(commands.Cog):
 
 			return None
 
-		role = self.bot.get_guild(DarknessServer.ID).get_role(DarknessServer.ABO_ROLE)
+		if role is None:
+			role = self.bot.get_guild(DarknessServer.ID).get_role(DarknessServer.ABO_ROLE)
 
 		one_week_ago = dt.datetime.utcnow() - dt.timedelta(days=7)
 

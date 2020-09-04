@@ -10,14 +10,9 @@ class HeroChest:
 		self.id = HeroChest.__hero_chest_id
 
 		self.name = name
-
-		self._cost = cost
+		self.cost = cost
 
 		HeroChest.__hero_chest_id += 1
-
-	@property
-	def cost(self):
-		return math.ceil(self._cost * 0.75)
 
 
 class NormalHeroChest(HeroChest):
@@ -29,7 +24,7 @@ class NormalHeroChest(HeroChest):
 
 class HeroChests:
 	_ALL = (
-		NormalHeroChest(name="Normal Hero Chest", cost=25_000),
+		NormalHeroChest(name="Normal Hero Chest", cost=20_000),
 	)
 
 	@classmethod
