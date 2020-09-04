@@ -11,7 +11,7 @@ class Heroes(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-	@commands.group(name="heroes", invoke_without_command=True, hidden=True)
+	@commands.group(name="heroes", invoke_without_command=True)
 	async def show_heroes(self, ctx, target: discord.User = None):
 		""" View your owned heroes. """
 
