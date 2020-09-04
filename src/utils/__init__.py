@@ -45,7 +45,6 @@ async def wait_for_reaction(*, bot, check, timeout):
 
 
 def net_income(empire) -> int:
-
 	hourly_income = Workers.get_total_hourly_income(empire)
 	hourly_upkeep = Military.get_total_hourly_upkeep(empire)
 
