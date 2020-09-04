@@ -63,4 +63,7 @@ class DisplayPages(menus.Menu):
 		await self.on_reaction(payload)
 
 	async def send(self, ctx, *, wait: bool = False):
+		if len(self.pages) == 1:
+			return await self.send_initial_message(ctx, ctx.channel)
+
 		await self.start(ctx, wait=wait)

@@ -60,4 +60,6 @@ while True:
 
     write_data_to_json(data)
 
+    print(".", end="")
+
     time.sleep(3_600)

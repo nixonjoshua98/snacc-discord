@@ -46,6 +46,7 @@ class Hero:
 		self.base_health = health
 
 		self.icon = self._get_icon()
+		self.grade = self._get_grade()
 
 		Hero.__hero_id += 1
 
@@ -55,6 +56,19 @@ class Hero:
 		config.read(os.path.join(os.getcwd(), "data", "heroes.ini"))
 
 		return config.get("icons", self.name, fallback=None)
+
+	def _get_grade(self):
+		grades = {"A": 65, "B": 50, "C": 40, "D": 30}
+
+		rating = self.base_attack + self.base_health
+
+		for k, v in grades.items():
+			if rating >= v:
+				return k
+
+		return "F"
+
+
 
 
 class ChestHeroes:
