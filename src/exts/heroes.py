@@ -2,7 +2,6 @@
 from src.common.heroes import HeroChests, ChestHeroes
 
 from src.structs.confirm import Confirm
-from src.structs.displaypages import DisplayPages
 
 from discord.ext import commands
 
@@ -17,31 +16,22 @@ class Heroes(commands.Cog):
 
 		heroes = await ctx.bot.db["heroes"].find({"user": ctx.author.id}).to_list(length=None)
 
-		chunks = [heroes[i:i + 10] for i in range(0, len(heroes), 10)]
+		heroes.sort(key=lambda h: h["hero"])
 
-		pages = []
+		embed = ctx.bot.embed(title="Your Heroes", author=ctx.author)
 
-		for i, chunk in enumerate(chunks, start=1):
-			embed = ctx.bot.embed(title="Your Heroes", author=ctx.author)
+		desc = []
 
-			for hero in chunk:
-				hero_inst = ChestHeroes.get(id=hero["hero"])
+		for hero in heroes:
+			hero_inst = ChestHeroes.get(id=hero["hero"])
 
-				name = f"{hero_inst.grade} | {hero_inst.name} | Owned {hero['owned']}"
+			s = f"`#{hero_inst.id:02d} | {hero['owned']:02d}x [{hero_inst.grade}] {hero_inst.name: <16}`"
 
-				embed.add_field(name=name, value="\u200b", inline=False)
+			desc.append(s)
 
-				if len(chunks) > 1:
-					txt = f"{str(ctx.bot.user)} | Page {i}/{len(chunks)}"
+		embed.description = "\n".join(desc)
 
-					embed.set_footer(text=txt, icon_url=ctx.bot.user.avatar_url)
-
-			pages.append(embed)
-
-		if len(pages) == 0:
-			return await ctx.send(embed=ctx.bot.embed(title="Your Heroes", author=ctx.author))
-
-		await DisplayPages(pages).send(ctx)
+		await ctx.send(embed=embed)
 
 	@show_heroes.command(name="chest")
 	@commands.has_permissions(add_reactions=True)
@@ -74,7 +64,7 @@ class Heroes(commands.Cog):
 			upsert=True
 		)
 
-		desc = f"You pulled **{hero.name} [{hero.grade}]**"
+		desc = f"You pulled **#{hero.id:02d} {hero.name} [{hero.grade}]**"
 
 		embed = ctx.bot.embed(title=chest.name, description=desc, author=ctx.author, thumbnail=hero.icon)
 

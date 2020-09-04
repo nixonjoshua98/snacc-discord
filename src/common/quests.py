@@ -24,7 +24,7 @@ class _Quest:
 		return math.floor(random.uniform(0.9, 1.1) * self.get_avg_reward(upgrades))
 
 	def get_loot(self, success_rate):
-		loot_chance = max(0.25, min(1.0 - success_rate, 0.65))
+		loot_chance = max(0.35, min(1.0 - success_rate, 0.75))
 
 		if loot_chance >= random.uniform(0.0, 1.0):
 			return {utils.get_random_name():  math.floor(self.power * random.uniform(5.0, 10.0))}
@@ -48,9 +48,9 @@ class EmpireQuests:
 		_Quest(id=3, 	name="Ogre Subjugation", 		power=75, 	reward=2_700, 	duration=3),  # 900
 		_Quest(id=4, 	name="The Dragon", 				power=125, 	reward=5_000,	duration=4),  # 1250
 		_Quest(id=5, 	name="Kill the Traitors", 		power=170, 	reward=7_000, 	duration=5),  # 1400
-		_Quest(id=6, 	name="Sabotage the Enemy", 		power=225, 	reward=9_900, 	duration=6),  # 1650
-		_Quest(id=7, 	name="Search for Durandel", 	power=290, 	reward=13_300, 	duration=7),  # 1900
-		_Quest(id=8, 	name="The Abyss Stares Back", 	power=350, 	reward=18_000, 	duration=8)   # 2250
+		_Quest(id=6, 	name="Sabotage the Enemy", 		power=215, 	reward=9_900, 	duration=6),  # 1650
+		_Quest(id=7, 	name="Search for Durandel", 	power=260, 	reward=13_300, 	duration=7),  # 1900
+		_Quest(id=8, 	name="The Abyss Stares Back", 	power=325, 	reward=18_000, 	duration=8)   # 2250
 	]
 
 	@classmethod
