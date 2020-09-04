@@ -39,7 +39,7 @@ class Heroes(commands.Cog):
 	async def hero_chests(self, ctx):
 		""" Open a hero chest. """
 
-		chest = HeroChests.get(id=1)
+		chest = HeroChests.get(id=0)
 
 		desc = f"Buy and open a **{chest.name}** for **${chest.cost:,}**?"
 
