@@ -3,7 +3,7 @@ from discord.ext import commands
 
 import datetime as dt
 
-from src.common import EmpireConstants
+from src.common import UnitMergeValues
 from src.common.quests import EmpireQuests
 from src.common.upgrades import EmpireUpgrades
 from src.common.population import Military, Workers
@@ -131,10 +131,10 @@ class MergeableUnit(EmpireUnit):
 		if owned < unit.calc_max_amount(unit_entry):
 			raise commands.CommandError(f"Merging requires you reach the owned limit first.")
 
-		elif owned < EmpireConstants.MERGE_COST:
-			raise commands.CommandError(f"Merging consumes **{EmpireConstants.MERGE_COST}** units")
+		elif owned < UnitMergeValues.MERGE_COST:
+			raise commands.CommandError(f"Merging consumes **{UnitMergeValues.MERGE_COST}** units")
 
-		if level >= EmpireConstants.MAX_UNIT_MERGE:
+		if level >= UnitMergeValues.MAX_UNIT_MERGE:
 			raise commands.CommandError(f"**{unit.display_name}** has already reached the maximum merge level.")
 
 		return unit

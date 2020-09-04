@@ -1,7 +1,7 @@
 
 from discord.ext import commands
 
-from src.common import EmpireConstants, checks
+from src.common import UnitMergeValues, checks
 from src.common.converters import EmpireUnit, Range, MergeableUnit
 from src.common.population import Workers, Military
 
@@ -84,7 +84,7 @@ class Units(commands.Cog):
 
 		embed.add_field(
 			name="WARNING",
-			value=f"Level up **{unit.display_name}** by consuming **{EmpireConstants.MERGE_COST}** units?"
+			value=f"Level up **{unit.display_name}** by consuming **{UnitMergeValues.MERGE_COST}** units?"
 		)
 
 		# - Double check that this is what the user wants to do
@@ -95,7 +95,7 @@ class Units(commands.Cog):
 			{"_id": ctx.author.id},
 			{
 				"$inc": {
-					f"units.{unit.key}.owned": -EmpireConstants.MERGE_COST,
+					f"units.{unit.key}.owned": -UnitMergeValues.MERGE_COST,
 					f"units.{unit.key}.level": 1
 				}
 			},

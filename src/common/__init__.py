@@ -21,6 +21,6 @@ class SupportServer:
 	GIVEAWAY_ROLE = 748562669216465058
 
 
-class EmpireConstants:
+class UnitMergeValues:
 	MAX_UNIT_MERGE = 10
 	MERGE_COST = 15

@@ -3,7 +3,7 @@ import discord
 
 from src.structs import TextPage
 
-from src.common import EmpireConstants
+from src.common import UnitMergeValues
 
 
 class UnitGroup:
@@ -153,7 +153,7 @@ class Workers(UnitGroup):
 			row = [unit.id, unit.display_name, level]
 
 			if owned >= max_units:
-				if level >= EmpireConstants.MAX_UNIT_MERGE:
+				if level >= UnitMergeValues.MAX_UNIT_MERGE:
 					continue
 
 				row.append("Mergeable")
@@ -220,7 +220,7 @@ class Military(UnitGroup):
 			row = [unit.id, unit.display_name, level]
 
 			if owned >= max_units:
-				if level >= EmpireConstants.MAX_UNIT_MERGE:
+				if level >= UnitMergeValues.MAX_UNIT_MERGE:
 					continue
 
 				row.append("Mergeable")

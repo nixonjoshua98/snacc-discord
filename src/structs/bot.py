@@ -17,13 +17,13 @@ EXTENSIONS = [
     "server_741225832994832427",
 
     "errorhandler",     "arena",            "abo",
-    "empire",           "quests",           "shop",
-    "units",            "battles",          "hangman",
-    "rewards",          "gambling",         "bank",
-    "inventory",        "crypto",           "questionnaire",
-    "moderator",        "misc",             "support",
-    "autorole",         "serverdoor",       "vote",
-    "settings"
+    "empire",           "heroes",           "quests",
+    "shop",             "units",            "battles",
+    "hangman",          "rewards",          "gambling",
+    "bank",             "inventory",        "crypto",
+    "questionnaire",    "moderator",        "misc",
+    "support",          "autorole",         "serverdoor",
+    "vote",             "settings"
 ]
 
 

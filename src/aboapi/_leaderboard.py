@@ -5,6 +5,7 @@ from src.aboapi._utils import _send_request
 
 
 class _Leaderboard:
+
 	@classmethod
 	async def get_player(cls, name):
 		data = {"purpose": "get", "position": -1, "count": 30, "name": name, "global": {}}
