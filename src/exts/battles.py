@@ -64,12 +64,12 @@ class Battles(commands.Cog):
 			]
 		)
 
-		s = f"You stole **${stolen_amount:,}** from **{target.display_name}!**"
+		s = f"You stole **${stolen_amount:,}** from **{str(target)}!**"
 
 		if thief_tax > 0:
 			s = (
-				f"You stole **${stolen_amount:,}** from **{target.display_name}!** "
-				f"but the thief you hired took a cut of **${thief_tax:,}**."
+				f"You stole **${stolen_amount:,}** from **{str(target)}** "
+				f"but the thief you hired took a cut of **${thief_tax:,}.**"
 			)
 
 		await self.update_battle_cooldown(ctx, target)

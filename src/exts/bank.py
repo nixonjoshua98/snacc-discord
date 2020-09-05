@@ -23,7 +23,13 @@ class Bank(commands.Cog):
 		async def query():
 			return await ctx.bot.db["bank"].find({}).sort("usd", -1).to_list(length=100)
 
-		await TextLeaderboard(title="Richest Players", columns=["usd"], order_by="usd", query_func=query).send(ctx)
+		await TextLeaderboard(
+			title="Richest Players",
+			columns=["usd"],
+			order_by="usd",
+			headers=["Money"],
+			query_func=query
+		).send(ctx)
 
 
 def setup(bot):

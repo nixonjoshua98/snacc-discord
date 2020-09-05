@@ -79,7 +79,7 @@ class Empire(commands.Cog):
 
 		await ctx.send(embed=embed)
 
-	@commands.command(name="power", aliases=["empires"])
+	@commands.command(name="power")
 	async def power_leaderboard(self, ctx):
 		""" Display the most powerful empires. """
 

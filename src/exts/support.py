@@ -1,12 +1,13 @@
 import asyncio
 import random
 
-from discord.ext import commands, tasks
-
-from src import utils
+from discord.ext import commands
 
 from src.common import SupportServer
 
+from src.common.converters import Range
+
+from src.structs.confirm import Confirm
 from src.structs.reactioncollection import ReactionCollection
 
 
@@ -16,27 +17,19 @@ class Support(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-	@commands.Cog.listener("on_startup")
-	async def on_startup(self):
-		if not self.bot.debug:
-			print("Starting loop: Giveaways")
-
-			self.giveaway_loop.start()
-
-	@tasks.loop(hours=12.0)
-	async def giveaway_loop(self):
-		await asyncio.sleep(6.0 * 3_600)
-
-		await Giveaway(self.bot).send()
-
 	@commands.is_owner()
 	@commands.command(name="giveaway")
-	async def giveaway_command(self, ctx):
+	async def giveaway_command(self, ctx, value: Range(0, None), *, item):
 		""" Start a giveaway in the support server. """
+
+		resp = await Confirm(f"Create a giveaway with {item} as the reward?").prompt(ctx)
+
+		if not resp:
+			return await ctx.send("Giveaway aborted")
 
 		await ctx.send("I have started a giveaway in the support server!")
 
-		asyncio.create_task(Giveaway(self.bot).send())
+		asyncio.create_task(Giveaway(self.bot, item, value).send())
 
 	@commands.command(name="support")
 	async def support(self, ctx):
@@ -46,8 +39,11 @@ class Support(commands.Cog):
 
 
 class Giveaway:
-	def __init__(self, bot):
+	def __init__(self, bot, name, value):
 		self.bot = bot
+
+		self.item_name = name
+		self.item_value = value
 
 		self.destination = None
 
@@ -68,15 +64,12 @@ class Giveaway:
 			await self.on_giveaway_end(members)
 
 	async def on_giveaway_end(self, members):
-		name = utils.get_random_name()
-		value = random.randint(5_000, 10_000)
-
 		winner = random.choice(members)
 
-		await self.bot.db["loot"].insert_one({"user": winner.id, "name": name, "value": value})
+		await self.bot.db["loot"].insert_one({"user": winner.id, "name": self.item_name, "value": self.item_value})
 
 		await self.destination.send(
-			f"Congratulations **{winner.mention}** for winning **- {name} -** worth **${value:,}!**"
+			f"Congratulations **{winner.mention}** for winning **- {self.item_name} -** worth **${self.item_value:,}!**"
 		)
 
 
