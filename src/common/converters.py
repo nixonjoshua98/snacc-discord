@@ -3,7 +3,7 @@ from discord.ext import commands
 
 import datetime as dt
 
-from src.common import UnitMergeValues
+from src.common import UnitMergeValues, BattleValues
 from src.common.quests import EmpireQuests
 from src.common.upgrades import EmpireUpgrades
 from src.common.population import Military, Workers
@@ -39,8 +39,7 @@ class DiscordUser(commands.Converter):
 		return member
 
 
-class EmpireAttackTarget(DiscordUser):
-	ATTACK_COOLDOWN = 2.0 * 3_600
+class EmpireBattleTarget(DiscordUser):
 
 	async def convert(self, ctx, argument):
 		user = await super().convert(ctx, argument)
@@ -50,16 +49,16 @@ class EmpireAttackTarget(DiscordUser):
 		if empire is None:
 			raise commands.CommandError(f"Target does not have an empire.")
 
-		if empire.get("last_attack") is None:
-			time_since_attack = self.ATTACK_COOLDOWN
+		if (last_battle := empire.get("last_battle")) is None:
+			time_since_attack = BattleValues.COOLDOWN
 
 		else:
-			time_since_attack = (dt.datetime.utcnow() - empire['last_attack']).total_seconds()
+			time_since_attack = (dt.datetime.utcnow() - last_battle).total_seconds()
 
-		if time_since_attack < self.ATTACK_COOLDOWN:
-			delta = dt.timedelta(seconds=int(self.ATTACK_COOLDOWN - time_since_attack))
+		if time_since_attack < BattleValues.COOLDOWN:
+			delta = dt.timedelta(seconds=int(BattleValues.COOLDOWN - time_since_attack))
 
-			raise commands.CommandError(f"Target is still recovering from a previous attack. Try again in `{delta}`")
+			raise commands.CommandError(f"Target is recovering from a previous battle. Try again in `{delta}`")
 
 		return user
 

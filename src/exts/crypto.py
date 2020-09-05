@@ -55,6 +55,9 @@ class Crypto(commands.Cog):
 		if bank is None or price > bank.get("usd", 0):
 			await ctx.send(f"You can't afford to buy **{amount}** Bitcoin(s).")
 
+		elif bank.get("btc", 0) + amount > 50:
+			await ctx.send(f"You can only store a maximum of **50** BTC in your wallet.")
+
 		else:
 			await ctx.bot.db["bank"].update_one(
 				{"_id": ctx.author.id},
@@ -62,7 +65,7 @@ class Crypto(commands.Cog):
 				upsert=True
 			)
 
-			await ctx.send(f"You bought **{amount}** Bitcoin(s) for **${price:,}**!")
+			await ctx.send(f"You bought **{amount}** Bitcoin(s) for **${price:,}**.")
 
 	@crypto_group.command(name="sell")
 	async def sell_coin(self, ctx, amount: Range(1, None) = 1):

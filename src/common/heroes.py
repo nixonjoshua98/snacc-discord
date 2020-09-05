@@ -66,7 +66,7 @@ class Hero:
 		return config.get("icons", self.name, fallback=None)
 
 	def _get_grade(self):
-		grades = {"S": 700, "A": 600, "B": 500, "C": 400, "D": 300, "E": 200, "F": 100, "Z": 0}
+		grades = {"Z": 999 + 999, "S": 700, "A": 600, "B": 500, "C": 400, "D": 300, "E": 200, "F": 100}
 
 		self.rating = rating = self.base_attack + self.base_health
 
@@ -80,7 +80,7 @@ class Hero:
 class ChestHeroes:
 	ALL_HEROES = (
 		# - Z
-		Hero(0, 	name="Snaccman", 			weight=5,	atk=0.0, 	hp=0.0),
+		Hero(0, 	name="Snaccman", 			weight=1,	atk=999.0, 	hp=999.0),
 
 		# - F
 		Hero(16, 	name="Happy", 				weight=50,	atk=10.0, 	hp=150.0),

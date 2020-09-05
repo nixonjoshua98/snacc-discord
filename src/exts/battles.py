@@ -9,10 +9,10 @@ from src import utils
 
 from discord.ext import commands
 
-from src.common import checks
+from src.common import BattleValues, checks
 from src.common.population import Military
 
-from src.common.converters import EmpireAttackTarget, DiscordUser, AnyoneWithEmpire
+from src.common.converters import EmpireBattleTarget, AnyoneWithEmpire
 
 
 THIEF_UNIT = Military.get(key="thief")
@@ -20,44 +20,6 @@ SCOUT_UNIT = Military.get(key="scout")
 
 
 class Battles(commands.Cog):
-
-	@staticmethod
-	def calc_win_chance(atk_power, def_power):
-		return max(0.15, min(0.85, ((atk_power / max(1, def_power)) + 0.15 / 2.0)))
-
-	@staticmethod
-	async def calc_units_lost(empire):
-		units_lost = dict()
-		units_lost_cost = 0
-
-		hourly_income = max(0, utils.net_income(empire))
-
-		units = empire.get("units", dict())
-
-		# - Get available units
-		avail_units = []
-		for u in Military.units:
-			unit_entry = units.get(u.key, dict())
-
-			if unit_entry.get("owned", 0) > 0:
-				avail_units.append(u)
-
-		avail_units.sort(key=lambda u: u.calc_price(units.get(u.key, dict()).get("owned", 0), 1), reverse=False)
-
-		for unit in avail_units:
-			unit_entry = units.get(unit.key, dict())
-
-			owned = unit_entry.get("owned", 0)
-
-			for i in range(1, owned + 1):
-				price = unit.calc_price(owned - i, i)
-
-				if (price + units_lost_cost) < hourly_income:
-					units_lost[unit] = i
-
-				units_lost_cost = sum([unit.calc_price(owned - n, n) for u, n in units_lost.items()])
-
-		return units_lost
 
 	@checks.has_unit(SCOUT_UNIT, 1)
 	@commands.cooldown(1, 15, commands.BucketType.user)
@@ -81,13 +43,13 @@ class Battles(commands.Cog):
 	@checks.has_unit(THIEF_UNIT, 1)
 	@commands.cooldown(1, 3_600, commands.BucketType.user)
 	@commands.command(name="steal", cooldown_after_parsing=True)
-	async def steal(self, ctx, *, target: DiscordUser()):
+	async def steal(self, ctx, *, target: EmpireBattleTarget()):
 		""" Attempt to steal from another user. """
 
 		def calculate_money_lost(bank):
 			min_val, max_val = int(bank.get("usd", 0) * 0.015), int(bank.get("usd", 0) * 0.025)
 
-			return random.randint(max(1, min_val), max(1, max_val))
+			return random.randint(max(0, min_val), max(0, max_val))
 
 		target_bank = await ctx.bot.db["bank"].find_one({"_id": target.id}) or dict()
 
@@ -110,12 +72,14 @@ class Battles(commands.Cog):
 				f"but the thief you hired took a cut of **${thief_tax:,}**."
 			)
 
+		await self.update_battle_cooldown(ctx, target)
+
 		await ctx.send(s)
 
 	@checks.has_power(25)
 	@commands.cooldown(1, 60 * 120, commands.BucketType.user)
 	@commands.command(name="attack", cooldown_after_parsing=True)
-	async def attack(self, ctx, *, target: EmpireAttackTarget()):
+	async def attack(self, ctx, *, target: EmpireBattleTarget()):
 		""" Attack a rival empire. """
 
 		def calc_pillaged_amount(empire, bank, multiplier: int = 1.0):
@@ -156,13 +120,11 @@ class Battles(commands.Cog):
 				]
 			)
 
-			await ctx.bot.db["empires"].update_one({"_id": target.id}, {"$set": {"last_attack": dt.datetime.utcnow()}})
-
 			# - Create the message to return to Discord
 			val = f"${pillaged:,} {f'**+ ${bonus:,} bonus**' if bonus > 0 else ''}"
 			title = f"Attack on {target_empire.get('name', target.display_name)}"
 
-			embed = ctx.bot.embed(title=title,author=ctx.author, description=f"**Money Pillaged:** {val}")
+			embed = ctx.bot.embed(title=title, author=ctx.author, description=f"**Money Pillaged:** {val}")
 
 			if units_lost:
 				units_lost_text = list(map(lambda kv: f"`{kv[1]}x {kv[0].display_name}`", units_lost.items()))
@@ -174,9 +136,56 @@ class Battles(commands.Cog):
 		else:
 			await ctx.send(f"You failed your attack on **{target.display_name}**!")
 
-		day_ago = dt.datetime.utcnow() - dt.timedelta(hours=24.0)
+		await self.update_battle_cooldown(ctx, target)
 
-		await ctx.bot.db["empires"].update_one({"_id": ctx.author.id}, {"$set": {"last_attack": day_ago}}, upsert=True)
+	@staticmethod
+	def calc_win_chance(atk_power, def_power):
+		return max(0.15, min(0.85, ((atk_power / max(1, def_power)) + 0.15 / 2.0)))
+
+	@staticmethod
+	async def calc_units_lost(empire):
+		units_lost = dict()
+		units_lost_cost = 0
+
+		hourly_income = max(0, utils.net_income(empire))
+
+		units = empire.get("units", dict())
+
+		# - Get available units
+		avail_units = []
+		for u in Military.units:
+			unit_entry = units.get(u.key, dict())
+
+			if unit_entry.get("owned", 0) > 0:
+				avail_units.append(u)
+
+		avail_units.sort(key=lambda un: un.calc_price(units.get(un.key, dict()).get("owned", 0), 1), reverse=False)
+
+		for unit in avail_units:
+			unit_entry = units.get(unit.key, dict())
+
+			owned = unit_entry.get("owned", 0)
+
+			for i in range(1, owned + 1):
+				price = unit.calc_price(owned - i, i)
+
+				if (price + units_lost_cost) < hourly_income:
+					units_lost[unit] = i
+
+				units_lost_cost = sum([unit.calc_price(owned - n, n) for u, n in units_lost.items()])
+
+		return units_lost
+
+	@staticmethod
+	async def update_battle_cooldown(ctx, target):
+		in_past = (now := dt.datetime.utcnow()) - dt.timedelta(seconds=BattleValues.COOLDOWN)
+
+		await ctx.bot.db["empires"].bulk_write(
+			[
+				UpdateOne({"_id": target.id}, {"$set": {"last_battle": now}}, upsert=True),
+				UpdateOne({"_id": ctx.author.id}, {"$set": {"last_battle": in_past}}, upsert=True),
+			]
+		)
 
 
 def setup(bot):

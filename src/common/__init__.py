@@ -24,3 +24,8 @@ class SupportServer:
 class UnitMergeValues:
 	MAX_UNIT_MERGE = 10
 	MERGE_COST = 15
+
+
+class BattleValues:
+	COOLDOWN = 2.0 * 3_600
+
