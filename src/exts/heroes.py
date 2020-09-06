@@ -38,7 +38,6 @@ class Heroes(commands.Cog):
 
 	@show_heroes.command(name="chest")
 	@commands.has_permissions(add_reactions=True)
-	@commands.cooldown(5, 1_800, commands.BucketType.user)
 	async def hero_chests(self, ctx):
 		""" Open a hero chest. """
 

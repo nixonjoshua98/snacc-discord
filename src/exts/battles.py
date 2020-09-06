@@ -58,7 +58,7 @@ class Battles(commands.Cog):
 
 		await ctx.send(
 			f"Your scout reports that you have a **{int(win_chance * 100)}%** "
-			f"chance of winning against **{str(target)}**."
+			f"chance of winning against **{target.display_name}**."
 		)
 
 	@checks.has_unit(THIEF_UNIT, 1)
@@ -89,7 +89,7 @@ class Battles(commands.Cog):
 
 		if thief_tax > 0:
 			s = (
-				f"You stole **${stolen_amount:,}** from **{str(target)}** "
+				f"You stole **${stolen_amount:,}** from **{target.display_name}** "
 				f"but the thief you hired took a cut of **${thief_tax:,}.**"
 			)
 
