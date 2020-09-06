@@ -1,108 +1,87 @@
 {
     "0": {
         "name": "Snaccman",
-        "grade": "Z",
-        "icon": null
+        "grade": "Z"
     },
     "1": {
         "name": "Light Yagami",
-        "grade": "D",
-        "icon": "https://i.imgur.com/xloJAE1.png"
+        "grade": "D"
     },
     "2": {
         "name": "Kirigaya Kazuto",
-        "grade": "D",
-        "icon": "https://i.imgur.com/vTJXtDK.png"
+        "grade": "D"
     },
     "3": {
         "name": "Edward Elric",
-        "grade": "D",
-        "icon": "https://i.imgur.com/zVWu4GP.png"
+        "grade": "D"
     },
     "4": {
         "name": "Levi Ackerman",
-        "grade": "D",
-        "icon": "https://i.imgur.com/1uCJi49.jpg"
+        "grade": "D"
     },
     "5": {
         "name": "Rias Gremory",
-        "grade": "C",
-        "icon": "https://i.imgur.com/ru7aDuC.jpg"
+        "grade": "C"
     },
     "6": {
         "name": "Death The Kid",
-        "grade": "C",
-        "icon": "https://i.imgur.com/3L5DiC4.jpg"
+        "grade": "C"
     },
     "7": {
         "name": "Natsu Dragneel",
-        "grade": "C",
-        "icon": "https://i.imgur.com/2M6sZuC.jpg"
+        "grade": "C"
     },
     "8": {
         "name": "Killua Zoldyck",
-        "grade": "B",
-        "icon": "https://i.imgur.com/3uJNHMO.jpg"
+        "grade": "B"
     },
     "9": {
         "name": "Itachi Uchiha",
-        "grade": "B",
-        "icon": "https://i.imgur.com/QZAuWXZ.jpg"
+        "grade": "B"
     },
     "10": {
         "name": "Yato",
-        "grade": "B",
-        "icon": "https://i.imgur.com/9W5ZsJB.jpg"
+        "grade": "B"
     },
     "11": {
         "name": "Saitama",
-        "grade": "B",
-        "icon": "https://i.imgur.com/q8SpP6s.jpg"
+        "grade": "B"
     },
     "12": {
         "name": "Shoto Todoroki",
-        "grade": "B",
-        "icon": "https://i.imgur.com/QGeiPKb.jpg"
+        "grade": "B"
     },
     "13": {
         "name": "Ichigo Kurosaki",
-        "grade": "A",
-        "icon": "https://i.imgur.com/44vCn4a.png"
+        "grade": "A"
     },
     "14": {
         "name": "Naruto",
-        "grade": "A",
-        "icon": "https://i.imgur.com/0XlxGis.png"
+        "grade": "A"
     },
     "15": {
         "name": "Monkey D. Luffy",
-        "grade": "A",
-        "icon": "https://i.imgur.com/dnQVJte.jpg"
+        "grade": "A"
     },
     "16": {
         "name": "Happy",
-        "grade": "F",
-        "icon": "https://i.imgur.com/SkDFEmv.png"
+        "grade": "F"
     },
     "17": {
         "name": "Mumen Rider",
-        "grade": "E",
-        "icon": "https://i.imgur.com/6UBEZkS.png"
+        "grade": "E"
     },
     "18": {
         "name": "Mob",
-        "grade": "S",
-        "icon": "https://i.imgur.com/SUhrLPf.png"
+        "grade": "S"
     },
     "19": {
         "name": "Gon Freecss",
-        "grade": "S",
-        "icon": "https://i.imgur.com/YG1HYXU.jpg"
+        "grade": "S"
     },
     "20": {
         "name": "Sakura Haruno",
-        "grade": "E",
-        "icon": "https://i.imgur.com/ShIT78z.png"
+        "grade": "E"
     },
     "21": {
         "name": "L",

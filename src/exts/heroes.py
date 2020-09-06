@@ -73,23 +73,20 @@ class Heroes(commands.Cog):
 
 		new_heroes = chest.open(amount)
 
-		embeds, requests = [], []
+		desc, requests = [], []
+
+		embed = ctx.bot.embed(title=chest.name, description=desc, author=ctx.author)
 
 		for hero, opened in new_heroes.items():
 			requests.append(UpdateOne({"user": ctx.author.id, "hero": hero.id}, {"$inc": {"owned": 1}}, upsert=True))
 
-			desc = f"You pulled **{opened}x #{hero.id:02d} {hero.name} [{hero.grade}]**"
+			desc.append(f"You pulled **{opened}x #{hero.id:02d} {hero.name} [{hero.grade}]**")
 
-			embed = ctx.bot.embed(title=chest.name, description=desc, author=ctx.author)
-
-			if hero.icon is not None:
-				embed.set_image(url=hero.icon)
-
-			embeds.append(embed)
+		embed.description = "\n".join(desc)
 
 		await ctx.bot.db["heroes"].bulk_write(requests)
 
-		await DisplayPages(embeds).send(ctx)
+		await ctx.send(embed=embed)
 
 	@show_heroes.command(name="sell")
 	async def sell_hero(self, ctx, hero: HeroFromChest(), amount: Range(1, None) = 1):
