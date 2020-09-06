@@ -13,7 +13,7 @@ DAILY_REWARDS = [
 
 class Rewards(commands.Cog):
 
-	#@commands.cooldown(1, 3_600 * 24, commands.BucketType.user)
+	@commands.cooldown(1, 3_600 * 24, commands.BucketType.user)
 	@commands.max_concurrency(1, commands.BucketType.user)
 	@commands.command(name="daily")
 	async def daily(self, ctx):
