@@ -4,6 +4,8 @@ import itertools
 import json
 import os
 
+from collections import Counter
+
 
 class HeroChest:
 	__ids = set()
@@ -21,10 +23,10 @@ class HeroChest:
 
 
 class NormalHeroChest(HeroChest):
-	def open(self):
+	def open(self, n):
 		weights = [hero.weight for hero in ChestHeroes.ALL_HEROES]
 
-		return random.choices(ChestHeroes.ALL_HEROES, weights=weights, k=1)[0]
+		return Counter(random.choices(ChestHeroes.ALL_HEROES, weights=weights, k=n))
 
 
 class HeroChests:
@@ -60,7 +62,7 @@ class Hero:
 	@property
 	def weight(self):
 		return {
-			"Z": 5, "S": 10, "A": 15, "B": 25, "C": 35, "D": 40, "E": 45, "F": 50
+			"Z": 3, "S": 10, "A": 15, "B": 25, "C": 35, "D": 40, "E": 45, "F": 50
 		}.get(self.grade, 0)
 
 

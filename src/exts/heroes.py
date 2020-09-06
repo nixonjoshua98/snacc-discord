@@ -1,12 +1,14 @@
-import math
+
+from pymongo import UpdateOne
+
+from discord.ext import commands
 
 from src.common.heroes import HeroChests, ChestHeroes
 
 from src.structs.confirm import Confirm
+from src.structs.displaypages import DisplayPages
 
 from src.common.converters import HeroFromChest, Range
-
-from discord.ext import commands
 
 
 class Heroes(commands.Cog):
@@ -21,29 +23,40 @@ class Heroes(commands.Cog):
 
 		heroes.sort(key=lambda h: h["hero"])
 
-		embed = ctx.bot.embed(title="Your Heroes", author=ctx.author)
+		if not heroes:
+			return await ctx.send("You do not currently own any heroes.")
 
-		desc = []
+		embeds, chunks = [], [heroes[i:i + 20] for i in range(0, len(heroes), 20)]
 
-		for hero in heroes:
-			hero_inst = ChestHeroes.get(id=hero["hero"])
+		for i, chunk in enumerate(chunks):
+			desc = []
 
-			s = f"`#{hero_inst.id:02d} | {hero['owned']:02d}x [{hero_inst.grade}] {hero_inst.name: <16}`"
+			embed = ctx.bot.embed(title=f"Your Heroes [Page {i + 1}/{len(chunks)}]", author=ctx.author)
 
-			desc.append(s)
+			embeds.append(embed)
 
-		embed.description = "\n".join(desc)
+			for hero in chunk:
+				hero_inst = ChestHeroes.get(id=hero["hero"])
 
-		await ctx.send(embed=embed)
+				s = f"`#{hero_inst.id:02d} | {hero['owned']:02d}x [{hero_inst.grade}] {hero_inst.name: <20}`"
+
+				desc.append(s)
+
+			embed.description = "\n".join(desc)
+
+		if len(embeds) >= 1:
+			await DisplayPages(embeds).send(ctx)
 
 	@show_heroes.command(name="chest")
 	@commands.has_permissions(add_reactions=True)
-	async def hero_chests(self, ctx):
+	async def hero_chests(self, ctx, amount: Range(1, 5) = 1):
 		""" Open a hero chest. """
 
 		chest = HeroChests.get(id=0)
 
-		desc = f"Buy and open a **{chest.name}** for **${chest.cost:,}**?"
+		cost = chest.cost * amount
+
+		desc = f"Buy and open **{amount:,}x {chest.name}** for **${cost:,}**?"
 
 		embed = ctx.bot.embed(title="Hero Chests", description=desc, author=ctx.author)
 
@@ -53,27 +66,30 @@ class Heroes(commands.Cog):
 		bank = await ctx.bot.db["bank"].find_one({"_id": ctx.author.id})
 
 		# - Check if the author can afford the crate
-		if bank is None or bank.get("usd", 0) < chest.cost:
-			return await ctx.send(f"You cannot afford **{chest.name}**.")
+		if bank is None or bank.get("usd", 0) < cost:
+			return await ctx.send(f"You cannot afford **{amount:,}x {chest.name}**.")
 
 		await ctx.bot.db["bank"].update_one({"_id": ctx.author.id}, {"$inc": {"usd": -chest.cost}})
 
-		hero = chest.open()
+		new_heroes = chest.open(amount)
 
-		await ctx.bot.db["heroes"].update_one(
-			{"user": ctx.author.id, "hero": hero.id},
-			{"$inc": {"owned": 1}},
-			upsert=True
-		)
+		embeds, requests = [], []
 
-		desc = f"You pulled **#{hero.id:02d} {hero.name} [{hero.grade}]**"
+		for hero, opened in new_heroes.items():
+			requests.append(UpdateOne({"user": ctx.author.id, "hero": hero.id}, {"$inc": {"owned": 1}}, upsert=True))
 
-		embed = ctx.bot.embed(title=chest.name, description=desc, author=ctx.author)
+			desc = f"You pulled **#{hero.id:02d} {hero.name} [{hero.grade}]**"
 
-		if hero.icon is not None:
-			embed.set_image(url=hero.icon)
+			embed = ctx.bot.embed(title=chest.name, description=desc, author=ctx.author)
 
-		await ctx.send(embed=embed)
+			if hero.icon is not None:
+				embed.set_image(url=hero.icon)
+
+			embeds.append(embed)
+
+		await ctx.bot.db["heroes"].bulk_write(requests)
+
+		await DisplayPages(embeds).send(ctx)
 
 	@show_heroes.command(name="sell")
 	async def sell_hero(self, ctx, hero: HeroFromChest(), amount: Range(1, None) = 1):
