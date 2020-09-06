@@ -21,6 +21,27 @@ SCOUT_UNIT = Military.get(key="scout")
 
 class Battles(commands.Cog):
 
+	def __init__(self, bot):
+		self.bot = bot
+
+		self.__cache = dict()
+
+	@commands.Cog.listener("on_startup")
+	async def on_startup(self):
+		pass
+
+	def get_target(self):
+		now = dt.datetime.utcnow()
+
+		for _id, last_battle in self.__cache.items():
+			time_since_battle = (now - last_battle).total_seconds()
+
+			if time_since_battle > BattleValues.COOLDOWN:
+				if (user := self.bot.get_user(_id)) is not None:
+					return user
+
+		return None
+
 	@checks.has_unit(SCOUT_UNIT, 1)
 	@commands.cooldown(1, 15, commands.BucketType.user)
 	@commands.command(name="scout", cooldown_after_parsing=True)
@@ -189,4 +210,4 @@ class Battles(commands.Cog):
 
 
 def setup(bot):
-	bot.add_cog(Battles())
+	bot.add_cog(Battles(bot))

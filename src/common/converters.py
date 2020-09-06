@@ -6,6 +6,7 @@ import datetime as dt
 from src.common import UnitMergeValues, BattleValues
 from src.common.quests import EmpireQuests
 from src.common.upgrades import EmpireUpgrades
+from src.common.heroes import ChestHeroes
 from src.common.population import Military, Workers
 
 
@@ -114,6 +115,23 @@ class EmpireUnit(commands.Converter):
 				raise commands.UserInputError(f"A unit with the ID `{val}` could not be found.")
 
 		return unit
+
+
+class HeroFromChest(commands.Converter):
+	async def convert(self, ctx, argument):
+		try:
+			val = int(argument)
+
+		except ValueError:
+			raise commands.UserInputError(f"A hero with the ID `{argument}` could not be found.")
+
+		else:
+			hero = ChestHeroes.get(id=val)
+
+			if hero is None:
+				raise commands.UserInputError(f"A hero with the ID `{val}` could not be found.")
+
+		return hero
 
 
 class MergeableUnit(EmpireUnit):

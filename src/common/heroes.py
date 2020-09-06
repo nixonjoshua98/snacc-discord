@@ -101,20 +101,20 @@ class ChestHeroes:
 		Hero(7, 	name="Natsu Dragneel", 		weight=35, 	atk=85.0, 	hp=375.0),
 
 		# - B
-		Hero(8, 	name="Killua Zoldyck", 		weight=30, 	atk=95.0, 	hp=430.0),
-		Hero(9, 	name="Itachi Uchiha", 		weight=30, 	atk=100.0, 	hp=410.0),
-		Hero(10, 	name="Yato", 				weight=30, 	atk=80.0, 	hp=450.0),
-		Hero(11, 	name="Saitama", 			weight=30, 	atk=125.0, 	hp=425.0),
-		Hero(12, 	name="Shoto Todoroki", 		weight=30, 	atk=75.0, 	hp=500.0),
+		Hero(8, 	name="Killua Zoldyck", 		weight=25, 	atk=95.0, 	hp=430.0),
+		Hero(9, 	name="Itachi Uchiha", 		weight=25, 	atk=100.0, 	hp=410.0),
+		Hero(10, 	name="Yato", 				weight=25, 	atk=80.0, 	hp=450.0),
+		Hero(11, 	name="Saitama", 			weight=25, 	atk=125.0, 	hp=425.0),
+		Hero(12, 	name="Shoto Todoroki", 		weight=25, 	atk=75.0, 	hp=500.0),
 
 		# - A
-		Hero(13, 	name="Ichigo Kurosaki",		weight=20, 	atk=125.0, 	hp=550.0),
-		Hero(14, 	name="Naruto", 				weight=20, 	atk=130.0, 	hp=530.0),
-		Hero(15, 	name="Monkey D. Luffy", 	weight=20, 	atk=120.0, 	hp=560.0),
+		Hero(13, 	name="Ichigo Kurosaki",		weight=15, 	atk=125.0, 	hp=550.0),
+		Hero(14, 	name="Naruto", 				weight=15, 	atk=130.0, 	hp=530.0),
+		Hero(15, 	name="Monkey D. Luffy", 	weight=15, 	atk=120.0, 	hp=560.0),
 
 		# - S
-		Hero(18, 	name="Mob", 				weight=15, 	atk=200.0, 	hp=500.0),
-		Hero(19, 	name="Gon Freecss", 		weight=15, 	atk=150.0, 	hp=550.0),
+		Hero(18, 	name="Mob", 				weight=10, 	atk=200.0, 	hp=500.0),
+		Hero(19, 	name="Gon Freecss", 		weight=10, 	atk=150.0, 	hp=550.0),
 	)
 
 	ALL_HEROES = sorted(ALL_HEROES, key=lambda h: h.rating, reverse=True)

@@ -38,9 +38,9 @@ class Arena(commands.Cog):
 
 			self.background_loop.start()
 
-	@tasks.loop(hours=8.0)
+	@tasks.loop(hours=4.0)
 	async def background_loop(self):
-		await asyncio.sleep(60 * 60 * 8.0)
+		await asyncio.sleep(60 * 60 * 4.0)
 
 		channel = self.bot.get_channel(DarknessServer.ABO_CHANNEL)
 
@@ -112,7 +112,7 @@ class Arena(commands.Cog):
 
 		return sorted(entries, key=lambda e: (e.get("rating", 0), e["level"]), reverse=True)
 
-	async def create_history(self, *, include_discord: bool = True, role=None):
+	async def create_history(self, *, include_discord: bool, role=None):
 		async def create_history_row(user):
 			stats = await self.bot.db["arena"].find(query).to_list(length=None)
 

@@ -22,7 +22,7 @@ class Support(commands.Cog):
 	async def giveaway_command(self, ctx, value: Range(0, None), *, item):
 		""" Start a giveaway in the support server. """
 
-		resp = await Confirm(f"Create a giveaway with {item} as the reward?").prompt(ctx)
+		resp = await Confirm(f"Create a giveaway with **{item}** worth **${value:,}** as the reward?").prompt(ctx)
 
 		if not resp:
 			return await ctx.send("Giveaway aborted")

@@ -1,7 +1,10 @@
+import math
 
 from src.common.heroes import HeroChests, ChestHeroes
 
 from src.structs.confirm import Confirm
+
+from src.common.converters import HeroFromChest, Range
 
 from discord.ext import commands
 
@@ -14,7 +17,7 @@ class Heroes(commands.Cog):
 	async def show_heroes(self, ctx):
 		""" View your owned heroes. """
 
-		heroes = await ctx.bot.db["heroes"].find({"user": ctx.author.id}).to_list(length=None)
+		heroes = await ctx.bot.db["heroes"].find({"user": ctx.author.id, "owned": {"$gt": 0}}).to_list(length=None)
 
 		heroes.sort(key=lambda h: h["hero"])
 
@@ -35,7 +38,7 @@ class Heroes(commands.Cog):
 
 	@show_heroes.command(name="chest")
 	@commands.has_permissions(add_reactions=True)
-	@commands.max_concurrency(1, commands.BucketType.user)
+	@commands.cooldown(5, 1_800, commands.BucketType.user)
 	async def hero_chests(self, ctx):
 		""" Open a hero chest. """
 
@@ -72,6 +75,32 @@ class Heroes(commands.Cog):
 			embed.set_image(url=hero.icon)
 
 		await ctx.send(embed=embed)
+
+	@show_heroes.command(name="sell")
+	async def sell_hero(self, ctx, hero: HeroFromChest(), amount: Range(1, None) = 1):
+		""" Sell your heroes. """
+
+		hero_entry = await ctx.bot.db["heroes"].find_one({"user": ctx.author.id, "hero": hero.id})
+
+		if hero_entry is None or hero_entry.get("owned", 0) < amount:
+			await ctx.send(f"You do not have **{amount:,}x** **#{hero.id}** available to sell")
+
+		else:
+			money = math.floor(hero.rating * 13.0) * amount
+
+			if await Confirm(f"Sell **{amount:,}x** hero **#{hero.id}** for **${money:,}**?").prompt(ctx):
+
+				await ctx.bot.db["heroes"].update_one(
+					{"user": ctx.author.id, "hero": hero.id},
+					{"$inc": {"owned": -amount}}
+				)
+
+				await ctx.bot.db["bank"].update_one({"_id": ctx.author.id}, {"$inc": {"usd": money}})
+
+				await ctx.send(f"Sold **{amount:,}x** hero **#{hero.id}** for **${money:,}**")
+
+			else:
+				await ctx.send("Hero sale aborted")
 
 
 def setup(bot):
