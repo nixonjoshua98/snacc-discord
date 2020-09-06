@@ -1,0 +1,239 @@
+{
+    "0": {
+        "name": "Snaccman",
+        "grade": "Z",
+        "icon": null
+    },
+    "1": {
+        "name": "Light Yagami",
+        "grade": "D",
+        "icon": "https://i.imgur.com/xloJAE1.png"
+    },
+    "2": {
+        "name": "Kirigaya Kazuto",
+        "grade": "D",
+        "icon": "https://i.imgur.com/vTJXtDK.png"
+    },
+    "3": {
+        "name": "Edward Elric",
+        "grade": "D",
+        "icon": "https://i.imgur.com/zVWu4GP.png"
+    },
+    "4": {
+        "name": "Levi Ackerman",
+        "grade": "D",
+        "icon": "https://i.imgur.com/1uCJi49.jpg"
+    },
+    "5": {
+        "name": "Rias Gremory",
+        "grade": "C",
+        "icon": "https://i.imgur.com/ru7aDuC.jpg"
+    },
+    "6": {
+        "name": "Death The Kid",
+        "grade": "C",
+        "icon": "https://i.imgur.com/3L5DiC4.jpg"
+    },
+    "7": {
+        "name": "Natsu Dragneel",
+        "grade": "C",
+        "icon": "https://i.imgur.com/2M6sZuC.jpg"
+    },
+    "8": {
+        "name": "Killua Zoldyck",
+        "grade": "B",
+        "icon": "https://i.imgur.com/3uJNHMO.jpg"
+    },
+    "9": {
+        "name": "Itachi Uchiha",
+        "grade": "B",
+        "icon": "https://i.imgur.com/QZAuWXZ.jpg"
+    },
+    "10": {
+        "name": "Yato",
+        "grade": "B",
+        "icon": "https://i.imgur.com/9W5ZsJB.jpg"
+    },
+    "11": {
+        "name": "Saitama",
+        "grade": "B",
+        "icon": "https://i.imgur.com/q8SpP6s.jpg"
+    },
+    "12": {
+        "name": "Shoto Todoroki",
+        "grade": "B",
+        "icon": "https://i.imgur.com/QGeiPKb.jpg"
+    },
+    "13": {
+        "name": "Ichigo Kurosaki",
+        "grade": "A",
+        "icon": "https://i.imgur.com/44vCn4a.png"
+    },
+    "14": {
+        "name": "Naruto",
+        "grade": "A",
+        "icon": "https://i.imgur.com/0XlxGis.png"
+    },
+    "15": {
+        "name": "Monkey D. Luffy",
+        "grade": "A",
+        "icon": "https://i.imgur.com/dnQVJte.jpg"
+    },
+    "16": {
+        "name": "Happy",
+        "grade": "F",
+        "icon": "https://i.imgur.com/SkDFEmv.png"
+    },
+    "17": {
+        "name": "Mumen Rider",
+        "grade": "E",
+        "icon": "https://i.imgur.com/6UBEZkS.png"
+    },
+    "18": {
+        "name": "Mob",
+        "grade": "S",
+        "icon": "https://i.imgur.com/SUhrLPf.png"
+    },
+    "19": {
+        "name": "Gon Freecss",
+        "grade": "S",
+        "icon": "https://i.imgur.com/YG1HYXU.jpg"
+    },
+    "20": {
+        "name": "Sakura Haruno",
+        "grade": "E",
+        "icon": "https://i.imgur.com/ShIT78z.png"
+    },
+    "21": {
+        "name": "L",
+        "grade": "C"
+    },
+    "22": {
+        "name": "Kakashi Hatake",
+        "grade": "A"
+    },
+    "23": {
+        "name": "Lelouch Lamperouge",
+        "grade": "B"
+    },
+    "24": {
+        "name": "Ryuk",
+        "grade": "D"
+    },
+    "25": {
+        "name": "Erza Scarlet",
+        "grade": "A"
+    },
+    "26": {
+        "name": "Gaara",
+        "grade": "C"
+    },
+    "27": {
+        "name": "Asuna Yuuki",
+        "grade": "D"
+    },
+    "28": {
+        "name": "Jiraiya",
+        "grade": "C"
+    },
+    "29": {
+        "name": "Rin Okumura",
+        "grade": "D"
+    },
+    "30": {
+        "name": "Kisuke Urahara",
+        "grade": "A"
+    },
+    "31": {
+        "name": "Sasuke Uchiha",
+        "grade": "S"
+    },
+    "32": {
+        "name": "Lucy Heartfilia",
+        "grade": "E"
+    },
+    "33": {
+        "name": "Goku Son",
+        "grade": "S"
+    },
+    "34": {
+        "name": "Ken Kaneki",
+        "grade": "A"
+    },
+    "35": {
+        "name": "Rock Lee",
+        "grade": "C"
+    },
+    "36": {
+        "name": "Ulquiorra Schiffer",
+        "grade": "B"
+    },
+    "37": {
+        "name": "Saber",
+        "grade": "A"
+    },
+    "38": {
+        "name": "Shiro",
+        "grade": "C"
+    },
+    "39": {
+        "name": "Sora",
+        "grade": "C"
+    },
+    "40": {
+        "name": "Izuku Midoriya",
+        "grade": "B"
+    },
+    "41": {
+        "name": "Black Star",
+        "grade": "B"
+    },
+    "42": {
+        "name": "Misa Amane",
+        "grade": "F"
+    },
+    "43": {
+        "name": "Yuzuru Otonashi",
+        "grade": "E"
+    },
+    "44": {
+        "name": "Shinigami",
+        "grade": "A"
+    },
+    "45": {
+        "name": "Sasha Braus",
+        "grade": "E"
+    },
+    "46": {
+        "name": "Hisoka Morrow",
+        "grade": "S"
+    },
+    "47": {
+        "name": "Gintoki Sakata",
+        "grade": "B"
+    },
+    "48": {
+        "name": "Nami",
+        "grade": "D"
+    },
+    "49": {
+        "name": "Shanks",
+        "grade": "B"
+    },
+    "50": {
+        "name": "Klein",
+        "grade": "E"
+    },
+    "51": {
+        "name": "Rin Tohsaka",
+        "grade": "C"
+    },
+    "52": {
+        "name": "Orihime Inoue",
+        "grade": "E"
+    },
+    "53": {
+        "name": "Karma Akabane",
+        "grade": "C"
+    }
+}

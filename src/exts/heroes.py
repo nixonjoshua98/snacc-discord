@@ -85,7 +85,7 @@ class Heroes(commands.Cog):
 			await ctx.send(f"You do not have **{amount:,}x** **#{hero.id}** available to sell")
 
 		else:
-			money = math.floor(hero.rating * 13.0) * amount
+			money = hero.sell_price * amount
 
 			if await Confirm(f"Sell **{amount:,}x** hero **#{hero.id}** for **${money:,}**?").prompt(ctx):
 

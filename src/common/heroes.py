@@ -1,8 +1,8 @@
 import discord
 import random
+import itertools
+import json
 import os
-
-from configparser import ConfigParser
 
 
 class HeroChest:
@@ -39,85 +39,38 @@ class HeroChests:
 class Hero:
 	__ids = set()
 
-	def __init__(self, _id, *, name, weight, atk, hp):
-		self.id = _id
+	def __init__(self, _id, *, name, grade, icon=None):
+		self.id = int(_id)
 
 		self.name = name
-		self.weight = weight
-
-		self.base_attack = atk
-		self.base_health = hp
-
-		self.rating = 0
-
-		self.icon = self._get_icon()
-		self.grade = self._get_grade()
+		self.grade = grade
+		self.icon = icon
 
 		if self.id in Hero.__ids:
 			raise KeyError(f"Hero ID '{self.id}' is not unique.")
 
 		Hero.__ids.add(self.id)
 
-	def _get_icon(self):
-		config = ConfigParser()
+	@property
+	def sell_price(self):
+		return {
+			"Z": 0, "S": 10_000, "A": 8_000, "B": 6_000, "C": 4_000, "D": 3_000, "E": 2_000, "F": 1_000
+		}.get(self.grade, 0)
 
-		config.read(os.path.join(os.getcwd(), "data", "heroes.ini"))
-
-		return config.get("icons", self.name, fallback=None)
-
-	def _get_grade(self):
-		grades = {"Z": 999 + 999, "S": 700, "A": 600, "B": 500, "C": 400, "D": 300, "E": 200, "F": 100}
-
-		self.rating = rating = self.base_attack + self.base_health
-
-		for k, v in grades.items():
-			if rating >= v:
-				return k
-
-		return "F"
+	@property
+	def weight(self):
+		return {
+			"Z": 5, "S": 10, "A": 15, "B": 25, "C": 35, "D": 40, "E": 45, "F": 50
+		}.get(self.grade, 0)
 
 
 class ChestHeroes:
-	ALL_HEROES = (
-		# - Z
-		Hero(0, 	name="Snaccman", 			weight=1,	atk=999.0, 	hp=999.0),
+	with open(os.path.join(os.getcwd(), "data", "heroes.json"), "r") as fh:
+		data = json.load(fh)
 
-		# - F
-		Hero(16, 	name="Happy", 				weight=50,	atk=10.0, 	hp=150.0),
+		ALL_HEROES = tuple(Hero(_id, **kwargs) for _id, kwargs in data.items())
 
-		# - E
-		Hero(17, 	name="Mumen Rider",			weight=45, 	atk=25.0, 	hp=200.0),
-		Hero(20, 	name="Sakura Haruno", 		weight=45, 	atk=60.0, 	hp=175.0),
-
-		# - D
-		Hero(1, 	name="Light Yagami", 		weight=40, 	atk=40.0, 	hp=260.0),
-		Hero(2, 	name="Kirigaya Kazuto", 	weight=40, 	atk=50.0, 	hp=300.0),
-		Hero(3, 	name="Edward Elric", 		weight=40, 	atk=50.0, 	hp=340.0),
-		Hero(4, 	name="Levi Ackerman", 		weight=40, 	atk=45.0, 	hp=330.0),
-
-		# - C
-		Hero(5, 	name="Rias Gremory", 		weight=35, 	atk=70.0, 	hp=330.0),
-		Hero(6, 	name="Death The Kid", 		weight=35, 	atk=80.0, 	hp=350.0),
-		Hero(7, 	name="Natsu Dragneel", 		weight=35, 	atk=85.0, 	hp=375.0),
-
-		# - B
-		Hero(8, 	name="Killua Zoldyck", 		weight=25, 	atk=95.0, 	hp=430.0),
-		Hero(9, 	name="Itachi Uchiha", 		weight=25, 	atk=100.0, 	hp=410.0),
-		Hero(10, 	name="Yato", 				weight=25, 	atk=80.0, 	hp=450.0),
-		Hero(11, 	name="Saitama", 			weight=25, 	atk=125.0, 	hp=425.0),
-		Hero(12, 	name="Shoto Todoroki", 		weight=25, 	atk=75.0, 	hp=500.0),
-
-		# - A
-		Hero(13, 	name="Ichigo Kurosaki",		weight=15, 	atk=125.0, 	hp=550.0),
-		Hero(14, 	name="Naruto", 				weight=15, 	atk=130.0, 	hp=530.0),
-		Hero(15, 	name="Monkey D. Luffy", 	weight=15, 	atk=120.0, 	hp=560.0),
-
-		# - S
-		Hero(18, 	name="Mob", 				weight=10, 	atk=200.0, 	hp=500.0),
-		Hero(19, 	name="Gon Freecss", 		weight=10, 	atk=150.0, 	hp=550.0),
-	)
-
-	ALL_HEROES = sorted(ALL_HEROES, key=lambda h: h.rating, reverse=True)
+	ALL_HEROES = sorted(ALL_HEROES, key=lambda h: "ZSABCDEF".index(h.grade))
 
 	@classmethod
 	def get(cls, **kwargs): return discord.utils.get(cls.ALL_HEROES, **kwargs)
@@ -125,8 +78,12 @@ class ChestHeroes:
 
 weights = sum([hero.weight for hero in ChestHeroes.ALL_HEROES])
 
-for hero in ChestHeroes.ALL_HEROES:
-	print(
-		f"[{hero.grade}] {hero.name: <16} "
-		f"{str(round((hero.weight / weights) * 100, 2)) + '%': <6} "
-	)
+
+for grade, heroes in itertools.groupby(ChestHeroes.ALL_HEROES, lambda h: h.grade):
+	heroes = list(heroes)
+
+	total_weight = sum([h.weight for h in heroes])
+
+	print(f"{grade} -> {str(round((total_weight / weights) * 100, 1)) + '%': <6}")
+
+
