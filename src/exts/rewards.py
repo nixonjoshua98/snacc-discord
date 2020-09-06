@@ -13,7 +13,7 @@ DAILY_REWARDS = [
 
 class Rewards(commands.Cog):
 
-	@commands.cooldown(1, 3_600 * 24, commands.BucketType.user)
+	#@commands.cooldown(1, 3_600 * 24, commands.BucketType.user)
 	@commands.max_concurrency(1, commands.BucketType.user)
 	@commands.command(name="daily")
 	async def daily(self, ctx):
@@ -27,7 +27,7 @@ class Rewards(commands.Cog):
 
 		last_daily = player_row.get("last_daily", now)
 
-		if (now - last_daily).total_seconds() / 3600 < 24:
+		if (hours_since_daily := (now - last_daily).total_seconds() / 3600) < 24:
 			cd = last_daily.replace(tzinfo=dt.timezone.utc).timestamp()
 
 			bucket = self.daily._buckets.get_bucket(ctx.message)
@@ -35,6 +35,9 @@ class Rewards(commands.Cog):
 			bucket._last, bucket._window, bucket._tokens = cd, cd, 0
 
 			raise commands.CommandOnCooldown(bucket, 24 * 3_600 - (now - last_daily).total_seconds())
+
+		elif hours_since_daily >= 48:
+			streak = 1
 
 		reward = 3_000 + (500 * min(streak, 14))
 
