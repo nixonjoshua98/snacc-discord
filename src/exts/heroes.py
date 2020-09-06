@@ -69,7 +69,7 @@ class Heroes(commands.Cog):
 		if bank is None or bank.get("usd", 0) < cost:
 			return await ctx.send(f"You cannot afford **{amount:,}x {chest.name}**.")
 
-		await ctx.bot.db["bank"].update_one({"_id": ctx.author.id}, {"$inc": {"usd": -chest.cost}})
+		await ctx.bot.db["bank"].update_one({"_id": ctx.author.id}, {"$inc": {"usd": -cost}})
 
 		new_heroes = chest.open(amount)
 
@@ -78,7 +78,7 @@ class Heroes(commands.Cog):
 		for hero, opened in new_heroes.items():
 			requests.append(UpdateOne({"user": ctx.author.id, "hero": hero.id}, {"$inc": {"owned": 1}}, upsert=True))
 
-			desc = f"You pulled **#{hero.id:02d} {hero.name} [{hero.grade}]**"
+			desc = f"You pulled **{opened}x #{hero.id:02d} {hero.name} [{hero.grade}]**"
 
 			embed = ctx.bot.embed(title=chest.name, description=desc, author=ctx.author)
 
