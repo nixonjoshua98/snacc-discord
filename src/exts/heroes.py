@@ -1,13 +1,13 @@
+import math
 
 from pymongo import UpdateOne
 
 from discord.ext import commands
 
-from src.common.heroes import HeroChests, ChestHeroes
-
 from src.structs.confirm import Confirm
 from src.structs.displaypages import DisplayPages
 
+from src.common.heroes import HeroChests, ChestHeroes
 from src.common.converters import HeroFromChest, Range
 
 
@@ -26,10 +26,10 @@ class Heroes(commands.Cog):
 		if not heroes:
 			return await ctx.send("You do not currently own any heroes.")
 
-		embeds, chunks = [], [heroes[i:i + 20] for i in range(0, len(heroes), 20)]
+		embeds, chunks = [], [heroes[i:i + 15] for i in range(0, len(heroes), 15)]
 
 		for i, chunk in enumerate(chunks):
-			desc = []
+			desc = [f"**Collected: {len(heroes)}/{len(ChestHeroes.ALL_HEROES)}**" + "\n"]
 
 			embed = ctx.bot.embed(title=f"Your Heroes [Page {i + 1}/{len(chunks)}]", author=ctx.author)
 
