@@ -96,7 +96,7 @@ class Bot(commands.Bot):
     async def bot_check(self, ctx) -> bool:
         svr = await self.db["servers"].find_one({"_id": ctx.guild.id}) or dict()
 
-        disabled_modules = svr.get("disabled", dict()).get("modules", [])
+        disabled_modules = svr.get("disabled_modules", [])
 
         if not self.exts_loaded or ctx.guild is None or ctx.author.bot:
             raise GlobalCheckFail("Bot not ready")

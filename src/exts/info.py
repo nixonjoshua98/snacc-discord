@@ -12,7 +12,7 @@ class Info(commands.Cog):
 
 		svr = await ctx.bot.db["servers"].find_one({"_id": ctx.guild.id}) or dict()
 
-		disabled_modules = svr.get("disabled", dict()).get("modules", [])
+		disabled_modules = svr.get("disabled_modules", [])
 
 		embed = ctx.bot.embed(title="Server Modules")
 
@@ -35,8 +35,8 @@ class Info(commands.Cog):
 
 			ls.append(f"`{name}`")
 
-		embed.add_field(name="Enabled Modules", value=" ".join(enabled) or "\u200b", inline=False)
-		embed.add_field(name="Disabled Modules", value=" ".join(disabled) or "\u200b", inline=False)
+		embed.add_field(name="Enabled Modules", value=" | ".join(enabled) or "\u200b", inline=False)
+		embed.add_field(name="Disabled Modules", value=" | ".join(disabled) or "\u200b", inline=False)
 
 		await ctx.send(embed=embed)
 

@@ -1,5 +1,3 @@
-import discord
-
 from discord.ext import commands
 
 from src.common.errors import CogNotFound
@@ -40,14 +38,16 @@ class Settings(commands.Cog):
 		disabled_modules = svr.get("disabled", dict()).get("modules", [])
 
 		if (module_name := module.__class__.__name__) in disabled_modules:
-			await ctx.bot.db["servers"].update_one({"_id": ctx.guild.id}, {"$pull": {"disabled.modules": module_name}})
+			query = {"$pull": {"disabled_modules": module_name}}
 
 			await ctx.send(f"Module **{module_name}** has been enabled.")
 
 		else:
-			await ctx.bot.db["servers"].update_one({"_id": ctx.guild.id}, {"$push": {"disabled.modules": module_name}})
+			query = {"$push": {"disabled_modules": module_name}}
 
 			await ctx.send(f"Module **{module_name}** has been disabled.")
+
+		await ctx.bot.db["servers"].update_one({"_id": ctx.guild.id}, query, upsert=True)
 
 
 def setup(bot):
