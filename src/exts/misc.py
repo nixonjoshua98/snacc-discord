@@ -97,7 +97,7 @@ class Miscellaneous(commands.Cog, name="Misc"):
 	async def send_bot_invite(self, ctx):
 		""" Bot invite link. """
 
-		url = "https://discord.com/oauth2/authorize?client_id=666616515436478473&scope=bot&permissions=388168"
+		url = "https://discord.com/oauth2/authorize?client_id=666616515436478473&scope=bot&permissions=387136"
 
 		await ctx.send(url)
 

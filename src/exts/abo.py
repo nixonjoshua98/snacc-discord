@@ -33,11 +33,11 @@ class ABO(commands.Cog):
 
 		await ctx.send(f"Username has been set to `{name}`")
 
-	@commands.group(name="info", hidden=True, invoke_without_command=True)
-	async def info_group(self, ctx):
+	@commands.group(name="abo", hidden=True, invoke_without_command=True)
+	async def group(self, ctx):
 		""" ... """
 
-	@info_group.command(name="player")
+	@group.command(name="player")
 	async def get_player(self, ctx, *, name):
 		""" Show information about a player. """
 
@@ -58,7 +58,7 @@ class ABO(commands.Cog):
 
 		await ctx.send(embed=embed)
 
-	@info_group.command(name="guild")
+	@group.command(name="guild")
 	async def get_guild(self, ctx, *, name):
 		""" Show information about a guild. """
 

@@ -136,6 +136,11 @@ class Questionnaire(commands.Cog):
 
 			await log_channel.send("I could not find the designated log channel.")
 
+		elif self.bot.has_permissions(log_channel, send_messages=False):
+			log_channel = from_channel
+
+			await log_channel.send("I do not have access to send embeds to the designated channel.")
+
 		embed.timestamp = dt.datetime.utcnow()
 
 		embed.set_footer(text=f"{str(author)}", icon_url=author.avatar_url)
