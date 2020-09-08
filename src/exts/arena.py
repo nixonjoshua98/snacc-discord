@@ -21,6 +21,7 @@ from src.structs.textleaderboard import TextLeaderboard
 
 
 class Arena(commands.Cog):
+	__can_disable__ = False
 	__help_verify_checks__ = True
 
 	def __init__(self, bot):

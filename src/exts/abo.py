@@ -10,6 +10,7 @@ from src.structs.confirm import Confirm
 
 
 class ABO(commands.Cog):
+	__can_disable__ = False
 	__help_verify_checks__ = True
 
 	async def cog_check(self, ctx):

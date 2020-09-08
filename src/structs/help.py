@@ -97,7 +97,7 @@ class Help(commands.HelpCommand):
 			await DisplayPages(embeds, timeout=180.0).send(self.context)
 
 		else:
-			await self.context.send("You do not have access to help for this command.")
+			await self.context.send("You do not have access to help for this command or module. It may be disabled or hidden")
 
 	async def send_cog_help(self, cog):
 		await self.send_bot_help({cog: cog.get_commands()})
