@@ -14,7 +14,7 @@ class Questionnaire(commands.Cog):
 
 	@commands.Cog.listener("on_startup")
 	async def on_startup(self):
-		if self.bot.debug:
+		if not self.bot.debug:
 			print("Added listeners: Questionnaire")
 
 			self.bot.add_listener(self.on_message, "on_message")
@@ -41,6 +41,8 @@ class Questionnaire(commands.Cog):
 			)
 
 			if questionnaire:
+				print(args)
+
 				svr = await self.bot.db["servers"].find_one({"_id": message.guild.id}) or dict()
 
 				if self.__class__.__name__ in svr.get("disabled_modules", []):
