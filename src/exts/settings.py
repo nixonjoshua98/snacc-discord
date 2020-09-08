@@ -35,7 +35,7 @@ class Settings(commands.Cog):
 
 		svr = await ctx.bot.db["servers"].find_one({"_id": ctx.guild.id}) or dict()
 
-		disabled_modules = svr.get("disabled", dict()).get("modules", [])
+		disabled_modules = svr.get("disabled_modules", [])
 
 		if (module_name := module.__class__.__name__) in disabled_modules:
 			query = {"$pull": {"disabled_modules": module_name}}
