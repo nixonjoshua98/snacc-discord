@@ -18,7 +18,7 @@ class Question:
 
 	def wait_for(self, message):
 		if isinstance(self.destination, (discord.Member, discord.User)):
-			return message.author.id == self.author.id
+			return message.author.id == self.author.id and message.guild is None
 
 		elif isinstance(self.destination, discord.TextChannel):
 			return message.author.id == self.author.id and message.channel.id == self.destination.id

@@ -14,7 +14,7 @@ class Questionnaire(commands.Cog):
 
 	@commands.Cog.listener("on_startup")
 	async def on_startup(self):
-		if not self.bot.debug:
+		if self.bot.debug:
 			print("Added listeners: Questionnaire")
 
 			self.bot.add_listener(self.on_message, "on_message")
@@ -41,7 +41,14 @@ class Questionnaire(commands.Cog):
 			)
 
 			if questionnaire:
-				await self.send_questionnaire(message.channel, message.author, questionnaire)
+				svr = await self.bot.db["servers"].find_one({"_id": message.guild.id}) or dict()
+
+				if self.__class__.__name__ in svr.get("disabled_modules", []):
+					if self.bot.has_permissions(message.channel, send_messages=True):
+						await message.channel.send(f"Questionnaires have been disabled in this server.")
+
+				else:
+					await self.send_questionnaire(message.channel, message.author, questionnaire)
 
 	@commands.has_permissions(administrator=True)
 	@commands.group(name="qu", hidden=True)
@@ -63,6 +70,19 @@ class Questionnaire(commands.Cog):
 		await ctx.bot.db["questionnaires"].insert_one(row)
 
 		await ctx.send("Questionnaire created!")
+
+	@commands.has_permissions(administrator=True)
+	@group.command(name="list")
+	async def list_questionnaires(self, ctx):
+		""" List the questionnaires available in this server. """
+
+		questionnaires = await ctx.bot.db["questionnaires"].find({"server": ctx.guild.id}).to_list(length=None)
+
+		embed = ctx.bot.embed(title="Server Questionnaires")
+
+		embed.description = "| ".join([f"`{qu['command']}`" for qu in questionnaires]) or "None"
+
+		await ctx.send(embed=embed)
 
 	@commands.has_permissions(administrator=True)
 	@group.command(name="delete")
