@@ -24,24 +24,6 @@ class Battles(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-		self.__cache = dict()
-
-	@commands.Cog.listener("on_startup")
-	async def on_startup(self):
-		pass
-
-	def get_target(self):
-		now = dt.datetime.utcnow()
-
-		for _id, last_battle in self.__cache.items():
-			time_since_battle = (now - last_battle).total_seconds()
-
-			if time_since_battle > BattleValues.COOLDOWN:
-				if (user := self.bot.get_user(_id)) is not None:
-					return user
-
-		return None
-
 	@checks.has_unit(SCOUT_UNIT, 1)
 	@commands.cooldown(1, 15, commands.BucketType.user)
 	@commands.command(name="scout", cooldown_after_parsing=True)
@@ -93,7 +75,7 @@ class Battles(commands.Cog):
 				f"but the thief you hired took a cut of **${thief_tax:,}.**"
 			)
 
-		await self.update_battle_cooldown(ctx, target)
+		await self.update_battle_cooldown(ctx, target, multiplier=0.5)
 
 		await ctx.send(s)
 
@@ -198,8 +180,8 @@ class Battles(commands.Cog):
 		return units_lost
 
 	@staticmethod
-	async def update_battle_cooldown(ctx, target):
-		in_past = (now := dt.datetime.utcnow()) - dt.timedelta(seconds=BattleValues.COOLDOWN)
+	async def update_battle_cooldown(ctx, target, *, multiplier: float = 1.0):
+		in_past = (now := dt.datetime.utcnow()) - dt.timedelta(seconds=BattleValues.COOLDOWN * multiplier)
 
 		await ctx.bot.db["empires"].bulk_write(
 			[

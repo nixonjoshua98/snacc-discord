@@ -8,7 +8,6 @@ from src.common import SupportServer
 
 
 class Vote(commands.Cog):
-	__can_disable__ = False
 
 	def __init__(self, bot):
 		self.bot = bot
@@ -41,15 +40,6 @@ class Vote(commands.Cog):
 
 				except (discord.Forbidden, discord.HTTPException):
 					""" Failed """
-
-	@commands.command(name="vote")
-	async def vote(self, ctx):
-		""" Link to the vote site. """
-
-		await ctx.send(
-			"https://discord.boats/bot/666616515436478473\n"
-			"https://top-bots.xyz/bot/666616515436478473"
-		)
 
 
 def setup(bot):

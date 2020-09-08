@@ -54,6 +54,15 @@ class Info(commands.Cog):
 
 		await ctx.send(url)
 
+	@commands.command(name="vote")
+	async def vote(self, ctx):
+		""" Link to the vote site. """
+
+		await ctx.send(
+			"https://discord.boats/bot/666616515436478473\n"
+			"https://top-bots.xyz/bot/666616515436478473"
+		)
+
 	@commands.command(name="uptime")
 	async def show_uptime(self, ctx):
 		""" Display how long I have been awake. """

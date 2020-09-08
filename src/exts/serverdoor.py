@@ -41,7 +41,7 @@ class ServerDoor(commands.Cog):
     @commands.has_permissions(administrator=True)
     @commands.command(name="toggledoor")
     async def toggle_door(self, ctx):
-        """ Toggle the messages posted when a member joins or leaves the server. """
+        """ Toggle the join and leave messages. """
 
         svr = await ctx.bot.get_server_data(ctx.guild)
 

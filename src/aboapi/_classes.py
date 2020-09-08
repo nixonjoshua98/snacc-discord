@@ -8,7 +8,7 @@ class _Object:
 
 
 class LeaderboardPlayer(_Object):
-	__slots__ = ("name", "rank", "level", "rating", "guild", "last_match")
+	__slots__ = ("name", "rank", "level", "rating", "guild")
 
 	def __init__(self, **kwargs):
 
@@ -17,7 +17,7 @@ class LeaderboardPlayer(_Object):
 		self.level = kwargs["level"]
 		self.rating = kwargs["rating"]
 
-		self.guild = kwargs.get("guildName")
+		self.guild = kwargs.get("guildName", "N/A")
 
 
 class LeaderboardGuild(_Object):
