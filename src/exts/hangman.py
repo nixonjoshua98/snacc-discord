@@ -172,10 +172,8 @@ class Hangman(commands.Cog):
 		inst = self.games.get(message.channel.id, None)
 
 		if inst is not None:
-			svr = await message.bot.db["servers"].find_one({"_id": message.guild.id}) or dict()
-
-			if self.__class__.__name__ in svr.get("disabled_modules", []):
-				return
+			if await self.bot.is_command_disabled(message.guild, self):
+				return None
 
 			result = inst.on_message(message)
 

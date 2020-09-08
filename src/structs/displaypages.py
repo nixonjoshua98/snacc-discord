@@ -13,16 +13,16 @@ class DisplayPages(menus.Menu):
 
 		self.pages = pages
 
-	async def send_initial_message(self, ctx, channel):
+	async def send_initial_message(self, _, destination):
 		current = self.pages[self.current]
 
 		if isinstance(current, discord.Embed):
-			return await channel.send(embed=current)
+			return await destination.send(embed=current)
 
-		return await channel.send(current)
+		return await destination.send(current)
 
 	def reaction_check(self, payload):
-		if payload.event_type == "REACTION_REMOVE":
+		if self.message.guild is not None and payload.event_type == "REACTION_REMOVE":
 			return False
 
 		return super(DisplayPages, self).reaction_check(payload)
@@ -30,7 +30,7 @@ class DisplayPages(menus.Menu):
 	async def on_reaction(self, payload):
 		current = self.pages[self.current]
 
-		if self.bot.has_permissions(self.message.channel, manage_messages=True):
+		if self.message.guild is not None and self.bot.has_permissions(self.message.channel, manage_messages=True):
 			await self.message.remove_reaction(payload.emoji, self.ctx.author)
 
 		if isinstance(current, discord.Embed):
@@ -62,8 +62,12 @@ class DisplayPages(menus.Menu):
 
 		await self.on_reaction(payload)
 
-	async def send(self, ctx, *, wait: bool = False):
+	async def send(self, ctx, *, send_dm: bool = False, wait: bool = False):
 		if len(self.pages) == 1:
 			return await self.send_initial_message(ctx, ctx.channel)
 
-		await self.start(ctx, wait=wait)
+		if send_dm:
+			await self.start(ctx, channel=await ctx.author.create_dm(), wait=wait)
+
+		else:
+			await self.start(ctx, channel=ctx.channel, wait=wait)

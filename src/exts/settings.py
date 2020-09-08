@@ -6,6 +6,9 @@ from src.common.errors import CogNotFound
 class Settings(commands.Cog):
 	__can_disable__ = False
 
+	async def cog_after_invoke(self, ctx):
+		await ctx.bot.update_server_data(ctx.guild)
+
 	@commands.has_permissions(administrator=True)
 	@commands.command(name="prefix")
 	async def set_prefix(self, ctx: commands.Context, prefix: str):
@@ -16,9 +19,26 @@ class Settings(commands.Cog):
 		await ctx.send(f"Server prefix has been updated to `{prefix}`")
 
 	@commands.has_permissions(administrator=True)
+	@commands.command(name="togglehelp")
+	async def toggle_dm_help(self, ctx):
+		""" Toggle whether to DM help to the user or to the server. """
+
+		svr = await ctx.bot.get_server_data(ctx.guild)
+
+		if not svr.get("dm_help", False):
+			await ctx.bot.db["servers"].update_one({"_id": ctx.guild.id}, {"$set": {"dm_help": True}}, upsert=True)
+
+			return await ctx.send("Send Help Command: `DM`")
+
+		else:
+			await ctx.bot.db["servers"].update_one({"_id": ctx.guild.id}, {"$set": {"dm_help": False}}, upsert=True)
+
+			return await ctx.send("Send Help Command: `Server`")
+
+	@commands.has_permissions(administrator=True)
 	@commands.command(name="toggle")
 	async def toggle_module(self, ctx: commands.Context, *, module):
-		""" Toggle a module between enabled and disabled for the channel. """
+		""" Toggle a module between enabled and disabled for the server. """
 
 		def get_module():
 			for key, inst in ctx.bot.cogs.items():

@@ -8,7 +8,6 @@ from bs4 import BeautifulSoup
 
 
 class Miscellaneous(commands.Cog, name="Misc"):
-	__can_disable__ = False
 
 	@commands.command(name="lines")
 	async def lines(self, ctx):
@@ -92,14 +91,6 @@ class Miscellaneous(commands.Cog, name="Misc"):
 			return await ctx.send(embed=embed)
 
 		await ctx.send("I found no definitions or examples for your query.")
-
-	@commands.command(name="invite")
-	async def send_bot_invite(self, ctx):
-		""" Bot invite link. """
-
-		url = "https://discord.com/oauth2/authorize?client_id=666616515436478473&scope=bot&permissions=387136"
-
-		await ctx.send(url)
 
 	@commands.command(name="cooldowns", aliases=["cd"])
 	async def cooldowns(self, ctx):

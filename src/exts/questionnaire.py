@@ -41,16 +41,12 @@ class Questionnaire(commands.Cog):
 			)
 
 			if questionnaire:
-				print(args)
-
-				svr = await self.bot.db["servers"].find_one({"_id": message.guild.id}) or dict()
-
-				if self.__class__.__name__ in svr.get("disabled_modules", []):
-					if self.bot.has_permissions(message.channel, send_messages=True):
+				if self.bot.has_permissions(message.channel, send_messages=True):
+					if await self.bot.is_command_disabled(message.guild, self):
 						await message.channel.send(f"Questionnaires have been disabled in this server.")
 
-				else:
-					await self.send_questionnaire(message.channel, message.author, questionnaire)
+					else:
+						await self.send_questionnaire(message.channel, message.author, questionnaire)
 
 	@commands.has_permissions(administrator=True)
 	@commands.group(name="qu", hidden=True)

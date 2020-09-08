@@ -19,10 +19,11 @@ https://discord.gg/QExQuvE
 
 
 class ServerDoor(commands.Cog):
-    __can_disable__ = False
-
     def __init__(self, bot):
         self.bot = bot
+
+    async def cog_after_invoke(self, ctx):
+        await ctx.bot.update_server_data(ctx.guild)
 
     @commands.Cog.listener("on_startup")
     async def on_startup(self):
@@ -42,7 +43,7 @@ class ServerDoor(commands.Cog):
     async def toggle_door(self, ctx):
         """ Toggle the messages posted when a member joins or leaves the server. """
 
-        svr = await ctx.bot.db["servers"].find_one({"_id": ctx.guild.id}) or dict()
+        svr = await ctx.bot.get_server_data(ctx.guild)
 
         display_joins = svr.get("display_joins", False)
 
@@ -60,20 +61,22 @@ class ServerDoor(commands.Cog):
     async def on_member_join(self, member):
         """ Called when a member joins a server. """
 
-        svr = await self.bot.db["servers"].find_one({"_id": member.guild.id}) or dict()
+        if not await self.bot.is_command_disabled(member.guild, self):
+            svr = await self.bot.get_server_data(member.guild)
 
-        if svr.get("display_joins", False):
-            await self.send_system(member.guild, f"Welcome {member.mention} to {member.guild.name}!")
+            if svr.get("display_joins", False):
+                await self.send_system(member.guild, f"Welcome {member.mention} to {member.guild.name}!")
 
     async def on_member_remove(self, member):
         """ Called when a member leaves a server. """
 
-        svr = await self.bot.db["servers"].find_one({"_id": member.guild.id}) or dict()
+        if not await self.bot.is_command_disabled(member.guild, self):
+            svr = await self.bot.get_server_data(member.guild)
 
-        if svr.get("display_joins", False):
-            msg = f"**{str(member)}** " + (f"({member.nick}) " if member.nick else "") + "has left the server"
+            if svr.get("display_joins", False):
+                msg = f"**{str(member)}** " + (f"({member.nick}) " if member.nick else "") + "has left the server"
 
-            await self.send_system(member.guild, msg)
+                await self.send_system(member.guild, msg)
 
 
 def setup(bot):

@@ -8,7 +8,7 @@ class Info(commands.Cog):
 
 	@commands.command(name="modules")
 	async def show_modules(self, ctx):
-		""" Show which modules have been disabled or enabled in this server. """
+		""" Show which modules are enabled in this server. """
 
 		svr = await ctx.bot.db["servers"].find_one({"_id": ctx.guild.id}) or dict()
 
@@ -42,13 +42,21 @@ class Info(commands.Cog):
 
 	@commands.command(name="ping")
 	async def ping(self, ctx):
-		""" Check the bot latency. """
+		""" View my latency. """
 
 		await ctx.send(f"Pong! {round(ctx.bot.latency * 1000, 3)}ms")
 
+	@commands.command(name="invite")
+	async def send_bot_invite(self, ctx):
+		""" Invite me to your server! """
+
+		url = "https://discord.com/oauth2/authorize?client_id=666616515436478473&scope=bot&permissions=387136"
+
+		await ctx.send(url)
+
 	@commands.command(name="uptime")
 	async def show_uptime(self, ctx):
-		""" Display the bot uptime """
+		""" Display how long I have been awake. """
 
 		embed = ctx.bot.embed(title="Bot Stats")
 

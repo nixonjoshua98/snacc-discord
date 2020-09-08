@@ -5,6 +5,8 @@ from discord.ext import commands, tasks
 
 import datetime as dt
 
+from typing import Union
+
 from src import utils
 from src.common import SNACCMAN
 from src.common.errors import GlobalCheckFail
@@ -38,6 +40,8 @@ class Bot(commands.Bot):
 
         self._bot_started = None
 
+        self._server_cache = dict()
+
         self.add_check(self.bot_check)
         self.after_invoke(self.after_invoke_coro)
 
@@ -52,11 +56,6 @@ class Bot(commands.Bot):
     def debug(self):
         return int(os.getenv("DEBUG", 0))
 
-    def has_permissions(self, chnl, **perms):
-        permissions = chnl.permissions_for(chnl.guild.me)
-
-        return not [perm for perm, value in perms.items() if getattr(permissions, perm) != value]
-
     @property
     def uptime(self):
         return dt.timedelta(seconds=int((dt.datetime.utcnow() - self._bot_started).total_seconds()))
@@ -70,6 +69,24 @@ class Bot(commands.Bot):
         activity = discord.Game(f"{len(self.users):,} users | {len(self.guilds):,} servers")
 
         await self.change_presence(status=discord.Status.online, activity=activity)
+
+    def has_permissions(self, chnl, **perms):
+        permissions = chnl.permissions_for(chnl.guild.me)
+
+        return not [perm for perm, value in perms.items() if getattr(permissions, perm) != value]
+
+    async def is_command_disabled(self, guild: discord.Guild, com: Union[commands.Cog, commands.Command]):
+        svr = await self.get_server_data(guild)
+
+        disabled_modules = svr.get("disabled_modules", [])
+
+        if isinstance(com, commands.Cog):
+            return com.__class__.__name__ in disabled_modules
+
+        elif com.cog is not None and com.cog.__class__.__name__ in disabled_modules:
+            return True
+
+        return False
 
     async def on_ready(self):
         """ Invoked once the bot is connected and ready to use. """
@@ -93,21 +110,23 @@ class Bot(commands.Bot):
         super().add_cog(cog)
         print("OK")
 
+    async def get_server_data(self, svr: discord.Guild):
+        if svr.id not in self._server_cache:
+            self._server_cache[svr.id] = await self.db["servers"].find_one({"_id": svr.id}) or dict()
+
+        return self._server_cache[svr.id]
+
+    async def update_server_data(self, svr: discord.Guild):
+        self._server_cache[svr.id] = await self.db["servers"].find_one({"_id": svr.id}) or dict()
+
     async def bot_check(self, ctx) -> bool:
-        svr = await self.db["servers"].find_one({"_id": ctx.guild.id}) or dict()
-
-        disabled_modules = svr.get("disabled_modules", [])
-
         if not self.exts_loaded or ctx.guild is None or ctx.author.bot:
             raise GlobalCheckFail("Bot not ready")
-
-        elif not self.has_permissions(ctx.channel, send_messages=True):
-            raise GlobalCheckFail(f"I cannot message G: {str(ctx.guild)} C: {ctx.channel.name}")
 
         elif self.debug and ctx.author.id != SNACCMAN:
             raise GlobalCheckFail("Bot is in Debug mode")
 
-        elif ctx.command.cog is not None and ctx.command.cog.__class__.__name__ in disabled_modules:
+        elif await self.is_command_disabled(ctx.guild, ctx.command):
             raise commands.DisabledCommand("This command has been disabled in this server.")
 
         return True
@@ -125,7 +144,7 @@ class Bot(commands.Bot):
     async def get_prefix(self, message):
         """ Get the prefix for the server/guild from the database/cache. """
 
-        svr = await self.db["servers"].find_one({"_id": message.guild.id}) or dict()
+        svr = await self.get_server_data(message.guild)
 
         prefix = "." if self.debug else svr.get("prefix", "!")
 

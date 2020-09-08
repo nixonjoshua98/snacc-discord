@@ -27,13 +27,16 @@ class Help(commands.HelpCommand):
 
 		ret = []
 		for cmd in iterator:
+			if await self.context.bot.is_command_disabled(self.context.guild, cmd):
+				continue
+
 			if getattr(cmd.cog, "__help_verify_checks__", self.verify_checks):
 				valid = await predicate(cmd)
 
-				if valid:
-					ret.append(cmd)
-			else:
-				ret.append(cmd)
+				if not valid:
+					continue
+
+			ret.append(cmd)
 
 		if sort:
 			ret.sort(key=key)
@@ -53,10 +56,6 @@ class Help(commands.HelpCommand):
 
 		mapping = await self.update_bot_mapping(mapping)
 
-		server_row = await self.context.bot.db["servers"].find_one({"_id": self.context.guild.id}) or dict()
-
-		disabled_modules = server_row.get("disabled", dict()).get("modules", [])
-
 		for i, (cog, cog_cmds) in enumerate(mapping.items()):
 			cog_cmds = await self.filter_commands(cog_cmds, sort=False)
 
@@ -67,37 +66,27 @@ class Help(commands.HelpCommand):
 
 				embed = bot.embed(title=title, description=(cog.__doc__ or "").strip())
 
-				if cog.__class__.__name__ in disabled_modules:
-					embed.description = "This module has been __disabled__ in this server." + "\n\n" + embed.description
-
 				embed.set_footer(text=f"{str(bot.user)} | Module {i + 1}/{len(mapping)}", icon_url=bot.user.avatar_url)
 
 				for ii, cmd in enumerate(chunk):
 					if not cmd.hidden:
-						embed.add_field(
-							name=get_cmd_title(cmd),
-							value=str(cmd.callback.__doc__).strip(),
-							inline=False
-						)
+						embed.add_field(name=get_cmd_title(cmd), value=str(cmd.callback.__doc__).strip(), inline=False)
 
 					if isinstance(cmd, commands.Group):
 						for sub in cmd.commands:
 							name = f"{get_cmd_title(sub.parent, signature=False)} {get_cmd_title(sub)}"
 
-							embed.add_field(name=name, value=str(sub.callback.__doc__).strip(),inline=False)
+							embed.add_field(name=name, value=str(sub.callback.__doc__).strip(), inline=False)
 
 				embeds.append(embed)
 
 		return embeds
 
 	async def send_bot_help(self, mapping):
-		embeds = await self.create_embeds(mapping)
+		if embeds := await self.create_embeds(mapping):
+			svr = await self.context.bot.get_server_data(self.context.guild)
 
-		if embeds:
-			await DisplayPages(embeds, timeout=180.0).send(self.context)
-
-		else:
-			await self.context.send("You do not have access to help for this command or module. It may be disabled or hidden")
+			await DisplayPages(embeds, timeout=180.0).send(self.context, send_dm=svr.get("dm_help", False))
 
 	async def send_cog_help(self, cog):
 		await self.send_bot_help({cog: cog.get_commands()})

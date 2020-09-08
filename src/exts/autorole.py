@@ -6,10 +6,12 @@ from src.common.converters import ServerAssignedRole
 
 
 class AutoRole(commands.Cog):
-	__can_disable__ = False
 
 	def __init__(self, bot):
 		self.bot = bot
+
+	async def cog_after_invoke(self, ctx):
+		await ctx.bot.update_server_data(ctx.guild)
 
 	def cog_check(self, ctx):
 		if not ctx.author.guild_permissions.administrator:
@@ -27,7 +29,10 @@ class AutoRole(commands.Cog):
 	async def on_member_join(self, member):
 		""" Called when a member joins a server. """
 
-		svr = await self.bot.db["servers"].find_one({"_id": member.guild.id}) or dict()
+		if await self.bot.is_command_disabled(member.guild, self):
+			return None
+
+		svr = await self.bot.get_server_data(member.guild)
 
 		try:
 			roles = svr.get("roles", dict())
