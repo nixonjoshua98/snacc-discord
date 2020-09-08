@@ -9,7 +9,6 @@ from src.structs.question import Question
 
 
 class Questionnaire(commands.Cog):
-
 	def __init__(self, bot):
 		self.bot = bot
 

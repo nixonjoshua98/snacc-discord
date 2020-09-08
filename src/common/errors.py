@@ -31,3 +31,7 @@ class NSFWChannelOnly(CommandError):
 
 class IncorrectUsername(CommandError):
 	""" ..."""
+
+
+class CogNotFound(CommandError):
+	""" ... """

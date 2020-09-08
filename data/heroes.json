@@ -3,11 +3,11 @@
         "name": "Snaccman",
         "grade": "Z"
     },
-    "1": {
+    "7": {
         "name": "Light Yagami",
         "grade": "D"
     },
-    "2": {
+    "11": {
         "name": "Kirigaya Kazuto",
         "grade": "D"
     },
@@ -15,11 +15,11 @@
         "name": "Edward Elric",
         "grade": "D"
     },
-    "4": {
+    "14": {
         "name": "Levi Ackerman",
         "grade": "D"
     },
-    "5": {
+    "9": {
         "name": "Rias Gremory",
         "grade": "C"
     },
@@ -27,7 +27,7 @@
         "name": "Death The Kid",
         "grade": "C"
     },
-    "7": {
+    "1": {
         "name": "Natsu Dragneel",
         "grade": "C"
     },
@@ -35,7 +35,7 @@
         "name": "Killua Zoldyck",
         "grade": "B"
     },
-    "9": {
+    "5": {
         "name": "Itachi Uchiha",
         "grade": "B"
     },
@@ -43,7 +43,7 @@
         "name": "Yato",
         "grade": "B"
     },
-    "11": {
+    "2": {
         "name": "Saitama",
         "grade": "B"
     },
@@ -51,11 +51,11 @@
         "name": "Shoto Todoroki",
         "grade": "B"
     },
-    "13": {
+    "19": {
         "name": "Ichigo Kurosaki",
         "grade": "A"
     },
-    "14": {
+    "4": {
         "name": "Naruto",
         "grade": "A"
     },
@@ -75,7 +75,7 @@
         "name": "Mob",
         "grade": "S"
     },
-    "19": {
+    "13": {
         "name": "Gon Freecss",
         "grade": "S"
     },

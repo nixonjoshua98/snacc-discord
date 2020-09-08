@@ -13,6 +13,7 @@ from src.structs.reactioncollection import ReactionCollection
 
 class Support(commands.Cog):
 	__help_verify_checks__ = True
+	__can_disable__ = False
 
 	def __init__(self, bot):
 		self.bot = bot

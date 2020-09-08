@@ -16,7 +16,8 @@ from src.structs.mongoclient import MongoClient
 EXTENSIONS = [
     "server_741225832994832427",
 
-    "errorhandler",     "arena",            "abo",
+    "errorhandler",     "info",             "arena",
+    "abo",
     "empire",           "heroes",           "quests",
     "shop",             "units",            "battles",
     "hangman",          "rewards",          "gambling",
@@ -93,6 +94,10 @@ class Bot(commands.Bot):
         print("OK")
 
     async def bot_check(self, ctx) -> bool:
+        svr = await self.db["servers"].find_one({"_id": ctx.guild.id}) or dict()
+
+        disabled_modules = svr.get("disabled", dict()).get("modules", [])
+
         if not self.exts_loaded or ctx.guild is None or ctx.author.bot:
             raise GlobalCheckFail("Bot not ready")
 
@@ -101,6 +106,9 @@ class Bot(commands.Bot):
 
         elif self.debug and ctx.author.id != SNACCMAN:
             raise GlobalCheckFail("Bot is in Debug mode")
+
+        elif ctx.command.cog is not None and ctx.command.cog.__class__.__name__ in disabled_modules:
+            raise commands.DisabledCommand("This command has been disabled in this server.")
 
         return True
 

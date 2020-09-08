@@ -6,10 +6,9 @@ from discord.ext import commands
 import datetime as dt
 from bs4 import BeautifulSoup
 
-from src.common import checks
 
-
-class Miscellaneous(commands.Cog):
+class Miscellaneous(commands.Cog, name="Misc"):
+	__can_disable__ = False
 
 	@commands.command(name="lines")
 	async def lines(self, ctx):
@@ -101,22 +100,6 @@ class Miscellaneous(commands.Cog):
 		url = "https://discord.com/oauth2/authorize?client_id=666616515436478473&scope=bot&permissions=388168"
 
 		await ctx.send(url)
-
-	@commands.command(name="ping")
-	async def ping(self, ctx):
-		""" Check the bot latency. """
-
-		await ctx.send(f"Pong! {round(ctx.bot.latency * 1000, 3)}ms")
-
-	@commands.command(name="uptime")
-	async def show_uptime(self, ctx):
-		""" Display the bot uptime """
-
-		embed = ctx.bot.embed(title="Bot Stats")
-
-		embed.add_field(name="Bot", value=f"**Uptime: ** `{ctx.bot.uptime}`")
-
-		await ctx.send(embed=embed)
 
 	@commands.command(name="cooldowns", aliases=["cd"])
 	async def cooldowns(self, ctx):

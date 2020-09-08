@@ -5,7 +5,9 @@ from discord.ext import commands
 from src.common.converters import ServerAssignedRole
 
 
-class AutoRole(commands.Cog, name="Auto Role"):
+class AutoRole(commands.Cog):
+	__can_disable__ = False
+
 	def __init__(self, bot):
 		self.bot = bot
 

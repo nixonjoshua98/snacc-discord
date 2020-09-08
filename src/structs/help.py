@@ -53,6 +53,10 @@ class Help(commands.HelpCommand):
 
 		mapping = await self.update_bot_mapping(mapping)
 
+		server_row = await self.context.bot.db["servers"].find_one({"_id": self.context.guild.id}) or dict()
+
+		disabled_modules = server_row.get("disabled", dict()).get("modules", [])
+
 		for i, (cog, cog_cmds) in enumerate(mapping.items()):
 			cog_cmds = await self.filter_commands(cog_cmds, sort=False)
 
@@ -62,6 +66,9 @@ class Help(commands.HelpCommand):
 				title = f"{cog.qualified_name} | Page {j + 1} / {len(chunked_cmds)}"
 
 				embed = bot.embed(title=title, description=(cog.__doc__ or "").strip())
+
+				if cog.__class__.__name__ in disabled_modules:
+					embed.description = "This module has been __disabled__ in this server." + "\n\n" + embed.description
 
 				embed.set_footer(text=f"{str(bot.user)} | Module {i + 1}/{len(mapping)}", icon_url=bot.user.avatar_url)
 

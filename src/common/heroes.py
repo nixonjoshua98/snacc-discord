@@ -86,6 +86,8 @@ for grade, heroes in itertools.groupby(ChestHeroes.ALL_HEROES, lambda h: h.grade
 
 	total_weight = sum([h.weight for h in heroes])
 
-	print(f"{grade} -> {str(round((total_weight / weights) * 100, 1)) + '%': <6}")
+	print(f"{grade} -> {str(round((total_weight / weights) * 100, 1)) + '%': <5}", end=" | ")
+
+print()
 
 

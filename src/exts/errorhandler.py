@@ -18,6 +18,8 @@ from src.common.errors import (
 
 
 class ErrorHandler(commands.Cog):
+    __can_disable__ = False
+
     def __init__(self, bot):
         bot.on_command_error = self.on_command_error
 

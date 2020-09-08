@@ -8,6 +8,8 @@ from src.common import SupportServer
 
 
 class Vote(commands.Cog):
+	__can_disable__ = False
+
 	def __init__(self, bot):
 		self.bot = bot
 

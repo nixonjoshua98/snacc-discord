@@ -1,4 +1,3 @@
-import discord
 
 from discord.ext import commands
 
@@ -19,7 +18,8 @@ https://discord.gg/QExQuvE
 """
 
 
-class ServerDoor(commands.Cog, name="Server Door"):
+class ServerDoor(commands.Cog):
+    __can_disable__ = False
 
     def __init__(self, bot):
         self.bot = bot

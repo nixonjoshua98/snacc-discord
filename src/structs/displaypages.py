@@ -57,7 +57,7 @@ class DisplayPages(menus.Menu):
 		await self.on_reaction(payload)
 
 	@menus.button(Emoji.FAST_FORWARD)
-	async def go_to_last(self, payload):
+	async def go_last(self, payload):
 		self.current = len(self.pages) - 1
 
 		await self.on_reaction(payload)
