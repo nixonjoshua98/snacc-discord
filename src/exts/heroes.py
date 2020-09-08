@@ -44,8 +44,7 @@ class Heroes(commands.Cog):
 
 			embed.description = "\n".join(desc)
 
-		if len(embeds) >= 1:
-			await DisplayPages(embeds).send(ctx)
+		await DisplayPages(embeds).send(ctx)
 
 	@show_heroes.command(name="chest")
 	@commands.has_permissions(add_reactions=True)

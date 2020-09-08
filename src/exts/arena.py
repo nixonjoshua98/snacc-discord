@@ -1,6 +1,5 @@
 
 
-import itertools
 import asyncio
 import discord
 
@@ -11,6 +10,8 @@ from discord.ext import commands, tasks
 from pymongo import InsertOne, DeleteMany
 
 from src.aboapi import API
+
+from src import utils
 
 from src.common import DarknessServer
 
@@ -38,9 +39,9 @@ class Arena(commands.Cog):
 
 			self.background_loop.start()
 
-	@tasks.loop(hours=4.0)
+	@tasks.loop(hours=6.0)
 	async def background_loop(self):
-		await asyncio.sleep(60 * 60 * 4.0)
+		await asyncio.sleep(60 * 60 * 6.0)
 
 		channel = self.bot.get_channel(DarknessServer.ABO_CHANNEL)
 
@@ -69,23 +70,32 @@ class Arena(commands.Cog):
 	async def stats(self, ctx, *, role: discord.Role = None):
 		""" View the history of the guild, or narrow it down to a single role. """
 
-		pages = await self.create_history(include_discord=not ctx.author.is_on_mobile(), role=role)
+		pages = await self.create_history(ctx, role=role)
 
 		if pages is None:
 			return await ctx.send("Found no user records.")
 
-		elif len(pages) > 1:
-			await DisplayPages(pages).send(ctx)
-
-		else:
-			await ctx.send(pages[0])
+		await DisplayPages(pages).send(ctx)
 
 	@commands.command(name="trophies", aliases=["rating"])
 	async def show_leaderboard(self, ctx: commands.Context):
 		""" Show the guild leaderboard. """
 
 		async def query():
-			return await self.get_member_rows()
+			role = ctx.guild.get_role(DarknessServer.ABO_ROLE)
+
+			ids = tuple(member.id for member in role.members)
+
+			rows = await ctx.bot.db["arena"].aggregate(
+				[
+					{"$match": {"user": {"$in": ids}}},
+					{"$group": {"_id": "$user", "level": {"$last": "$level"}, "rating": {"$last": "$rating"}}},
+					{"$sort":  {"date": 1}}
+				]
+
+			).to_list(length=None)
+
+			return sorted(rows, key=lambda e: (e["rating"], e["level"]), reverse=True)
 
 		await TextLeaderboard(
 			title="Guild Leaderboard",
@@ -94,81 +104,58 @@ class Arena(commands.Cog):
 			query_func=query
 		).send(ctx)
 
-	async def get_member_rows(self):
-		role = self.bot.get_guild(DarknessServer.ID).get_role(DarknessServer.ABO_ROLE)
-
-		ids = tuple(member.id for member in role.members)
-
-		rows = await self.bot.db["arena"].find({"user": {"$in": ids}}).to_list(length=None)
-
-		rows.sort(key=lambda r: (r["user"], r["date"]))
-
-		entries = []
-
-		for key, group in itertools.groupby(rows, key=lambda r: r["user"]):
-			group = list(group)
-
-			entries.append(group[-1])
-
-		return sorted(entries, key=lambda e: (e.get("rating", 0), e["level"]), reverse=True)
-
-	async def create_history(self, *, include_discord: bool, role=None):
-		async def create_history_row(user):
-			stats = await self.bot.db["arena"].find(query).to_list(length=None)
-
-			if stats:
-				oldest, newest = stats[0], stats[-1]
-
-				r = dict(name=str(user), abo_name=abo_name, level=newest["level"], rating=newest["rating"])
-
-				r.update(rating_gained=newest['rating']-oldest['rating'], levels_gained=newest['level']-oldest['level'])
-
-				return r
-
-			return None
-
-		if role is None:
-			role = self.bot.get_guild(DarknessServer.ID).get_role(DarknessServer.ABO_ROLE)
-
+	async def create_history(self, ctx, role=None):
 		one_week_ago = dt.datetime.utcnow() - dt.timedelta(days=7)
 
-		data = []
+		role = role if role is not None else ctx.guild.get_role(DarknessServer.ABO_ROLE)
 
-		for member in role.members:
-			player_entry = await self.bot.db["players"].find_one({"_id": member.id}) or dict()
+		ids = [m.id for m in role.members]
 
-			if (abo_name := player_entry.get("abo_name")) is None:
-				continue
+		stats = await ctx.bot.db["arena"].aggregate(
+			[
+				{"$match": {"user": {"$in": ids}, "$and": [{"date": {"$gte": one_week_ago}}]}},
+				{
+					"$group": {
+						"_id": "$user",
+						"old_level": {"$first": "$level"}, "old_rating": {"$first": "$rating"},
+						"new_level": {"$last":  "$level"}, "new_rating": {"$last":  "$rating"},
+					}
+				},
+				{"$sort": {"date": 1}},
+			]
 
-			query = {"user": member.id, "date": {"$gte": one_week_ago}}
+		).to_list(length=None)
 
-			if (row := await create_history_row(member)) is not None:
-				data.append(row)
-
-		# - We have no stored data so just return None
-		if len(data) == 0:
+		if not stats:
 			return None
 
-		data = sorted(data, key=lambda e: e["rating_gained"], reverse=True)
+		players = await ctx.bot.db["players"].find({"_id": {"$in": ids}}).to_list(length=None)
 
-		pages, chunks = [], [data[i:i + 15] for i in range(0, len(data), 15)]
+		stats.sort(key=lambda e: e["old_rating"] - e["new_rating"])
 
-		# - Create pages for the history
+		pages, chunks = [], [stats[i:i + 15] for i in range(0, len(stats), 15)]
+
+		on_mobile = ctx.author.is_on_mobile()
+
 		for chunk in chunks:
-			headers = ["Name", "Discord", "Level", "Rating"] if include_discord else ["Name", "Level", "Rating"]
+			# - Hide the Discord column if on mobile since the width is too much
+			headers = ["Name", "Level", "Rating"] if on_mobile else ["Name", "Discord", "Level", "Rating"]
 
 			page = TextPage(title="Darkness Arena History", headers=headers)
 
-			for ele in chunk:
-				lvl = f"{ele['level']}({ele['levels_gained']})"
-				rating = f"{ele['rating']}({ele['rating_gained']})"
+			for row in chunk:
+				player = utils.get(players, _id=row["_id"], default=dict())
 
-				row = [ele["abo_name"], lvl, rating]
+				levels, rating = row['new_level'] - row['old_level'], row['new_rating'] - row['old_rating']
 
-				if include_discord:
-					row.insert(1, ele["name"])
+				page_row = [player.get("abo_name"), f"{row['new_level']}({levels})", f"{row['new_rating']}({rating})"]
 
-				page.add(row)
+				if not on_mobile:
+					member = discord.utils.get(role.members, id=row["_id"])
+
+					page_row.insert(1, str(member))
+
+				page.add(page_row)
 
 			pages.append(page.get())
 
@@ -181,8 +168,10 @@ class Arena(commands.Cog):
 
 		one_month_ago = dt.datetime.utcnow() - dt.timedelta(days=31)
 
+		players = await self.bot.db["players"].find({"_id": {"$in": [m.id for m in role.members]}}).to_list(length=None)
+
 		for member in role.members:
-			player_entry = await self.bot.db["players"].find_one({"_id": member.id}) or dict()
+			player_entry = utils.get(players, _id=member.id, default=dict())
 
 			if (abo_name := player_entry.get("abo_name")) is not None:
 				player = await API.leaderboard.get_player(abo_name)

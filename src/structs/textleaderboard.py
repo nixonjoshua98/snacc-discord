@@ -62,9 +62,9 @@ class TextLeaderboard:
         for row in results:
             user = row.get("user", row.get("_id"))
 
-            user = self._get_user(ctx, user)
+            user = ctx.guild.get_member(user) or ctx.bot.get_user(user)
 
-            if isinstance(user, int):
+            if user is None:
                 continue
 
             if prev_row is None or prev_row.get(self.order_col, 0) > row.get(self.order_col, 0):
@@ -103,12 +103,3 @@ class TextLeaderboard:
         entry.extend([str(row.get(col, '')) for col in self.columns])
 
         return entry
-
-    @staticmethod
-    def _get_user(ctx, id_):
-        user = ctx.guild.get_member(id_)
-
-        if user is None:
-            user = ctx.bot.get_user(id_)
-
-        return user or id_

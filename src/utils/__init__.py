@@ -55,3 +55,11 @@ def grouper(iterable, n, fill=None):
 	args = [iter(iterable)] * n
 
 	return itertools.zip_longest(*args, fillvalue=fill)
+
+
+def get(ls: list, *, default=None, **kwargs):
+	for d in ls:
+		if all(d.get(k) == v for k, v in kwargs.items()):
+			return d
+
+	return default

@@ -68,7 +68,7 @@ class Battles(commands.Cog):
 		""" Attempt to steal from another user. """
 
 		def calculate_money_lost(bank):
-			min_val, max_val = int(bank.get("usd", 0) * 0.015), int(bank.get("usd", 0) * 0.025)
+			min_val, max_val = int(bank.get("usd", 0) * 0.025), int(bank.get("usd", 0) * 0.05)
 
 			return random.randint(max(0, min_val), max(0, max_val))
 
