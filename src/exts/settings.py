@@ -30,7 +30,7 @@ class Settings(commands.Cog):
 		if (module := get_module()) is None:
 			raise CogNotFound("Module not found.")
 
-		elif len(module.get_commands()) == 0 and not getattr(module, "__can_disable__", True):
+		elif len(module.get_commands()) == 0 or not getattr(module, "__can_disable__", True):
 			return await ctx.send("This module cannot be disabled.")
 
 		svr = await ctx.bot.db["servers"].find_one({"_id": ctx.guild.id}) or dict()
