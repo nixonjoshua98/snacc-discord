@@ -29,12 +29,12 @@ class Empire(commands.Cog):
 	@checks.no_empire()
 	@commands.command(name="create")
 	@commands.max_concurrency(1, commands.BucketType.user)
-	async def create_empire(self, ctx, *, empire_name: str):
+	async def create_empire(self, ctx, *, name: str):
 		""" Establish an empire under your name. """
 
 		now = dt.datetime.utcnow()
 
-		row = dict(_id=ctx.author.id, name=empire_name, last_income=now, last_attack=now)
+		row = dict(_id=ctx.author.id, name=name, last_income=now, last_attack=now)
 
 		await ctx.bot.db["empires"].insert_one(row)
 
@@ -47,7 +47,7 @@ class Empire(commands.Cog):
 	async def rename_empire(self, ctx, *, name):
 		""" Rename your established empire. """
 
-		await self.bot.db["empires"].update_one({"_id": ctx.author.id}, {"name": name})
+		await self.bot.db["empires"].update_one({"_id": ctx.author.id}, {"$set": {"name": name}})
 
 		await ctx.send(f"Your empire has been renamed to `{name}`")
 
