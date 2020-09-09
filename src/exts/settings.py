@@ -75,7 +75,7 @@ class Settings(commands.Cog):
 	@checks.is_admin()
 	@commands.command(name="togglechannel")
 	async def toggle_channel(self, ctx, *, channel: discord.TextChannel):
-		""" Whitelist a command. All commands are whitelisted initially. """
+		""" Whitelist a channel. All channels are whitelisted initially. """
 
 		svr = await ctx.bot.get_server_data(ctx.guild)
 
