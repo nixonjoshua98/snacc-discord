@@ -25,7 +25,7 @@ EXTENSIONS = [
     "hangman",          "rewards",          "gambling",
     "bank",             "inventory",        "crypto",
     "questionnaire",    "moderator",        "misc",
-    "support",          "autorole",         "serverdoor",
+    "snaccman",         "autorole",         "serverdoor",
     "vote",             "settings"
 ]
 
