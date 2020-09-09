@@ -172,7 +172,7 @@ class Hangman(commands.Cog):
 		inst = self.games.get(message.channel.id, None)
 
 		if inst is not None:
-			if await self.bot.is_command_disabled(message.guild, self):
+			if not await self.bot.is_command_enabled(message.guild, self):
 				return None
 
 			result = inst.on_message(message)

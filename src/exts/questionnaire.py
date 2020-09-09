@@ -42,7 +42,7 @@ class Questionnaire(commands.Cog):
 
 			if questionnaire:
 				if self.bot.has_permissions(message.channel, send_messages=True):
-					if await self.bot.is_command_disabled(message.guild, self):
+					if not await self.bot.is_command_enabled(message.guild, self):
 						await message.channel.send(f"Questionnaires have been disabled in this server.")
 
 					else:

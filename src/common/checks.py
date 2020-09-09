@@ -1,3 +1,5 @@
+import discord
+
 from discord.ext import commands
 
 from src.common.errors import (
@@ -16,6 +18,20 @@ def has_empire():
 			raise MissingEmpire(f"You do not have an empire. You can establish one using `{ctx.prefix}create`")
 
 		return True
+
+	return commands.check(predicate)
+
+
+def is_admin():
+	async def predicate(ctx):
+		permissions = ctx.channel.permissions_for(ctx.author)
+
+		has_admin_role = discord.utils.get(ctx.guild.roles, name="Admin")
+
+		if permissions.administrator or has_admin_role:
+			return True
+
+		raise commands.CommandError("You need to be an Administrator or have the `Admin` role to access this command.")
 
 	return commands.check(predicate)
 

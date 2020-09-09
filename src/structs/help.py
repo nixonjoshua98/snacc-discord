@@ -27,7 +27,7 @@ class Help(commands.HelpCommand):
 
 		ret = []
 		for cmd in iterator:
-			if await self.context.bot.is_command_disabled(self.context.guild, cmd):
+			if not await self.context.bot.is_command_enabled(self.context.guild, cmd):
 				continue
 
 			if getattr(cmd.cog, "__help_verify_checks__", self.verify_checks):

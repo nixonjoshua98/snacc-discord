@@ -75,18 +75,15 @@ class Bot(commands.Bot):
 
         return not [perm for perm, value in perms.items() if getattr(permissions, perm) != value]
 
-    async def is_command_disabled(self, guild: discord.Guild, com: Union[commands.Cog, commands.Command]):
+    async def is_command_enabled(self, guild: discord.Guild, com: Union[commands.Cog, commands.Command]):
         svr = await self.get_server_data(guild)
 
         disabled_modules = svr.get("disabled_modules", [])
 
         if isinstance(com, commands.Cog):
-            return com.__class__.__name__ in disabled_modules
+            return com.__class__.__name__ not in disabled_modules
 
-        elif com.cog is not None and com.cog.__class__.__name__ in disabled_modules:
-            return True
-
-        return False
+        return com.cog is None or com.cog.__class__.__name__ not in disabled_modules
 
     async def on_ready(self):
         """ Invoked once the bot is connected and ready to use. """
@@ -121,12 +118,15 @@ class Bot(commands.Bot):
 
     async def bot_check(self, ctx) -> bool:
         if not self.exts_loaded or ctx.guild is None or ctx.author.bot:
-            raise GlobalCheckFail("Bot not ready")
+            raise GlobalCheckFail("Bot not ready.")
 
         elif self.debug and ctx.author.id != SNACCMAN:
-            raise GlobalCheckFail("Bot is in Debug mode")
+            raise GlobalCheckFail("Bot is in Debug mode.")
 
-        elif await self.is_command_disabled(ctx.guild, ctx.command):
+        elif self.has_permissions(ctx.channel, send_messages=False):
+            raise GlobalCheckFail("Missing Send Messages permission.")
+
+        elif not await self.is_command_enabled(ctx.guild, ctx.command):
             raise commands.DisabledCommand("This command has been disabled in this server.")
 
         return True

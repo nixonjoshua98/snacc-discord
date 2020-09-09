@@ -13,7 +13,6 @@ from src.structs.reactioncollection import ReactionCollection
 
 class Support(commands.Cog):
 	__help_verify_checks__ = True
-	__can_disable__ = False
 
 	def __init__(self, bot):
 		self.bot = bot
@@ -31,12 +30,6 @@ class Support(commands.Cog):
 		await ctx.send("I have started a giveaway in the support server!")
 
 		asyncio.create_task(Giveaway(self.bot, item, value).send())
-
-	@commands.command(name="support")
-	async def support(self, ctx):
-		""" Link to the support server. """
-
-		await ctx.send("https://discord.gg/QExQuvE")
 
 
 class Giveaway:

@@ -46,22 +46,23 @@ class Info(commands.Cog):
 
 		await ctx.send(f"Pong! {round(ctx.bot.latency * 1000, 3)}ms")
 
+	@commands.command(name="support")
+	async def support(self, ctx):
+		""" Link to the support server. """
+
+		await ctx.send("https://discord.gg/QExQuvE")
+
 	@commands.command(name="invite")
 	async def send_bot_invite(self, ctx):
 		""" Invite me to your server! """
 
-		url = "https://discord.com/oauth2/authorize?client_id=666616515436478473&scope=bot&permissions=387136"
-
-		await ctx.send(url)
+		await ctx.send("https://discord.com/oauth2/authorize?client_id=666616515436478473&scope=bot&permissions=387136")
 
 	@commands.command(name="vote")
 	async def vote(self, ctx):
 		""" Link to the vote site. """
 
-		await ctx.send(
-			"https://discord.boats/bot/666616515436478473\n"
-			"https://top-bots.xyz/bot/666616515436478473"
-		)
+		await ctx.send("https://discord.boats/bot/666616515436478473\nhttps://top-bots.xyz/bot/666616515436478473")
 
 	@commands.command(name="uptime")
 	async def show_uptime(self, ctx):
