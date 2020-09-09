@@ -8,6 +8,7 @@ from src.common.errors import CogNotFound
 
 
 class Settings(commands.Cog):
+
 	__can_disable__ = False
 	__override_channel_whitelist__ = True
 

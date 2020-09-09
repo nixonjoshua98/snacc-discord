@@ -122,7 +122,7 @@ class Questionnaire(commands.Cog):
 
 			embed.add_field(name=question, value=response, inline=False)
 
-		await author.send("Your application is complete!")
+		await author.send("Questionnaire completed!")
 
 		#  - - - LOG RESULTS - - - #
 

@@ -8,8 +8,6 @@ from typing import Optional
 
 
 class Moderator(commands.Cog):
-	""" Requires the user to have the `Mod` role. """
-
 	__override_channel_whitelist__ = True
 
 	async def cog_check(self, ctx):

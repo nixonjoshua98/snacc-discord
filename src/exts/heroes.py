@@ -1,5 +1,3 @@
-import math
-
 from pymongo import UpdateOne
 
 from discord.ext import commands
@@ -15,7 +13,7 @@ class Heroes(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-	@commands.group(name="heroes", aliases=["h"], invoke_without_command=True)
+	@commands.group(name="hero", aliases=["heroes"], invoke_without_command=True)
 	async def show_heroes(self, ctx):
 		""" View your owned heroes. """
 
