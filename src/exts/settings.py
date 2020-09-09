@@ -91,7 +91,7 @@ class Settings(commands.Cog):
 		else:
 			query = {"$push": {"whitelisted_channels": channel.id}}
 
-			await ctx.send(f"I will now accept commands from {channel.mention.")
+			await ctx.send(f"I will now accept commands from {channel.mention}")
 
 		await ctx.bot.db["servers"].update_one({"_id": ctx.guild.id}, query, upsert=True)
 
