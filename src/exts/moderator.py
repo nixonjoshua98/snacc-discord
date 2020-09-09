@@ -8,7 +8,7 @@ from typing import Optional
 
 
 class Moderator(commands.Cog):
-	""" Commands require the user to have the `Mod` role. """
+	""" Requires the user to have the `Mod` role. """
 
 	async def cog_check(self, ctx):
 		role = discord.utils.get(ctx.author.roles, name="Mod")

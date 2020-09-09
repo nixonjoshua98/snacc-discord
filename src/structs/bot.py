@@ -85,6 +85,15 @@ class Bot(commands.Bot):
 
         return com.cog is None or com.cog.__class__.__name__ not in disabled_modules
 
+    async def is_channel_whitelisted(self, guild, channel, *, command=None):
+        svr = await self.get_server_data(guild)
+
+        override = command is not None and getattr(command.cog, "__override_channel_whitelist__", False)
+
+        whitelisted_channels = svr.get("whitelisted_channels", [])
+
+        return override or (len(whitelisted_channels) == 0 or channel.id in whitelisted_channels)
+
     async def on_ready(self):
         """ Invoked once the bot is connected and ready to use. """
 
@@ -109,7 +118,7 @@ class Bot(commands.Bot):
 
     async def get_server_data(self, svr: discord.Guild):
         if svr.id not in self._server_cache:
-            self._server_cache[svr.id] = await self.db["servers"].find_one({"_id": svr.id}) or dict()
+            await self.update_server_data(svr)
 
         return self._server_cache[svr.id]
 
@@ -123,11 +132,14 @@ class Bot(commands.Bot):
         elif self.debug and ctx.author.id != SNACCMAN:
             raise GlobalCheckFail("Bot is in Debug mode.")
 
-        elif self.has_permissions(ctx.channel, send_messages=False):
-            raise GlobalCheckFail("Missing Send Messages permission.")
+        elif not self.has_permissions(ctx.channel, send_messages=True):
+            raise GlobalCheckFail("Missing `Send Messages` permission.")
 
         elif not await self.is_command_enabled(ctx.guild, ctx.command):
             raise commands.DisabledCommand("This command has been disabled in this server.")
+
+        elif not await self.is_channel_whitelisted(ctx.guild, ctx.channel, command=ctx.command):
+            raise commands.DisabledCommand("Commands have been disabled in this channel.")
 
         return True
 

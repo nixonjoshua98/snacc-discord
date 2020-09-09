@@ -40,6 +40,26 @@ class Info(commands.Cog):
 
 		await ctx.send(embed=embed)
 
+	@commands.command(name="channels")
+	async def show_channels(self, ctx):
+		""" Show the server channel whitelist. """
+
+		svr = await ctx.bot.get_server_data(ctx.guild)
+
+		whitelisted_channels = svr.get("whitelisted_channels", [])
+
+		embed = ctx.bot.embed(title="Channel Whitelist")
+
+		value = []
+
+		for channel in ctx.guild.text_channels:
+			if channel.id in whitelisted_channels:
+				value.append(channel.mention)
+
+		embed.add_field(name="Whitelisted", value=" | ".join(value) or "All channels whitelisted")
+
+		await ctx.send(embed=embed)
+
 	@commands.command(name="ping")
 	async def ping(self, ctx):
 		""" View my latency. """

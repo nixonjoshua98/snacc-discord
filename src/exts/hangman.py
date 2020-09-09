@@ -175,6 +175,9 @@ class Hangman(commands.Cog):
 			if not await self.bot.is_command_enabled(message.guild, self):
 				return None
 
+			elif not await self.bot.is_channel_whitelisted(message.guild, message.channel):
+				return None
+
 			result = inst.on_message(message)
 
 			if result == HangmanGuess.CORRECT_GUESS:

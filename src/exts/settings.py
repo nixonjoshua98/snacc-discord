@@ -1,3 +1,5 @@
+import discord
+
 from discord.ext import commands
 
 from src.common import checks
@@ -7,6 +9,7 @@ from src.common.errors import CogNotFound
 
 class Settings(commands.Cog):
 	__can_disable__ = False
+	__override_channel_whitelist__ = True
 
 	async def cog_after_invoke(self, ctx):
 		await ctx.bot.update_server_data(ctx.guild)
@@ -68,6 +71,27 @@ class Settings(commands.Cog):
 			query = {"$push": {"disabled_modules": module_name}}
 
 			await ctx.send(f"Module **{module_name}** has been disabled.")
+
+		await ctx.bot.db["servers"].update_one({"_id": ctx.guild.id}, query, upsert=True)
+
+	@checks.is_admin()
+	@commands.command(name="togglechannel")
+	async def toggle_channel(self, ctx, *, channel: discord.TextChannel):
+		""" Whitelist a command. All commands are whitelisted initially. """
+
+		svr = await ctx.bot.get_server_data(ctx.guild)
+
+		whitelisted_channels = svr.get("whitelisted_channels", [])
+
+		if channel.id in whitelisted_channels:
+			query = {"$pull": {"whitelisted_channels": channel.id}}
+
+			await ctx.send(f"I will not longer accept commands from {channel.mention}.")
+
+		else:
+			query = {"$push": {"whitelisted_channels": channel.id}}
+
+			await ctx.send(f"I will now accept commands from {channel.mention}.")
 
 		await ctx.bot.db["servers"].update_one({"_id": ctx.guild.id}, query, upsert=True)
 

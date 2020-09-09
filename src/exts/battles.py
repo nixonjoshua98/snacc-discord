@@ -67,7 +67,7 @@ class Battles(commands.Cog):
 			]
 		)
 
-		s = f"You stole **${stolen_amount:,}** from **{str(target)}!**"
+		s = f"You stole **${stolen_amount:,}** from **{target.display_name}!**"
 
 		if thief_tax > 0:
 			s = (
