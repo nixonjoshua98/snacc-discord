@@ -50,29 +50,6 @@ class Snaccman(commands.Cog):
 
 		await ctx.send("I have started a giveaway in the support server!")
 
-	@commands.is_owner()
-	@commands.command(name="exec")
-	async def exec_python(self, ctx, *, code):
-		""" Execute python code. """
-
-		code = code.replace("```", "")
-
-		embed = ctx.bot.embed(
-			title="Execute Python Code?",
-			description=f"**Potentially Dangerous**\n```py\n{code[:1024]}```"
-		)
-
-		if not await Confirm(embed).prompt(ctx):
-			return await ctx.send("Code execution aborted.")
-
-		try:
-			exec(code, {"ctx": ctx, "asyncio": asyncio})
-
-		except Exception as e:
-			return await ctx.send(f"`{e}`")
-
-		await ctx.send("Code ran with no errors.")
-
 
 
 def setup(bot):
