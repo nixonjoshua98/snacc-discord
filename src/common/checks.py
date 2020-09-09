@@ -28,7 +28,7 @@ def is_admin():
 
 		has_admin_role = discord.utils.get(ctx.guild.roles, name="Admin")
 
-		if ctx.bot.is_owner(ctx.author) or permissions.administrator or has_admin_role:
+		if await ctx.bot.is_owner(ctx.author) or permissions.administrator or has_admin_role:
 			return True
 
 		raise commands.CommandError("You need to be an Administrator or have the `Admin` role to access this command.")
