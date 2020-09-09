@@ -58,11 +58,9 @@ class Settings(commands.Cog):
 		elif len(module.get_commands()) == 0 or not getattr(module, "__can_disable__", True):
 			return await ctx.send("This module cannot be disabled.")
 
-		svr = await ctx.bot.db["servers"].find_one({"_id": ctx.guild.id}) or dict()
+		module_name = module.__class__.__name__
 
-		disabled_modules = svr.get("disabled_modules", [])
-
-		if (module_name := module.__class__.__name__) in disabled_modules:
+		if await ctx.bot.is_command_enabled(ctx.guild, module):
 			query = {"$pull": {"disabled_modules": module_name}}
 
 			await ctx.send(f"Module **{module_name}** has been enabled.")
@@ -86,12 +84,12 @@ class Settings(commands.Cog):
 		if channel.id in whitelisted_channels:
 			query = {"$pull": {"whitelisted_channels": channel.id}}
 
-			await ctx.send(f"I will not longer accept commands from {channel.mention}")
+			await ctx.send(f"Channel {channel.mention} is no longer whitelisted.")
 
 		else:
 			query = {"$push": {"whitelisted_channels": channel.id}}
 
-			await ctx.send(f"I will now accept commands from {channel.mention}")
+			await ctx.send(f"Channel {channel.mention} is now whitelisted")
 
 		await ctx.bot.db["servers"].update_one({"_id": ctx.guild.id}, query, upsert=True)
 
