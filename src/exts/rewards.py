@@ -25,18 +25,24 @@ class Rewards(commands.Cog):
 
 		streak = player_row.get("daily_streak", 0) + 1
 
-		last_daily = player_row.get("last_daily", now)
+		last_daily = player_row.get("last_daily")
 
-		if (hours_since_daily := (now - last_daily).total_seconds() / 3600) < 24:
-			cd = last_daily.replace(tzinfo=dt.timezone.utc).timestamp()
+		if last_daily is not None:
+			hours_since_daily = (now - last_daily).total_seconds() / 3600
 
-			bucket = self.daily._buckets.get_bucket(ctx.message)
+			if hours_since_daily < 24:
+				cd = last_daily.replace(tzinfo=dt.timezone.utc).timestamp()
 
-			bucket._last, bucket._window, bucket._tokens = cd, cd, 0
+				bucket = self.daily._buckets.get_bucket(ctx.message)
 
-			raise commands.CommandOnCooldown(bucket, 24 * 3_600 - (now - last_daily).total_seconds())
+				bucket._last, bucket._window, bucket._tokens = cd, cd, 0
 
-		elif hours_since_daily >= 48:
+				raise commands.CommandOnCooldown(bucket, 24 * 3_600 - (now - last_daily).total_seconds())
+
+			elif hours_since_daily >= 48:
+				streak = 1
+
+		else:
 			streak = 1
 
 		reward = 3_000 + (500 * min(streak, 14))

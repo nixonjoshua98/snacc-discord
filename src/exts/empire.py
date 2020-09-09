@@ -38,7 +38,9 @@ class Empire(commands.Cog):
 
 		await ctx.bot.db["empires"].insert_one(row)
 
-		await ctx.send(f"Your empire has been established! You can rename your empire using `{ctx.prefix}rename`")
+		await ctx.bot.db["bank"].update_one({"_id": ctx.author.id}, {"$inc": {"btc": 3}})
+
+		await ctx.send(f"Your empire has been established. You have received **3** BTC!")
 
 		await self.show_empire(ctx)
 
@@ -174,7 +176,7 @@ async def assassinated_event(ctx):
 
 	else:
 		# - The user has no units so we send a generic message and do not do anything
-		await ctx.send("An assassin from a rival empire was found dead in your empire")
+		await ctx.send("An assassin from a rival empire was found dead in your empire.")
 
 
 async def stolen_event(ctx):

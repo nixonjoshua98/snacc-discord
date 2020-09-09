@@ -125,7 +125,7 @@ class Quests(commands.Cog):
 
 					loot_field.append(f"{name} **${value:,}**")
 
-				embed.description = f"Quest completed! \nYou have been rewarded **${reward:,}**"
+				embed.description = f"Quest completed!\n\nYou have been rewarded **${reward:,}**"
 
 				if loot:
 					await ctx.bot.db["loot"].bulk_write(requests)
