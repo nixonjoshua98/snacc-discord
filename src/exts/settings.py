@@ -12,9 +12,6 @@ class Settings(commands.Cog):
 	__can_disable__ = False
 	__override_channel_whitelist__ = True
 
-	async def cog_after_invoke(self, ctx):
-		await ctx.bot.update_server_data(ctx.guild)
-
 	@checks.is_admin()
 	@commands.command(name="prefix")
 	async def set_prefix(self, ctx: commands.Context, prefix: str):
@@ -29,7 +26,7 @@ class Settings(commands.Cog):
 	async def toggle_dm_help(self, ctx):
 		""" Toggle whether to DM help to the user or to the server. """
 
-		svr = await ctx.bot.get_server_data(ctx.guild)
+		svr = await ctx.bot.db["servers"].find_one({"_id": ctx.guild.id}) or dict()
 
 		if not svr.get("dm_help", False):
 			await ctx.bot.db["servers"].update_one({"_id": ctx.guild.id}, {"$set": {"dm_help": True}}, upsert=True)
@@ -78,7 +75,7 @@ class Settings(commands.Cog):
 	async def toggle_channel(self, ctx, *, channel: discord.TextChannel):
 		""" Whitelist a channel. All channels are whitelisted initially. """
 
-		svr = await ctx.bot.get_server_data(ctx.guild)
+		svr = await ctx.bot.db["servers"].find_one({"_id": ctx.guild.id}) or dict()
 
 		whitelisted_channels = svr.get("whitelisted_channels", [])
 

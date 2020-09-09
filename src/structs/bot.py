@@ -40,8 +40,6 @@ class Bot(commands.Bot):
 
         self._bot_started = None
 
-        self._server_cache = dict()
-
         self.add_check(self.bot_check)
         self.after_invoke(self.after_invoke_coro)
 
@@ -76,7 +74,7 @@ class Bot(commands.Bot):
         return not [perm for perm, value in perms.items() if getattr(permissions, perm) != value]
 
     async def is_command_enabled(self, guild: discord.Guild, com: Union[commands.Cog, commands.Command]):
-        svr = await self.get_server_data(guild)
+        svr = await self.db["servers"].find_one({"_id": guild.id}) or dict()
 
         disabled_modules = svr.get("disabled_modules", [])
 
@@ -86,7 +84,7 @@ class Bot(commands.Bot):
         return com.cog is None or com.cog.__class__.__name__ not in disabled_modules
 
     async def is_channel_whitelisted(self, guild, channel, *, command=None):
-        svr = await self.get_server_data(guild)
+        svr = await self.db["servers"].find_one({"_id": guild.id}) or dict()
 
         override = command is not None and getattr(command.cog, "__override_channel_whitelist__", False)
 
@@ -115,15 +113,6 @@ class Bot(commands.Bot):
         print(f"Adding Cog: {cog.qualified_name}", end="...")
         super().add_cog(cog)
         print("OK")
-
-    async def get_server_data(self, svr: discord.Guild):
-        if svr.id not in self._server_cache:
-            await self.update_server_data(svr)
-
-        return self._server_cache[svr.id]
-
-    async def update_server_data(self, svr: discord.Guild):
-        self._server_cache[svr.id] = await self.db["servers"].find_one({"_id": svr.id}) or dict()
 
     async def bot_check(self, ctx) -> bool:
         if not self.exts_loaded or ctx.guild is None or ctx.author.bot:
@@ -156,7 +145,7 @@ class Bot(commands.Bot):
     async def get_prefix(self, message):
         """ Get the prefix for the server/guild from the database/cache. """
 
-        svr = await self.get_server_data(message.guild)
+        svr = await self.db["servers"].find_one({"_id": message.guild.id}) or dict()
 
         prefix = "." if self.debug else svr.get("prefix", "!")
 
@@ -183,5 +172,3 @@ class Bot(commands.Bot):
 
     def run(self):
         super(Bot, self).run(os.getenv("BOT_TOKEN"))
-
-

@@ -11,9 +11,6 @@ class AutoRole(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-	async def cog_after_invoke(self, ctx):
-		await ctx.bot.update_server_data(ctx.guild)
-
 	@commands.Cog.listener("on_startup")
 	async def on_startup(self):
 		if not self.bot.debug:
@@ -62,7 +59,7 @@ class AutoRole(commands.Cog):
 		if not await self.bot.is_command_enabled(member.guild, self):
 			return None
 
-		svr = await self.bot.get_server_data(member.guild)
+		svr = await self.bot.db["servers"].find_one({"_id": member.guild.id}) or dict()
 
 		try:
 			roles = svr.get("roles", dict())

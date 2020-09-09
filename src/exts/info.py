@@ -44,7 +44,7 @@ class Info(commands.Cog):
 	async def show_channels(self, ctx):
 		""" Show the server channel whitelist. """
 
-		svr = await ctx.bot.get_server_data(ctx.guild)
+		svr = await ctx.bot.db["servers"].find_one({"_id": ctx.guild.id}) or dict()
 
 		whitelisted_channels = svr.get("whitelisted_channels", [])
 

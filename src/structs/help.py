@@ -84,7 +84,7 @@ class Help(commands.HelpCommand):
 
 	async def send_bot_help(self, mapping):
 		if embeds := await self.create_embeds(mapping):
-			svr = await self.context.bot.get_server_data(self.context.guild)
+			svr = await self.context.bot.db["servers"].find_one({"_id": self.context.guild.id}) or dict()
 
 			await DisplayPages(embeds, timeout=180.0).send(self.context, send_dm=svr.get("dm_help", False))
 
