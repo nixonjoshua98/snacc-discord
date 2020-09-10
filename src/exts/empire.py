@@ -123,6 +123,7 @@ class Empire(commands.Cog):
 			now = dt.datetime.utcnow()
 
 			player_row = await self.bot.db["players"].find_one({"_id": empire["_id"]}) or dict()
+			bank_row = await self.bot.db["bank"].find_one({"_id": empire["_id"]}) or dict()
 
 			# - Set the last_income field which is used to calculate the income rate from the delta time
 			await self.bot.db["empires"].update_one({"_id": empire["_id"]}, {"$set": {"last_income": now}})
@@ -143,6 +144,9 @@ class Empire(commands.Cog):
 			hours = (now - last_income).total_seconds() / 3600
 
 			income = int(utils.net_income(empire) * hours)
+
+			if bank_row.get("usd", 0) >= 250_000:
+				income *= 0.4
 
 			requests.append(UpdateOne({"_id": empire["_id"]}, {"$inc": {"usd": income}}, upsert=True))
 

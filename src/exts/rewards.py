@@ -1,14 +1,12 @@
+import asyncio
 
 from discord.ext import commands
 
 import datetime as dt
 
+from src import utils
 
-DAILY_REWARDS = [
-	{"bank": {"btc": 1}}, 		{"bank": {"usd": 1_500}}, 			{"bank": {"usd": 3_000}},
-	{"bank": {"usd": 5_000}}, 	{"bank": {"btc": 1, "usd": 1_000}}, {"bank": {"usd": 7_500}},
-	{"bank": {"usd": 10_000}}, 	{"bank": {"btc": 1}}, 				{"bank": {"usd": 5_000}}
-]
+from src.common import SupportServer
 
 
 class Rewards(commands.Cog):
@@ -64,7 +62,19 @@ class Rewards(commands.Cog):
 			thumbnail=ctx.author.avatar_url
 		)
 
+		if not utils.author_in_support_server(ctx):
+			embed.description += "\n\n" + f"Our support server {SupportServer.LINK} has daily giveaways!"
+
 		embed.add_field(name="Reward", value=f"**${reward:,}**")
+
+		async def temp():
+			chnl = ctx.bot.get_channel(SupportServer.LOGGING_CHANNEL)
+
+			s = f"User `{str(ctx.author)}` from server `{ctx.guild.name}` claimed their `{streak}` streak daily reward"
+
+			await chnl.send(s)
+
+		asyncio.create_task(temp())
 
 		await ctx.send(embed=embed)
 

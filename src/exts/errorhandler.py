@@ -24,14 +24,11 @@ class ErrorHandler(commands.Cog):
         bot.on_command_error = self.on_command_error
 
     async def on_command_error(self, ctx, esc):
-        if isinstance(esc, CommandNotFound):
+        if isinstance(esc, (CommandNotFound, GlobalCheckFail)):
             return None
 
         elif isinstance(esc, NotOwner):
             await ctx.send("This command is only accessible by my owner.")
-
-        elif isinstance(esc, GlobalCheckFail):
-            print("Global Check Fail:", esc)
 
         elif isinstance(esc, CommandOnCooldown):
             seconds = float(esc.args[0].split(" ")[-1][0:-1])

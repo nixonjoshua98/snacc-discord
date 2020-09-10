@@ -62,7 +62,7 @@ class Bot(commands.Bot):
     def users(self):
         return set([m for g in self.guilds for m in g.members])
 
-    @tasks.loop(minutes=15.0)
+    @tasks.loop(minutes=5.0)
     async def activity_loop(self):
         activity = discord.Game(f"{len(self.users):,} users | {len(self.guilds):,} servers")
 

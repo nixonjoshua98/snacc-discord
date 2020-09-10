@@ -118,19 +118,19 @@ class Quests(commands.Cog):
 
 				loot = quest_instance.get_loot(current_quest["success_rate"])
 
-				requests, loot_field = [], []
-
-				for name, value in loot.items():
-					requests.append(InsertOne({"user": ctx.author.id, "name": name, "value": value}))
-
-					loot_field.append(f"{name} **${value:,}**")
-
 				embed.description = f"Quest completed!\n\nYou have been rewarded **${reward:,}**"
 
 				if loot:
+					requests, value = [], []
+
+					for name, value in loot.items():
+						requests.append(InsertOne({"user": ctx.author.id, "name": name, "value": value}))
+
+						value.append(f"{name} **${value:,}**")
+
 					await ctx.bot.db["loot"].bulk_write(requests)
 
-					embed.add_field(name="Loot", value="\n".join(loot_field))
+					embed.add_field(name="Loot", value="\n".join(value))
 
 			else:
 				embed.description = "Your squad died while on the quest!"

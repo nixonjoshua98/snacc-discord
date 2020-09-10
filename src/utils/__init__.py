@@ -3,6 +3,8 @@ import asyncio
 import itertools
 import random
 
+from src.common import SupportServer
+
 from src.common.population import Military, Workers
 
 
@@ -63,3 +65,9 @@ def get(ls: list, *, default=None, **kwargs):
 			return d
 
 	return default
+
+
+def author_in_support_server(ctx):
+	support_server = ctx.bot.get_guild(SupportServer.ID)
+
+	return support_server.get_member(ctx.author.id) is not None

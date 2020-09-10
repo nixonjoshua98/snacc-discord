@@ -24,7 +24,7 @@ class _Quest:
 		return math.floor(random.uniform(0.9, 1.1) * self.get_avg_reward(upgrades))
 
 	def get_loot(self, success_rate):
-		loot_chance = max(0.25, min(1.0 - success_rate, 0.75))
+		loot_chance = max(0.50, min(1.0 - success_rate, 0.75))
 
 		if loot_chance >= random.uniform(0.0, 1.0):
 			return {utils.get_random_name():  math.floor(self.power * random.uniform(5.0, 10.0))}
