@@ -184,9 +184,8 @@ class Arena(commands.Cog):
 				else:
 					print(f"Warning: User {abo_name} could not be updated.")
 
-				continue
-
-			missing.append(member.mention)
+			else:
+				missing.append(member.mention)
 
 			await asyncio.sleep(5.0)
 
