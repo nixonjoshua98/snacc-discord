@@ -12,6 +12,7 @@ from src.structs.reactioncollection import ReactionCollection
 
 
 class Snaccman(commands.Cog):
+	__help_verify_checks__ = True
 
 	@staticmethod
 	async def giveaway_task(ctx, item_name, item_value):

@@ -26,12 +26,24 @@ def is_admin():
 	async def predicate(ctx):
 		permissions = ctx.channel.permissions_for(ctx.author)
 
-		has_admin_role = discord.utils.get(ctx.guild.roles, name="Admin")
+		admin_role = discord.utils.get(ctx.guild.roles, name="Admin")
 
-		if await ctx.bot.is_owner(ctx.author) or permissions.administrator or has_admin_role:
+		if await ctx.bot.is_owner(ctx.author) or permissions.administrator or admin_role is not None:
 			return True
 
 		raise commands.CommandError("You need to be an Administrator or have the `Admin` role to access this command.")
+
+	return commands.check(predicate)
+
+
+def is_mod():
+	async def predicate(ctx):
+		mod_role = discord.utils.get(ctx.guild.roles, name="Mod")
+
+		if await ctx.bot.is_owner(ctx.author) or mod_role is not None:
+			return True
+
+		raise commands.MissingRole("Mod")
 
 	return commands.check(predicate)
 

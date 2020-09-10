@@ -81,7 +81,7 @@ class Questionnaire(commands.Cog):
 
 		embed = ctx.bot.embed(title="Server Questionnaires")
 
-		embed.description = "| ".join([f"`{qu['command']}`" for qu in questionnaires]) or "None"
+		embed.description = " | ".join([f"`{qu['command']}`" for qu in questionnaires]) or "None"
 
 		await ctx.send(embed=embed)
 
