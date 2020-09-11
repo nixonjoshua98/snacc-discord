@@ -123,10 +123,10 @@ class Quests(commands.Cog):
 				if loot:
 					requests, value = [], []
 
-					for name, value in loot.items():
-						requests.append(InsertOne({"user": ctx.author.id, "name": name, "value": value}))
+					for item_name, item_value in loot.items():
+						requests.append(InsertOne({"user": ctx.author.id, "name": item_name, "value": item_value}))
 
-						value.append(f"{name} **${value:,}**")
+						value.append(f"{item_name} **${item_value:,}**")
 
 					await ctx.bot.db["loot"].bulk_write(requests)
 
