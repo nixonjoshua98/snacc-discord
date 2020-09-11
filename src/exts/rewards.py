@@ -1,5 +1,3 @@
-import asyncio
-
 from discord.ext import commands
 
 import datetime as dt
@@ -62,19 +60,10 @@ class Rewards(commands.Cog):
 			thumbnail=ctx.author.avatar_url
 		)
 
-		if not utils.author_in_support_server(ctx):
-			embed.description += "\n\n" + f"Our support server {SupportServer.LINK} has daily giveaways!"
+		if utils.author_in_support_server(ctx):
+			embed.description += "\n\n" + f"Click [here]({SupportServer.LINK}) to join the support server."
 
 		embed.add_field(name="Reward", value=f"**${reward:,}**")
-
-		async def temp():
-			chnl = ctx.bot.get_channel(SupportServer.LOGGING_CHANNEL)
-
-			s = f"User `{str(ctx.author)}` from server `{ctx.guild.name}` claimed their `{streak}` streak daily reward"
-
-			await chnl.send(s)
-
-		asyncio.create_task(temp())
 
 		await ctx.send(embed=embed)
 

@@ -2,6 +2,8 @@ import discord
 
 from discord.ext import commands
 
+from src.common import SupportServer
+
 
 class Info(commands.Cog):
 	__can_disable__ = False
@@ -60,29 +62,30 @@ class Info(commands.Cog):
 
 		await ctx.send(embed=embed)
 
+	@commands.command(name="links", aliases=["invite", "support", "vote"])
+	async def links(self, ctx):
+		""" Show the invite links for the bot. """
+
+		embed = ctx.bot.embed(title="Bot Links")
+
+		bot_invite = "https://discord.com/oauth2/authorize?client_id=666616515436478473&scope=bot&permissions=387136"
+
+		bot_vote_1 = "https://discord.boats/bot/666616515436478473"
+		bot_vote_2 = "https://top-bots.xyz/bot/666616515436478473"
+
+		vote_text = f"You can vote for me [here]({bot_vote_1}) and [here]({bot_vote_2})"
+
+		embed.add_field(name="Invite", value=f"Click [here]({bot_invite}) to add me to your server", inline=False)
+		embed.add_field(name="Vote", value=f"{vote_text}", inline=False)
+		embed.add_field(name="Support", value=f"Join my support server [here]({SupportServer.LINK})", inline=False)
+
+		await ctx.send(embed=embed)
+
 	@commands.command(name="ping")
 	async def ping(self, ctx):
 		""" View my latency. """
 
 		await ctx.send(f"Pong! {round(ctx.bot.latency * 1000, 3)}ms")
-
-	@commands.command(name="support")
-	async def support(self, ctx):
-		""" Link to the support server. """
-
-		await ctx.send("https://discord.gg/QExQuvE")
-
-	@commands.command(name="invite")
-	async def send_bot_invite(self, ctx):
-		""" Invite me to your server! """
-
-		await ctx.send("https://discord.com/oauth2/authorize?client_id=666616515436478473&scope=bot&permissions=387136")
-
-	@commands.command(name="vote")
-	async def vote(self, ctx):
-		""" Link to the vote site. """
-
-		await ctx.send("https://discord.boats/bot/666616515436478473\nhttps://top-bots.xyz/bot/666616515436478473")
 
 	@commands.command(name="uptime")
 	async def show_uptime(self, ctx):
