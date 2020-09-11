@@ -50,7 +50,7 @@ class Moderator(commands.Cog):
 
 	@checks.is_mod()
 	@commands.max_concurrency(1, commands.BucketType.channel)
-	@commands.cooldown(1, 15, commands.BucketType.member)
+	@commands.bot_has_permissions(manage_messages=True)
 	@commands.command(name="purge", usage="<user=None> <limit=0>", cooldown_after_parsing=True)
 	async def purge(self, ctx, user: Optional[discord.Member] = None, limit: Range(0, 100) = 0):
 		""" Clear a channel of messages. """
