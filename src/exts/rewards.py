@@ -60,7 +60,7 @@ class Rewards(commands.Cog):
 			thumbnail=ctx.author.avatar_url
 		)
 
-		if utils.author_in_support_server(ctx):
+		if not utils.author_in_support_server(ctx):
 			embed.description += "\n\n" + f"Click [here]({SupportServer.LINK}) to join the support server."
 
 		embed.add_field(name="Reward", value=f"**${reward:,}**")
