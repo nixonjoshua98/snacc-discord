@@ -74,4 +74,4 @@ def author_in_support_server(ctx):
 
 
 def hero_xp_to_level(xp):
-	return (xp // 75) + 1
+	return (xp // 100) + 1

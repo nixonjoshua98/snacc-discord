@@ -1,3 +1,4 @@
+import os
 import discord
 
 from discord.ext import commands
@@ -81,14 +82,27 @@ class Info(commands.Cog):
 
 		await ctx.send(embed=embed)
 
-	@commands.command(name="stats", aliases=["bot", "ping", "uptime"])
+	@commands.command(name="stats", aliases=["bot", "ping", "uptime", "lines"])
 	async def stats(self, ctx):
 		""" Show stats about the bot. """
 
 		embed = ctx.bot.embed(title="Bot Stats")
 
+		lines = 0
+
+		for root, dirs, files in os.walk("./src/"):
+			for f in files:
+				if not f.endswith(".py"):
+					continue
+
+				path = os.path.join(root, f)
+
+				with open(path, "r") as fh:
+					lines += len(tuple(line for line in fh.read().splitlines() if line))
+
 		embed.add_field(name="Uptime", value=ctx.bot.uptime)
 		embed.add_field(name="Ping", value=f"{round(ctx.bot.latency * 1000, 3)}ms")
+		embed.add_field(name="Lines", value=lines)
 
 		await ctx.send(embed=embed)
 

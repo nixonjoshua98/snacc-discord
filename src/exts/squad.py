@@ -97,9 +97,11 @@ class Squad(commands.Cog):
 
 	@checks.has_empire()
 	@checks.has_hero_squad()
-	@commands.cooldown(1, 15 * 60, commands.BucketType.user)
+	@commands.cooldown(1, 300, commands.BucketType.user)
 	@show_squad.command(name="train")
 	async def start_training(self, ctx):
+		""" Start or stop your squad training. """
+
 		squad = await ctx.bot.db["heroes"].find(
 			{"user": ctx.author.id, "in_squad": True}
 		).sort("hero", 1).to_list(length=None)

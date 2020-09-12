@@ -9,24 +9,6 @@ from bs4 import BeautifulSoup
 
 class Miscellaneous(commands.Cog, name="Misc"):
 
-	@commands.command(name="lines")
-	async def lines(self, ctx):
-		""" Count the number of lines within the bot. """
-
-		lines = 0
-
-		for root, dirs, files in os.walk("./src/"):
-			for f in files:
-				if not f.endswith(".py"):
-					continue
-
-				path = os.path.join(root, f)
-
-				with open(path, "r") as fh:
-					lines += len(tuple(line for line in fh.read().splitlines() if line))
-
-		await ctx.send(f"I am made up of **{lines:,}** lines of code.")
-
 	@commands.is_nsfw()
 	@commands.command(name="urban")
 	async def urban_dict(self, ctx, *, term):
