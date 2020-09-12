@@ -71,3 +71,7 @@ def author_in_support_server(ctx):
 	support_server = ctx.bot.get_guild(SupportServer.ID)
 
 	return support_server.get_member(ctx.author.id) is not None
+
+
+def hero_xp_to_level(xp):
+	return (xp // 75) + 1

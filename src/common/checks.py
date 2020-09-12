@@ -36,6 +36,32 @@ def is_admin():
 	return commands.check(predicate)
 
 
+def has_hero_squad():
+	async def predicate(ctx):
+		squad = await ctx.bot.db["heroes"].find(
+			{"user": ctx.author.id, "in_squad": True}
+		).sort("hero", 1).to_list(length=None)
+
+		if len(squad) == 0:
+			raise commands.CommandError("Your hero squad is empty.")
+
+		return True
+
+	return commands.check(predicate)
+
+
+def hero_squad_not_training():
+	async def predicate(ctx):
+		training_row = await ctx.bot.db["hero_training"].find_one({"_id": ctx.author.id})
+
+		if training_row is not None:
+			raise commands.CommandError("Your hero squad is currently training.")
+
+		return True
+
+	return commands.check(predicate)
+
+
 def is_mod():
 	async def predicate(ctx):
 		mod_role = discord.utils.get(ctx.guild.roles, name="Mod")

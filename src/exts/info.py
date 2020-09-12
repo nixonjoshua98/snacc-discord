@@ -81,19 +81,14 @@ class Info(commands.Cog):
 
 		await ctx.send(embed=embed)
 
-	@commands.command(name="ping")
-	async def ping(self, ctx):
-		""" View my latency. """
-
-		await ctx.send(f"Pong! {round(ctx.bot.latency * 1000, 3)}ms")
-
-	@commands.command(name="uptime")
-	async def show_uptime(self, ctx):
-		""" Display how long I have been awake. """
+	@commands.command(name="stats", aliases=["bot", "ping", "uptime"])
+	async def stats(self, ctx):
+		""" Show stats about the bot. """
 
 		embed = ctx.bot.embed(title="Bot Stats")
 
-		embed.add_field(name="Bot", value=f"**Uptime: ** `{ctx.bot.uptime}`")
+		embed.add_field(name="Uptime", value=ctx.bot.uptime)
+		embed.add_field(name="Ping", value=f"{round(ctx.bot.latency * 1000, 3)}ms")
 
 		await ctx.send(embed=embed)
 

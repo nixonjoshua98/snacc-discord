@@ -2,6 +2,8 @@ from pymongo import UpdateOne
 
 from discord.ext import commands
 
+from src import utils
+
 from src.structs.confirm import Confirm
 from src.structs.displaypages import DisplayPages
 
@@ -13,34 +15,34 @@ class Heroes(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-	@commands.group(name="hero", aliases=["heroes"], invoke_without_command=True)
+	@commands.group(name="heroes", aliases=["hero", "h"], invoke_without_command=True)
 	async def show_heroes(self, ctx):
 		""" View your owned heroes. """
 
-		heroes = await ctx.bot.db["heroes"].find({"user": ctx.author.id, "owned": {"$gt": 0}}).to_list(length=None)
-
-		heroes.sort(key=lambda h: h["hero"])
+		heroes = await ctx.bot.db["heroes"].find(
+			{"user": ctx.author.id, "owned": {"$gt": 0}}
+		).sort("hero", 1).to_list(length=None)
 
 		if not heroes:
 			return await ctx.send("You do not currently own any heroes.")
 
-		embeds, chunks = [], [heroes[i:i + 15] for i in range(0, len(heroes), 15)]
+		embeds, chunks = [], [heroes[i:i + 9] for i in range(0, len(heroes), 9)]
 
 		for i, chunk in enumerate(chunks):
-			desc = [f"**Collected: {len(heroes)}/{len(ChestHeroes.ALL_HEROES)}**" + "\n"]
-
 			embed = ctx.bot.embed(title=f"Your Heroes [Page {i + 1}/{len(chunks)}]", author=ctx.author)
+
+			embed.description = f"**Collected: {len(heroes)}/{len(ChestHeroes.ALL_HEROES)}**"
 
 			embeds.append(embed)
 
 			for hero in chunk:
 				hero_inst = ChestHeroes.get(id=hero["hero"])
 
-				s = f"`#{hero_inst.id:02d} | {hero['owned']:02d}x [{hero_inst.grade}] {hero_inst.name: <20}`"
+				hero_level = utils.hero_xp_to_level(hero.get("xp", 0))
 
-				desc.append(s)
+				name = f"#{hero_inst.id:02d} | [{hero_inst.grade}] {hero_inst.name}"
 
-			embed.description = "\n".join(desc)
+				embed.add_field(name=name, value=f"Owned {hero['owned']} | Level {hero_level}")
 
 		await DisplayPages(embeds).send(ctx)
 
@@ -91,8 +93,8 @@ class Heroes(commands.Cog):
 
 		hero_entry = await ctx.bot.db["heroes"].find_one({"user": ctx.author.id, "hero": hero.id})
 
-		if hero_entry is None or hero_entry.get("owned", 0) < amount:
-			await ctx.send(f"You do not have **{amount:,}x** **#{hero.id}** available to sell")
+		if hero_entry is None or hero_entry.get("owned", 0) + 1 < amount:
+			await ctx.send(f"You do not have **{amount:,}x** duplicates of **#{hero.id}** available to sell")
 
 		else:
 			money = hero.sell_price * amount

@@ -20,7 +20,8 @@ EXTENSIONS = [
 
     "errorhandler",     "info",             "arena",
     "abo",
-    "empire",           "heroes",           "quests",
+    "empire",           "heroes",           "squad",
+    "quests",
     "shop",             "units",            "battles",
     "hangman",          "rewards",          "gambling",
     "bank",             "inventory",        "crypto",

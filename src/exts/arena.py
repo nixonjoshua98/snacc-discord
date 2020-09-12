@@ -66,7 +66,7 @@ class Arena(commands.Cog):
 
 		await message.edit(content=msg)
 
-	@commands.command(name="stats", aliases=["s"], usage="")
+	@commands.command(name="s")
 	async def stats(self, ctx, *, role: discord.Role = None):
 		""" View the history of the guild, or narrow it down to a single role. """
 

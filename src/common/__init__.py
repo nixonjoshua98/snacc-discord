@@ -31,3 +31,6 @@ class UnitMergeValues:
 class BattleValues:
 	COOLDOWN = 2.0 * 3_600
 
+
+class HeroValues:
+	SQUAD_SIZE = 3
