@@ -56,7 +56,7 @@ class Hero:
 	@property
 	def sell_price(self):
 		return {
-			"Z": 0, "S": 10_000, "A": 8_000, "B": 6_000, "C": 4_000, "D": 3_000, "E": 2_000, "F": 1_000
+			"Z": 0, "S": 10_000, "A": 8_000, "B": 5_500, "C": 4_000, "D": 3_000, "E": 2_000, "F": 1_000
 		}.get(self.grade, 0)
 
 	@property

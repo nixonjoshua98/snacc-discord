@@ -58,7 +58,7 @@ class Settings(commands.Cog):
 
 		module_name = module.__class__.__name__
 
-		if await ctx.bot.is_command_enabled(ctx.guild, module):
+		if not await ctx.bot.is_command_enabled(ctx.guild, module):
 			query = {"$pull": {"disabled_modules": module_name}}
 
 			await ctx.send(f"Module **{module_name}** has been enabled.")

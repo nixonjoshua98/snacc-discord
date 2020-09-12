@@ -97,7 +97,7 @@ class Squad(commands.Cog):
 
 	@checks.has_empire()
 	@checks.has_hero_squad()
-	@commands.cooldown(1, 300, commands.BucketType.user)
+	@commands.cooldown(1, 30, commands.BucketType.user)
 	@show_squad.command(name="train")
 	async def start_training(self, ctx):
 		""" Start or stop your squad training. """
