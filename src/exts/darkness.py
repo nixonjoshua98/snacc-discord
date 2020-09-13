@@ -22,7 +22,7 @@ class Darkness(commands.Cog):
 		self.bot = bot
 
 	async def cog_check(self, ctx):
-		if ctx.guild.id not in (DarknessServer.ID, ):
+		if ctx.guild.id != DarknessServer.ID:
 			raise commands.DisabledCommand("This command is disabled in this server")
 
 		return True

@@ -14,7 +14,7 @@ class ABO(commands.Cog):
 	__help_verify_checks__ = True
 
 	async def cog_check(self, ctx):
-		if ctx.guild.id != DarknessServer.ID:
+		if ctx.guild.id not in (DarknessServer.ID,):
 			raise commands.DisabledCommand("This command is disabled in this server")
 
 		return True
@@ -22,7 +22,7 @@ class ABO(commands.Cog):
 	@commands.is_owner()
 	@commands.command(name="setaboname")
 	async def set_abo_name(self, ctx, user: discord.Member, *, name):
-		""" Associate a discord user to a user in ABO. """
+		""" Associate a discord user to an abo username. """
 
 		embed = ctx.bot.embed(title="Auto Battles Online", description=f"{user.mention} username is `{name}`?")
 
@@ -35,7 +35,7 @@ class ABO(commands.Cog):
 
 	@commands.command(name="getdiscord")
 	async def get_discord(self, ctx, *, username):
-		""" Get the discord user associated with a ABO username. """
+		""" Get the discord user associated with an abo username. """
 
 		player = await ctx.bot.db["players"].find_one({"abo_name": re.compile(username, re.IGNORECASE)})
 

@@ -59,7 +59,9 @@ class Info(commands.Cog):
 
 		for channel in ctx.guild.text_channels:
 			if channel.id in whitelisted_channels:
-				value.append(channel.mention)
+				perms = channel.permissions_for(ctx.author)
+
+				value.append(channel.mention if perms.read_messages else "`[hidden]`")
 
 		embed.add_field(name="Whitelisted", value=" | ".join(value) or "All channels whitelisted")
 
