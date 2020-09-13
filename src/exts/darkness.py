@@ -33,9 +33,11 @@ class Darkness(commands.Cog):
 		@tasks.loop(hours=1.0)
 		async def update_users_loop():
 			if missing_usernames := await self.update_users():
-				chnl = self.bot.get_channel(DarknessServer.ABO_CHANNEL)
+				chnl = self.bot.get_channel(DarknessServer.BOT_CHANNEL)
 
-				await chnl.send(f"Missing Usernames: {', '.join(map(lambda m: m.mention, missing_usernames))}")
+				snacc = chnl.guild.owner.mention
+
+				await chnl.send(f"{snacc}, Missing Usernames: {', '.join(map(lambda m: m.mention, missing_usernames))}")
 
 		print("Starting Loop: Darkness")
 
