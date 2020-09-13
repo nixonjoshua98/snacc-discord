@@ -30,7 +30,7 @@ class Darkness(commands.Cog):
 	@commands.Cog.listener("on_startup")
 	async def on_startup(self):
 
-		@tasks.loop(hours=4.0)
+		@tasks.loop(hours=1.0)
 		async def update_users_loop():
 			if missing_usernames := await self.update_users():
 				chnl = self.bot.get_channel(DarknessServer.ABO_CHANNEL)
@@ -157,7 +157,7 @@ class Darkness(commands.Cog):
 			page = TextPage(title="Guild Members history", headers=["Username", "XP", "Level", "Rating"])
 
 			for row in chunk:
-				page_row = [row["abo_name"], "0/0", row["level"], f"{row['rating']}({row['rating_diff']})"]
+				page_row = [row["abo_name"], "0(0)", row["level"], f"{row['rating']}({row['rating_diff']})"]
 
 				page.add(page_row)
 

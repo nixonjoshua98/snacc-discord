@@ -33,7 +33,7 @@ class ABO(commands.Cog):
 		await ctx.send(f"Username has been set to `{name}`")
 
 	@commands.command(name="getaboname")
-	async def set_abo_name(self, ctx, *, user: discord.Member):
+	async def get_abo_name(self, ctx, *, user: discord.Member):
 		""" Get the associated discord user to a username in ABO. """
 
 		player = await ctx.bot.db["players"].find_one({"_id": user.id}) or dict()
