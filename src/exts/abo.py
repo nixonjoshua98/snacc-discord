@@ -8,6 +8,8 @@ from src.aboapi import API
 from src.common import DarknessServer
 
 from src.structs.confirm import Confirm
+from src.structs.textpage import TextPage
+from src.structs.dynamicpages import DynamicPages
 
 
 class ABO(commands.Cog):
@@ -53,6 +55,48 @@ class ABO(commands.Cog):
 	async def group(self, ctx):
 		""" ... """
 
+	@group.command(name="guilds")
+	async def show_guild_leaderboard(self, ctx):
+		""" Show the guild leaderboard. """
+
+		async def callback(current: int, change, pages: list):
+			return await self.dynamic_leaderboard_callback(create_page, current, change, pages)
+
+		async def create_page(start, end):
+			guilds = await API.leaderboard.get_guilds(pos=start, count=end)
+
+			page = TextPage(title="Guild Leaderboard", headers=["#", "Name", "Rating"])
+
+			for guild in guilds:
+				row = [f"#{guild.rank}", guild.name, f"{guild.rating:,}"]
+
+				page.add(row)
+
+			return page.get() if len(page.rows) > 0 else None
+
+		await DynamicPages([await create_page(0, 15)], callback).send(ctx)
+
+	@group.command(name="players")
+	async def show_player_leaderboard(self, ctx):
+		""" Show the player leaderboard. """
+
+		async def callback(current: int, change, pages: list):
+			return await self.dynamic_leaderboard_callback(create_page, current, change, pages)
+
+		async def create_page(start, end):
+			players = await API.leaderboard.get_players(pos=start, count=end)
+
+			page = TextPage(title="Player Leaderboard", headers=["#", "Name", "Rating"])
+
+			for player in players:
+				row = [f"#{player.rank}", player.name, f"{player.rating:,}"]
+
+				page.add(row)
+
+			return page.get() if len(page.rows) > 0 else None
+
+		await DynamicPages([await create_page(0, 15)], callback).send(ctx)
+
 	@group.command(name="player")
 	async def get_player(self, ctx, *, name):
 		""" Show information about a player. """
@@ -95,6 +139,20 @@ class ABO(commands.Cog):
 		embed.add_field(name="Guild XP", value=f"{guild.guild_xp}/{guild.total_guild_xp}")
 
 		await ctx.send(embed=embed)
+
+	@staticmethod
+	async def dynamic_leaderboard_callback(create_page, current: int, change, pages: list):
+		new_index = current + change
+
+		if change == 1 and (new_index + 1) >= len(pages):
+			page = await create_page(new_index * 15, 15)
+
+			if page is None:
+				return current
+
+			pages.append(page)
+
+		return max(0, new_index)
 
 
 def setup(bot):

@@ -1,7 +1,7 @@
 
 from src.aboapi._classes import LeaderboardGuild, LeaderboardPlayer
 
-from src.aboapi._utils import _send_request
+from src.aboapi._utils import Server
 
 
 class _Leaderboard:
@@ -10,7 +10,7 @@ class _Leaderboard:
 	async def get_player(cls, name):
 		data = {"purpose": "get", "position": -1, "count": 30, "name": name, "global": {}}
 
-		if (resp := await _send_request("leaderboard", data)) is not None:
+		if (resp := await Server.send_request("leaderboard", data)) is not None:
 			for user in resp["users"]:
 				inst = LeaderboardPlayer(**user)
 
@@ -23,7 +23,7 @@ class _Leaderboard:
 	async def get_players(cls, *, pos, count):
 		data = {"purpose": "get", "position": pos, "count": count, "global": {}}
 
-		if (resp := await _send_request("leaderboard", data)) is not None:
+		if (resp := await Server.send_request("leaderboard", data)) is not None:
 			return [LeaderboardPlayer(**user) for user in resp["users"]]
 
 		return None
@@ -32,7 +32,7 @@ class _Leaderboard:
 	async def get_guild(cls, name):
 		data = {"purpose": "getGuilds", "position": -1, "count": 30, "name": name, "global": {}}
 
-		if (resp := await _send_request("leaderboard", data)) is not None:
+		if (resp := await Server.send_request("leaderboard", data)) is not None:
 			for user in resp["guilds"]:
 				inst = LeaderboardGuild(**user)
 
@@ -45,7 +45,7 @@ class _Leaderboard:
 	async def get_guilds(cls, *, pos, count):
 		data = {"purpose": "getGuilds", "position": pos, "count": count, "global": {}}
 
-		if (resp := await _send_request("leaderboard", data)) is not None:
+		if (resp := await Server.send_request("leaderboard", data)) is not None:
 			return [LeaderboardGuild(**guild) for guild in resp["guilds"]]
 
 		return None

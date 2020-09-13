@@ -37,7 +37,7 @@ class Darkness(commands.Cog):
 
 				snacc = chnl.guild.owner.mention
 
-				await chnl.send(f"{snacc}, Missing Usernames: {', '.join(map(lambda m: m.mention, missing_usernames))}")
+				await chnl.send(f"{snacc}, missing usernames: {', '.join(map(lambda m: m.mention, missing_usernames))}")
 
 		print("Starting Loop: Darkness")
 

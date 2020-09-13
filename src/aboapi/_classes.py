@@ -43,9 +43,10 @@ class LeaderboardGuild(_Object):
 	def __init__(self, **kwargs):
 		self.name = kwargs["name"]
 		self.rank = kwargs["position"] + 1
-		self.leader = kwargs["leaderName"]
 		self.rating = kwargs["rating"]
 		self.size = kwargs["membersCount"]
+
+		self.leader = kwargs.get("leaderName", "N/A")
 
 		self.guild_xp = kwargs["guildXp"]
 		self.total_guild_xp = kwargs["rollingGuildXp"]
