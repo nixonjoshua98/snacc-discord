@@ -55,27 +55,6 @@ class ABO(commands.Cog):
 	async def group(self, ctx):
 		""" ... """
 
-	@group.command(name="guilds")
-	async def show_guild_leaderboard(self, ctx):
-		""" Show the guild leaderboard. """
-
-		async def callback(current: int, change, pages: list):
-			return await self.dynamic_leaderboard_callback(create_page, current, change, pages)
-
-		async def create_page(start, end):
-			guilds = await API.leaderboard.get_guilds(pos=start, count=end)
-
-			page = TextPage(title="Guild Leaderboard", headers=["#", "Name", "Rating"])
-
-			for guild in guilds:
-				row = [f"#{guild.rank}", guild.name, f"{guild.rating:,}"]
-
-				page.add(row)
-
-			return page.get() if len(page.rows) > 0 else None
-
-		await DynamicPages([await create_page(0, 15)], callback).send(ctx)
-
 	@group.command(name="players")
 	async def show_player_leaderboard(self, ctx):
 		""" Show the player leaderboard. """
@@ -90,6 +69,27 @@ class ABO(commands.Cog):
 
 			for player in players:
 				row = [f"#{player.rank}", player.name, f"{player.rating:,}"]
+
+				page.add(row)
+
+			return page.get() if len(page.rows) > 0 else None
+
+		await DynamicPages([await create_page(0, 15)], callback).send(ctx)
+
+	@group.command(name="guilds")
+	async def show_guild_leaderboard(self, ctx):
+		""" Show the guild leaderboard. """
+
+		async def callback(current: int, change, pages: list):
+			return await self.dynamic_leaderboard_callback(create_page, current, change, pages)
+
+		async def create_page(start, end):
+			guilds = await API.leaderboard.get_guilds(pos=start, count=end)
+
+			page = TextPage(title="Guild Leaderboard", headers=["#", "Name", "Rating"])
+
+			for guild in guilds:
+				row = [f"#{guild.rank}", guild.name, f"{guild.rating:,}"]
 
 				page.add(row)
 

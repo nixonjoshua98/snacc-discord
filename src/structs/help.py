@@ -26,14 +26,13 @@ class Help(commands.HelpCommand):
 				return False
 
 		ret = []
+
 		for cmd in iterator:
 			if not await self.context.bot.is_command_enabled(self.context.guild, cmd):
 				continue
 
-			if getattr(cmd.cog, "__help_verify_checks__", self.verify_checks):
-				valid = await predicate(cmd)
-
-				if not valid:
+			elif getattr(cmd.cog, "__help_verify_checks__", self.verify_checks):
+				if not await predicate(cmd):
 					continue
 
 			ret.append(cmd)
