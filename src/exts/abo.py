@@ -19,7 +19,7 @@ class ABO(commands.Cog):
 		return True
 
 	@commands.is_owner()
-	@commands.command(name="aboname")
+	@commands.command(name="setaboname")
 	async def set_abo_name(self, ctx, user: discord.Member, *, name):
 		""" Associate a discord user to a user in ABO. """
 
@@ -31,6 +31,18 @@ class ABO(commands.Cog):
 		await ctx.bot.db["players"].update_one({"_id": user.id}, {"$set": {"abo_name": name}}, upsert=True)
 
 		await ctx.send(f"Username has been set to `{name}`")
+
+	@commands.command(name="getaboname")
+	async def set_abo_name(self, ctx, *, user: discord.Member):
+		""" Get the associated discord user to a username in ABO. """
+
+		player = await ctx.bot.db["players"].find_one({"_id": user.id}) or dict()
+
+		if (username := player.get("abo_name")) is None:
+			await ctx.send("I do not have their username stored.")
+
+		else:
+			await ctx.send(f"**{user.display_name}**'s username is **{username}**")
 
 	@commands.group(name="abo", hidden=True, invoke_without_command=True)
 	async def group(self, ctx):
@@ -53,6 +65,9 @@ class ABO(commands.Cog):
 			f"Rating: **{player.rating:,}**\n"
 		)
 
+		embed.add_field(name="Last Active", value=player.last_active)
+		embed.add_field(name="Guild XP", value=f"{player.guild_xp}/{player.total_guild_xp}")
+
 		await ctx.send(embed=embed)
 
 	@group.command(name="guild")
@@ -71,6 +86,8 @@ class ABO(commands.Cog):
 			f"Rating: **{guild.rating:,}**\n"
 			f"Member Count: **{guild.size:,}**"
 		)
+
+		embed.add_field(name="Guild XP", value=f"{guild.guild_xp}/{guild.total_guild_xp}")
 
 		await ctx.send(embed=embed)
 

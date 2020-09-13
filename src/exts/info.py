@@ -22,9 +22,11 @@ class Info(commands.Cog):
 		async def can_run(cog):
 			if hasattr(cog, "__help_verify_checks__"):
 				try:
-					await discord.utils.maybe_coroutine(cog.cog_check, ctx)
+					can_run_ = await discord.utils.maybe_coroutine(cog.cog_check, ctx)
 				except commands.CommandError:
 					return False
+
+				return can_run_
 
 			return True
 

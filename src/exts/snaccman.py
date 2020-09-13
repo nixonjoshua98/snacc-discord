@@ -14,6 +14,12 @@ from src.structs.reactioncollection import ReactionCollection
 class Snaccman(commands.Cog):
 	__help_verify_checks__ = True
 
+	async def cog_check(self, ctx):
+		if not await ctx.bot.is_owner(ctx.author):
+			raise commands.NotOwner()
+
+		return True
+
 	@staticmethod
 	async def giveaway_task(ctx, item_name, item_value):
 		support_server = ctx.bot.get_guild(SupportServer.ID)
@@ -37,7 +43,6 @@ class Snaccman(commands.Cog):
 
 			await destination.send(s)
 
-	@commands.is_owner()
 	@commands.command(name="giveaway")
 	async def giveaway(self, ctx, value: Range(0, None), *, item):
 		""" Create a giveaway in the support server. """

@@ -112,3 +112,14 @@ def has_power(amount):
 		return True
 
 	return commands.check(predicate)
+
+
+def in_server(svr):
+	async def predicate(ctx):
+
+		if ctx.guild.id != svr:
+			raise commands.DisabledCommand(f"This command is disabled in this server.")
+
+		return True
+
+	return commands.check(predicate)
