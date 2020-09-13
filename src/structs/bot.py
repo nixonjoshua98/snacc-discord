@@ -42,14 +42,8 @@ class Bot(commands.Bot):
         self._bot_started = None
 
         self.add_check(self.bot_check)
-        self.after_invoke(self.after_invoke_coro)
 
         self.load_extensions()
-
-    async def after_invoke_coro(self, ctx):
-        now = dt.datetime.utcnow()
-
-        await ctx.bot.db["players"].update_one({"_id": ctx.author.id}, {"$set": {"last_login": now}}, upsert=True)
 
     @property
     def debug(self):

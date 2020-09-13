@@ -26,6 +26,11 @@ class Empire(commands.Cog):
 
 		self.income_loop.start()
 
+	async def cog_after_invoke(self, ctx):
+		now = dt.datetime.utcnow()
+
+		await ctx.bot.db["players"].update_one({"_id": ctx.author.id}, {"$set": {"last_login": now}}, upsert=True)
+
 	@checks.no_empire()
 	@commands.command(name="create")
 	@commands.max_concurrency(1, commands.BucketType.user)
@@ -141,11 +146,11 @@ class Empire(commands.Cog):
 				continue
 
 			# - Total number of hours we need to credit the empire's bank
-			hours = (now - last_income).total_seconds() / 3600
+			hours = min(MAX_HOURS_OFFLINE, (now - last_income).total_seconds() / 3600)
 
 			income = int(utils.net_income(empire) * hours)
 
-			if bank_row.get("usd", 0) >= 250_000:
+			if bank_row.get("usd", 0) >= 250_000 and income > 0:
 				income *= 0.4
 
 			requests.append(UpdateOne({"_id": empire["_id"]}, {"$inc": {"usd": income}}, upsert=True))

@@ -1,3 +1,4 @@
+import re
 import discord
 
 from discord.ext import commands
@@ -32,17 +33,21 @@ class ABO(commands.Cog):
 
 		await ctx.send(f"Username has been set to `{name}`")
 
-	@commands.command(name="getaboname")
-	async def get_abo_name(self, ctx, *, user: discord.Member):
-		""" Get the associated discord user to a username in ABO. """
+	@commands.command(name="getdiscord")
+	async def get_discord(self, ctx, *, username):
+		""" Get the discord user associated with a ABO username. """
 
-		player = await ctx.bot.db["players"].find_one({"_id": user.id}) or dict()
+		player = await ctx.bot.db["players"].find_one({"abo_name": re.compile(username, re.IGNORECASE)})
 
-		if (username := player.get("abo_name")) is None:
-			await ctx.send("I do not have their username stored.")
+		if player is None:
+			await ctx.send("I do not have a reference to their discord stored.")
 
 		else:
-			await ctx.send(f"**{user.display_name}**'s username is **{username}**")
+			if (user := ctx.guild.get_member(player["_id"])) is not None:
+				await ctx.send(f"The user **{player['abo_name']}** is associated with **{str(user)}**")
+
+			else:
+				await ctx.send("I found the user in my records but they are not in this server.")
 
 	@commands.group(name="abo", hidden=True, invoke_without_command=True)
 	async def group(self, ctx):
