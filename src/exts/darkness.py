@@ -68,31 +68,25 @@ class Darkness(commands.Cog):
 
 		now = dt.datetime.utcnow()
 
-		# - Short reference
-		get_player = API.leaderboard.get_player
-
-		requests = []
-
-		missing_usernames = []
+		requests, missing_usernames = [], []
 
 		for member in role.members:
 			player = await self.bot.db["players"].find_one({"_id": member.id}) or dict()
 
-			if (abo_name := player.get("abo_name")) is not None and (player := await get_player(abo_name)) is not None:
-				row = dict(
-					user=member.id,
-					date=now,
-					level=player.level,
-					rating=player.rating,
-					guild_xp=player.total_guild_xp
-				)
+			if (abo_name := player.get("abo_name")) is not None:
+				if (player := await API.leaderboard.get_player(abo_name)) is not None:
+					row = dict(
+						user=member.id,
+						date=now,
+						level=player.level,
+						rating=player.rating,
+						guild_xp=player.total_guild_xp
+					)
 
-				requests.append(InsertOne(row))
+					requests.append(InsertOne(row))
 
 			else:
 				missing_usernames.append(member)
-
-			await asyncio.sleep(2.5)
 
 		requests.append(DeleteMany({"date": {"$lt": now - dt.timedelta(days=31)}}))
 
