@@ -39,9 +39,10 @@ class Darkness(commands.Cog):
 
 				await chnl.send(f"{snacc}, missing usernames: {', '.join(map(lambda m: m.mention, missing_usernames))}")
 
-		print("Starting Loop: Darkness")
+		if not self.bot.debug:
+			print("Starting Loop: Darkness")
 
-		update_users_loop.start()
+			update_users_loop.start()
 
 	@checks.in_server(DarknessServer.ID)
 	@commands.command(name="trophies", aliases=["rating"])
@@ -53,6 +54,7 @@ class Darkness(commands.Cog):
 		await DisplayPages(pages).send(ctx)
 
 	@checks.in_server(DarknessServer.ID)
+	@commands.has_role(DarknessServer.DARKNESS_ROLE)
 	@commands.command(name="guild", aliases=["history"])
 	async def show_history(self, ctx, *, role: discord.Role = None):
 		""" Show the guild history, sorted by the rating gained the past week. """

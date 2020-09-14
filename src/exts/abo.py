@@ -144,7 +144,7 @@ class ABO(commands.Cog):
 			for player in players:
 				name_len = 20 - len(str(player.rank)) - 1
 
-				s = f"#{player.rank} {player.name: <{name_len}} {player.level} {player.rating:,}"
+				s = f"#{str(player.rank): <4} {player.name: <{name_len}} {player.level} {player.rating:,}"
 
 				desc.append(s)
 

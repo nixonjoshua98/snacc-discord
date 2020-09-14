@@ -36,7 +36,7 @@ class DisplayPages(menus.Menu):
 		current = self.pages[self.current]
 
 		if self.message.guild is not None and self.bot.has_permissions(self.message.channel, manage_messages=True):
-			await self.message.remove_reaction(payload.emoji, self.ctx.author)
+			await self.message.remove_reaction(payload.emoji, payload.member)
 
 		if isinstance(current, discord.Embed):
 			return await self.message.edit(content=None, embed=current)
