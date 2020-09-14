@@ -1,8 +1,3 @@
-import discord
-
-from discord.ext import menus
-
-from src.common.emoji import Emoji
 
 from src.structs.displaypages import DisplayPages
 

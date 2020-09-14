@@ -3,6 +3,8 @@ import discord
 
 from discord.ext import commands
 
+from src import utils
+
 from src.aboapi import API
 
 from src.common import DarknessServer
@@ -55,26 +57,26 @@ class ABO(commands.Cog):
 	async def group(self, ctx):
 		""" ... """
 
-	@group.command(name="players")
-	async def show_player_leaderboard(self, ctx):
-		""" Show the player leaderboard. """
+	@group.command(name="guild")
+	async def get_guild(self, ctx, *, name):
+		""" Show information about a guild. """
 
-		async def callback(current: int, change, pages: list):
-			return await self.dynamic_leaderboard_callback(create_page, current, change, pages)
+		guild = await API.leaderboard.get_guild(name)
 
-		async def create_page(start, end):
-			players = await API.leaderboard.get_players(pos=start, count=end)
+		if guild is None:
+			return await ctx.send(f"I found no guild named `{name}`")
 
-			page = TextPage(title="Player Leaderboard", headers=["#", "Name", "Rating"])
+		embed = ctx.bot.embed(title=f"{guild.name} [Leader: {guild.leader}]")
 
-			for player in players:
-				row = [f"#{player.rank}", player.name, f"{player.rating:,}"]
+		embed.description = (
+			f"Rank: **#{guild.rank:02d}**\n"
+			f"Rating: **{guild.rating:,}**\n"
+			f"Member Count: **{guild.size:,}**"
+		)
 
-				page.add(row)
+		embed.add_field(name="Guild XP", value=f"{guild.guild_xp}/{guild.total_guild_xp}")
 
-			return page.get() if len(page.rows) > 0 else None
-
-		await DynamicPages([await create_page(0, 15)], callback).send(ctx)
+		await ctx.send(embed=embed)
 
 	@group.command(name="guilds")
 	async def show_guild_leaderboard(self, ctx):
@@ -86,14 +88,20 @@ class ABO(commands.Cog):
 		async def create_page(start, end):
 			guilds = await API.leaderboard.get_guilds(pos=start, count=end)
 
-			page = TextPage(title="Guild Leaderboard", headers=["#", "Name", "Rating"])
+			embed = ctx.bot.embed(title="Guild Leaderboard", author=ctx.author)
+
+			desc = []
 
 			for guild in guilds:
-				row = [f"#{guild.rank}", guild.name, f"{guild.rating:,}"]
+				name_len = 20 - len(str(guild.rank)) - 1
 
-				page.add(row)
+				s = f"#{guild.rank} {guild.name: <{name_len}} {guild.rating:,}"
 
-			return page.get() if len(page.rows) > 0 else None
+				desc.append(s)
+
+			embed.description = "```" + "\n".join(desc) + "```"
+
+			return embed if len(guilds) > 0 else None
 
 		await DynamicPages([await create_page(0, 15)], callback).send(ctx)
 
@@ -119,26 +127,32 @@ class ABO(commands.Cog):
 
 		await ctx.send(embed=embed)
 
-	@group.command(name="guild")
-	async def get_guild(self, ctx, *, name):
-		""" Show information about a guild. """
+	@group.command(name="players")
+	async def show_player_leaderboard(self, ctx):
+		""" Show the player leaderboard. """
 
-		guild = await API.leaderboard.get_guild(name)
+		async def callback(current: int, change, pages: list):
+			return await self.dynamic_leaderboard_callback(create_page, current, change, pages)
 
-		if guild is None:
-			return await ctx.send(f"I found no guild named `{name}`")
+		async def create_page(start, end):
+			players = await API.leaderboard.get_players(pos=start, count=end)
 
-		embed = ctx.bot.embed(title=f"{guild.name} [Leader: {guild.leader}]")
+			embed = ctx.bot.embed(title="Player Leaderboard", author=ctx.author)
 
-		embed.description = (
-			f"Rank: **#{guild.rank:02d}**\n"
-			f"Rating: **{guild.rating:,}**\n"
-			f"Member Count: **{guild.size:,}**"
-		)
+			desc = []
 
-		embed.add_field(name="Guild XP", value=f"{guild.guild_xp}/{guild.total_guild_xp}")
+			for player in players:
+				name_len = 20 - len(str(player.rank)) - 1
 
-		await ctx.send(embed=embed)
+				s = f"#{player.rank} {player.name: <{name_len}} {player.level} {player.rating:,}"
+
+				desc.append(s)
+
+			embed.description = "```" + "\n".join(desc) + "```"
+
+			return embed if len(players) > 0 else None
+
+		await DynamicPages([await create_page(0, 15)], callback).send(ctx)
 
 	@staticmethod
 	async def dynamic_leaderboard_callback(create_page, current: int, change, pages: list):
