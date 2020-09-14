@@ -33,7 +33,7 @@ EXTENSIONS = [
 
 class Bot(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix=self.get_prefix, case_insensitive=True, help_command=Help())
+        super().__init__(command_prefix=self.get_prefix, case_insensitive=True, help_command=Help(), owner_id=SNACCMAN)
 
         self.db = MongoClient().snaccV2
 
@@ -112,9 +112,6 @@ class Bot(commands.Bot):
     async def bot_check(self, ctx) -> bool:
         if not self.exts_loaded or ctx.guild is None or ctx.author.bot:
             raise GlobalCheckFail("Bot not ready.")
-
-        elif self.debug and ctx.author.id != SNACCMAN:
-            raise GlobalCheckFail("Bot is in Debug mode.")
 
         elif not self.has_permissions(ctx.channel, send_messages=True):
             raise GlobalCheckFail("Missing `Send Messages` permission.")

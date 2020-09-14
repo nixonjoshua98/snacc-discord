@@ -93,9 +93,9 @@ class ABO(commands.Cog):
 			desc = []
 
 			for guild in guilds:
-				name_len = 20 - len(str(guild.rank)) - 1
+				name_len = 20 - max(3, len(str(guild.rank))) - 1
 
-				s = f"#{guild.rank} {guild.name: <{name_len}} {guild.rating:,}"
+				s = f"#{str(guild.rank): <3} {guild.name: <{name_len}} {guild.rating:,}"
 
 				desc.append(s)
 
@@ -142,9 +142,9 @@ class ABO(commands.Cog):
 			desc = []
 
 			for player in players:
-				name_len = 20 - len(str(player.rank)) - 1
+				name_len = 20 - max(3, len(str(player.rank))) - 1
 
-				s = f"#{str(player.rank): <4} {player.name: <{name_len}} {player.level} {player.rating:,}"
+				s = f"#{str(player.rank): <3} {player.name: <{name_len}} {player.level} {player.rating:,}"
 
 				desc.append(s)
 
