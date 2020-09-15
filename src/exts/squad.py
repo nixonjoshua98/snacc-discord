@@ -31,11 +31,13 @@ class Squad(commands.Cog):
 		for hero in squad:
 			hero_inst = ChestHeroes.get(id=hero["hero"])
 
-			hero_level = utils.hero_xp_to_level(hero.get("xp", 0))
+			hero_level = hero_inst.xp_to_level(hero.get("xp", 0))
 
 			name = f"#{hero_inst.id:02d} [{hero_inst.grade}] {hero_inst.name: <20}"
 
-			embed.add_field(name=name, value=f"Level {hero_level}", inline=False)
+			value = f"Level {hero_level} | ATK {hero_inst.get_atk(hero)} | HP {hero_inst.get_hp(hero)}"
+
+			embed.add_field(name=name, value=value, inline=False)
 
 		await ctx.send(embed=embed)
 
@@ -127,8 +129,8 @@ class Squad(commands.Cog):
 
 				xp_gained = math.floor(random.randint(50, 100) * training_dur)
 
-				old_level = utils.hero_xp_to_level(hero.get("xp", 0))
-				new_level = utils.hero_xp_to_level(hero.get("xp", 0) + xp_gained)
+				old_level = hero_inst.xp_to_level(hero.get("xp", 0))
+				new_level = hero_inst.xp_to_level(hero.get("xp", 0) + xp_gained)
 
 				value = f"Gained **{xp_gained:,} XP**"
 

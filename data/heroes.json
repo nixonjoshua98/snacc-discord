@@ -1,218 +1,350 @@
 {
     "0": {
-        "name": "Snaccman",
-        "grade": "Z"
-    },
-    "7": {
-        "name": "Light Yagami",
-        "grade": "D"
-    },
-    "11": {
-        "name": "Kirigaya Kazuto",
-        "grade": "D"
-    },
-    "3": {
-        "name": "Edward Elric",
-        "grade": "D"
-    },
-    "14": {
-        "name": "Levi Ackerman",
-        "grade": "D"
-    },
-    "9": {
-        "name": "Rias Gremory",
-        "grade": "C"
-    },
-    "6": {
-        "name": "Death The Kid",
-        "grade": "C"
+        "atk": 999,
+        "grade": "Z",
+        "hp": 999,
+        "name": "Snaccman"
     },
     "1": {
-        "name": "Natsu Dragneel",
-        "grade": "C"
-    },
-    "8": {
-        "name": "Killua Zoldyck",
-        "grade": "B"
-    },
-    "5": {
-        "name": "Itachi Uchiha",
-        "grade": "B"
-    },
-    "10": {
-        "name": "Yato",
-        "grade": "B"
+        "atk": 167,
+        "grade": "C",
+        "hp": 297,
+        "name": "Natsu Dragneel"
     },
     "2": {
-        "name": "Saitama",
-        "grade": "B"
+        "atk": 245,
+        "grade": "B",
+        "hp": 265,
+        "name": "Saitama"
     },
-    "12": {
-        "name": "Shoto Todoroki",
-        "grade": "B"
-    },
-    "19": {
-        "name": "Ichigo Kurosaki",
-        "grade": "A"
+    "3": {
+        "atk": 120,
+        "grade": "D",
+        "hp": 239,
+        "name": "Edward Elric"
     },
     "4": {
-        "name": "Naruto",
-        "grade": "A"
+        "atk": 284,
+        "grade": "A",
+        "hp": 377,
+        "name": "Naruto"
     },
-    "15": {
-        "name": "Monkey D. Luffy",
-        "grade": "A"
+    "5": {
+        "atk": 214,
+        "grade": "B",
+        "hp": 301,
+        "name": "Itachi Uchiha"
     },
-    "16": {
-        "name": "Happy",
-        "grade": "F"
+    "6": {
+        "atk": 119,
+        "grade": "C",
+        "hp": 307,
+        "name": "Death The Kid"
     },
-    "17": {
-        "name": "Mumen Rider",
-        "grade": "E"
+    "7": {
+        "atk": 152,
+        "grade": "D",
+        "hp": 165,
+        "name": "Light Yagami"
     },
-    "18": {
-        "name": "Mob",
-        "grade": "S"
+    "8": {
+        "atk": 185,
+        "grade": "B",
+        "hp": 339,
+        "name": "Killua Zoldyck"
+    },
+    "9": {
+        "atk": 206,
+        "grade": "C",
+        "hp": 240,
+        "name": "Rias Gremory"
+    },
+    "10": {
+        "atk": 262,
+        "grade": "B",
+        "hp": 311,
+        "name": "Yato"
+    },
+    "11": {
+        "atk": 145,
+        "grade": "D",
+        "hp": 188,
+        "name": "Kirigaya Kazuto"
+    },
+    "12": {
+        "atk": 144,
+        "grade": "B",
+        "hp": 386,
+        "name": "Shoto Todoroki"
     },
     "13": {
-        "name": "Gon Freecss",
-        "grade": "S"
+        "atk": 346,
+        "grade": "S",
+        "hp": 360,
+        "name": "Gon Freecss"
+    },
+    "14": {
+        "atk": 87,
+        "grade": "D",
+        "hp": 237,
+        "name": "Levi Ackerman"
+    },
+    "15": {
+        "atk": 293,
+        "grade": "A",
+        "hp": 320,
+        "name": "Monkey D. Luffy"
+    },
+    "16": {
+        "atk": 40,
+        "grade": "F",
+        "hp": 80,
+        "name": "Happy"
+    },
+    "17": {
+        "atk": 54,
+        "grade": "E",
+        "hp": 161,
+        "name": "Mumen Rider"
+    },
+    "18": {
+        "atk": 318,
+        "grade": "S",
+        "hp": 428,
+        "name": "Mob"
+    },
+    "19": {
+        "atk": 211,
+        "grade": "A",
+        "hp": 451,
+        "name": "Ichigo Kurosaki"
     },
     "20": {
-        "name": "Sakura Haruno",
-        "grade": "E"
+        "atk": 126,
+        "grade": "E",
+        "hp": 142,
+        "name": "Sakura Haruno"
     },
     "21": {
-        "name": "L",
-        "grade": "C"
+        "atk": 139,
+        "grade": "C",
+        "hp": 294,
+        "name": "L"
     },
     "22": {
-        "name": "Kakashi Hatake",
-        "grade": "A"
+        "atk": 161,
+        "grade": "A",
+        "hp": 485,
+        "name": "Kakashi Hatake"
     },
     "23": {
-        "name": "Lelouch Lamperouge",
-        "grade": "B"
+        "atk": 197,
+        "grade": "B",
+        "hp": 358,
+        "name": "Lelouch Lamperouge"
     },
     "24": {
-        "name": "Ryuk",
-        "grade": "D"
+        "atk": 148,
+        "grade": "D",
+        "hp": 181,
+        "name": "Ryuk"
     },
     "25": {
-        "name": "Erza Scarlet",
-        "grade": "A"
+        "atk": 279,
+        "grade": "A",
+        "hp": 362,
+        "name": "Erza Scarlet"
     },
     "26": {
-        "name": "Gaara",
-        "grade": "C"
+        "atk": 111,
+        "grade": "C",
+        "hp": 305,
+        "name": "Gaara"
     },
     "27": {
-        "name": "Asuna Yuuki",
-        "grade": "D"
+        "atk": 88,
+        "grade": "D",
+        "hp": 218,
+        "name": "Asuna Yuuki"
     },
     "28": {
-        "name": "Jiraiya",
-        "grade": "C"
+        "atk": 126,
+        "grade": "C",
+        "hp": 324,
+        "name": "Jiraiya"
     },
     "29": {
-        "name": "Rin Okumura",
-        "grade": "D"
+        "atk": 92,
+        "grade": "D",
+        "hp": 245,
+        "name": "Rin Okumura"
     },
     "30": {
-        "name": "Kisuke Urahara",
-        "grade": "A"
+        "atk": 155,
+        "grade": "A",
+        "hp": 453,
+        "name": "Kisuke Urahara"
     },
     "31": {
-        "name": "Sasuke Uchiha",
-        "grade": "S"
+        "atk": 216,
+        "grade": "S",
+        "hp": 505,
+        "name": "Sasuke Uchiha"
     },
     "32": {
-        "name": "Lucy Heartfilia",
-        "grade": "E"
+        "atk": 87,
+        "grade": "E",
+        "hp": 125,
+        "name": "Lucy Heartfilia"
     },
     "33": {
-        "name": "Goku Son",
-        "grade": "S"
+        "atk": 185,
+        "grade": "S",
+        "hp": 537,
+        "name": "Goku Son"
     },
     "34": {
-        "name": "Ken Kaneki",
-        "grade": "A"
+        "atk": 235,
+        "grade": "A",
+        "hp": 428,
+        "name": "Ken Kaneki"
     },
     "35": {
-        "name": "Rock Lee",
-        "grade": "C"
+        "atk": 183,
+        "grade": "C",
+        "hp": 288,
+        "name": "Rock Lee"
     },
     "36": {
-        "name": "Ulquiorra Schiffer",
-        "grade": "B"
+        "atk": 174,
+        "grade": "B",
+        "hp": 326,
+        "name": "Ulquiorra Schiffer"
     },
     "37": {
-        "name": "Saber",
-        "grade": "A"
+        "atk": 262,
+        "grade": "A",
+        "hp": 410,
+        "name": "Saber"
     },
     "38": {
-        "name": "Shiro",
-        "grade": "C"
+        "atk": 145,
+        "grade": "C",
+        "hp": 324,
+        "name": "Shiro"
     },
     "39": {
-        "name": "Sora",
-        "grade": "C"
+        "atk": 169,
+        "grade": "C",
+        "hp": 258,
+        "name": "Sora"
     },
     "40": {
-        "name": "Izuku Midoriya",
-        "grade": "B"
+        "atk": 235,
+        "grade": "B",
+        "hp": 340,
+        "name": "Izuku Midoriya"
     },
     "41": {
-        "name": "Black Star",
-        "grade": "B"
+        "atk": 209,
+        "grade": "B",
+        "hp": 331,
+        "name": "Black Star"
     },
     "42": {
-        "name": "Misa Amane",
-        "grade": "F"
+        "atk": 62,
+        "grade": "F",
+        "hp": 70,
+        "name": "Misa Amane"
     },
     "43": {
-        "name": "Yuzuru Otonashi",
-        "grade": "E"
+        "atk": 95,
+        "grade": "E",
+        "hp": 115,
+        "name": "Yuzuru Otonashi"
     },
     "44": {
-        "name": "Shinigami",
-        "grade": "A"
+        "atk": 169,
+        "grade": "A",
+        "hp": 431,
+        "name": "Shinigami"
     },
     "45": {
-        "name": "Sasha Braus",
-        "grade": "E"
+        "atk": 99,
+        "grade": "E",
+        "hp": 175,
+        "name": "Sasha Braus"
     },
     "46": {
-        "name": "Hisoka Morrow",
-        "grade": "S"
+        "atk": 218,
+        "grade": "S",
+        "hp": 509,
+        "name": "Hisoka Morrow"
     },
     "47": {
-        "name": "Gintoki Sakata",
-        "grade": "B"
+        "atk": 184,
+        "grade": "B",
+        "hp": 318,
+        "name": "Gintoki Sakata"
     },
     "48": {
-        "name": "Nami",
-        "grade": "D"
+        "atk": 112,
+        "grade": "D",
+        "hp": 218,
+        "name": "Nami"
     },
     "49": {
-        "name": "Shanks",
-        "grade": "B"
+        "atk": 228,
+        "grade": "B",
+        "hp": 342,
+        "name": "Shanks"
     },
     "50": {
-        "name": "Klein",
-        "grade": "E"
+        "atk": 96,
+        "grade": "E",
+        "hp": 119,
+        "name": "Klein"
     },
     "51": {
-        "name": "Rin Tohsaka",
-        "grade": "C"
+        "atk": 107,
+        "grade": "C",
+        "hp": 306,
+        "name": "Rin Tohsaka"
     },
     "52": {
-        "name": "Orihime Inoue",
-        "grade": "E"
+        "atk": 91,
+        "grade": "E",
+        "hp": 121,
+        "name": "Orihime Inoue"
     },
     "53": {
-        "name": "Karma Akabane",
-        "grade": "C"
+        "atk": 229,
+        "grade": "C",
+        "hp": 239,
+        "name": "Karma Akabane"
+    },
+    "54": {
+        "atk": 276,
+        "grade": "S",
+        "hp": 456,
+        "name": "Koro-sensei"
+    },
+    "55": {
+        "atk": 171,
+        "grade": "A",
+        "hp": 484,
+        "name": "Roronoa Zoro"
+    },
+    "56": {
+        "atk": 149,
+        "grade": "C",
+        "hp": 320,
+        "name": "C.C."
+    },
+    "57": {
+        "atk": 66,
+        "grade": "F",
+        "hp": 104,
+        "name": "Yuno Gasai"
     }
 }

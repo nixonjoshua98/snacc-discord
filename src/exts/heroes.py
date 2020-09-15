@@ -1,21 +1,21 @@
+import itertools
+
 from pymongo import UpdateOne
 
 from discord.ext import commands
-
-from src import utils
 
 from src.structs.confirm import Confirm
 from src.structs.displaypages import DisplayPages
 
 from src.common.heroes import HeroChests, ChestHeroes
-from src.common.converters import HeroFromChest, Range
+from src.common.converters import HeroFromChest, Range, ValidHeroChest
 
 
 class Heroes(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-	@commands.group(name="heroes", aliases=["hero", "h"], invoke_without_command=True)
+	@commands.group(name="heroes", aliases=["h"], invoke_without_command=True)
 	async def show_heroes(self, ctx):
 		""" View your owned heroes. """
 
@@ -26,7 +26,7 @@ class Heroes(commands.Cog):
 		if not heroes:
 			return await ctx.send("You do not currently own any heroes.")
 
-		embeds, chunks = [], [heroes[i:i + 9] for i in range(0, len(heroes), 9)]
+		embeds, chunks = [], [heroes[i:i + 8] for i in range(0, len(heroes), 8)]
 
 		for i, chunk in enumerate(chunks):
 			embed = ctx.bot.embed(title=f"Your Heroes [Page {i + 1}/{len(chunks)}]", author=ctx.author)
@@ -35,23 +35,26 @@ class Heroes(commands.Cog):
 
 			embeds.append(embed)
 
-			for hero in chunk:
+			for j, hero in enumerate(chunk, start=1):
 				hero_inst = ChestHeroes.get(id=hero["hero"])
 
-				hero_level = utils.hero_xp_to_level(hero.get("xp", 0))
+				hero_level = hero_inst.xp_to_level(hero.get("xp", 0))
 
 				name = f"#{hero_inst.id:02d} | [{hero_inst.grade}] {hero_inst.name}"
 
-				embed.add_field(name=name, value=f"Owned {hero['owned']} | Level {hero_level}")
+				value = (
+					f"Owned {hero['owned']} | Level {hero_level} | "
+					f"ATK {hero_inst.get_atk(hero)} | HP {hero_inst.get_hp(hero)}"
+				)
+
+				embed.add_field(name=name, value=value, inline=False)
 
 		await DisplayPages(embeds).send(ctx)
 
 	@show_heroes.command(name="chest")
 	@commands.has_permissions(add_reactions=True)
-	async def hero_chests(self, ctx, amount: Range(1, 5) = 1):
+	async def hero_chests(self, ctx, chest: ValidHeroChest(), amount: Range(1, 10) = 1):
 		""" Open a hero chest. """
-
-		chest = HeroChests.get(id=0)
 
 		cost = chest.cost * amount
 
@@ -112,6 +115,30 @@ class Heroes(commands.Cog):
 
 			else:
 				await ctx.send("Hero sale aborted")
+
+	@show_heroes.command(name="chests")
+	async def show_chests(self, ctx):
+		""" Show information about each hero chest. """
+
+		embed = ctx.bot.embed(title="Hero Chests")
+
+		for chest in HeroChests.ALL:
+			full_weight = sum([hero.weight for hero in chest.all])
+
+			value = []
+
+			for grade, heroes in itertools.groupby(chest.all, lambda h: h.grade):
+				heroes = list(heroes)
+
+				total_weight = sum([h.weight for h in heroes])
+
+				value.append(f"{grade} {round((total_weight / full_weight) * 100, 1)}%")
+
+			name = f"{chest.id} | {chest.name} [${chest.cost:,}]"
+
+			embed.add_field(name=name, value=f"`{' '.join(value)}`", inline=False)
+
+		await ctx.send(embed=embed)
 
 
 def setup(bot):

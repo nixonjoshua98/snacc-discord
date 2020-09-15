@@ -1,6 +1,6 @@
 import discord
 import random
-import itertools
+import math
 import json
 import os
 
@@ -21,49 +21,86 @@ class HeroChest:
 
 		HeroChest.__ids.add(self.id)
 
+	@property
+	def all(self): return ChestHeroes.ALL_HEROES
 
-class NormalHeroChest(HeroChest):
-	def open(self, n):
-		weights = [hero.weight for hero in ChestHeroes.ALL_HEROES]
+	def open(self, n): return Counter(random.choices(self.all, weights=[hero.weight for hero in self.all], k=n))
 
-		return Counter(random.choices(ChestHeroes.ALL_HEROES, weights=weights, k=n))
+
+class WoodenHeroChest(HeroChest):
+
+	@property
+	def all(self): return [hero for hero in ChestHeroes.ALL_HEROES if hero.grade in "DEF"]
+
+
+class BronzeHeroChest(HeroChest):
+
+	@property
+	def all(self): return [hero for hero in ChestHeroes.ALL_HEROES if hero.grade in "ABC"]
+
+
+class IronHeroChest(HeroChest):
+
+	@property
+	def all(self): return [hero for hero in ChestHeroes.ALL_HEROES if hero.grade in "ZSA"]
 
 
 class HeroChests:
-	_ALL = (
-		NormalHeroChest(0, name="Normal Hero Chest", cost=7_500),
+	ALL = (
+		WoodenHeroChest(1, name="Wooden Hero Chest", cost=5_000),
+		BronzeHeroChest(2, name="Bronze Hero Chest", cost=10_000),
+		IronHeroChest(3, name="Iron Hero Chest", cost=25_000),
 	)
 
 	@classmethod
-	def get(cls, **kwargs): return discord.utils.get(cls._ALL, **kwargs)
+	def get(cls, **kwargs): return discord.utils.get(cls.ALL, **kwargs)
 
 
 class Hero:
 	__ids = set()
 
-	def __init__(self, _id, *, name, grade, icon=None):
+	PRICES = {"Z": 50_000, "S": 27_500, "A": 17_500, "B": 12_500, "C": 7_500, "D": 5_500, "E": 3_000, "F": 1_500}
+	WEIGHTS = {"Z": 2, "S": 10, "A": 15, "B": 25, "C": 35, "D": 45, "E": 40, "F": 50}
+
+	def __init__(self, _id, *, name, grade, atk, hp, icon=None):
 		self.id = int(_id)
 
 		self.name = name
 		self.grade = grade
 		self.icon = icon
 
+		self.atk = atk
+		self.hp = hp
+
 		if self.id in Hero.__ids:
 			raise KeyError(f"Hero ID '{self.id}' is not unique.")
 
 		Hero.__ids.add(self.id)
 
-	@property
-	def sell_price(self):
-		return {
-			"Z": 0, "S": 10_000, "A": 8_000, "B": 5_500, "C": 4_000, "D": 3_000, "E": 2_000, "F": 1_000
-		}.get(self.grade, 0)
+	def xp_to_level(self, xp):
+		lvl = 1
+
+		while xp > 0:
+			if (xp := xp - (100 + (10 * lvl))) >= 0:
+				lvl += 1
+
+		return lvl
+
+	def get_atk(self, hero_row):
+		level = self.xp_to_level(hero_row.get("xp", 0)) - 1
+
+		return math.floor(self.atk * (1.0 + (level * 0.01)))
+
+	def get_hp(self, hero_row):
+		level = self.xp_to_level(hero_row.get("xp", 0)) - 1
+
+		return math.floor(self.hp * (1.0 + (level * 0.01)))
 
 	@property
-	def weight(self):
-		return {
-			"Z": 3, "S": 10, "A": 15, "B": 25, "C": 35, "D": 40, "E": 45, "F": 50
-		}.get(self.grade, 0)
+	def sell_price(self): return self.PRICES.get(self.grade, 0)
+
+	@property
+	def weight(self): return self.WEIGHTS.get(self.grade, 0)
 
 
 class ChestHeroes:
@@ -72,20 +109,7 @@ class ChestHeroes:
 
 		ALL_HEROES = tuple(Hero(_id, **kwargs) for _id, kwargs in data.items())
 
-	ALL_HEROES = sorted(ALL_HEROES, key=lambda h: "ZSABCDEF".index(h.grade))
+	ALL_HEROES = sorted(ALL_HEROES, key=lambda h: "Z S A B C D E F".index(h.grade))
 
 	@classmethod
 	def get(cls, **kwargs): return discord.utils.get(cls.ALL_HEROES, **kwargs)
-
-
-weights = sum([hero.weight for hero in ChestHeroes.ALL_HEROES])
-
-
-for grade, heroes in itertools.groupby(ChestHeroes.ALL_HEROES, lambda h: h.grade):
-	heroes = list(heroes)
-
-	total_weight = sum([h.weight for h in heroes])
-
-	# print(f"{grade} -> {str(round((total_weight / weights) * 100, 1)) + '%': <5}", end=" | ")
-
-

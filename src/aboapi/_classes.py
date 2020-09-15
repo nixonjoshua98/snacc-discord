@@ -8,7 +8,7 @@ class _Object:
 		return f"{self.__class__.__name__}({', '.join((f'{k}={getattr(self, k)}' for k in self.__slots__))})"
 
 
-class PlayerObject(_Object):
+class _PlayerObject(_Object):
 
 	@staticmethod
 	def get_last_active(timestamp):
@@ -19,7 +19,7 @@ class PlayerObject(_Object):
 		return dt.timedelta(seconds=int((now - update_time).total_seconds()))
 
 
-class LeaderboardPlayer(PlayerObject):
+class LeaderboardPlayer(_PlayerObject):
 	__slots__ = ("name", "rank", "level", "rating", "guild", "last_active", "guild_xp", "total_guild_xp")
 
 	def __init__(self, **kwargs):
