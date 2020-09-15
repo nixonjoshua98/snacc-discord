@@ -111,5 +111,7 @@ class ChestHeroes:
 
 	ALL_HEROES = sorted(ALL_HEROES, key=lambda h: "Z S A B C D E F".index(h.grade))
 
+	ALL_GRADES = sorted(set(h.grade for h in ALL_HEROES), key=lambda g: "Z S A B C D E F".index(g))
+
 	@classmethod
 	def get(cls, **kwargs): return discord.utils.get(cls.ALL_HEROES, **kwargs)

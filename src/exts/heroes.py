@@ -28,10 +28,25 @@ class Heroes(commands.Cog):
 
 		embeds, chunks = [], [heroes[i:i + 8] for i in range(0, len(heroes), 8)]
 
+		# - Initial Embed
+		embed = ctx.bot.embed(title=f"Your Hero Collection", author=ctx.author)
+
+		desc = [f"**Collected: {len(heroes)}/{len(ChestHeroes.ALL_HEROES)}**\n"]
+
+		for grade in ChestHeroes.ALL_GRADES:
+			num_heroes = len([h for h in ChestHeroes.ALL_HEROES if h.grade == grade])
+
+			num_owned_heroes = len([row for row in heroes if ChestHeroes.get(id=row["hero"]).grade == grade])
+
+			desc.append(f"`{grade} {f'{num_owned_heroes}/{num_heroes:}': <6}`")
+
+		embed.description = "\n".join(desc)
+
+		embeds.append(embed)
+		# -
+
 		for i, chunk in enumerate(chunks):
 			embed = ctx.bot.embed(title=f"Your Heroes [Page {i + 1}/{len(chunks)}]", author=ctx.author)
-
-			embed.description = f"**Collected: {len(heroes)}/{len(ChestHeroes.ALL_HEROES)}**"
 
 			embeds.append(embed)
 

@@ -55,7 +55,7 @@ class Darkness(commands.Cog):
 
 	@checks.in_server(DarknessServer.ID)
 	@commands.has_role(DarknessServer.DARKNESS_ROLE)
-	@commands.command(name="guild", aliases=["history"])
+	@commands.command(name="history")
 	async def show_history(self, ctx, *, role: discord.Role = None):
 		""" Show the guild history, sorted by the rating gained the past week. """
 

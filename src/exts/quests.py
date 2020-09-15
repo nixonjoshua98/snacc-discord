@@ -118,7 +118,7 @@ class Quests(commands.Cog):
 
 				loot = quest_instance.get_loot(current_quest["success_rate"])
 
-				embed.description = f"Quest completed!\n\nYou have been rewarded **${reward:,}**"
+				embed.description = f"Quest completed!\nYou have been rewarded **${reward:,}**"
 
 				if loot:
 					requests, value = [], []
