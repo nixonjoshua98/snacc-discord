@@ -50,7 +50,7 @@ class Battles(commands.Cog):
 		""" Attempt to steal from another user. """
 
 		def calculate_money_lost(bank):
-			min_val, max_val = int(bank.get("usd", 0) * 0.025), int(bank.get("usd", 0) * 0.05)
+			min_val, max_val = int(bank.get("usd", 0) * 0.05), int(bank.get("usd", 0) * 0.075)
 
 			return random.randint(max(0, min_val), max(0, max_val))
 
@@ -125,7 +125,7 @@ class Battles(commands.Cog):
 
 			# - Create the message to return to Discord
 			val = f"${pillaged:,} {f'**+ ${bonus:,} bonus**' if bonus > 0 else ''}"
-			title = f"Attack on {target_empire.get('name', target.display_name)}"
+			title = f"Attack on '{target_empire.get('name', target.display_name)}'"
 
 			embed = ctx.bot.embed(title=title, author=ctx.author, description=f"**Money Pillaged:** {val}")
 
@@ -181,12 +181,13 @@ class Battles(commands.Cog):
 
 	@staticmethod
 	async def update_battle_cooldown(ctx, target, *, multiplier: float = 1.0):
-		in_past = (now := dt.datetime.utcnow()) - dt.timedelta(seconds=BattleValues.COOLDOWN * multiplier)
+		target_time = dt.datetime.utcnow() - dt.timedelta(seconds=BattleValues.COOLDOWN * multiplier)
+		author_time = dt.datetime.utcnow() - dt.timedelta(seconds=BattleValues.COOLDOWN)
 
 		await ctx.bot.db["empires"].bulk_write(
 			[
-				UpdateOne({"_id": target.id}, {"$set": {"last_battle": now}}, upsert=True),
-				UpdateOne({"_id": ctx.author.id}, {"$set": {"last_battle": in_past}}, upsert=True),
+				UpdateOne({"_id": target.id}, {"$set": {"last_battle": target_time}}, upsert=True),
+				UpdateOne({"_id": ctx.author.id}, {"$set": {"last_battle": author_time}}, upsert=True),
 			]
 		)
 

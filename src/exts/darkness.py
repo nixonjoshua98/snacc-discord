@@ -44,7 +44,7 @@ class Darkness(commands.Cog):
 
 			update_users_loop.start()
 
-	@checks.in_server(DarknessServer.ID)
+	@commands.has_role(DarknessServer.DARKNESS_ROLE)
 	@commands.command(name="trophies", aliases=["rating"])
 	async def show_guild(self, ctx, *, role: discord.Role = None):
 		""" Show the guild history, sorted by player rating. """
@@ -53,7 +53,26 @@ class Darkness(commands.Cog):
 
 		await DisplayPages(pages).send(ctx)
 
-	@checks.in_server(DarknessServer.ID)
+	@commands.is_owner()
+	@commands.command(name="recruit")
+	async def recruit_ad(self, ctx):
+		""" Post the guild advert. """
+
+		embed = ctx.bot.embed(title="Darkness Family", author=ctx.author)
+
+		embed.description = "\n".join(
+			(
+				"• Darkness Corp",
+				"• Darkness Inc",
+				"• Darkness Co",
+			)
+		)
+
+		embed.add_field(name="Recruiting", value="2K+ rating")
+		embed.add_field(name="Server", value="https://discord.gg/2bpnwH3")
+
+		await ctx.send(embed=embed)
+
 	@commands.has_role(DarknessServer.DARKNESS_ROLE)
 	@commands.command(name="history")
 	async def show_history(self, ctx, *, role: discord.Role = None):
