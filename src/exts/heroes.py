@@ -105,6 +105,7 @@ class Heroes(commands.Cog):
 
 		await ctx.send(embed=embed)
 
+	@commands.max_concurrency(1, commands.BucketType.user)
 	@show_heroes.command(name="sell")
 	async def sell_hero(self, ctx, hero: HeroFromChest(), amount: Range(1, None) = 1):
 		""" Sell your heroes. """
