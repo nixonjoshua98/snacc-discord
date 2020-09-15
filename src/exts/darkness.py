@@ -1,5 +1,4 @@
 import discord
-import asyncio
 
 import datetime as dt
 
@@ -9,7 +8,7 @@ from pymongo import InsertOne, DeleteMany
 
 from src.aboapi import API
 
-from src.common import checks, DarknessServer
+from src.common import DarknessServer
 
 from src.structs import TextPage
 from src.structs.displaypages import DisplayPages
@@ -52,26 +51,6 @@ class Darkness(commands.Cog):
 		pages = await self.create_guild_page(ctx, role=role, sort_by="rating")
 
 		await DisplayPages(pages).send(ctx)
-
-	@commands.is_owner()
-	@commands.command(name="recruit")
-	async def recruit_ad(self, ctx):
-		""" Post the guild advert. """
-
-		embed = ctx.bot.embed(title="Darkness Family", author=ctx.author)
-
-		embed.description = "\n".join(
-			(
-				"• Darkness Corp",
-				"• Darkness Inc",
-				"• Darkness Co",
-			)
-		)
-
-		embed.add_field(name="Recruiting", value="2K+ rating")
-		embed.add_field(name="Server", value="https://discord.gg/2bpnwH3")
-
-		await ctx.send(embed=embed)
 
 	@commands.has_role(DarknessServer.DARKNESS_ROLE)
 	@commands.command(name="history")
@@ -174,7 +153,9 @@ class Darkness(commands.Cog):
 			page = TextPage(title="Guild Members history", headers=["Username", "XP", "Level", "Rating"])
 
 			for row in chunk:
-				page_row = [row["abo_name"], "0(0)", row["level"], f"{row['rating']}({row['rating_diff']})"]
+				levels = f"{row['level']}({row['levels_diff']})"
+
+				page_row = [row["abo_name"], "0(0)", levels, f"{row['rating']}({row['rating_diff']})"]
 
 				page.add(page_row)
 

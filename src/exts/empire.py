@@ -151,7 +151,7 @@ class Empire(commands.Cog):
 			income = int(utils.net_income(empire) * hours)
 
 			if bank_row.get("usd", 0) >= 250_000 and income > 0:
-				income *= 0.4
+				income = int(income * 0.4)
 
 			requests.append(UpdateOne({"_id": empire["_id"]}, {"$inc": {"usd": income}}, upsert=True))
 
