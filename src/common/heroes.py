@@ -59,7 +59,7 @@ class HeroChests:
 class Hero:
 	__ids = set()
 
-	PRICES = {"Z": 50_000, "S": 27_500, "A": 17_500, "B": 12_500, "C": 7_500, "D": 5_500, "E": 3_000, "F": 1_500}
+	PRICES = {"Z": 50_000, "S": 25_000, "A": 15_000, "B": 12_500, "C": 7_500, "D": 5_500, "E": 3_000, "F": 1_500}
 	WEIGHTS = {"Z": 2, "S": 10, "A": 15, "B": 25, "C": 35, "D": 45, "E": 40, "F": 50}
 
 	def __init__(self, _id, *, name, grade, atk, hp, icon=None):
