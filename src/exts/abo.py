@@ -3,14 +3,11 @@ import discord
 
 from discord.ext import commands
 
-from src import utils
-
 from src.aboapi import API
 
 from src.common import DarknessServer
 
 from src.structs.confirm import Confirm
-from src.structs.textpage import TextPage
 from src.structs.dynamicpages import DynamicPages
 
 
