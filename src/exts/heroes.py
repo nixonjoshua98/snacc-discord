@@ -111,7 +111,7 @@ class Heroes(commands.Cog):
 
 		hero_entry = await ctx.bot.db["heroes"].find_one({"user": ctx.author.id, "hero": hero.id})
 
-		if hero_entry is None or hero_entry.get("owned", 0) + 1 <= amount:
+		if hero_entry is None or hero_entry.get("owned", 0) <= amount + 1:
 			await ctx.send(f"You do not have **{amount:,}x** duplicates of **#{hero.id}** available to sell")
 
 		else:
