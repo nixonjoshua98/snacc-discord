@@ -18,8 +18,7 @@ from src.structs.mongoclient import MongoClient
 EXTENSIONS = [
     "server_741225832994832427",
 
-    "errorhandler",     "info",             "darkness",
-    "abo",
+    "errorhandler",     "info",
     "empire",           "heroes",           "squad",
     "quests",
     "shop",             "units",            "battles",
