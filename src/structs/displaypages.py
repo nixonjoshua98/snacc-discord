@@ -28,7 +28,7 @@ class DisplayPages(menus.Menu):
 		return super(DisplayPages, self).reaction_check(payload)
 
 	async def on_reaction_extra(self, payload, index_change):
-		self.current += index_change
+		self.current = max(0, min(len(self.pages), self.current + index_change))
 
 	async def on_reaction(self, payload, index_change):
 		await self.on_reaction_extra(payload, index_change)

@@ -92,8 +92,6 @@ class Darkness(commands.Cog):
 
 		await self.bot.db["arena"].bulk_write(requests)
 
-		await self.bot.db["abo_history"].bulk_write(requests)
-
 		return missing_usernames
 
 	async def create_guild_page(self, ctx, *, role, sort_by="rating_diff"):
@@ -119,6 +117,8 @@ class Darkness(commands.Cog):
 						"level": {"$last":  "$level"}, "old_level": {"$first": "$level"},
 
 						"rating": {"$last":  "$rating"}, "old_rating": {"$first": "$rating"},
+
+						"guild_xp": {"$last": "$guild_xp"}, "old_guild_xp": {"$first": "$guild_xp"},
 					}
 				},
 
@@ -135,10 +135,11 @@ class Darkness(commands.Cog):
 				},
 				{
 					"$project": {
-						"level": 1, "rating": 1, "abo_name": "$player.abo_name",
+						"level": 1, "rating": 1, "guild_xp": 1, "abo_name": "$player.abo_name",
 
 						"levels_diff": {"$subtract": ["$level", "$old_level"]},
-						"rating_diff": {"$subtract": ["$rating", "$old_rating"]}
+						"rating_diff": {"$subtract": ["$rating", "$old_rating"]},
+						"guild_xp_diff": {"$subtract": ["$guild_xp", "$old_guild_xp"]}
 					}
 				}
 			]
@@ -154,8 +155,10 @@ class Darkness(commands.Cog):
 
 			for row in chunk:
 				levels = f"{row['level']}({row['levels_diff']})"
+				rating = f"{row['rating']}({row['rating_diff']})"
+				xp = f"{row['guild_xp']}({row['guild_xp_diff']})"
 
-				page_row = [row["abo_name"], "0(0)", levels, f"{row['rating']}({row['rating_diff']})"]
+				page_row = [row["abo_name"], xp, levels, rating]
 
 				page.add(page_row)
 
