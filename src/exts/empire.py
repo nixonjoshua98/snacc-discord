@@ -26,7 +26,6 @@ class Empire(commands.Cog):
 
 		self.income_loop.start()
 
-
 	@checks.no_empire()
 	@commands.command(name="create")
 	@commands.max_concurrency(1, commands.BucketType.user)
