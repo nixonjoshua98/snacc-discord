@@ -20,12 +20,7 @@ class Vote(commands.Cog):
 		if data["type"] == "upvote" and data["bot"] == self.bot.user.id:
 			user_id = data["user"]
 
-			# - isWeekend or is_weekend?
-			num_votes = 1 if not data.get("isWeekend", data.get("is_weekend")) else 2
-
 			user = self.bot.get_user(user_id)
-
-			await self.bot.db["players"].update_one({"_id": user_id}, {"$inc": {"votes": num_votes}}, upsert=True)
 
 			if user is not None:
 				support_server = self.bot.get_guild(SupportServer.ID)

@@ -26,10 +26,6 @@ class Empire(commands.Cog):
 
 		self.income_loop.start()
 
-	async def cog_after_invoke(self, ctx):
-		now = dt.datetime.utcnow()
-
-		await ctx.bot.db["players"].update_one({"_id": ctx.author.id}, {"$set": {"last_login": now}}, upsert=True)
 
 	@checks.no_empire()
 	@commands.command(name="create")
