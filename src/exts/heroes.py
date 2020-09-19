@@ -94,10 +94,10 @@ class Heroes(commands.Cog):
 
 		embed = ctx.bot.embed(title=chest.name, description=desc, author=ctx.author)
 
-		for hero, opened in new_heroes.items():
-			requests.append(UpdateOne({"user": ctx.author.id, "hero": hero.id}, {"$inc": {"owned": 1}}, upsert=True))
+		for hero, n in new_heroes.items():
+			requests.append(UpdateOne({"user": ctx.author.id, "hero": hero.id}, {"$inc": {"owned": n}}, upsert=True))
 
-			desc.append(f"You pulled **{opened}x #{hero.id:02d} {hero.name} [{hero.grade}]**")
+			desc.append(f"You pulled **{n}x #{hero.id:02d} {hero.name} [{hero.grade}]**")
 
 		embed.description = "\n".join(desc)
 
