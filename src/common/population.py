@@ -124,11 +124,11 @@ class Workers(UnitGroup):
 		WorkerUnit(income=35, 	key="baker"),
 		WorkerUnit(income=40, 	key="blacksmith"),
 		WorkerUnit(income=45, 	key="cook"),
-		WorkerUnit(income=50, 	key="winemaker"),
-		WorkerUnit(income=55, 	key="shoemaker"),
-		WorkerUnit(income=60, 	key="falconer"),
-		WorkerUnit(income=65, 	key="carpenter"),
-		WorkerUnit(income=70, 	key="merchant"),
+		WorkerUnit(income=55, 	key="winemaker"),
+		WorkerUnit(income=60, 	key="shoemaker"),
+		WorkerUnit(income=65, 	key="falconer"),
+		WorkerUnit(income=70, 	key="carpenter"),
+		WorkerUnit(income=75, 	key="merchant"),
 	)
 
 	@classmethod
