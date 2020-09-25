@@ -1,6 +1,8 @@
 import asyncio
 import discord
 
+import datetime as dt
+
 from discord.ext import commands
 
 from src.common import checks
@@ -51,35 +53,42 @@ class Moderator(commands.Cog):
 	@checks.is_mod()
 	@commands.max_concurrency(1, commands.BucketType.channel)
 	@commands.bot_has_permissions(manage_messages=True)
-	@commands.command(name="purge", usage="<user=None> <limit=0>", cooldown_after_parsing=True)
-	async def purge(self, ctx, user: Optional[discord.Member] = None, limit: Range(0, 100) = 0):
-		""" Clear a channel of messages. """
+	@commands.command(name="purge", usage="<user> <num>")
+	async def purge_command(self, ctx, user: Optional[discord.Member] = None, amount: Range(1, 10) = 0):
+		""" Purge messages from channel. Checks up to **7** days in the past or **250** messages. """
 
-		async def target_user():
-			messages_deleted = 0
+		seven_days_ago = dt.datetime.utcnow() - dt.timedelta(days=7)
 
-			async for msg in ctx.channel.history(limit=500):
-				if messages_deleted >= limit:
+		async def purge():
+			messages = []
+
+			async for msg in ctx.channel.history(limit=250, after=seven_days_ago, oldest_first=False):
+				if len(messages) >= amount:
 					break
 
-				elif msg.author.id == user.id:
-					await msg.delete()
+				elif msg.id == ctx.message.id:
+					continue
 
-					messages_deleted += 1
+				elif user is None or msg.author.id == user.id:
+					messages.append(msg)
 
-			return messages_deleted
+			# We can only bulk delete a max of 100 messages
+			await ctx.channel.delete_messages(messages)
 
-		if user is None:
-			if (deleted := len(await ctx.channel.purge(limit=limit))) > 0:
-				self.log_action(ctx, title=f"Channel Purge [{deleted} message(s)]", channel=ctx.channel.mention)
+			return len(messages)
 
-		else:
-			if (deleted := await target_user()) > 0:
-				chnl = ctx.channel.mention
+		deleted = await purge()
 
-				self.log_action(ctx, title=f"Channel Purge [{deleted} message(s)]", channel=chnl, user=user.mention)
+		if user is None and deleted > 0:
+			self.log_action(ctx, title=f"Channel Purge [{deleted} message(s)]", channel=ctx.channel.mention)
+
+		elif user is not None and deleted > 0:
+			chnl = ctx.channel.mention
+
+			self.log_action(ctx, title=f"Channel Purge [{deleted} message(s)]", channel=chnl, user=user.mention)
 
 		await ctx.send(f"Deleted {deleted:,} message(s)")
+
 
 
 def setup(bot):
