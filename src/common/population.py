@@ -181,10 +181,10 @@ class Military(UnitGroup):
 		MilitaryUnit(upkeep=25, 	key="soldier"),
 		MilitaryUnit(upkeep=40, 	key="thief"),
 		MilitaryUnit(upkeep=45, 	key="spearman"),
-		MilitaryUnit(upkeep=60, 	key="cavalry"),
-		MilitaryUnit(upkeep=65, 	key="warrior"),
-		MilitaryUnit(upkeep=75, 	key="archer"),
-		MilitaryUnit(upkeep=90,		key="knight"),
+		MilitaryUnit(upkeep=50, 	key="cavalry"),
+		MilitaryUnit(upkeep=60, 	key="warrior"),
+		MilitaryUnit(upkeep=70, 	key="archer"),
+		MilitaryUnit(upkeep=80,		key="knight"),
 	)
 
 	@classmethod

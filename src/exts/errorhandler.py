@@ -9,7 +9,7 @@ from discord.ext.commands import (
     CommandOnCooldown,
     MissingRequiredArgument,
     MissingRole,
-    NotOwner
+    NotOwner,
 )
 
 from src.common.errors import (

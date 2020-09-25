@@ -12,7 +12,7 @@ from typing import Optional
 class Moderator(commands.Cog):
 	__override_channel_whitelist__ = True
 
-	async def log_action(self, ctx, *, title, **kwargs):
+	def log_action(self, ctx, *, title, **kwargs):
 		async def log_action_task():
 			svr = await ctx.bot.db["servers"].find_one({"_id": ctx.guild.id}) or dict()
 
@@ -55,19 +55,31 @@ class Moderator(commands.Cog):
 	async def purge(self, ctx, user: Optional[discord.Member] = None, limit: Range(0, 100) = 0):
 		""" Clear a channel of messages. """
 
-		def check(m):
-			return user is None or m.author.id == user.id
+		async def target_user():
+			messages_deleted = 0
 
-		try:
-			deleted = await ctx.channel.purge(limit=limit, check=check)
+			async for msg in ctx.channel.history(limit=500):
+				if messages_deleted >= limit:
+					break
 
-		except (discord.HTTPException, discord.Forbidden):
-			return await ctx.send("Channel purge failed.")
+				elif msg.author.id == user.id:
+					await msg.delete()
 
-		if len(deleted) > 0:
-			await self.log_action(ctx, title=f"Channel Purge [{len(deleted)} message(s)]", channel=ctx.channel.mention)
+					messages_deleted += 1
 
-		await ctx.send(f"Deleted {len(deleted):,} message(s)")
+			return messages_deleted
+
+		if user is None:
+			if (deleted := len(await ctx.channel.purge(limit=limit))) > 0:
+				self.log_action(ctx, title=f"Channel Purge [{deleted} message(s)]", channel=ctx.channel.mention)
+
+		else:
+			if (deleted := await target_user()) > 0:
+				chnl = ctx.channel.mention
+
+				self.log_action(ctx, title=f"Channel Purge [{deleted} message(s)]", channel=chnl, user=user.mention)
+
+		await ctx.send(f"Deleted {deleted:,} message(s)")
 
 
 def setup(bot):
