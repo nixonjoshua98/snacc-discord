@@ -62,12 +62,11 @@ class Hero:
 	PRICES = {"Z": 50_000, "S": 25_000, "A": 15_000, "B": 10_000, "C": 7_500, "D": 5_000, "E": 3_000, "F": 1_500}
 	WEIGHTS = {"Z": 3, "S": 10, "A": 15, "B": 25, "C": 35, "D": 45, "E": 40, "F": 50}
 
-	def __init__(self, _id, *, name, grade, atk, hp, icon=None):
+	def __init__(self, _id, *, name, grade, atk, hp):
 		self.id = int(_id)
 
 		self.name = name
 		self.grade = grade
-		self.icon = icon
 
 		self.atk = atk
 		self.hp = hp

@@ -107,30 +107,31 @@ class Heroes(commands.Cog):
 
 	@commands.max_concurrency(1, commands.BucketType.user)
 	@show_heroes.command(name="sell")
-	async def sell_hero(self, ctx, hero: HeroFromChest(), amount: Range(1, None) = 1):
-		""" Sell your heroes. """
+	async def sell_hero(self, ctx):
+		""" Sell your duplicate heroes. """
 
-		hero_entry = await ctx.bot.db["heroes"].find_one({"user": ctx.author.id, "hero": hero.id})
+		heroes = await ctx.bot.db["heroes"].find({"user": ctx.author.id, "owned": {"$gt": 1}}).to_list(length=None)
 
-		if hero_entry is None or hero_entry.get("owned", 0) < amount + 1:
-			await ctx.send(f"You do not have **{amount:,}x** duplicates of **#{hero.id}** available to sell")
+		total_cost = sum([ChestHeroes.get(id=h["hero"]).sell_price * (h["owned"] - 1) for h in heroes])
 
-		else:
-			money = hero.sell_price * amount
+		if total_cost == 0:
+			return await ctx.send("You do not have any duplicates.")
 
-			if await Confirm(f"Sell **{amount:,}x** hero **#{hero.id}** for **${money:,}**?").prompt(ctx):
+		elif not await Confirm(f"Sell hero duplicates for **${total_cost:,}**?").prompt(ctx):
+			return await ctx.send("Hero sale aborted.")
 
-				await ctx.bot.db["heroes"].update_one(
-					{"user": ctx.author.id, "hero": hero.id},
-					{"$inc": {"owned": -amount}}
-				)
+		requests = []
 
-				await ctx.bot.db["bank"].update_one({"_id": ctx.author.id}, {"$inc": {"usd": money}})
+		for h in heroes:
+			r = UpdateOne({"user": ctx.author.id, "hero": h["hero"]}, {"$inc": {"owned": -(h["owned"] - 1)}})
 
-				await ctx.send(f"Sold **{amount:,}x** hero **#{hero.id}** for **${money:,}**")
+			requests.append(r)
 
-			else:
-				await ctx.send("Hero sale aborted")
+		await ctx.bot.db["heroes"].bulk_write(requests)
+
+		await ctx.bot.db["bank"].update_one({"_id": ctx.author.id}, {"$inc": {"usd": total_cost}}, upsert=True)
+
+		await ctx.send(f"Sold duplicate heroes for **${total_cost:,}**")
 
 	@show_heroes.command(name="chests")
 	async def show_chests(self, ctx):
