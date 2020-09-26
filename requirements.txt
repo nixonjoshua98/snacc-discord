@@ -7,5 +7,3 @@ dnspython==2.0.0
 motor==2.1.0
 pymongo==3.10.1
 git+https://github.com/Rapptz/discord-ext-menus
-
-aiohttp==3.6.2
