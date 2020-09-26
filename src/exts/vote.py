@@ -11,6 +11,8 @@ from aiohttp import web
 
 async def webhook(self):
 	async def vote_handler(request):
+		print(request)
+
 		req_auth = request.headers.get('Authorization')
 		if self.webhook_auth == req_auth:
 			data = await request.json()
