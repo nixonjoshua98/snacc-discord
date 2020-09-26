@@ -17,7 +17,10 @@ class Vote(commands.Cog):
 
 	@commands.Cog.listener(name="on_dbl_vote")
 	async def on_dbl_vote(self, data):
+		print(data)
+
 		if data["type"] == "upvote" and data["bot"] == self.bot.user.id:
+
 			user_id = data["user"]
 
 			user = self.bot.get_user(user_id)
@@ -31,7 +34,7 @@ class Vote(commands.Cog):
 					member = support_server.get_member(user_id)
 
 					if member is None:
-						await user.send("psst...you can join our support server here https://discord.gg/QExQuvE")
+						await user.send(f"psst...you can join our support server here {SupportServer.LINK}")
 
 				except (discord.Forbidden, discord.HTTPException):
 					""" Failed """

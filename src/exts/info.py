@@ -75,13 +75,12 @@ class Info(commands.Cog):
 
 		bot_invite = "https://discord.com/oauth2/authorize?client_id=666616515436478473&scope=bot&permissions=387136"
 
-		bot_vote_1 = "https://discord.boats/bot/666616515436478473"
-		bot_vote_2 = "https://top-bots.xyz/bot/666616515436478473"
+		bot_vote = "https://top.gg/bot/666616515436478473"
 
-		vote_text = f"You can vote for me [here]({bot_vote_1}) and [here]({bot_vote_2})"
+		vote_text = f"You can vote for me [here]({bot_vote})"
 
 		embed.add_field(name="Invite", value=f"Click [here]({bot_invite}) to add me to your server", inline=False)
-		embed.add_field(name="Vote", value=f"{vote_text}", inline=False)
+		embed.add_field(name="Vote (rewarded)", value=f"{vote_text}", inline=False)
 		embed.add_field(name="Support", value=f"Join my support server [here]({SupportServer.LINK})", inline=False)
 
 		await ctx.send(embed=embed)
