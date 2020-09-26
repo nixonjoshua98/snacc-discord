@@ -11,54 +11,6 @@
         "hp": 297,
         "name": "Natsu Dragneel"
     },
-    "2": {
-        "atk": 245,
-        "grade": "B",
-        "hp": 265,
-        "name": "Saitama"
-    },
-    "3": {
-        "atk": 120,
-        "grade": "D",
-        "hp": 239,
-        "name": "Edward Elric"
-    },
-    "4": {
-        "atk": 284,
-        "grade": "A",
-        "hp": 377,
-        "name": "Naruto"
-    },
-    "5": {
-        "atk": 214,
-        "grade": "B",
-        "hp": 301,
-        "name": "Itachi Uchiha"
-    },
-    "6": {
-        "atk": 119,
-        "grade": "C",
-        "hp": 307,
-        "name": "Death The Kid"
-    },
-    "7": {
-        "atk": 152,
-        "grade": "D",
-        "hp": 165,
-        "name": "Light Yagami"
-    },
-    "8": {
-        "atk": 185,
-        "grade": "B",
-        "hp": 339,
-        "name": "Killua Zoldyck"
-    },
-    "9": {
-        "atk": 206,
-        "grade": "C",
-        "hp": 240,
-        "name": "Rias Gremory"
-    },
     "10": {
         "atk": 262,
         "grade": "B",
@@ -118,6 +70,12 @@
         "grade": "A",
         "hp": 451,
         "name": "Ichigo Kurosaki"
+    },
+    "2": {
+        "atk": 245,
+        "grade": "B",
+        "hp": 265,
+        "name": "Saitama"
     },
     "20": {
         "atk": 126,
@@ -179,6 +137,12 @@
         "hp": 245,
         "name": "Rin Okumura"
     },
+    "3": {
+        "atk": 120,
+        "grade": "D",
+        "hp": 239,
+        "name": "Edward Elric"
+    },
     "30": {
         "atk": 155,
         "grade": "A",
@@ -238,6 +202,12 @@
         "grade": "C",
         "hp": 258,
         "name": "Sora"
+    },
+    "4": {
+        "atk": 284,
+        "grade": "A",
+        "hp": 377,
+        "name": "Naruto"
     },
     "40": {
         "atk": 235,
@@ -299,6 +269,12 @@
         "hp": 342,
         "name": "Shanks"
     },
+    "5": {
+        "atk": 214,
+        "grade": "B",
+        "hp": 301,
+        "name": "Itachi Uchiha"
+    },
     "50": {
         "atk": 96,
         "grade": "E",
@@ -346,5 +322,77 @@
         "grade": "F",
         "hp": 104,
         "name": "Yuno Gasai"
+    },
+    "58": {
+        "atk": 74,
+        "grade": "E",
+        "hp": 179,
+        "name": "Shou Tucker"
+    },
+    "59": {
+        "atk": 147,
+        "grade": "C",
+        "hp": 287,
+        "name": "Danzou Shimura"
+    },
+    "6": {
+        "atk": 119,
+        "grade": "C",
+        "hp": 307,
+        "name": "Death The Kid"
+    },
+    "60": {
+        "atk": 53,
+        "grade": "F",
+        "hp": 76,
+        "name": "Euphemia Li Britannia"
+    },
+    "61": {
+        "atk": 151,
+        "grade": "C",
+        "hp": 273,
+        "name": "Mine"
+    },
+    "62": {
+        "atk": 204,
+        "grade": "C",
+        "hp": 253,
+        "name": "Asia Argento"
+    },
+    "63": {
+        "atk": 57,
+        "grade": "E",
+        "hp": 174,
+        "name": "Yui"
+    },
+    "64": {
+        "atk": 82,
+        "grade": "D",
+        "hp": 221,
+        "name": "Karin"
+    },
+    "7": {
+        "atk": 152,
+        "grade": "D",
+        "hp": 165,
+        "name": "Light Yagami"
+    },
+    "8": {
+        "atk": 185,
+        "grade": "B",
+        "hp": 339,
+        "name": "Killua Zoldyck"
+    },
+    "9": {
+        "atk": 206,
+        "grade": "C",
+        "hp": 240,
+        "name": "Rias Gremory"
+    },
+    "65": {
+        "atk": 350,
+        "grade": "S",
+        "hp": 400,
+        "name": "Crito"
     }
 }
