@@ -21,10 +21,14 @@ class Vote(commands.Cog):
 
 			print("Created DBL client")
 
-	@commands.Cog.listener(name="on_dbl_vote")
-	async def on_dbl_vote(self, data):
+	@commands.Cog.listener(name="on_dbl_test")
+	async def on_dbl_test(self, data):
 		print(data)
 
+		await self.on_dbl_vote(data)
+
+	@commands.Cog.listener(name="on_dbl_vote")
+	async def on_dbl_vote(self, data):
 		user_id = data["user"]
 
 		user = self.bot.get_user(user_id)
