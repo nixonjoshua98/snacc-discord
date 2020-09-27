@@ -57,10 +57,7 @@ class Heroes(commands.Cog):
 
 				name = f"#{hero_inst.id:02d} | [{hero_inst.grade}] {hero_inst.name}"
 
-				value = (
-					f"Owned {hero['owned']} | Level {hero_level} | "
-					f"ATK {hero_inst.get_atk(hero)} | HP {hero_inst.get_hp(hero)}"
-				)
+				value = f"Level {hero_level} | ATK {hero_inst.get_atk(hero)} | HP {hero_inst.get_hp(hero)}"
 
 				embed.add_field(name=name, value=value, inline=False)
 
