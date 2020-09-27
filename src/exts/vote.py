@@ -4,6 +4,8 @@ import discord
 
 from discord.ext import commands
 
+from src import utils
+
 from src.common import SupportServer
 
 
@@ -27,15 +29,19 @@ class Vote(commands.Cog):
 
 		user = self.bot.get_user(user_id)
 
-		reward = 5 if data["isWeekend"] else 3
+		empire = await self.bot.db["empires"].find_one({"_id": user_id}) or dict()
 
-		await self.bot.db["bank"].update_one({"_id": user_id}, {"$inc": {"btc": reward}}, upsert=True)
+		multiplier = 1.5 if data["isWeekend"] else 1.0
+
+		reward = int(min(50_000, max(utils.net_income(empire) * 5, 10_000)) * multiplier)
+
+		await self.bot.db["bank"].update_one({"_id": user_id}, {"$inc": {"usd": reward}}, upsert=True)
 
 		if user is not None:
 			support_server = self.bot.get_guild(SupportServer.ID)
 
 			try:
-				await user.send(f"Thank you for voting for me! I have given you **{reward}** BTC :heart:")
+				await user.send(f"Thank you for voting for me! You have received **${reward:,}** :heart:")
 
 				member = support_server.get_member(user_id)
 
