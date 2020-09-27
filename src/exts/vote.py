@@ -23,6 +23,8 @@ class Vote(commands.Cog):
 
 	@commands.Cog.listener(name="on_dbl_vote")
 	async def on_dbl_vote(self, data):
+		print(data)
+
 		user_id = data["user"]
 
 		user = self.bot.get_user(user_id)
