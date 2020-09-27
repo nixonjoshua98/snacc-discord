@@ -17,7 +17,7 @@ class Vote(commands.Cog):
 	@commands.Cog.listener("on_startup")
 	async def on_startup(self):
 		if (token := os.getenv("DBL_TOKEN")) not in (None, "TOKEN", "VALUE", "", " "):
-			self.dbl = dbl.DBLClient(self.bot, token, autopost=True, webhook_port=10010, webhook_auth="snacc")
+			self.dbl = dbl.DBLClient(self.bot, token, webhook_auth='snacc', webhook_port=4999)
 
 			print("Created DBL webhook")
 
