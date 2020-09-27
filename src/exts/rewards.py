@@ -41,7 +41,7 @@ class Rewards(commands.Cog):
 		else:
 			streak = 1
 
-		reward = 3_000 + (500 * min(streak, 14))
+		reward = 3_000 + (750 * min(streak, 14))
 
 		# - Add the reward to the user bank balance
 		await ctx.bot.db["bank"].update_one({"_id": ctx.author.id}, {"$inc": {"usd": reward}}, upsert=True)
@@ -55,7 +55,7 @@ class Rewards(commands.Cog):
 
 		embed = ctx.bot.embed(
 			title=f"Daily Reward!",
-			description=f"Your daily reward is **$3,000** + **$500** multiplied by your streak (up to 14).",
+			description=f"Your daily reward is **$3,000** + **$750** multiplied by your streak (up to 14).",
 			author=ctx.author,
 			thumbnail=ctx.author.avatar_url
 		)
