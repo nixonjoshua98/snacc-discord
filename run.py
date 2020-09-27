@@ -10,7 +10,7 @@ def set_env():
 
     os.environ["BOT_TOKEN"] = config.get("bot", "TOKEN")
     os.environ["DBL_TOKEN"] = config.get("api", "DBL_TOKEN")
-    os.environ["MONGO_CON_STR"] = config.get("database", "MONGO_CON_STR")
+    os.environ["MONGO_STR"] = config.get("database", "MONGO_STR")
 
     os.environ["RAID_API_KEY"] = config.get("api", "RAID_API_KEY")
 

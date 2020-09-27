@@ -3,16 +3,18 @@ import discord
 
 from discord.ext import commands, tasks
 
+from motor.motor_asyncio import AsyncIOMotorClient
+
 import datetime as dt
 
 from typing import Union
+
 
 from src import utils
 from src.common import SNACCMAN
 from src.common.errors import GlobalCheckFail
 
 from src.structs.help import Help
-from src.structs.mongoclient import MongoClient
 
 
 EXTENSIONS = [
@@ -34,7 +36,7 @@ class Bot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix=self.get_prefix, case_insensitive=True, help_command=Help(), owner_id=SNACCMAN)
 
-        self.db = MongoClient().snaccV2
+        self.db = AsyncIOMotorClient(os.getenv("MONGO_CON_STR")).snaccV2
 
         self.exts_loaded = False
 
