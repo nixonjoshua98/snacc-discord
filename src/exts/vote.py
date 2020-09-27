@@ -1,12 +1,42 @@
 import dbl
 import os
+import httpx
 import discord
+import asyncio
+
+from aiohttp import web
 
 from discord.ext import commands
 
 from src import utils
 
 from src.common import SupportServer
+
+
+class DiscordBotList:
+	def __init__(self, bot, token, *, webhook_path, webhook_auth, webhook_port):
+
+		self.bot = bot
+		self.token = token
+
+		self.webhook_path = webhook_path
+		self.webhook_auth = webhook_auth
+		self.webhook_port = webhook_port
+
+		asyncio.create_task(self.auto_post())
+
+	async def auto_post(self):
+		url = f"https://discordbotlist.com/api/v1/bots/{self.bot.user.id}/stats"
+
+		headers = {"Authorization": self.token}
+
+		while not self.bot.is_closed():
+			body = {"users": len(self.bot.users), "guilds": len(self.bot.guilds)}
+
+			async with httpx.AsyncClient() as client:
+				r = await client.post(url, headers=headers, data=body)
+
+			await asyncio.sleep(1_800)
 
 
 class Vote(commands.Cog):
@@ -16,26 +46,29 @@ class Vote(commands.Cog):
 
 	@commands.Cog.listener("on_startup")
 	async def on_startup(self):
-		if (token := os.getenv("DBL_TOKEN")) not in (None, "TOKEN", "VALUE", "", " "):
 
-			auth = os.environ["VOTE_AUTH"]
+		dbl.DBLClient(
+			self.bot,
+			os.environ["TOPGG_TOKEN"],
+			autopost=True,
+			webhook_port=4999,
+			webhook_path="/topgghook",
+			webhook_auth=os.environ["TOPGG_AUTH"]
+		)
 
-			dbl.DBLClient(
-				self.bot,
-				token,
-				autopost=True,
-				webhook_port=4999,
-				webhook_path="/topgghook",
-				webhook_auth=auth
-			)
+		DiscordBotList(
+			self.bot,
+			os.environ["DBL_TOKEN"],
+			webhook_port=5001,
+			webhook_path="/dblhook",
+			webhook_auth=os.environ["DBL_AUTH"],
+		)
 
-			print("Created vote clients")
+		print("Created vote clients")
 
 	@commands.Cog.listener(name="on_dbl_test")
 	async def on_dbl_test(self, data):
 		print(data)
-
-		await self.on_dbl_vote(data)
 
 	@commands.Cog.listener(name="on_dbl_vote")
 	async def on_dbl_vote(self, data):

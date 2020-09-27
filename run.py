@@ -8,7 +8,7 @@ def set_env():
 
     os.environ["DEBUG"] = "1"
 
-    os.environ["VOTE_AUTH"] = config.get("bot", "VOTE_AUTH")
+    os.environ["TOPGG_AUTH"] = config.get("bot", "TOPGG_AUTH")
 
     os.environ["BOT_TOKEN"] = config.get("bot", "TOKEN")
     os.environ["DBL_TOKEN"] = config.get("api", "DBL_TOKEN")
