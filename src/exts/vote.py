@@ -1,12 +1,38 @@
 import dbl
 import os
 import discord
+import asyncio
+
+from aiohttp import web
 
 from discord.ext import commands
 
 from src import utils
 
 from src.common import SupportServer
+
+
+class DiscordBotList:
+	def __init__(self, bot):
+		self.bot = bot
+
+		asyncio.create_task(self.webhook())
+
+	async def webhook(self):
+		async def vote_handler(request):
+			print(request)
+
+		app = web.Application(loop=self.bot.loop)
+
+		app.router.add_post("/discordbotlistwebhook", vote_handler)
+
+		runner = web.AppRunner(app)
+
+		await runner.setup()
+
+		webserver = web.TCPSite(runner, '0.0.0.0', 5000)
+
+		await webserver.start()
 
 
 class Vote(commands.Cog):
@@ -19,7 +45,9 @@ class Vote(commands.Cog):
 	@commands.Cog.listener("on_startup")
 	async def on_startup(self):
 		if (token := os.getenv("DBL_TOKEN")) not in (None, "TOKEN", "VALUE", "", " "):
-			self.dbl = dbl.DBLClient(self.bot, token, autopost=True, webhook_auth='snacc')
+			dbl.DBLClient(self.bot, token, autopost=True, webhook_auth='snacc')
+
+			DiscordBotList(self.bot)
 
 			print("Created DBL client")
 
