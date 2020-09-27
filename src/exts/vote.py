@@ -14,7 +14,7 @@ from src.common import SupportServer
 
 
 class DiscordBotList:
-	def __init__(self, bot, token, *, webhook_path, webhook_auth, webhook_port):
+	def __init__(self, bot, token, *, autopost, webhook_path, webhook_auth, webhook_port):
 
 		self.bot = bot
 		self.token = token
@@ -23,12 +23,15 @@ class DiscordBotList:
 		self.webhook_auth = webhook_auth
 		self.webhook_port = webhook_port
 
-		asyncio.create_task(self.auto_post())
+		if autopost:
+			asyncio.create_task(self.auto_post())
 
 	async def auto_post(self):
 		url = f"https://discordbotlist.com/api/v1/bots/{self.bot.user.id}/stats"
 
 		headers = {"Authorization": self.token}
+
+		print(headers)
 
 		while not self.bot.is_closed():
 			body = {"users": len(self.bot.users), "guilds": len(self.bot.guilds)}
@@ -59,6 +62,7 @@ class Vote(commands.Cog):
 		DiscordBotList(
 			self.bot,
 			os.environ["DBL_TOKEN"],
+			autopost=True,
 			webhook_port=5001,
 			webhook_path="/dblhook",
 			webhook_auth=os.environ["DBL_AUTH"],
