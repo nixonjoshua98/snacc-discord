@@ -14,11 +14,12 @@ from src.common import SupportServer
 
 
 class DiscordBotList:
-	def __init__(self, bot, *, webhook_path, webhook_auth):
+	def __init__(self, bot, *, webhook_path, webhook_auth, webhook_port):
 		self.bot = bot
 
 		self.webhook_path = webhook_path
 		self.webhook_auth = webhook_auth
+		self.webhook_port = webhook_port
 
 		asyncio.create_task(self.webhook())
 
@@ -36,7 +37,7 @@ class DiscordBotList:
 
 		await runner.setup()
 
-		webserver = web.TCPSite(runner, '0.0.0.0', 5000)
+		webserver = web.TCPSite(runner, '0.0.0.0', self.webhook_port)
 
 		await webserver.start()
 
@@ -73,7 +74,7 @@ class Vote(commands.Cog):
 				webhook_auth=auth
 			)
 
-			DiscordBotList(self.bot, webhook_path="/dblhook", webhook_auth=auth)
+			DiscordBotList(self.bot, webhook_path="/dblhook", webhook_auth=auth, webhook_port=5001)
 
 			print("Created vote clients")
 
