@@ -75,9 +75,10 @@ class Info(commands.Cog):
 
 		bot_invite = "https://discord.com/oauth2/authorize?client_id=666616515436478473&scope=bot&permissions=387136"
 
-		bot_vote = "https://top.gg/bot/666616515436478473"
+		bot_vote_1 = "https://top.gg/bot/666616515436478473"
+		bot_vote_2 = "https://discord.ly/snacc"
 
-		vote_text = f"You can vote for me [here]({bot_vote})"
+		vote_text = f"You can vote for me [here]({bot_vote_1}) and [here]({bot_vote_2})"
 
 		embed.add_field(name="Invite", value=f"Click [here]({bot_invite}) to add me to your server", inline=False)
 		embed.add_field(name="Vote (rewarded)", value=f"{vote_text}", inline=False)
