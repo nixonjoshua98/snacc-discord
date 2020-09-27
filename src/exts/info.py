@@ -80,7 +80,7 @@ class Info(commands.Cog):
 		vote_text = f"You can vote for me [here]({bot_vote})"
 
 		embed.add_field(name="Invite", value=f"Click [here]({bot_invite}) to add me to your server", inline=False)
-		embed.add_field(name="Vote (soon rewarded)", value=f"{vote_text}", inline=False)
+		embed.add_field(name="Vote (rewarded)", value=f"{vote_text}", inline=False)
 		embed.add_field(name="Support", value=f"Join my support server [here]({SupportServer.LINK})", inline=False)
 
 		await ctx.send(embed=embed)
