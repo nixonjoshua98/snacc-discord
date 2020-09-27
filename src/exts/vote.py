@@ -35,8 +35,6 @@ class DiscordBotList:
 			async with httpx.AsyncClient() as client:
 				r = await client.post(url, headers=headers, data=body)
 
-			print(r.json())
-
 			await asyncio.sleep(1_800)
 
 
@@ -50,27 +48,23 @@ class Vote(commands.Cog):
 
 		dbl.DBLClient(
 			self.bot,
-			os.environ["TOPGG_TOKEN"],
+			os.environ["DBL_TOKEN"],
 			autopost=True,
 			webhook_port=4999,
 			webhook_path="/topgghook",
-			webhook_auth=os.environ["TOPGG_AUTH"]
+			webhook_auth=os.environ["DBL_AUTH"]
 		)
 
 		DiscordBotList(
 			self.bot,
-			os.environ["DBL_TOKEN"],
+			os.environ["BOTLIST_TOKEN"],
 			autopost=True,
 			webhook_port=5001,
 			webhook_path="/dblhook",
-			webhook_auth=os.environ["DBL_AUTH"],
+			webhook_auth=os.environ["BOTLIST_AUTH"],
 		)
 
 		print("Created vote clients")
-
-	@commands.Cog.listener(name="on_dbl_test")
-	async def on_dbl_test(self, data):
-		print(data)
 
 	@commands.Cog.listener(name="on_dbl_vote")
 	async def on_dbl_vote(self, data):
