@@ -1,5 +1,6 @@
 import dbl
 import os
+import httpx
 import discord
 import asyncio
 
@@ -13,10 +14,15 @@ from src.common import SupportServer
 
 
 class DiscordBotList:
-	def __init__(self, bot):
+	def __init__(self, bot, *, webhook_path, webhook_auth):
 		self.bot = bot
 
+		self.webhook_path = webhook_path
+		self.webhook_auth = webhook_auth
+
 		asyncio.create_task(self.webhook())
+
+		asyncio.create_task(self.auto_post())
 
 	async def webhook(self):
 		async def vote_handler(request):
@@ -24,7 +30,7 @@ class DiscordBotList:
 
 		app = web.Application(loop=self.bot.loop)
 
-		app.router.add_post("/discordbotlistwebhook", vote_handler)
+		app.router.add_post(self.webhook_path, vote_handler)
 
 		runner = web.AppRunner(app)
 
@@ -34,22 +40,39 @@ class DiscordBotList:
 
 		await webserver.start()
 
+	async def auto_post(self):
+		url = f"https://discordbotlist.com/api/v1/bots/{self.bot.user.id}/stats"
+
+		headers = {"Authorization": self.webhook_auth}
+
+		while not self.bot.is_closed():
+			body = {"users": len(self.bot.users), "guilds": len(self.bot.guilds)}
+
+			async with httpx.AsyncClient() as client:
+				r = await client.post(url, headers=headers, data=body)
+
+			await asyncio.sleep(1_800)
+
 
 class Vote(commands.Cog):
 
 	def __init__(self, bot):
 		self.bot = bot
 
-		self.dbl = None
-
 	@commands.Cog.listener("on_startup")
 	async def on_startup(self):
 		if (token := os.getenv("DBL_TOKEN")) not in (None, "TOKEN", "VALUE", "", " "):
-			dbl.DBLClient(self.bot, token, autopost=True, webhook_auth='snacc')
+			auth = os.environ["VOTE_AUTH"]
 
-			DiscordBotList(self.bot)
+			dbl.DBLClient(self.bot, token, autopost=True, webhook_path="/topgghook", webhook_auth=auth)
 
-			print("Created DBL client")
+			DiscordBotList(self.bot, webhook_path="/dblhook", webhook_auth=auth)
+
+			print("Created vote clients")
+
+	@commands.Cog.listener(name="on_dbl_test")
+	async def on_dbl_test(self, data):
+		print(data)
 
 	@commands.Cog.listener(name="on_dbl_vote")
 	async def on_dbl_vote(self, data):
@@ -81,5 +104,5 @@ class Vote(commands.Cog):
 
 
 def setup(bot):
-	if not bot.debug:
+	if bot.debug:
 		bot.add_cog(Vote(bot))

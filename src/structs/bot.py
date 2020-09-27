@@ -62,7 +62,7 @@ class Bot(commands.Bot):
 
     @property
     def users(self):
-        return set([m for g in self.guilds for m in g.members])
+        return [m for g in self.guilds for m in g.members]
 
     @tasks.loop(minutes=5.0)
     async def activity_loop(self):
