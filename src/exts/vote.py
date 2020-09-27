@@ -43,7 +43,17 @@ class DiscordBotList:
 
 	async def webhook(self):
 		async def vote_handler(request):
-			print(request)
+			req_auth = request.headers.get('Authorization')
+
+			if self.webhook_auth == req_auth:
+				data = await request.json()
+
+				self.bot.dispatch("botlist_vote", dict(user=data["id"]))
+
+				return web.Response()
+
+			else:
+				return web.Response(status=401)
 
 		app = web.Application(loop=self.bot.loop)
 
@@ -91,6 +101,7 @@ class Vote(commands.Cog):
 		print(data)
 
 	@commands.Cog.listener(name="on_dbl_vote")
+	@commands.Cog.listener(name="on_botlist_vote")
 	async def on_dbl_vote(self, data):
 		user_id = int(data["user"])
 
@@ -98,9 +109,7 @@ class Vote(commands.Cog):
 
 		empire = await self.bot.db["empires"].find_one({"_id": user_id}) or dict()
 
-		multiplier = 1.25 if data["isWeekend"] else 1.0
-
-		reward = int(min(50_000, max(utils.net_income(empire) * 5, 5_000)) * multiplier)
+		reward = int(min(50_000, max(utils.net_income(empire) * 5, 5_000)))
 
 		await self.bot.db["bank"].update_one({"_id": user_id}, {"$inc": {"usd": reward}}, upsert=True)
 
