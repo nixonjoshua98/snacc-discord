@@ -33,7 +33,7 @@ class Vote(commands.Cog):
 
 		multiplier = 1.25 if data["isWeekend"] else 1.0
 
-		reward = int(min(50_000, max(utils.net_income(empire) * 5, 10_000)) * multiplier)
+		reward = int(min(50_000, max(utils.net_income(empire) * 5, 5_000)) * multiplier)
 
 		await self.bot.db["bank"].update_one({"_id": user_id}, {"$inc": {"usd": reward}}, upsert=True)
 
