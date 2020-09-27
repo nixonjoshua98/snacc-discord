@@ -104,5 +104,5 @@ class Vote(commands.Cog):
 
 
 def setup(bot):
-	if bot.debug:
+	if not bot.debug:
 		bot.add_cog(Vote(bot))
