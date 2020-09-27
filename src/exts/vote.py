@@ -4,8 +4,6 @@ import httpx
 import discord
 import asyncio
 
-from aiohttp import web
-
 from discord.ext import commands
 
 from src import utils
@@ -31,13 +29,13 @@ class DiscordBotList:
 
 		headers = {"Authorization": self.token}
 
-		print(headers)
-
 		while not self.bot.is_closed():
 			body = {"users": len(self.bot.users), "guilds": len(self.bot.guilds)}
 
 			async with httpx.AsyncClient() as client:
 				r = await client.post(url, headers=headers, data=body)
+
+			print(r.json())
 
 			await asyncio.sleep(1_800)
 
