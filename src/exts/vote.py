@@ -86,6 +86,10 @@ class Vote(commands.Cog):
 
 		print("Created vote clients")
 
+	@commands.Cog.listener(name="on_dbl_test")
+	async def on_dbl_test(self, data):
+		print(data)
+
 	@commands.Cog.listener(name="on_dbl_vote")
 	async def on_dbl_vote(self, data):
 		user_id = int(data["user"])
