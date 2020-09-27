@@ -4,6 +4,8 @@ import httpx
 import discord
 import asyncio
 
+from aiohttp import web
+
 from discord.ext import commands
 
 from src import utils
@@ -24,6 +26,8 @@ class DiscordBotList:
 		if autopost:
 			asyncio.create_task(self.auto_post())
 
+		asyncio.create_task(self.webhook())
+
 	async def auto_post(self):
 		url = f"https://discordbotlist.com/api/v1/bots/{self.bot.user.id}/stats"
 
@@ -36,6 +40,22 @@ class DiscordBotList:
 				r = await client.post(url, headers=headers, data=body)
 
 			await asyncio.sleep(1_800)
+
+	async def webhook(self):
+		async def vote_handler(request):
+			print(request)
+
+		app = web.Application(loop=self.bot.loop)
+
+		app.router.add_post(self.webhook_path, vote_handler)
+
+		runner = web.AppRunner(app)
+
+		await runner.setup()
+
+		webserver = web.TCPSite(runner, '0.0.0.0', self.webhook_port)
+
+		await webserver.start()
 
 
 class Vote(commands.Cog):
@@ -51,7 +71,7 @@ class Vote(commands.Cog):
 			os.environ["DBL_TOKEN"],
 			autopost=True,
 			webhook_port=4999,
-			webhook_path="/topgghook",
+			webhook_path="/dblwebhook",
 			webhook_auth=os.environ["DBL_AUTH"]
 		)
 
@@ -60,7 +80,7 @@ class Vote(commands.Cog):
 			os.environ["BOTLIST_TOKEN"],
 			autopost=True,
 			webhook_port=5001,
-			webhook_path="/dblhook",
+			webhook_path="/botlistwebhook",
 			webhook_auth=os.environ["BOTLIST_AUTH"],
 		)
 
