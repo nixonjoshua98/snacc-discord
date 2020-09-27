@@ -25,7 +25,31 @@ class Vote(commands.Cog):
 	async def on_dbl_test(self, data):
 		print(data)
 
-		await self.on_dbl_vote(data)
+		user_id = data["user"]
+
+		user = self.bot.get_user(user_id)
+
+		print(user)
+
+		reward = 5 if data["isWeekend"] else 3
+
+		await self.bot.db["bank"].update_one({"_id": user_id}, {"$inc": {"btc": reward}}, upsert=True)
+
+		print("Added BTC")
+
+		if user is not None:
+			support_server = self.bot.get_guild(SupportServer.ID)
+
+			try:
+				await user.send(f"Thank you for voting for me! I have given you {reward} BTC :heart:")
+
+				member = support_server.get_member(user_id)
+
+				if member is None:
+					await user.send(f"psst...you can join our support server here {SupportServer.LINK}")
+
+			except (discord.Forbidden, discord.HTTPException):
+				""" Failed """
 
 	@commands.Cog.listener(name="on_dbl_vote")
 	async def on_dbl_vote(self, data):
