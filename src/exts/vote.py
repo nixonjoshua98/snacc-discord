@@ -64,7 +64,14 @@ class Vote(commands.Cog):
 		if (token := os.getenv("DBL_TOKEN")) not in (None, "TOKEN", "VALUE", "", " "):
 			auth = os.environ["VOTE_AUTH"]
 
-			dbl.DBLClient(self.bot, token, autopost=True, webhook_path="/topgghook", webhook_auth=auth)
+			dbl.DBLClient(
+				self.bot,
+				token,
+				autopost=True,
+				webhook_port=5000,
+				webhook_path="/topgghook",
+				webhook_auth=auth
+			)
 
 			DiscordBotList(self.bot, webhook_path="/dblhook", webhook_auth=auth)
 
