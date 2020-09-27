@@ -6,6 +6,35 @@ from discord.ext import commands
 
 from src.common import SupportServer
 
+from aiohttp import web
+
+
+class DBL(dbl.DBLClient):
+	async def webhook(self):
+		print(".webhook")
+
+		async def vote_handler(request):
+			print(request)
+
+			req_auth = request.headers.get('Authorization')
+			if self.webhook_auth == req_auth:
+				data = await request.json()
+				if data.get('type') == 'upvote':
+					event_name = 'dbl_vote'
+				elif data.get('type') == 'test':
+					event_name = 'dbl_test'
+				self.bot.dispatch(event_name, data)
+				return web.Response()
+			else:
+				return web.Response(status=401)
+
+		app = web.Application(loop=self.loop)
+		app.router.add_post(self.webhook_path, vote_handler)
+		runner = web.AppRunner(app)
+		await runner.setup()
+		self._webserver = web.TCPSite(runner, 'https://snacc-bot.herokuapp.com', self.webhook_port)
+		await self._webserver.start()
+
 
 class Vote(commands.Cog):
 
@@ -17,7 +46,7 @@ class Vote(commands.Cog):
 	@commands.Cog.listener("on_startup")
 	async def on_startup(self):
 		if (token := os.getenv("DBL_TOKEN")) not in (None, "TOKEN", "VALUE", "", " "):
-			self.dbl = dbl.DBLClient(self.bot, token, autopost=True, webhook_port=10010, webhook_auth="snacc")
+			self.dbl = DBL(self.bot, token, autopost=True, port=10010, webhook_auth="snacc")
 
 			print("Created DBL webhook")
 
