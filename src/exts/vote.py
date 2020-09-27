@@ -31,7 +31,7 @@ class Vote(commands.Cog):
 
 		empire = await self.bot.db["empires"].find_one({"_id": user_id}) or dict()
 
-		multiplier = 1.5 if data["isWeekend"] else 1.0
+		multiplier = 1.25 if data["isWeekend"] else 1.0
 
 		reward = int(min(50_000, max(utils.net_income(empire) * 5, 10_000)) * multiplier)
 

@@ -66,7 +66,10 @@ class Bot(commands.Bot):
 
     @tasks.loop(minutes=5.0)
     async def activity_loop(self):
-        activity = discord.Game(f"{len(self.users):,} users | {len(self.guilds):,} servers")
+        activity = discord.Activity(
+            type=discord.ActivityType.watching,
+            name=f"{len(self.users):,} users {len(self.guilds):,} servers"
+        )
 
         await self.change_presence(status=discord.Status.online, activity=activity)
 
@@ -106,10 +109,9 @@ class Bot(commands.Bot):
 
     @commands.Cog.listener("on_startup")
     async def on_startup(self):
-        if not self.debug:
-            print("Starting loop: Activity")
+        print("Starting loop: Activity")
 
-            self.activity_loop.start()
+        self.activity_loop.start()
 
     def add_cog(self, cog):
         print(f"Adding Cog: {cog.qualified_name}", end="...")
