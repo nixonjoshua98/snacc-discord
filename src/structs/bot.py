@@ -36,7 +36,7 @@ class Bot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix=self.get_prefix, case_insensitive=True, help_command=Help(), owner_id=SNACCMAN)
 
-        self.db = AsyncIOMotorClient(os.getenv("MONGO_CON_STR")).snaccV2
+        self.db = AsyncIOMotorClient(os.getenv("MONGO_STR")).snaccV2
 
         self.exts_loaded = False
 

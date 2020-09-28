@@ -85,7 +85,6 @@ class Vote(commands.Cog):
 			webhook_auth=os.environ["DBL_AUTH"]
 		)
 
-		"""		
 		DiscordBotList(
 			self.bot,
 			os.environ["BOTLIST_TOKEN"],
@@ -94,7 +93,6 @@ class Vote(commands.Cog):
 			webhook_path="/botlistwebhook",
 			webhook_auth=os.environ["BOTLIST_AUTH"],
 		)
-		"""
 
 		print("Created vote clients")
 
