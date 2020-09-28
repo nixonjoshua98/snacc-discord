@@ -80,7 +80,7 @@ class Vote(commands.Cog):
 			self.bot,
 			os.environ["DBL_TOKEN"],
 			autopost=True,
-			webhook_port=4999,
+			webhook_port=4934,
 			webhook_path="/dblwebhook",
 			webhook_auth=os.environ["DBL_AUTH"]
 		)
