@@ -48,7 +48,7 @@ class DiscordBotList:
 			if self.webhook_auth == req_auth:
 				data = await request.json()
 
-				self.bot.dispatch("botlist_vote", dict(user=data["id"]))
+				self.bot.dispatch("botlist_vote", data)
 
 				return web.Response()
 
@@ -100,8 +100,13 @@ class Vote(commands.Cog):
 	async def on_dbl_test(self, data):
 		print(data)
 
+	@commands.Cog.listener("on_botlist_vote")
+	async def on_botlist_vote(self, data):
+		print(data)
+
+		await self.on_dbl_vote(dict(user=data["id"]))
+
 	@commands.Cog.listener(name="on_dbl_vote")
-	@commands.Cog.listener(name="on_botlist_vote")
 	async def on_dbl_vote(self, data):
 		user_id = int(data["user"])
 
