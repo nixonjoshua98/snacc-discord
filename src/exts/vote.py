@@ -102,12 +102,12 @@ class Vote(commands.Cog):
 
 	@commands.Cog.listener("on_botlist_vote")
 	async def on_botlist_vote(self, data):
-		print(data)
-
 		await self.on_dbl_vote(dict(user=data["id"]))
 
 	@commands.Cog.listener(name="on_dbl_vote")
 	async def on_dbl_vote(self, data):
+		print(data)
+
 		user_id = int(data["user"])
 
 		user = self.bot.get_user(user_id)
