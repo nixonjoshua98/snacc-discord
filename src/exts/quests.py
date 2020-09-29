@@ -116,7 +116,7 @@ class Quests(commands.Cog):
 				# - Add the reward money to the account
 				await ctx.bot.db["bank"].update_one({"_id": ctx.author.id}, {"$inc": {"usd": reward}}, upsert=True)
 
-				loot = quest_instance.get_loot(current_quest["success_rate"])
+				loot = quest_instance.get_loot()
 
 				embed.description = f"Quest completed!\nYou have been rewarded **${reward:,}**"
 
