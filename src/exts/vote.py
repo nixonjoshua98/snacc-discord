@@ -37,7 +37,12 @@ class DiscordBotList:
 			body = {"users": len(self.bot.users), "guilds": len(self.bot.guilds)}
 
 			async with httpx.AsyncClient() as client:
-				await client.post(url, headers=headers, data=body)
+				try:
+					r = await client.post(url, headers=headers, data=body)
+				except httpx.ReadTimeout:
+					""" ... """
+				else:
+					print(r.json())
 
 			await asyncio.sleep(1_800)
 
