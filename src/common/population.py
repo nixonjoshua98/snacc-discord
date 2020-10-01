@@ -120,15 +120,15 @@ class Workers(UnitGroup):
 		WorkerUnit(income=15, 	key="stonemason"),
 		WorkerUnit(income=20, 	key="butcher"),
 		WorkerUnit(income=25, 	key="weaver"),
-		WorkerUnit(income=30, 	key="tailor"),
-		WorkerUnit(income=35, 	key="baker"),
-		WorkerUnit(income=40, 	key="blacksmith"),
-		WorkerUnit(income=45, 	key="cook"),
+		WorkerUnit(income=35, 	key="tailor"),
+		WorkerUnit(income=40, 	key="baker"),
+		WorkerUnit(income=45, 	key="blacksmith"),
+		WorkerUnit(income=50, 	key="cook"),
 		WorkerUnit(income=55, 	key="winemaker"),
 		WorkerUnit(income=60, 	key="shoemaker"),
 		WorkerUnit(income=65, 	key="falconer"),
-		WorkerUnit(income=70, 	key="carpenter"),
-		WorkerUnit(income=75, 	key="merchant"),
+		WorkerUnit(income=75, 	key="carpenter"),
+		WorkerUnit(income=80, 	key="merchant"),
 	)
 
 	@classmethod
@@ -184,7 +184,7 @@ class Military(UnitGroup):
 		MilitaryUnit(upkeep=50, 	key="cavalry"),
 		MilitaryUnit(upkeep=60, 	key="warrior"),
 		MilitaryUnit(upkeep=70, 	key="archer"),
-		MilitaryUnit(upkeep=80,		key="knight"),
+		MilitaryUnit(upkeep=75,		key="knight"),
 	)
 
 	@classmethod
