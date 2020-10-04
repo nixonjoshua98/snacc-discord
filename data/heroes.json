@@ -11,6 +11,54 @@
         "hp": 297,
         "name": "Natsu Dragneel"
     },
+    "2": {
+        "atk": 245,
+        "grade": "B",
+        "hp": 265,
+        "name": "Saitama"
+    },
+    "3": {
+        "atk": 120,
+        "grade": "D",
+        "hp": 239,
+        "name": "Edward Elric"
+    },
+    "4": {
+        "atk": 284,
+        "grade": "A",
+        "hp": 377,
+        "name": "Naruto"
+    },
+    "5": {
+        "atk": 214,
+        "grade": "B",
+        "hp": 301,
+        "name": "Itachi Uchiha"
+    },
+    "6": {
+        "atk": 119,
+        "grade": "C",
+        "hp": 307,
+        "name": "Death The Kid"
+    },
+    "7": {
+        "atk": 152,
+        "grade": "D",
+        "hp": 165,
+        "name": "Light Yagami"
+    },
+    "8": {
+        "atk": 185,
+        "grade": "B",
+        "hp": 339,
+        "name": "Killua Zoldyck"
+    },
+    "9": {
+        "atk": 206,
+        "grade": "C",
+        "hp": 240,
+        "name": "Rias Gremory"
+    },
     "10": {
         "atk": 262,
         "grade": "B",
@@ -70,12 +118,6 @@
         "grade": "A",
         "hp": 451,
         "name": "Ichigo Kurosaki"
-    },
-    "2": {
-        "atk": 245,
-        "grade": "B",
-        "hp": 265,
-        "name": "Saitama"
     },
     "20": {
         "atk": 126,
@@ -137,12 +179,6 @@
         "hp": 245,
         "name": "Rin Okumura"
     },
-    "3": {
-        "atk": 120,
-        "grade": "D",
-        "hp": 239,
-        "name": "Edward Elric"
-    },
     "30": {
         "atk": 155,
         "grade": "A",
@@ -203,12 +239,6 @@
         "hp": 258,
         "name": "Sora"
     },
-    "4": {
-        "atk": 284,
-        "grade": "A",
-        "hp": 377,
-        "name": "Naruto"
-    },
     "40": {
         "atk": 235,
         "grade": "B",
@@ -249,7 +279,7 @@
         "atk": 218,
         "grade": "S",
         "hp": 509,
-        "name": "Hisoka Morrow"
+        "name": "Hisoka Morow"
     },
     "47": {
         "atk": 184,
@@ -268,12 +298,6 @@
         "grade": "B",
         "hp": 342,
         "name": "Shanks"
-    },
-    "5": {
-        "atk": 214,
-        "grade": "B",
-        "hp": 301,
-        "name": "Itachi Uchiha"
     },
     "50": {
         "atk": 96,
@@ -335,12 +359,6 @@
         "hp": 287,
         "name": "Danzou Shimura"
     },
-    "6": {
-        "atk": 119,
-        "grade": "C",
-        "hp": 307,
-        "name": "Death The Kid"
-    },
     "60": {
         "atk": 53,
         "grade": "F",
@@ -371,28 +389,76 @@
         "hp": 221,
         "name": "Karin"
     },
-    "7": {
-        "atk": 152,
-        "grade": "D",
-        "hp": 165,
-        "name": "Light Yagami"
-    },
-    "8": {
-        "atk": 185,
-        "grade": "B",
-        "hp": 339,
-        "name": "Killua Zoldyck"
-    },
-    "9": {
-        "atk": 206,
-        "grade": "C",
-        "hp": 240,
-        "name": "Rias Gremory"
-    },
     "65": {
         "atk": 350,
         "grade": "S",
         "hp": 400,
         "name": "Crito"
+    },
+    "66": {
+        "atk": 345,
+        "grade": "S",
+        "hp": 378,
+        "name": "Kenpachi Zaraki"
+    },
+    "67": {
+        "atk": 349,
+        "grade": "S",
+        "hp": 362,
+        "name": "Jiraiya"
+    },
+    "68": {
+        "atk": 228,
+        "grade": "B",
+        "hp": 278,
+        "name": "Boruto Uzumaki"
+    },
+    "69": {
+        "atk": 222,
+        "grade": "A",
+        "hp": 420,
+        "name": "Subaru Natsuki"
+    },
+    "70": {
+        "atk": 125,
+        "grade": "D",
+        "hp": 200,
+        "name": "Android 17"
+    },
+    "72": {
+        "atk": 141,
+        "grade": "C",
+        "hp": 288,
+        "name": "Shinn Asuka"
+    },
+    "73": {
+        "atk": 69,
+        "grade": "E",
+        "hp": 176,
+        "name": "Matt Ishida"
+    },
+    "74": {
+        "atk": 231,
+        "grade": "A",
+        "hp": 397,
+        "name": "Beerus"
+    },
+    "75": {
+        "atk": 81,
+        "grade": "E",
+        "hp": 133,
+        "name": "Scar"
+    },
+    "71": {
+        "atk": 36,
+        "grade": "F",
+        "hp": 79,
+        "name": "Vegeta"
+    },
+    "77": {
+        "atk": 54,
+        "grade": "F",
+        "hp": 71,
+        "name": "Astro Boy"
     }
 }

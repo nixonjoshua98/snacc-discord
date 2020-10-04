@@ -7,7 +7,7 @@ while True:
     with open(r"C:\Repos\snacc-bot\data\heroes.json", "r") as fh:
         data = json.load(fh)
 
-    print(len(data.keys()))
+    data = {int(k): v for k, v in data.items()}
 
     name = input("Name: ").title()
 
@@ -26,7 +26,7 @@ while True:
 
     _id = max([int(k) for k in data.keys()]) + 1
 
-    data[str(_id)] = dict(atk=atk, hp=hp, name=name.title(), grade=grade)
+    data[_id] = dict(atk=atk, hp=hp, name=name.title(), grade=grade)
 
     with open(r"C:\Repos\snacc-bot\data\heroes.json", "w") as fh:
         json.dump(data, fh, indent=4, sort_keys=True)

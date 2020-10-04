@@ -116,7 +116,7 @@ class Vote(commands.Cog):
 
 		empire = await self.bot.db["empires"].find_one({"_id": user_id}) or dict()
 
-		reward = int(min(50_000, max(utils.net_income(empire), 5_000) * 5))
+		reward = int(min(50_000, max(utils.net_income(empire), 5_000) * 3))
 
 		await self.bot.db["bank"].update_one({"_id": user_id}, {"$inc": {"usd": reward}}, upsert=True)
 
