@@ -64,7 +64,7 @@ class Bot(commands.Bot):
     def users(self):
         return [m for g in self.guilds for m in g.members]
 
-    @tasks.loop(minutes=5.0)
+    @tasks.loop(minutes=1.0)
     async def activity_loop(self):
         activity = discord.Activity(
             type=discord.ActivityType.watching,
