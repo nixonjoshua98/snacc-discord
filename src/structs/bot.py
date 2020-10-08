@@ -34,7 +34,13 @@ EXTENSIONS = [
 
 class Bot(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix=self.get_prefix, case_insensitive=True, help_command=Help(), owner_id=SNACCMAN)
+        super().__init__(
+            command_prefix=self.get_prefix,
+            case_insensitive=True,
+            help_command=Help(),
+            intents=discord.Intents(guilds=True, messages=True),
+            owner_id=SNACCMAN
+        )
 
         self.db = AsyncIOMotorClient(os.getenv("MONGO_STR")).snaccV2
 
@@ -109,6 +115,8 @@ class Bot(commands.Bot):
 
     @commands.Cog.listener("on_startup")
     async def on_startup(self):
+        return None
+
         print("Starting loop: Activity")
 
         self.activity_loop.start()
@@ -172,4 +180,4 @@ class Bot(commands.Bot):
             await super(Bot, self).on_message(message)
 
     def run(self):
-        super(Bot, self).run(os.getenv("BOT_TOKEN"))
+        super(Bot, self).run(os.environ["BOT_TOKEN"])
