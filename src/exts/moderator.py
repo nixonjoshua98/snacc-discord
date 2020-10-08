@@ -54,7 +54,7 @@ class Moderator(commands.Cog):
 	@commands.max_concurrency(1, commands.BucketType.channel)
 	@commands.bot_has_permissions(manage_messages=True)
 	@commands.command(name="purge", usage="<user> <num>")
-	async def purge_command(self, ctx, user: Optional[discord.Member] = None, amount: Range(1, 10) = 0):
+	async def purge_command(self, ctx, user: Optional[discord.Member] = None, amount: Range(1, 100) = 0):
 		""" Purge messages from channel. Checks up to **7** days in the past or **250** messages. """
 
 		seven_days_ago = dt.datetime.utcnow() - dt.timedelta(days=7)

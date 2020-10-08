@@ -42,6 +42,7 @@ class Help(commands.HelpCommand):
 
 		return ret
 
+
 	async def create_embeds(self, mapping):
 		def get_cmd_title(cmd_, *, signature: bool = True):
 			s_ = " " + str(cmd_.usage or cmd_.signature.replace("[", "<").replace("]", ">")) if signature else ""
