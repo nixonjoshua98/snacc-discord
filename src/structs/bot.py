@@ -38,7 +38,7 @@ class Bot(commands.Bot):
             command_prefix=self.get_prefix,
             case_insensitive=True,
             help_command=Help(),
-            intents=discord.Intents(guilds=True, messages=True),
+            intents=discord.Intents.default(),
             owner_id=SNACCMAN
         )
 
