@@ -38,7 +38,7 @@ class Empire(commands.Cog):
 
 		await ctx.bot.db["empires"].insert_one(row)
 
-		await ctx.bot.db["bank"].update_one({"_id": ctx.author.id}, {"$inc": {"btc": 3}})
+		await ctx.bot.db["bank"].update_one({"_id": ctx.author.id}, {"$inc": {"btc": 3}}, upsert=True)
 
 		await ctx.send(f"Your empire has been established. You have received **3** BTC")
 
