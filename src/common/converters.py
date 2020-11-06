@@ -3,7 +3,7 @@ from discord.ext import commands
 
 import datetime as dt
 
-from src.common import UnitMergeValues, BattleValues
+from src.common import UnitValues, BattleValues
 from src.common.quests import EmpireQuests
 from src.common.upgrades import EmpireUpgrades
 from src.common.heroes import ChestHeroes, HeroChests
@@ -162,14 +162,19 @@ class MergeableUnit(EmpireUnit):
 
 		owned, level = unit_entry.get("owned", 0), unit_entry.get("level", 0)
 
+		power_requirement = 350 + ((10 - unit_entry.get("level", 0)) * 10) if unit_entry.get("level", 0) >= 10 else 0
+
 		if owned < unit.calc_max_amount(unit_entry):
 			raise commands.CommandError(f"Merging requires you reach the owned limit first.")
 
-		elif owned < UnitMergeValues.MERGE_COST:
-			raise commands.CommandError(f"Merging consumes **{UnitMergeValues.MERGE_COST}** units")
+		elif owned < UnitValues.MERGE_COST:
+			raise commands.CommandError(f"Merging consumes **{UnitValues.MERGE_COST}** units")
 
-		if level >= UnitMergeValues.MAX_UNIT_MERGE:
+		if level >= UnitValues.MAX_UNIT_MERGE:
 			raise commands.CommandError(f"**{unit.display_name}** has already reached the maximum merge level.")
+
+		elif Military.calc_total_power(empire) < power_requirement:
+			raise commands.CommandError(f"Your empire is too weak. You need a power rating of **{power_requirement}**")
 
 		return unit
 

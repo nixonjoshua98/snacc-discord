@@ -3,7 +3,7 @@ import discord
 
 from src.structs import TextPage
 
-from src.common import UnitMergeValues
+from src.common import UnitValues
 
 
 class UnitGroup:
@@ -54,7 +54,7 @@ class Unit:
 		return math.ceil(price)
 
 	def calc_max_amount(self, unit_entry: dict):
-		return self._base_max_amount + unit_entry.get("level", 0)
+		return min(UnitValues.MAX_UNITS, self._base_max_amount + unit_entry.get("level", 0))
 
 	def calc_price(self, owned: int, buying: int):
 		return self._calc_price(owned, buying)
@@ -78,9 +78,7 @@ class WorkerUnit(Unit):
 		return math.ceil(self.income_per_unit * (1.0 + (level * 0.05)))
 
 	def calc_hourly_income(self, unit_entry: dict):
-		owned, level = unit_entry.get("owned", 0), unit_entry.get("level", 0)
-
-		return math.ceil(self.income_per_unit * owned * (1.0 + (level * 0.05)))
+		return self.calc_income_per_unit(unit_entry) * unit_entry.get("owned", 0)
 
 
 class MilitaryUnit(Unit):
@@ -121,14 +119,15 @@ class Workers(UnitGroup):
 		WorkerUnit(income=20, 	key="butcher"),
 		WorkerUnit(income=25, 	key="weaver"),
 		WorkerUnit(income=35, 	key="tailor"),
-		WorkerUnit(income=40, 	key="baker"),
-		WorkerUnit(income=45, 	key="blacksmith"),
-		WorkerUnit(income=50, 	key="cook"),
-		WorkerUnit(income=55, 	key="winemaker"),
-		WorkerUnit(income=60, 	key="shoemaker"),
-		WorkerUnit(income=65, 	key="falconer"),
-		WorkerUnit(income=75, 	key="carpenter"),
-		WorkerUnit(income=80, 	key="merchant"),
+		WorkerUnit(income=40, 	key="maid"),
+		WorkerUnit(income=45, 	key="baker"),
+		WorkerUnit(income=50, 	key="blacksmith"),
+		WorkerUnit(income=60, 	key="cook"),
+		WorkerUnit(income=65, 	key="winemaker"),
+		WorkerUnit(income=70, 	key="shoemaker"),
+		WorkerUnit(income=75, 	key="falconer"),
+		WorkerUnit(income=80, 	key="carpenter"),
+		WorkerUnit(income=85, 	key="merchant"),
 	)
 
 	@classmethod
@@ -154,7 +153,7 @@ class Workers(UnitGroup):
 			row = [unit.id, unit.display_name, level]
 
 			if owned >= max_units:
-				if level >= UnitMergeValues.MAX_UNIT_MERGE:
+				if level >= UnitValues.MAX_UNIT_MERGE:
 					continue
 
 				row.append("Mergeable")
@@ -179,12 +178,12 @@ class Military(UnitGroup):
 		MilitaryUnit(upkeep=10, 	key="scout"),
 		MilitaryUnit(upkeep=15, 	key="peasant"),
 		MilitaryUnit(upkeep=25, 	key="soldier"),
-		MilitaryUnit(upkeep=40, 	key="thief"),
-		MilitaryUnit(upkeep=45, 	key="spearman"),
-		MilitaryUnit(upkeep=50, 	key="cavalry"),
-		MilitaryUnit(upkeep=60, 	key="warrior"),
-		MilitaryUnit(upkeep=70, 	key="archer"),
-		MilitaryUnit(upkeep=75,		key="knight"),
+		MilitaryUnit(upkeep=35, 	key="thief"),
+		MilitaryUnit(upkeep=40, 	key="spearman"),
+		MilitaryUnit(upkeep=45, 	key="cavalry"),
+		MilitaryUnit(upkeep=55, 	key="warrior"),
+		MilitaryUnit(upkeep=65, 	key="archer"),
+		MilitaryUnit(upkeep=70,		key="knight"),
 	)
 
 	@classmethod
@@ -221,7 +220,7 @@ class Military(UnitGroup):
 			row = [unit.id, unit.display_name, level]
 
 			if owned >= max_units:
-				if level >= UnitMergeValues.MAX_UNIT_MERGE:
+				if level >= UnitValues.MAX_UNIT_MERGE:
 					continue
 
 				row.append("Mergeable")

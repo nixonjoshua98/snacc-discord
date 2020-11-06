@@ -25,8 +25,10 @@ class SupportServer:
 	GIVEAWAY_ROLE = 748562669216465058
 
 
-class UnitMergeValues:
-	MAX_UNIT_MERGE = 10
+class UnitValues:
+	MAX_UNITS = 25
+
+	MAX_UNIT_MERGE = 15
 	MERGE_COST = 15
 
 
