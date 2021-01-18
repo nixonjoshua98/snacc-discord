@@ -46,6 +46,8 @@ class Bot(commands.Bot):
             owner_id=SNACCMAN
         )
 
+        print(os.getenv("MONGO_STR"))
+
         self.db = AsyncIOMotorClient(os.getenv("MONGO_STR")).snaccV2
 
         self.exts_loaded = False
