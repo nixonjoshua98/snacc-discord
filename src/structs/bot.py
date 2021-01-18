@@ -158,7 +158,7 @@ class Bot(commands.Bot):
     async def get_prefix(self, message):
         """ Get the prefix for the server/guild from the database/cache. """
 
-        svr = await self.db["servers"].find_one({"_id": message.guild.id}) or dict()
+        svr = (await self.db["servers"].find_one({"_id": message.guild.id})) or dict()
 
         prefix = "." if self.debug else svr.get("prefix", "!")
 

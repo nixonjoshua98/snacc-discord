@@ -162,8 +162,6 @@ class MergeableUnit(EmpireUnit):
 
 		owned, level = unit_entry.get("owned", 0), unit_entry.get("level", 0)
 
-		power_requirement = 350 + ((10 - unit_entry.get("level", 0)) * 10) if unit_entry.get("level", 0) >= 10 else 0
-
 		if owned < unit.calc_max_amount(unit_entry):
 			raise commands.CommandError(f"Merging requires you reach the owned limit first.")
 
@@ -172,9 +170,6 @@ class MergeableUnit(EmpireUnit):
 
 		if level >= UnitValues.MAX_UNIT_MERGE:
 			raise commands.CommandError(f"**{unit.display_name}** has already reached the maximum merge level.")
-
-		elif Military.calc_total_power(empire) < power_requirement:
-			raise commands.CommandError(f"Your empire is too weak. You need a power rating of **{power_requirement}**")
 
 		return unit
 
