@@ -1,5 +1,5 @@
 discord==1.0.1
-httpx==0.12.1
+httpx==0.23.0
 beautifulsoup4==4.9.1
 matplotlib==3.3.0
 dblpy==0.3.4
